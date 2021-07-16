@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjtech.wisdom.tourism.system.mapper.IconMapper">
+    <resultMap type="com.yjtech.wisdom.tourism.system.domain.Icon" id="IconResult">
+        <id property="id" column="id"/>
+        <result property="type" column="type"/>
+        <result property="typeLabel" column="type_label"/>
+        <result property="iconType" column="icon_type"/>
+        <result property="iconTypeLabel" column="icon_type_label"/>
+        <result property="value" column="value"
+                javaType="com.yjtech.wisdom.tourism.system.domain.IconDetail"
+                typeHandler="com.yjtech.wisdom.tourism.mybatis.typehandler.ListObjectJsonTypeHandler"/>
+        <result property="createUser" column="create_user"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateUser" column="update_user"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="deleted" column="deleted"/>
+    </resultMap>
+
+    <select id="queryForPage" resultMap="IconResult">
+        select ti.*, type_label, icon_type_label
+        from tb_icon ti
+        left join (select dict_label type_label, dict_value type_value
+        from sys_dict_data where dict_type = #{spotQuery}) a on ti.type = a.type_value
+        left join (select dict_label icon_type_label, dict_value icon_type_value
+        from sys_dict_data where dict_type = #{imgQuery}) b on ti.icon_type = b.icon_type_value
+        <where>
+            deleted = 0
+            <if test="type != null and type != ''">
+                and type_label like concat('%', #{type}, '%')
+            </if>
+        </where>
+
+    </select>
+
+    <select id="queryForDetail" resultMap="IconResult">
+        select ti.*, type_label, icon_type_label
+        from tb_icon ti
+        left join (select dict_label type_label, dict_value type_value
+        from sys_dict_data where dict_type = #{spotQuery}) a on ti.type = a.type_value
+        left join (select dict_label icon_type_label, dict_value icon_type_value
+        from sys_dict_data where dict_type = #{imgQuery}) b on ti.icon_type = b.icon_type_value
+        <where>
+            id = #{id}
+        </where>
+
+    </select>
+
+    <select id="queryIconByType" resultMap="IconResult">
+        select *
+        from tb_icon
+        <where>
+            type = #{type}
+        </where>
+
+    </select>
+
+    <select id="querMenuIconList" resultMap="IconResult">
+        select *
+        from tb_icon
+        where deleted = 0
+        order by create_time desc
+    </select>
+</mapper>

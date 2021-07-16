@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjtech.wisdom.tourism.systemconfig.area.mapper.AreaAdminMapper">
+
+    <select id="queryForPage" resultType="com.yjtech.wisdom.tourism.systemconfig.area.vo.AreaAdminVO">
+        SELECT
+            a.CODE,
+            b.NAME,
+            a.administration,
+            a.abbreviation,
+            a.plate,
+            a.province_code,
+            a.city_code,
+            a.update_time,
+            b.province_name,
+            b.city_name
+        FROM
+           (select
+             *
+           from
+           `tb_area_admin`
+            <where>
+                <if test="params.administration != null and params.administration != ''">
+                    AND administration like concat('%', #{params.administration}, '%')
+                </if>
+                and deleted = 0
+            </where>
+           ) a
+            INNER JOIN (
+                select
+                    code,
+                    name,
+                    province_name,
+                    city_name
+                from
+                tb_area_data
+                <where>
+                    <if test="params.provinceName != null and params.provinceName != ''">
+                        AND province_name like concat('%', #{params.provinceName}, '%')
+                    </if>
+                    <if test="params.cityName != null and params.cityName != ''">
+                        AND city_name like concat('%', #{params.cityName}, '%')
+                    </if>
+                </where>
+            ) b ON a.CODE = b.CODE
+            order by code desc
+    </select>
+</mapper>

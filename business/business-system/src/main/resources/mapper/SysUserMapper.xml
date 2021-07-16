@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjtech.wisdom.tourism.system.mapper.SysUserMapper">
+
+	<resultMap type="com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysUser" id="SysUserResult">
+		<id     property="userId"       column="user_id"      />
+		<result property="deptId"       column="dept_id"      />
+		<result property="userName"     column="user_name"    />
+		<result property="nickName"     column="nick_name"    />
+		<result property="email"        column="email"        />
+		<result property="phonenumber"  column="phonenumber"  />
+		<result property="sex"          column="sex"          />
+		<result property="avatar"       column="avatar"       />
+		<result property="password"     column="password"     />
+		<result property="status"       column="status"       />
+		<result property="loginIp"      column="login_ip"     />
+		<result property="loginDate"    column="login_date"   />
+		<result property="createUser"     column="create_user"    />
+		<result property="createTime"   column="create_time"  />
+		<result property="updateUser"     column="update_user"    />
+		<result property="updateTime"   column="update_time"  />
+		<result property="remark"       column="remark"       />
+		<result property="deleted"       column="deleted"       />
+		<result property="roleName"       column="role_name"       />
+		<association property="dept"    column="dept_id" javaType="com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysDept" resultMap="deptResult" />
+		<collection  property="roles"   javaType="java.util.List"        resultMap="RoleResult" />
+	</resultMap>
+	
+	<resultMap id="deptResult" type="com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysDept">
+		<id     property="deptId"   column="dept_id"     />
+		<result property="parentId" column="parent_id"   />
+		<result property="deptName" column="dept_name"   />
+		<result property="orderNum" column="order_num"   />
+		<result property="leader"   column="leader"      />
+		<result property="status"   column="dept_status" />
+	</resultMap>
+	
+	<resultMap id="RoleResult" type="com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysRole">
+		<id     property="roleId"       column="role_id"        />
+		<result property="roleName"     column="role_name"      />
+		<result property="roleKey"      column="role_key"       />
+		<result property="roleSort"     column="role_sort"      />
+		<result property="dataScope"     column="data_scope"    />
+		<result property="status"       column="role_status"    />
+	</resultMap>
+	
+	<sql id="selectUserVo">
+        select u.user_id, u.dept_id, u.user_name, u.nick_name, u.email, u.avatar, u.phonenumber, u.password, u.sex, u.status as status, u.deleted, u.login_ip, u.login_date, u.create_user, u.create_time, u.remark,
+        d.dept_id, d.parent_id, d.dept_name, d.order_num, d.leader, d.status as dept_status,
+        r.role_id, r.role_name, r.role_key, r.role_sort, r.data_scope, r.status as role_status
+        from sys_user u
+		    left join sys_dept d on u.dept_id = d.dept_id
+		    left join sys_user_role ur on u.user_id = ur.user_id
+		    left join sys_role r on r.role_id = ur.role_id
+    </sql>
+    
+    <select id="selectUserList" parameterType="com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysUser" resultMap="SysUserResult">
+		select u.user_id, u.dept_id, u.nick_name, u.user_name, u.email, u.avatar, u.phonenumber, u.password, u.sex, u.status, u.deleted, u.login_ip, u.login_date, u.create_user, u.create_time, u.remark, d.dept_name, d.leader,
+		r.role_name
+		from sys_user u
+		left join sys_dept d on u.dept_id = d.dept_id
+		left join sys_user_role ur on u.user_id = ur.user_id
+		left join sys_role r on r.role_id = ur.role_id
+		where u.deleted = '0'
+		<if test="args.userName != null and args.userName != ''">
+			AND u.user_name like concat('%', #{args.userName}, '%')
+		</if>
+		<if test="args.nickName != null and args.nickName != ''">
+			AND u.nick_name like concat('%', #{args.nickName}, '%')
+		</if>
+		<if test="args.status != null and args.status != ''">
+			AND u.status = #{args.status}
+		</if>
+		<if test="args.phonenumber != null and args.phonenumber != ''">
+			AND u.phonenumber like concat('%', #{args.phonenumber}, '%')
+		</if>
+		<if test="args.beginTime != null and args.beginTime != ''"><!-- 开始时间检索 -->
+			AND date_format(u.create_time,'%y%m%d') &gt;= date_format(#{args.beginTime},'%y%m%d')
+		</if>
+		<if test="args.endTime != null and args.endTime != ''"><!-- 结束时间检索 -->
+			AND date_format(u.create_time,'%y%m%d') &lt;= date_format(#{args.endTime},'%y%m%d')
+		</if>
+		<if test="args.roleId != null">
+			AND ur.role_id = #{args.roleId}
+		</if>
+		<if test="args.deptId != null and args.deptId != 0">
+			AND (u.dept_id = #{args.deptId} OR u.dept_id IN ( SELECT t.dept_id FROM sys_dept t WHERE FIND_IN_SET (#{args.deptId},ancestors) ))
+		</if>
+		<!-- 数据范围过滤 -->
+		${args.params.dataScope}
+		order by create_time desc
+	</select>
+	
+	<select id="selectUserByUserName" parameterType="java.lang.String" resultMap="SysUserResult">
+	    <include refid="selectUserVo"/>
+		where u.user_name = #{userName} and u.deleted=0
+	</select>
+	
+	<select id="selectUserById" parameterType="java.lang.Long" resultMap="SysUserResult">
+		<include refid="selectUserVo"/>
+		where u.user_id = #{userId}
+	</select>
+	
+	<select id="checkUserNameUnique" parameterType="java.lang.String" resultType="int">
+		select count(1) from sys_user where user_name = #{userName} and deleted = 0 limit 1
+	</select>
+	
+	<select id="checkPhoneUnique" parameterType="java.lang.String" resultMap="SysUserResult">
+		select user_id, phonenumber from sys_user where phonenumber = #{phonenumber} and deleted = 0  limit 1
+	</select>
+	
+	<select id="checkEmailUnique" parameterType="java.lang.String" resultMap="SysUserResult">
+		select user_id, email from sys_user where email = #{email} and deleted = 0 limit 1
+	</select>
+	
+	<insert id="insertUser" parameterType="com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysUser" useGeneratedKeys="true" keyProperty="userId">
+ 		insert into sys_user(
+ 			<if test="userId != null and userId != 0">user_id,</if>
+ 			<if test="deptId != null and deptId != 0">dept_id,</if>
+ 			<if test="userName != null and userName != ''">user_name,</if>
+ 			<if test="nickName != null and nickName != ''">nick_name,</if>
+ 			<if test="email != null and email != ''">email,</if>
+ 			<if test="avatar != null and avatar != ''">avatar,</if>
+ 			<if test="phonenumber != null and phonenumber != ''">phonenumber,</if>
+ 			<if test="sex != null and sex != ''">sex,</if>
+ 			<if test="password != null and password != ''">password,</if>
+ 			<if test="status != null and status != ''">status,</if>
+ 			<if test="createUser != null and createUser != ''">create_user,</if>
+ 			<if test="remark != null and remark != ''">remark,</if>
+ 			create_time
+ 		)values(
+ 			<if test="userId != null and userId != ''">#{userId},</if>
+ 			<if test="deptId != null and deptId != ''">#{deptId},</if>
+ 			<if test="userName != null and userName != ''">#{userName},</if>
+ 			<if test="nickName != null and nickName != ''">#{nickName},</if>
+ 			<if test="email != null and email != ''">#{email},</if>
+ 			<if test="avatar != null and avatar != ''">#{avatar},</if>
+ 			<if test="phonenumber != null and phonenumber != ''">#{phonenumber},</if>
+ 			<if test="sex != null and sex != ''">#{sex},</if>
+ 			<if test="password != null and password != ''">#{password},</if>
+ 			<if test="status != null and status != ''">#{status},</if>
+ 			<if test="createUser != null and createUser != ''">#{createUser},</if>
+ 			<if test="remark != null and remark != ''">#{remark},</if>
+ 			sysdate()
+ 		)
+	</insert>
+	
+	<update id="updateUser" parameterType="com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysUser">
+ 		update sys_user
+ 		<set>
+ 			<if test="deptId != null and deptId != 0">dept_id = #{deptId},</if>
+ 			<if test="userName != null and userName != ''">user_name = #{userName},</if>
+ 			<if test="nickName != null and nickName != ''">nick_name = #{nickName},</if>
+ 			<if test="email != null and email != ''">email = #{email},</if>
+ 			<if test="phonenumber != null and phonenumber != ''">phonenumber = #{phonenumber},</if>
+ 			<if test="sex != null and sex != ''">sex = #{sex},</if>
+ 			<if test="avatar != null and avatar != ''">avatar = #{avatar},</if>
+ 			<if test="password != null and password != ''">password = #{password},</if>
+ 			<if test="status != null and status != ''">status = #{status},</if>
+ 			<if test="loginIp != null and loginIp != ''">login_ip = #{loginIp},</if>
+ 			<if test="loginDate != null">login_date = #{loginDate},</if>
+ 			<if test="updateUser != null and updateUser != ''">update_user = #{updateUser},</if>
+ 			<if test="remark != null">remark = #{remark},</if>
+ 			update_time = sysdate()
+ 		</set>
+ 		where user_id = #{userId}
+	</update>
+	
+	<update id="updateUserStatus" parameterType="com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysUser">
+ 		update sys_user set status = #{status} where user_id = #{userId}
+	</update>
+	
+	<update id="updateUserAvatar" parameterType="com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysUser">
+ 		update sys_user set avatar = #{avatar} where user_name = #{userName}
+	</update>
+	
+	<update id="resetUserPwd" parameterType="com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysUser">
+ 		update sys_user set password = #{password} where user_name = #{userName}
+	</update>
+	
+	<delete id="deleteUserById" parameterType="java.lang.Long">
+ 		delete from sys_user where user_id = #{userId}
+ 	</delete>
+ 	
+ 	<delete id="deleteUserByIds" parameterType="java.lang.Long">
+ 		update sys_user set deleted = 1 where user_id in
+ 		<foreach collection="array" item="userId" open="(" separator="," close=")">
+ 			#{userId}
+        </foreach> 
+ 	</delete>
+	
+</mapper> 

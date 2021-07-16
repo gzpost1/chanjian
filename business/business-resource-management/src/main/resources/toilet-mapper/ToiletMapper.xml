@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjtech.wisdom.tourism.resource.toilet.mapper.ToiletMapper">
+    <resultMap id="BaseResultMap" type="com.yjtech.wisdom.tourism.resource.toilet.entity.ToiletEntity">
+        <!--@mbg.generated-->
+        <!--@Table tb_toilet-->
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="device_id" jdbcType="VARCHAR" property="deviceId"/>
+        <result column="address" jdbcType="VARCHAR" property="address"/>
+        <result column="longitude" jdbcType="DECIMAL" property="longitude"/>
+        <result column="latitude" jdbcType="DECIMAL" property="latitude"/>
+        <result column="equip_status" jdbcType="TINYINT" property="equipStatus"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="create_user" jdbcType="BIGINT" property="createUser"/>
+        <result column="update_user" jdbcType="BIGINT" property="updateUser"/>
+        <result column="deleted" jdbcType="TINYINT" property="deleted"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--@mbg.generated-->
+        id, `name`, device_id, `address`, longitude, latitude, equip_status, `status`, create_time,
+        update_time, create_user, update_user, deleted
+    </sql>
+
+
+    <select id="queryForPage" resultType="com.yjtech.wisdom.tourism.resource.toilet.vo.ToiletVo">
+        select *
+        from tb_toilet
+                where deleted = 0
+        <if test="params != null  and params.name != null and params.name != ''">
+            and name like concat('%', #{params.name}, '%')
+        </if>
+        <if test="params != null  and params.status != null and params.status != ''">
+            and status = #{params.status}
+        </if>
+        order by create_time desc, status desc, name
+    </select>
+</mapper>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjtech.wisdom.tourism.system.mapper.AreaMapper">
+  <resultMap id="BaseResultMap" type="com.yjtech.wisdom.tourism.dto.area.AreaTreeNode">
+    <id column="id" jdbcType="VARCHAR" property="id"/>
+    <result column="parent_id" jdbcType="VARCHAR" property="parentId"/>
+    <result column="title" jdbcType="VARCHAR" property="title"/>
+  </resultMap>
+
+  <select id="getAreaTree" resultMap="BaseResultMap" parameterType="java.lang.String">
+    SELECT
+        code as id,
+        parent_code as parent_id,
+        name as title
+    FROM
+        `tb_area_data`
+    WHERE
+        town_code IS NULL
+    <if test="areaCode != null and areaCode != ''">
+      AND code like CONCAT(#{areaCode},'%')
+    </if>
+    ORDER BY CODE
+  </select>
+
+  <select id="getAreaInfoByCode" resultType="com.yjtech.wisdom.tourism.dto.area.AreaInfoVO"
+          parameterType="java.lang.String">
+    SELECT `code`, `name`, `province_code`, `province_name`, `city_code`, `city_name`, `county_code`, `county_name`, `town_code`, `town_name`, `village_code`, `village_name`, `type`, `parent_code`,abbreviation
+    FROM tb_area_data
+    where code=#{code}
+  </select>
+
+  <select id="getPrefectureLevelCityList"
+          resultType="com.yjtech.wisdom.tourism.dto.area.AreaInfoVO">
+      SELECT `code`, `name`, `province_code`, `province_name`, `city_code`, `city_name`, `parent_code`,abbreviation
+      FROM tb_area_data
+      where name != '港澳' and code!='000000000000' and county_code is null and name!='市辖区' and name!='县'
+      order by code
+    </select>
+
+  <select id="getAreaList" resultType="com.yjtech.wisdom.tourism.dto.area.AreaInfoVO">
+     SELECT `code`, `name`, `province_code`, `province_name`, `city_code`, `city_name`, `parent_code`,abbreviation
+      FROM tb_area_data
+      order by code
+  </select>
+
+</mapper>

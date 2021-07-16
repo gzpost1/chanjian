@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjtech.wisdom.tourism.resource.ticket.mapper.TicketVisitorSourceHourSummaryMapper">
+
+
+    <sql id="condition_sql_where">
+        <if test="params.year != null">
+            and year = #{params.year}
+        </if>
+        <if test="params.month != null">
+            and month = #{params.month}
+        </if>
+        <if test="params.day != null">
+            and day = #{params.day}
+        </if>
+        <if test="params.hour != null">
+            and hour = #{params.hour}
+        </if>
+        <if test="params.beginTime != null and params.endTime != null">
+            and record_time >= #{params.beginTime} and record_time <![CDATA[<=]]> #{params.endTime}
+        </if>
+    </sql>
+
+    <select id="sourceType" resultType="com.yjtech.wisdom.tourism.resource.ticket.vo.TicketSourceSummaryVo"
+            parameterType="com.yjtech.wisdom.tourism.resource.ticket.query.TicketSumaryQuery">
+        SELECT
+        source_type,
+        province,
+        city,
+        sum(quantity) AS quantity
+        FROM
+        tb_ticket_visitor_source_hour_summary
+        <where>
+            <if test="params.beginTime != null and params.endTime != null">
+                and record_time >= #{params.beginTime} and record_time <![CDATA[<]]> #{params.endTime}
+            </if>
+        </where>
+        GROUP BY
+        source_type,
+        province,
+        city
+    </select>
+
+    <select id="queryVisitorSourceRankingByProvince" resultType="com.yjtech.wisdom.tourism.resource.ticket.vo.TicketRankingVO"
+            parameterType="com.yjtech.wisdom.tourism.resource.ticket.query.TicketRankingQuery">
+        SELECT
+        province name,
+        sum(quantity) AS value
+        FROM
+        tb_ticket_visitor_source_hour_summary
+        <where>
+            <include refid="condition_sql_where"></include>
+        </where>
+        GROUP BY
+        province
+        order by value desc
+    </select>
+
+    <select id="queryVisitorSourceRankingByCity" resultType="com.yjtech.wisdom.tourism.resource.ticket.vo.TicketRankingVO"
+            parameterType="com.yjtech.wisdom.tourism.resource.ticket.query.TicketRankingQuery">
+        SELECT
+        province,
+        city name,
+        sum(quantity) AS value
+        FROM
+        tb_ticket_visitor_source_hour_summary
+        <where>
+            <include refid="condition_sql_where"></include>
+            and source_type !=2
+        </where>
+        GROUP BY
+        province,
+        city
+        order by value desc
+    </select>
+</mapper>

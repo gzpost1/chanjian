@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjtech.wisdom.tourism.event.mapper.EventLevelDailySummaryMapper">
+
+    <sql id="condition_sql_where">
+        <if test="params.year != null">
+            and year = #{params.year}
+        </if>
+        <if test="params.month != null">
+            and month = #{params.month}
+        </if>
+        <if test="params.day != null">
+            and day = #{params.day}
+        </if>
+        <if test="params.hour != null">
+            and hour = #{params.hour}
+        </if>
+        <if test="params.beginTime != null and params.endTime != null">
+            and record_date >= #{params.beginTime} and record_date <![CDATA[<=]]> #{params.endTime}
+        </if>
+    </sql>
+
+
+    <select id="queryEventLevel" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO"
+            parameterType="com.yjtech.wisdom.tourism.event.query.EventSumaryQuery">
+        SELECT
+        level name,
+        sum(quantity) AS value
+        FROM
+        tb_event_level_daily_summary
+        <where>
+            <include refid="condition_sql_where"></include>
+        </where>
+        GROUP BY
+        level
+    </select>
+</mapper>

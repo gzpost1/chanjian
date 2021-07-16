@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjtech.wisdom.tourism.resource.comment.mapper.PraiseTypeSummaryMapper">
+  <resultMap id="BaseResultMap" type="com.yjtech.wisdom.tourism.resource.comment.entity.PraiseTypeSummaryEntity">
+    <!--@mbg.generated-->
+    <!--@Table tb_praise_type_summary-->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="comment_time" jdbcType="DATE" property="commentTime" />
+    <result column="comment_poor" jdbcType="BIGINT" property="commentPoor" />
+    <result column="comment_medium" jdbcType="BIGINT" property="commentMedium" />
+    <result column="comment_excellent" jdbcType="BIGINT" property="commentExcellent" />
+    <result column="comment_total" jdbcType="BIGINT" property="commentTotal" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="create_user" jdbcType="BIGINT" property="createUser" />
+    <result column="update_user" jdbcType="BIGINT" property="updateUser" />
+    <result column="deleted" jdbcType="BOOLEAN" property="deleted" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, comment_time, comment_poor, comment_medium, comment_excellent, comment_total, 
+    create_time, update_time, create_user, update_user, deleted
+  </sql>
+
+  <select id="queryForAll" resultMap="BaseResultMap">
+    select
+            sum(comment_poor) as comment_poor, sum(comment_medium) as comment_medium, sum(comment_excellent) as comment_excellent, sum(comment_total) as comment_total
+    from
+            tb_praise_type_summary
+    where
+    deleted = 0
+  </select>
+
+  <select id="queryDayForCommentDate" resultMap="BaseResultMap">
+    SELECT
+            a.day as comment_time,
+            b.comment_total,
+            b.comment_excellent,
+            b.comment_medium,
+            b.comment_poor
+    from (
+     select date_sub(curdate(), interval (cast(help_topic_id as signed ) - 0) day) day
+     from mysql.help_topic
+     where help_topic_id <![CDATA[<]]> 30
+     order by help_topic_id
+    ) a
+    LEFT JOIN tb_praise_type_summary b on a.day = b.comment_time and b.deleted = 0
+    ORDER BY
+    a.day asc
+  </select>
+
+  <select id="queryTotalOtaTop" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO">
+      select
+              ota_type as name,
+              sum(comment_total) as value
+      from
+              tb_praise_ota_summary
+      where deleted = 0
+      group by ota_type
+      order by sum(comment_total) desc,ota_type
+  </select>
+
+  <select id="queryExcellentTotalOtaTop" resultType="com.yjtech.wisdom.tourism.common.bean.BasePercentVO">
+      select
+              ota_type as name,
+              sum(comment_excellent) as value,
+              case when sum(comment_total) = 0 then 0.0000
+                   when sum(comment_total) is null then 0.0000
+                   else round(sum(comment_excellent)/sum(comment_total),4)
+                      end as rate
+      from
+              tb_praise_ota_summary
+      where deleted = 0
+      group by ota_type
+      order by case when sum(comment_total) = 0 then 0.0000
+                    when sum(comment_total) is null then 0.0000
+                    else round(sum(comment_excellent)/sum(comment_total),4)
+                       end desc,sum(comment_excellent) desc ,ota_type
+    </select>
+
+  <select id="queryMonthForCommentDate" resultMap="BaseResultMap">
+      SELECT
+              a.month as comment_time,
+              ifnull(b.comment_total,0) as comment_total,
+              ifnull(b.comment_excellent,0) as comment_excellent,
+              ifnull(b.comment_medium,0) as comment_medium,
+              ifnull(b.comment_poor,0) as comment_poor
+      from (
+           select date_sub(curdate(), interval (cast(help_topic_id as signed ) - 0) month ) month
+           from mysql.help_topic
+           where help_topic_id <![CDATA[<]]> 12
+           order by help_topic_id
+           ) a
+           LEFT JOIN
+           (
+           select
+                   date_format(comment_time,'%Y-%m') as comment_time,
+                   sum(comment_total)as comment_total,
+                   sum(comment_excellent)as comment_excellent,
+                   sum(comment_medium)as comment_medium,
+                   sum(comment_poor)as comment_poor
+               from
+           tb_praise_type_summary
+           where deleted = 0
+           group by date_format(comment_time,'%Y-%m')
+           )b on date_format(a.month,'%Y-%m') = b.comment_time
+      ORDER BY
+              a.month asc
+    </select>
+</mapper>

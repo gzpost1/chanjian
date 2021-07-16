@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjtech.wisdom.tourism.resource.ticket.mapper.TicketHourSummaryMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.yjtech.wisdom.tourism.resource.ticket.entity.TicketHourSummaryEntity">
+        <id column="summary_id" property="summaryId" />
+        <result column="record_time" property="recordTime" />
+        <result column="year" property="year" />
+        <result column="month" property="month" />
+        <result column="day" property="day" />
+        <result column="hour" property="hour" />
+        <result column="will_visit_quantity" property="willVisitQuantity" />
+        <result column="visit_quantity" property="visitQuantity" />
+        <result column="will_visit_group_quantity" property="willVisitGroupQuantity" />
+        <result column="group_quantity" property="groupQuantity" />
+        <result column="will_visit_individual_quantity" property="willVisitIndividualQuantity" />
+        <result column="individual_quantity" property="individualQuantity" />
+        <result column="leave_quantity" property="leaveQuantity" />
+        <result column="sale_quantity" property="saleQuantity" />
+    </resultMap>
+
+
+    <sql id="condition_sql_where">
+        <if test="params.year != null">
+            and year = #{params.year}
+        </if>
+        <if test="params.month != null">
+            and month = #{params.month}
+        </if>
+        <if test="params.day != null">
+            and day = #{params.day}
+        </if>
+        <if test="params.hour != null">
+            and hour = #{params.hour}
+        </if>
+        <if test="params.beginTime != null and params.endTime != null">
+            and record_time >= #{params.beginTime} and record_time <![CDATA[<=]]> #{params.endTime}
+        </if>
+    </sql>
+
+    <select id="queryTrend" resultType="com.yjtech.wisdom.tourism.resource.ticket.vo.SaleTrendVO"
+            parameterType="com.yjtech.wisdom.tourism.resource.ticket.query.TicketSumaryQuery">
+        SELECT
+        DATE_FORMAT( record_time, #{params.sqlDateFormat} ) AS time,
+        COALESCE(sum( sale_quantity ),0) AS sale_quantity,
+        COALESCE(sum( visit_quantity ),0) AS visit_quantity
+        FROM
+            tb_ticket_hour_summary
+        <where>
+            <include refid="condition_sql_where"></include>
+        </where>
+        GROUP BY
+        DATE_FORMAT( record_time, #{params.sqlDateFormat} )
+    </select>
+
+    <select id="querySaleQuantity" resultType="integer"
+            parameterType= "com.yjtech.wisdom.tourism.resource.ticket.query.TicketSumaryQuery">
+        SELECT
+        COALESCE(sum( sale_quantity ),0) AS sale_quantity
+        FROM
+        tb_ticket_hour_summary
+        <where>
+            <if test="params.beginTime != null and params.endTime != null">
+                and record_time >= #{params.beginTime} and record_time <![CDATA[<=]]> #{params.endTime}
+            </if>
+        </where>
+    </select>
+
+    <select id="queryFareCollection" resultType="com.yjtech.wisdom.tourism.resource.ticket.vo.TicketFareCollectionVO"
+            parameterType= "com.yjtech.wisdom.tourism.resource.ticket.query.TicketSumaryQuery">
+        SELECT
+        COALESCE(sum( will_visit_group_quantity ),0) AS will_visit_group_quantity,
+        COALESCE(sum( group_quantity ),0) AS group_quantity,
+        COALESCE(sum( will_visit_individual_quantity ),0) AS will_visit_individual_quantity,
+        COALESCE(sum( individual_quantity ),0) AS individual_quantity
+        FROM
+        tb_ticket_hour_summary
+        <where>
+            <if test="params.beginTime != null and params.endTime != null">
+                and record_time >= #{params.beginTime} and record_time <![CDATA[<=]]> #{params.endTime}
+            </if>
+        </where>
+    </select>
+</mapper>

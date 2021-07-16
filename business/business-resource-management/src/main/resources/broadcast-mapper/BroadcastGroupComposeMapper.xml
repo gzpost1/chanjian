@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yjtech.wisdom.tourism.resource.broadcast.mapper.BroadcastGroupComposeMapper" >
+
+    <resultMap id="BaseResultMap" type="com.yjtech.wisdom.tourism.resource.broadcast.entity.BroadcastGroupComposeEntity" >
+        <id column="compose_id" property="composeId" jdbcType="BIGINT" />
+        <result column="group_id" property="groupId" jdbcType="BIGINT" />
+        <result column="broadcast_id" property="broadcastId" jdbcType="BIGINT" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+    compose_id, group_id, broadcast_id
+    </sql>
+
+    <select id="queryByGroupIds" resultMap="BaseResultMap" parameterType="java.util.List">
+        select
+        <include refid="Base_Column_List" />
+        from tb_broadcast_group_compose
+        where group_id in
+        <foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="queryByBroadcastIds" resultMap="BaseResultMap" parameterType="java.util.List">
+        select
+        <include refid="Base_Column_List" />
+        from tb_broadcast_group_compose
+        where broadcast_id in
+        <foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <delete id="deleteByBroadcastIds" parameterType="java.util.List">
+        delete from tb_broadcast_group_compose
+        where broadcast_id in
+        <foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <delete id="deleteByGroupIds" parameterType="java.util.List">
+        delete from tb_broadcast_group_compose
+        where group_id in
+        <foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <update id="batchInsertCompose" parameterType="java.util.List">
+        replace into tb_broadcast_group_compose(
+        <include refid="Base_Column_List"/>
+        ) values
+        <foreach collection="list" item="compose" index="index" separator=",">
+            (#{compose.composeId,jdbcType=BIGINT}, #{compose.groupId,jdbcType=BIGINT}, #{compose.broadcastId,jdbcType=BIGINT})
+        </foreach>
+    </update>
+</mapper>

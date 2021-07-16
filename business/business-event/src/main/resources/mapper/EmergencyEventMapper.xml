@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yjtech.wisdom.tourism.event.mapper.EmergencyEventMapper" >
+
+  <select id="queryUserById" resultType="com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysUser">
+    select * from sys_user
+    <foreach collection="userIds" item="userId" open="where user_id in (" separator="," close=")">
+      #{userId}
+    </foreach>
+  </select>
+
+</mapper>

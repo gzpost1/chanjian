@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: standard-integrated-admin-portal
+  namespace: test-standard-integrated
+  labels:
+    app: standard-integrated-admin-portal
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: standard-integrated-admin-portal
+  template:
+    metadata:
+      labels:
+        app: standard-integrated-admin-portal
+    spec:
+      imagePullSecrets:
+      - name: harbor-secret
+      containers:
+      - name: standard-integrated-admin-portal
+        args:
+        - --spring.profiles.active=test
+        image: ${CICD_IMAGE}:${CICD_EXECUTION_SEQUENCE}
+        ports:
+        - containerPort: 8080
+---
+kind: Service
+apiVersion: v1
+metadata:
+  annotations:
+    field.cattle.io/ipAddresses: "null"
+    field.cattle.io/targetDnsRecordIds: "null"
+    field.cattle.io/targetWorkloadIds: '["deployment:test-standard-integrated:standard-integrated-admin-portal"]'
+  name: standard-integrated-admin-portal
+  namespace: test-standard-integrated
+spec:
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080

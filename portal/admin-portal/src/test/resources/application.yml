@@ -1,0 +1,177 @@
+# 项目相关配置
+app:
+  # 名称
+  name: smart-scenic
+  # 版本
+  version: 3.0.0
+  # 版权年份
+  copyrightYear: 2020
+  # 实例演示开关
+  demoEnabled: true
+  # 文件路径 示例（ Windows配置D:/temp/uploadPath，Linux配置 /home/temp/uploadPath）
+  profile: /app/uploadPath
+  # 获取ip地址开关
+  addressEnabled: false
+  # 验证码类型 math 数组计算 char 字符验证
+  captchaType: math
+
+# 开发环境配置
+server:
+  # 服务器的HTTP端口，默认为8080
+  port: 8080
+  servlet:
+    # 应用的访问路径
+    context-path: /
+  tomcat:
+    # tomcat的URI编码
+    uri-encoding: UTF-8
+    # tomcat最大线程数，默认为200
+    max-threads: 800
+    # Tomcat启动初始化的线程数，默认值25
+    min-spare-threads: 30
+
+# 日志配置
+logging:
+  level:
+    org.springframework: warn
+    org.springframework.data.mongodb.core.MongoTemplate: DEBUG
+
+# Spring配置
+spring:
+  # 资源信息
+  messages:
+    # 国际化资源文件路径
+    basename: i18n/messages
+  profiles:
+    active: local
+  # 文件上传
+  servlet:
+    multipart:
+      # 单个文件大小
+      max-file-size:  10MB
+      # 设置总上传的文件大小
+      max-request-size:  20MB
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+    druid:
+      # 主库数据源
+      master:
+        url: jdbc:mysql://mysql:3306/smart_scenic?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+        username: root
+        password: yjwl2019!@#
+      # 从库数据源
+      slave:
+        # 从数据源开关/默认关闭
+        enabled: false
+        url:
+        username:
+        password:
+      # 初始连接数
+      initialSize: 5
+      # 最小连接池数量
+      minIdle: 10
+      # 最大连接池数量
+      maxActive: 20
+      # 配置获取连接等待超时的时间
+      maxWait: 60000
+      # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+      timeBetweenEvictionRunsMillis: 60000
+      # 配置一个连接在池中最小生存的时间，单位是毫秒
+      minEvictableIdleTimeMillis: 300000
+      # 配置一个连接在池中最大生存的时间，单位是毫秒
+      maxEvictableIdleTimeMillis: 900000
+      # 配置检测连接是否有效
+      validationQuery: SELECT 1 FROM DUAL
+      testWhileIdle: true
+      testOnBorrow: false
+      testOnReturn: false
+      webStatFilter:
+        enabled: true
+      statViewServlet:
+        enabled: true
+        # 设置白名单，不填则允许所有访问
+        allow:
+        url-pattern: /druid/*
+        # 控制台管理用户名和密码
+        login-username:
+        login-password:
+      filter:
+        stat:
+          enabled: true
+          # 慢SQL记录
+          log-slow-sql: true
+          slow-sql-millis: 2000
+          merge-sql: true
+        wall:
+          config:
+            multi-statement-allow: true
+  # redis 配置
+  redis:
+    # 地址
+    host: localhost
+    # 端口，默认为6379
+    port: 6379
+    # 密码
+    password:
+    # 连接超时时间
+    timeout: 10s
+    lettuce:
+      pool:
+        # 连接池中的最小空闲连接
+        min-idle: 0
+        # 连接池中的最大空闲连接
+        max-idle: 8
+        # 连接池的最大数据库连接数
+        max-active: 8
+        # 连接池最大阻塞等待时间（使用负值表示没有限制）
+        max-wait: -1ms
+
+mybatis-plus:
+  mapper-locations: classpath*:mapper/*.xml,classpath*:custom-mapper/*.xml
+  type-handlers-package: com.yjbigdata.wisdom.tourism.typehandler
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: true
+  global-config:
+    db-config:
+      id-type: id_worker
+      logic-delete-value: 1 # 逻辑已删除值(默认为 1)
+      logic-not-delete-value: 0 # 逻辑未删除值(默认为 0)
+      table-prefix: tb_
+
+# token配置
+token:
+  # 令牌自定义标识
+  header: Authorization
+  # 令牌密钥
+  secret: CW2elXljOGC6UFGW2qgmcmJUJ3
+  # 令牌有效期（默认30分钟）,修改为8个小时
+  expireTime: 480
+
+# 防止XSS攻击
+xss:
+  # 过滤开关
+  enabled: true
+  # 排除链接（多个用逗号分隔）
+  excludes: /system/notice/*
+  # 匹配链接
+  urlPatterns: /system/*,/monitor/*,/tool/*
+
+#实时环境监测
+realTimeEvnMonitor:
+  evn_monitor_url: http://iot.whxph.com:90/intfa/queryData/16061539
+
+wechat.open:
+  componentAppId: "wx671ce4c60f0f6d0e"
+  componentAppSecret: "3a10327f5f2197a25c371c6fb2339a92"
+  componentToken: "DUxdvcifxg4F1Y1b"
+  componentAesKey: "fghijklmnopABCqrstuvwxyzDEFGHIJKLMNabcde567"
+  gotoAuthUrl: "https://developer.yunjingtech.cn/smart-scenic-platform-admin/wxopen/auth/goto_auth_url"
+  authRedirectURI: "https://developer.yunjingtech.cn/smart-scenic-platform-admin/wxopen/auth/callback"
+  requestDomainList: "developer.yjctrip.com,developer.yunjingtech.cn,apis.map.qq.com"
+  wsrequestDomainList: "developer.yjctrip.com,developer.yunjingtech.cn"
+  uploadDomainList: "developer.yjctrip.com,developer.yunjingtech.cn"
+  downloadDomainList: "developer.yjctrip.com,developer.yunjingtech.cn"
+  webViewDomainList: "https://developer.yjctrip.com,https://developer.yunjingtech.cn"
+  cacheKeyPrefix: smartScenic

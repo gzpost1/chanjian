@@ -1,0 +1,110 @@
+POST {{host}}login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "Admin1357",
+  "uuid":"78a6d41dd35c485798340ac2260312d0",
+  "code":"2"
+}
+//{
+//  "username": "lks01",
+//  "password": "Aa123456",
+//  "uuid": "c141e125b7a74255a29f3f05111bb069"
+//}
+
+> {%
+    client.global.set("token",response.body.data);
+ %}
+
+###
+
+GET {{host}}captchaImage
+Content-Type: application/json
+
+{
+
+}
+
+###
+POST {{host}}/video/list
+Content-Type: application/json
+Authorization: {{token}}
+
+{
+}
+###
+POST {{host}}/screen/video/list
+Content-Type: application/json
+Authorization: {{token}}
+
+{
+}
+
+###
+POST {{host}}/screen/deviceLocation/list
+Content-Type: application/json
+Authorization: {{token}}
+
+{
+}
+###
+POST {{host}}/screen/deviceLocation/statistics
+Content-Type: application/json
+Authorization: {{token}}
+
+{
+}
+
+###
+POST {{host}}/deviceLocation/list
+Content-Type: application/json
+Authorization: {{token}}
+
+{
+}
+
+
+###
+POST {{host}}/wechat-app/authorize
+Content-Type: application/json
+Authorization: {{token}}
+
+{
+"id":"1244529271382188033"
+}
+
+
+
+
+
+###
+GET {{host}}/wxopen/auth/goto_auth_url
+Content-Type: application/json
+Authorization: {{token}}
+
+{
+"id":"1244529271382188033"
+}
+
+
+###
+POST {{host}}/wxopen/notify/event/authorize/accept?timestamp=21312412421&nonce=124125215&signature=123213
+Content-Type: application/json
+Authorization: {{token}}
+
+{
+}
+
+###
+GET {{host}}/wxopen/auth/goto_auth_url
+Content-Type: application/json
+Authorization: {{token}}
+
+{
+}
+
+###
+
+
+

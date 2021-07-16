@@ -1,0 +1,25 @@
+# 数据源配置
+spring:
+  datasource:
+    druid:
+      # 主库数据源
+      master:
+        url: jdbc:mysql://mysql:3306/industry_monitoring_standard?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+        username: root
+        password: yjwl2019!@#
+  redis:
+    database: 12
+    # 地址
+    host: redis
+    # 端口，默认为6379
+    port: 6379
+    # 密码
+    password:
+
+  data:
+    mongodb:
+      host: 1.14.13.130
+      port: 32585
+      database: industry-monitoring-standard
+      username: industry
+      password: yjwlindustry

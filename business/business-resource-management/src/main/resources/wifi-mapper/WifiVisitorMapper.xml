@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yjtech.wisdom.tourism.resource.wifi.mapper.WifiVisitorMapper">
+    <resultMap id="BaseResultMap" type="com.yjtech.wisdom.tourism.resource.wifi.entity.WifiVisitorEntity">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="scenic_spot_id" property="scenicSpotId" jdbcType="BIGINT"/>
+        <result column="user_account" property="userAccount" jdbcType="VARCHAR"/>
+        <result column="user_name" property="userName" jdbcType="VARCHAR"/>
+        <result column="mac_address" property="macAddress" jdbcType="VARCHAR"/>
+        <result column="auth_type" property="authType" jdbcType="VARCHAR"/>
+        <result column="os_type" property="osType" jdbcType="VARCHAR"/>
+        <result column="phone_number" property="phoneNumber" jdbcType="VARCHAR"/>
+        <result column="browser_type" property="browserType" jdbcType="VARCHAR"/>
+        <result column="ap_id" property="apId" jdbcType="VARCHAR"/>
+        <result column="register_time" property="registerTime" jdbcType="TIMESTAMP"/>
+        <result column="phone_manufacturer" property="phoneManufacturer" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+    id, scenic_spot_id, user_account, user_name, mac_address, auth_type, os_type, phone_number, 
+    browser_type, ap_id, register_time, phone_manufacturer
+    </sql>
+
+    <sql id="condition_sql_where">
+        <if test="params.year != null">
+            and year = #{params.year}
+        </if>
+        <if test="params.month != null">
+            and month = #{params.month}
+        </if>
+        <if test="params.day != null">
+            and day = #{params.day}
+        </if>
+        <if test="params.hour != null">
+            and hour = #{params.hour}
+        </if>
+        <if test="params.beginTime != null and params.endTime != null">
+            and (register_time >= #{params.beginTime} and register_time <![CDATA[<]]> #{params.endTime})
+        </if>
+    </sql>
+
+    <select id="queryPhoneManufacturerTop10" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO">
+        SELECT
+	        phone_manufacturer name,
+	        COUNT(*) `value`
+        FROM
+            tb_wifi_visitor
+        <where>
+            <include refid="condition_sql_where"></include>
+        </where>
+        GROUP BY
+            phone_manufacturer
+        ORDER BY
+            `value` DESC
+            LIMIT 10
+    </select>
+
+    <select id="queryAuthType" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO">
+        SELECT
+            auth_type NAME,
+            COUNT(*) `value`
+        FROM
+            tb_wifi_visitor
+        GROUP BY
+            auth_type
+        ORDER BY
+            `value` DESC
+    </select>
+
+</mapper>

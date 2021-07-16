@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjtech.wisdom.tourism.systemconfig.chart.mapper.SystemconfigChartsListMapper">
+  <resultMap id="BaseResultMap" type="com.yjtech.wisdom.tourism.systemconfig.chart.entity.SystemconfigChartsListEntity">
+    <!--@mbg.generated-->
+    <!--@Table tb_systemconfig_charts_list-->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="chart_id" jdbcType="BIGINT" property="chartId" />
+    <result column="filed_key" jdbcType="VARCHAR" property="filedKey" />
+    <result column="is_show" jdbcType="TINYINT" property="isShow" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="create_user" jdbcType="BIGINT" property="createUser" />
+    <result column="update_user" jdbcType="BIGINT" property="updateUser" />
+    <result column="deleted" jdbcType="TINYINT" property="deleted" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, chart_id, filed_key, is_show, create_time, update_time, create_user, update_user, 
+    deleted
+  </sql>
+  <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
+    <!--@mbg.generated-->
+    insert into tb_systemconfig_charts_list
+    (chart_id, filed_key, is_show, create_time, update_time, create_user, update_user, 
+      deleted)
+    values
+    <foreach collection="list" item="item" separator=",">
+      (#{item.chartId,jdbcType=BIGINT}, #{item.filedKey,jdbcType=VARCHAR}, #{item.isShow,jdbcType=TINYINT},
+        #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateTime,jdbcType=TIMESTAMP}, #{item.createUser,jdbcType=BIGINT}, 
+        #{item.updateUser,jdbcType=BIGINT}, #{item.deleted,jdbcType=TINYINT})
+    </foreach>
+  </insert>
+
+  <select id="queryChartsListsBYCharts"
+          resultType="com.yjtech.wisdom.tourism.systemconfig.chart.dto.list.SystemconfigChartsListVo">
+    select
+    #{params.chartId} as chart_id,
+    a.dict_value as filed_key,
+    b.is_show
+    from
+    sys_dict_data a
+    left join tb_systemconfig_charts_list b on b.deleted = 0 and b.chart_id = #{params.chartId} and a.dict_value = b.filed_key
+    where
+    a.status = 0
+    and a.dict_type = #{params.listType}
+    order by a.dict_sort
+  </select>
+
+  <update id="removeChartListBYChartId">
+    update tb_systemconfig_charts_list set deleted = 1 where chart_id = #{chartId}
+  </update>
+</mapper>

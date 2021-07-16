@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjtech.wisdom.tourism.resource.depot.mapper.DepotSourceSummaryMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.yjtech.wisdom.tourism.resource.depot.entity.DepotTypeSummaryEntity">
+        <id column="summary_id" property="summaryId" />
+        <result column="record_time" property="recordTime" />
+        <result column="year" property="year" />
+        <result column="month" property="month" />
+        <result column="day" property="day" />
+        <result column="hour" property="hour" />
+        <result column="source_type" property="sourceType" />
+        <result column="province" property="province" />
+        <result column="city" property="city" />
+        <result column="quantity" property="quantity" />
+    </resultMap>
+
+    <sql id="condition_sql_where">
+        <if test="params.year != null">
+            and year = #{params.year}
+        </if>
+        <if test="params.month != null">
+            and month = #{params.month}
+        </if>
+        <if test="params.day != null">
+            and day = #{params.day}
+        </if>
+        <if test="params.hour != null">
+            and hour = #{params.hour}
+        </if>
+        <if test="params.beginTime != null and params.endTime != null">
+            and (record_time >= #{params.beginTime} and record_time <![CDATA[<]]> #{params.endTime})
+        </if>
+    </sql>
+
+    <select id="queryDistributionMaps" resultType="com.yjtech.wisdom.tourism.resource.depot.entity.vo.DepotBaseVo"
+            parameterType="com.yjtech.wisdom.tourism.resource.depot.query.DepotSummaryQuery">
+        SELECT
+        province name,
+        COALESCE(sum( quantity ),0) AS `value`
+        FROM
+        tb_depot_source_summary
+        <where>
+            <include refid="condition_sql_where"></include>
+        </where>
+        GROUP BY province
+    </select>
+
+    <select id="querySourceOfProvince" resultType="com.yjtech.wisdom.tourism.resource.depot.entity.vo.DepotBaseVo"
+            parameterType="com.yjtech.wisdom.tourism.resource.depot.query.DepotPageSummaryQuery">
+        SELECT
+        province name,
+        COALESCE(sum( quantity ),0) AS `value`
+        FROM
+        tb_depot_source_summary
+        <where>
+            <include refid="condition_sql_where"></include>
+        </where>
+        GROUP BY province
+    </select>
+
+    <select id="querySourceOfCity" resultType="com.yjtech.wisdom.tourism.resource.depot.entity.vo.DepotBaseVo"
+            parameterType="com.yjtech.wisdom.tourism.resource.depot.query.DepotPageSummaryQuery">
+        SELECT
+        city name,
+        COALESCE(sum( quantity ),0) AS `value`
+        FROM
+        tb_depot_source_summary
+        <where>
+            <include refid="condition_sql_where"></include>
+            and source_type != 2
+        </where>
+        GROUP BY city
+    </select>
+
+</mapper>

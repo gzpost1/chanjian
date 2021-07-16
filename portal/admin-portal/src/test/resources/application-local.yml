@@ -1,0 +1,28 @@
+# 数据源配置
+spring:
+  datasource:
+    druid:
+      # 主库数据源
+      master:
+        url: jdbc:mysql://42.193.2.246:31907/smart_scenic_v2?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+        username: root
+        password: yjwl2019!@#
+  redis:
+    # 地址
+    host: 42.193.2.246
+    # 端口，默认为6379
+    port: 30206
+    # 密码
+    password:
+  rabbitmq:
+    host: 1.14.22.139
+    port: 31248
+    username: admin
+    password: lyjd-123
+
+
+depot:
+  server:
+    url: http://118.212.38.88:9091
+  sima:
+    url: http://118.212.38.88:18081
