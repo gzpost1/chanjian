@@ -19,6 +19,7 @@
         <module>business-weather</module>
         <module>business-resource-management</module>
         <module>business-event</module>
+        <module>business-integration</module>
     </modules>
 
 </project>

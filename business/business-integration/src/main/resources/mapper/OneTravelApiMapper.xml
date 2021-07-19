@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjtech.wisdom.tourism.integration.mapper.OneTravelApiMapper">
+
+    <select id="queryVisitStatistics"
+            resultType="com.yjtech.wisdom.tourism.integration.pojo.bo.onetravel.OneTravelVisitStatisticsBO">
+        SELECT
+        a.NAME as name,
+        VALUE,
+        code as code,
+        longitude,
+        latitude
+        FROM
+        ( SELECT NAME, sum( VALUE ) VALUE FROM `tb_wx_city_distributed` GROUP BY NAME ) a
+        INNER JOIN (
+        SELECT CODE
+        ,
+        NAME,
+        longitude,
+        latitude
+        FROM
+        `tb_dict_area`
+        <where>
+            <if test="params != null">
+                <if test="params.areaCode != null and params.areaCode != ''">
+                    code LIKE CONCAT(#{params.areaCode},'%') and
+                </if>
+            </if>
+            LEVEL = 1
+        </where>
+        ) b ON POSITION( a.NAME IN b.NAME )
+    </select>
+
+    <select id="queryProvinceVisitStatistics"
+            resultType="com.yjtech.wisdom.tourism.integration.pojo.bo.onetravel.OneTravelVisitStatisticsBO">
+        select
+        CASE
+        WHEN visitInfo.name = '香港' or visitInfo.name = '澳门' THEN CONCAT(visitInfo.name, '特别行政区')
+        ELSE areaInfo.name END as name,
+        areaInfo.code as code,
+        areaInfo.longitude as longitude,
+        areaInfo.latitude as latitude,
+        SUM(visitInfo.value) as value
+        from
+        tb_wx_user_world visitInfo
+        LEFT JOIN
+        (select code, name, longitude, latitude
+        from tb_dict_area
+        <where>
+            level = 0
+        </where>) areaInfo ON POSITION( visitInfo.name IN areaInfo.name )
+        <where>
+            visitInfo.name not in ('其他','未知') and
+            visitInfo.deleted = 0
+        </where>
+        GROUP BY visitInfo.name
+    </select>
+
+
+    <select id="queryDailySum"
+            resultType="com.yjtech.wisdom.tourism.integration.pojo.bo.onetravel.OneTravelMagicVisitPvBO">
+        select
+        ifnull(sum(visit_persons), 0) as visitPersons,
+        ifnull(sum(visit_times), 0) as visitTimes,
+        ifnull(sum(magic_data), 0) as magicData
+        from tb_magic_visit_pv
+    </select>
+
+    <select id="queryComplaintStatistics" resultType="integer"
+            parameterType="com.yjtech.wisdom.tourism.integration.pojo.vo.OneTravelQueryVO">
+        select
+        count(id)
+        from
+        tb_complaint
+        <where>
+            <include refid="base_query_condition"/>
+        </where>
+    </select>
+
+    <select id="queryComplaintForPage"
+            resultType="com.yjtech.wisdom.tourism.integration.pojo.bo.onetravel.OneTravelComplaintListBO"
+            parameterType="com.yjtech.wisdom.tourism.integration.pojo.vo.OneTravelQueryVO">
+        select
+        id as id,
+        complaint_type as complaintObject,
+        user_name as complaintUser,
+        phone as complaintPhone,
+        status as complaintStatus,
+        CASE
+        WHEN status = '1'THEN '待处理'
+        WHEN status = '2'THEN '已处理'
+        WHEN status = '3'THEN '已评价'
+        ELSE '其他' END as complaintStatusDesc,
+        complaint_content as complaintContent,
+        image as complaintImage,
+        happen_location as happenLocation,
+        complaint_time as complaintTime,
+        operate_content as operateContent,
+        operate_time as operateTime,
+        operate_user_name as operateUser,
+        evaluate_content as evaluateContent,
+        evaluate_time as evaluateTime
+        from
+        tb_complaint
+        <where>
+            <include refid="base_query_condition"/>
+        </where>
+        ORDER BY complaint_time DESC
+    </select>
+
+    <select id="queryComplaintDistribution" resultType="com.yjtech.wisdom.tourism.common.bean.DistributionBaseInfo"
+            parameterType="com.yjtech.wisdom.tourism.integration.pojo.vo.OneTravelQueryVO">
+        select
+        CASE
+        WHEN status = 1 THEN '待处理'
+        WHEN status = 2 THEN '已处理'
+        WHEN status = 3 THEN '已评价'
+        ELSE '其他' END as name,
+        COUNT(id) as number,
+        COALESCE (ROUND(COUNT(id)/total.totalNum, 4),0) as percent
+        from
+        tb_complaint as complaint
+        INNER JOIN
+        (select
+        count(id) as totalNum
+        from
+        tb_complaint
+        <where>
+            <include refid="base_query_condition"/>
+        </where>
+        ) as total ON 1 = 1
+        <where>
+            <include refid="base_query_condition"/>
+        </where>
+        GROUP BY status
+    </select>
+
+    <!-- 查询微信城市分布 -->
+    <select id="userCityTotalSum" resultType="long">
+        SELECT
+        SUM(value) as sumValue
+        FROM tb_wx_city_distributed
+    </select>
+
+    <!-- 查询微信省级、直辖市、自治区、特别行政区分布 -->
+    <select id="userProvinceTotalSum" resultType="long">
+        SELECT
+        SUM(value) as sumValue
+        FROM tb_wx_user_world
+    </select>
+
+    <sql id="base_query_condition">
+        <if test="params != null">
+            <if test="params.beginTime != null and params.beginTime != ''">
+                <![CDATA[ LEFT(create_time,10) >= #{params.beginTime} ]]> and
+            </if>
+            <if test="params.endTime != null and params.endTime != ''">
+                <![CDATA[ LEFT(create_time,10) <= #{params.endTime} ]]> and
+            </if>
+            <if test="params.complaintStatus != null and params.complaintStatus != ''">
+                <![CDATA[ status = #{params.complaintStatus} ]]> and
+            </if>
+        </if>
+        deleted = 0
+    </sql>
+</mapper>

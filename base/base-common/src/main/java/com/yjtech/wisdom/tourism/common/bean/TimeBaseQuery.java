@@ -2,7 +2,6 @@ package com.yjtech.wisdom.tourism.common.bean;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.yjtech.wisdom.tourism.common.core.domain.PageQuery;
 import com.yjtech.wisdom.tourism.common.enums.AnalysisDateTypeEnum;
 import lombok.Data;
 import org.hibernate.validator.constraints.Range;
@@ -18,7 +17,7 @@ import java.time.LocalDateTime;
  * @Date 2021/5/24 19:50
  */
 @Data
-public class TimeBaseQuery extends PageQuery implements Serializable {
+public class TimeBaseQuery extends AreaBaseVO implements Serializable {
 
     private static final long serialVersionUID = 1433486511420789935L;
 

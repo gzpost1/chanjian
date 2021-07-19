@@ -28,6 +28,6 @@ public class BaseValueVO {
     /**
      * 值
      */
-    private List<? extends Object> value;
+    private List<?> value;
 
 }

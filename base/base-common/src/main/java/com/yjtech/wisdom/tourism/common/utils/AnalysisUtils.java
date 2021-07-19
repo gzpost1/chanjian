@@ -1,7 +1,9 @@
 package com.yjtech.wisdom.tourism.common.utils;
 
 import com.google.common.collect.Lists;
-import com.yjtech.wisdom.tourism.common.bean.*;
+import com.yjtech.wisdom.tourism.common.bean.BaseSaleTrendVO;
+import com.yjtech.wisdom.tourism.common.bean.BaseValueVO;
+import com.yjtech.wisdom.tourism.common.bean.TimeBaseQuery;
 import com.yjtech.wisdom.tourism.common.enums.AnalysisDateTypeEnum;
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,7 +34,7 @@ public class AnalysisUtils {
      */
     public static <T extends BaseSaleTrendVO> List<BaseValueVO> MultipleBuildAnalysis(TimeBaseQuery query,
                                                                                           List<T> analysisInfo,
-                                                                                          SFunction<T, ? extends Integer>... func) {
+                                                                                          SFunction<T, ?>... func) {
         AssertUtil.isFalse(Objects.isNull(query.getBeginTime()) || Objects.isNull(query.getEndTime()), "起始时间或结束时间不能为空");
         AnalysisDateTypeEnum analysisDateTypeEnum = AnalysisDateTypeEnum.getItemByValue(query.getType());
 
@@ -44,14 +46,14 @@ public class AnalysisUtils {
         ArrayList<BaseValueVO> baseValueVOS = Lists.newArrayList();
 
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(javaDateFormat);
-        for (SFunction<T, ? extends Integer> fun : func) {
+        for (SFunction<T, ?> fun : func) {
 
-            Map<String, Integer> timeMap = Optional.ofNullable(analysisInfo).orElse(Lists.newArrayList())
+            Map<String, Object> timeMap = Optional.ofNullable(analysisInfo).orElse(Lists.newArrayList())
                     .stream().collect(Collectors.toMap(item -> item.getTime(), item -> fun.apply(item)));
             //值
-            List<Integer> value = Lists.newArrayList();
+            List<Object> value = Lists.newArrayList();
             for (LocalDateTime yearMark : markList) {
-                Integer quantity = timeMap.get(yearMark.format(dateTimeFormatter));
+                Object quantity = timeMap.get(yearMark.format(dateTimeFormatter));
                 if (Objects.nonNull(quantity)) {
                     value.add(quantity);
                 } else {
@@ -62,9 +64,9 @@ public class AnalysisUtils {
         }
 
         ArrayList<Integer> coordinate = Lists.newArrayList();
-        DateTimeFormatter coorDateTimeFormatter = DateTimeFormatter.ofPattern(analysisDateTypeEnum.getCoorJavaDateFormat());
+        DateTimeFormatter coordinateDateTimeFormatter = DateTimeFormatter.ofPattern(analysisDateTypeEnum.getCoordinateJavaDateFormat());
         for (LocalDateTime yearMark : markList) {
-            coordinate.add(Integer.parseInt(yearMark.format(coorDateTimeFormatter)));
+            coordinate.add(Integer.parseInt(yearMark.format(coordinateDateTimeFormatter)));
         }
         baseValueVOS.add(BaseValueVO.builder().name("coordinate").value(coordinate).build());
         return baseValueVOS;
