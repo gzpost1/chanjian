@@ -1,6 +1,6 @@
-package com.yjtech.wisdom.tourism.command.mapper;
+package com.yjtech.wisdom.tourism.command.mapper.plan;
 
-import com.yjtech.wisdom.tourism.command.entity.EmergencyPlanTypeEntity;
+import com.yjtech.wisdom.tourism.command.entity.plan.EmergencyPlanTypeEntity;
 import com.yjtech.wisdom.tourism.mybatis.extension.MyBaseMapper;
 
 /**

@@ -1,4 +1,4 @@
-package com.yjtech.wisdom.tourism.command.entity;
+package com.yjtech.wisdom.tourism.command.entity.plan;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;

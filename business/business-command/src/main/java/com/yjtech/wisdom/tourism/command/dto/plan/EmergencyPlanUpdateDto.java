@@ -1,4 +1,4 @@
-package com.yjtech.wisdom.tourism.command.dto;
+package com.yjtech.wisdom.tourism.command.dto.plan;
 
 import lombok.Getter;
 import lombok.Setter;

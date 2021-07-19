@@ -1,4 +1,4 @@
-package com.yjtech.wisdom.tourism.command.query;
+package com.yjtech.wisdom.tourism.command.query.plan;
 
 import com.yjtech.wisdom.tourism.mybatis.entity.PageQuery;
 import lombok.Getter;

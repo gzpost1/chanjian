@@ -1,12 +1,12 @@
-package com.yjtech.wisdom.tourism.command.service;
+package com.yjtech.wisdom.tourism.command.service.plan;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
-import com.yjtech.wisdom.tourism.command.entity.EmergencyPlanEntity;
-import com.yjtech.wisdom.tourism.command.entity.EmergencyPlanTypeEntity;
-import com.yjtech.wisdom.tourism.command.mapper.EmergencyPlanMapper;
-import com.yjtech.wisdom.tourism.command.query.EmergencyPlanQuery;
+import com.yjtech.wisdom.tourism.command.entity.plan.EmergencyPlanEntity;
+import com.yjtech.wisdom.tourism.command.entity.plan.EmergencyPlanTypeEntity;
+import com.yjtech.wisdom.tourism.command.mapper.plan.EmergencyPlanMapper;
+import com.yjtech.wisdom.tourism.command.query.plan.EmergencyPlanQuery;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

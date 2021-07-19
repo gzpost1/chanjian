@@ -1,8 +1,8 @@
-package com.yjtech.wisdom.tourism.command.service;
+package com.yjtech.wisdom.tourism.command.service.plan;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.yjtech.wisdom.tourism.command.entity.EmergencyPlanTypeEntity;
-import com.yjtech.wisdom.tourism.command.mapper.EmergencyPlanTypeMapper;
+import com.yjtech.wisdom.tourism.command.entity.plan.EmergencyPlanTypeEntity;
+import com.yjtech.wisdom.tourism.command.mapper.plan.EmergencyPlanTypeMapper;
 import org.springframework.stereotype.Service;
 
 /**
