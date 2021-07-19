@@ -19,7 +19,7 @@
     <dependencies>
         <dependency>
             <groupId>com.yjtech.wisdom.tourism</groupId>
-            <artifactId>business-event</artifactId>
+            <artifactId>business-command</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
