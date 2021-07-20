@@ -46,11 +46,6 @@ public class HydrologicalDeviceController {
         queryWrapper.eq("status", "1");
         queryWrapper.orderByDesc("create_time");
         List<HydrologicalDevice> list = deviceService.list(queryWrapper);
-        if (CollectionUtils.isNotEmpty(list)) {
-            for (HydrologicalDevice device : list) {
-                device.setIconUrl(iconService.queryIconUrl(IconSpotEnum.HYDROLOGICAL, device.getEquipStatus().toString()));
-            }
-        }
         return JsonResult.success(list);
     }
 

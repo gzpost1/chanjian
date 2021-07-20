@@ -45,11 +45,6 @@ public class TurnstileController {
         queryWrapper.eq("status", "1");
         queryWrapper.orderByDesc("create_time");
         List<Turnstile> list = turnstileService.list(queryWrapper);
-        if (CollectionUtils.isNotEmpty(list)) {
-            for (Turnstile turnstile : list) {
-                turnstile.setIconUrl(iconService.queryIconUrl(IconSpotEnum.TURNSTILE, turnstile.getEquipStatus().toString()));
-            }
-        }
         return JsonResult.success(list);
     }
 

@@ -82,9 +82,6 @@ public class BroadcastScreenController {
         if(CollectionUtils.isEmpty(list)){
             return success();
         }
-        list.forEach(item ->{
-            item.setIconUrl(iconService.queryIconUrl(IconSpotEnum.BROADCAST,item.getEquipStatus().toString()));
-        });
         return success(list);
     }
 
