@@ -26,7 +26,6 @@ import java.util.Objects;
 @RestController
 @RequestMapping("/system/platform")
 public class PlatformController {
-    private static final String DEFAULT_ZOOM_LEVEL = "13";
 
     @Autowired
     private PlatformService platformService;
@@ -55,9 +54,6 @@ public class PlatformController {
     @PostMapping("update")
     public JsonResult<?> update(@RequestBody @Validated PlatformVO params) {
         Platform platform = BeanMapper.map(params, Platform.class);
-        if (StringUtils.isEmpty(platform.getZoomLevel())) {
-            platform.setZoomLevel(DEFAULT_ZOOM_LEVEL);
-        }
         platformService.savePlatform(platform);
         return JsonResult.success();
     }

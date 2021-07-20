@@ -27,6 +27,11 @@ public class Platform extends BaseEntity {
     private String simpleName;
 
     /**
+     * 英文名称
+     */
+    private String englishName;
+
+    /**
      * 区域编码
      */
     private String areaCode;
@@ -51,29 +56,5 @@ public class Platform extends BaseEntity {
      */
     private String latitude;
 
-    /**
-     * 缩放比例
-     */
-    private String zoomLevel;
-
-    /**
-     * 左上角经度
-     */
-    private String leftLongitude;
-
-    /**
-     * 左上角纬度
-     */
-    private String leftLatitude;
-
-    /**
-     * 右下角经度
-     */
-    private String rightLongitude;
-
-    /**
-     * 右下角纬度
-     */
-    private String rightLatitude;
 
 }

@@ -29,6 +29,13 @@ public class PlatformVO implements Serializable {
     private String simpleName;
 
     /**
+     * 英文名称
+     */
+    @NotBlank(message = "英文名称不能为空")
+    @Length(max = 100, message = "英文名称长度不超过100")
+    private String englishName;
+
+    /**
      * 区域编码
      */
     @NotBlank(message = "行政区域编码不能为空")
@@ -57,33 +64,4 @@ public class PlatformVO implements Serializable {
      */
     @NotBlank(message = "中心点纬度不能为空")
     private String latitude;
-
-    /**
-     * 缩放比例
-     */
-    private String zoomLevel;
-
-    /**
-     * 左上角经度
-     */
-    @NotBlank(message = "左上角经度不能为空")
-    private String leftLongitude;
-
-    /**
-     * 左上角纬度
-     */
-    @NotBlank(message = "左上角纬度不能为空")
-    private String leftLatitude;
-
-    /**
-     * 右下角经度
-     */
-    @NotBlank(message = "右下角经度不能为空")
-    private String rightLongitude;
-
-    /**
-     * 右下角纬度
-     */
-    @NotBlank(message = "右下角纬度不能为空")
-    private String rightLatitude;
 }
