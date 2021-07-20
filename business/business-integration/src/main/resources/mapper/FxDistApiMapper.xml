@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjtech.wisdom.tourism.integration.mapper.FxDistApiMapper">
+
+    <select  id="queryPriceForBusinessType" resultType="com.yjtech.wisdom.tourism.integration.pojo.bo.fxdist.FxDistPriceTypeBO"
+            parameterType="com.yjtech.wisdom.tourism.integration.pojo.vo.FxDistQueryVO">
+        SELECT
+        COALESCE( `business_type_id`, - 1 ) type,
+        sum( current_price )/100 current_price
+        FROM
+        ( SELECT belong_sub_merchant_id, business_type_id, current_price FROM tb_order
+        <where>
+            deleted = 0
+            <if test="params != null">
+                <if test="params.beginTime != null and params.beginTime != ''">
+                    and <![CDATA[ create_time >= #{params.beginTime} ]]>
+                </if>
+                <if test="params.endTime != null and params.endTime != ''">
+                    and <![CDATA[ create_time <= #{params.endTime} ]]>
+                </if>
+                <if test="params.subMchId != null">
+                    and belong_sub_merchant_id = #{params.subMchId}
+                </if>
+            </if>
+        </where>
+        ) a
+        INNER JOIN ( SELECT sub_mch_id FROM tb_sub_mch
+        <where>
+            deleted = 0
+            <if test="params != null">
+                <if test="params.areaCode != null and params.areaCode != ''">
+                    and place_code LIKE CONCAT(#{params.areaCode},'%')
+                </if>
+            </if>
+        </where>
+        ) b ON a.belong_sub_merchant_id = b.sub_mch_id
+        GROUP BY
+        a.business_type_id WITH ROLLUP
+    </select>
+
+    <select id="queryStoreCountByArea" resultType="integer"
+            parameterType="com.yjtech.wisdom.tourism.integration.pojo.vo.FxDistQueryVO">
+        select
+        COUNT(sub_mch_id)
+        from
+        tb_sub_mch
+        <where>
+            <if test="params != null">
+                <if test="params.areaCode != null and params.areaCode != ''">
+                    place_code LIKE CONCAT(#{params.areaCode},'%') and
+                </if>
+                <if test="params.beginTime != null and params.beginTime != ''">
+                    <![CDATA[ LEFT(create_time,10) >= #{params.beginTime} ]]> and
+                </if>
+                <if test="params.endTime != null and params.endTime != ''">
+                    <![CDATA[ LEFT(create_time,10) <= #{params.endTime} ]]> and
+                </if>
+            </if>
+            deleted = 0 and
+            business_status = 0
+        </where>
+    </select>
+
+    <select id="queryProductCountByArea" resultType="integer"
+            parameterType="com.yjtech.wisdom.tourism.integration.pojo.vo.FxDistQueryVO">
+        select
+        COUNT(product.id)
+        from
+        t_product product
+        INNER JOIN tb_sub_mch subMch ON product.sub_mch_id = subMch.sub_mch_id
+        <where>
+            <if test="params != null">
+                <if test="params.areaCode != null and params.areaCode != ''">
+                    subMch.place_code LIKE CONCAT(#{params.areaCode},'%') and
+                </if>
+                <if test="params.beginTime != null and params.beginTime != ''">
+                    <![CDATA[ product.create_time >= #{params.beginTime} ]]> and
+                </if>
+                <if test="params.endTime != null and params.endTime != ''">
+                    <![CDATA[ product.create_time <= #{params.endTime} ]]> and
+                </if>
+            </if>
+            product.deleted = 0 and
+            subMch.deleted = 0 and
+            product.status = 0
+        </where>
+    </select>
+
+    <select id="queryOrderCountByArea" resultType="integer"
+            parameterType="com.yjtech.wisdom.tourism.integration.pojo.vo.FxDistQueryVO">
+        select
+        COUNT(orderInfo.order_id)
+        from
+        tb_order orderInfo
+        LEFT JOIN tb_sub_mch subMch ON orderInfo.sale_sub_merchant_id = subMch.sub_mch_id
+        <where>
+            <include refid="base_order_subMch_query"/>
+        </where>
+    </select>
+
+    <select id="queryOrderSumByArea" resultType="integer"
+            parameterType="com.yjtech.wisdom.tourism.integration.pojo.vo.FxDistQueryVO">
+        select
+        COALESCE (ROUND(SUM(orderInfo.current_price)/100,2),0)
+        from
+        tb_order orderInfo
+        LEFT JOIN tb_sub_mch subMch ON orderInfo.sale_sub_merchant_id = subMch.sub_mch_id
+        <where>
+            <include refid="base_order_subMch_query"/>
+        </where>
+    </select>
+
+    <select id="queryAreaSaleList" resultType="com.yjtech.wisdom.tourism.integration.pojo.bo.fxdist.FxDistAreaSaleListBO"
+            parameterType="com.yjtech.wisdom.tourism.integration.pojo.vo.FxDistQueryVO">
+        select
+        areaInfo.name as xName,
+        COALESCE (yInfo,0) as yInfo
+        from
+        tb_dict_area areaInfo
+        LEFT JOIN
+        (select
+        subMch.place_code as areaCode,
+        COALESCE (ROUND(SUM(orderInfo.current_price)/100,2),0) as yInfo
+        from
+        tb_order orderInfo
+        LEFT JOIN tb_sub_mch subMch ON orderInfo.sale_sub_merchant_id = subMch.sub_mch_id
+        <where>
+            <if test="params != null">
+                <if test="params.beginTime != null and params.beginTime !=''">
+                    <![CDATA[ orderInfo.pay_time >= #{params.beginTime} ]]> and
+                </if>
+                <if test="params.endTime != null and params.endTime !=''">
+                    <![CDATA[ orderInfo.pay_time <= #{params.endTime} ]]> and
+                </if>
+                <if test="params.areaCode != null and params.areaCode != ''">
+                    subMch.place_code LIKE CONCAT(#{params.areaCode},'%') and
+                </if>
+            </if>
+            orderInfo.deleted = 0 and
+            orderInfo.status in (10,11,12,13,14,15,16,17,18,19,20,21,22) and
+            subMch.deleted = 0
+        </where>
+        GROUP BY subMch.place_code) as info ON areaInfo.code = info.areaCode
+        <where>
+            <if test="params != null">
+                <if test="params.areaCode != null and params.areaCode != ''">
+                    areaInfo.code LIKE CONCAT(#{params.areaCode},'%') and
+                </if>
+            </if>
+            areaInfo.county_code is not null
+        </where>
+    </select>
+
+
+    <select id="queryAreaSaleCountList" resultType="com.yjtech.wisdom.tourism.integration.pojo.bo.fxdist.FxDistAreaSaleListBO"
+            parameterType="com.yjtech.wisdom.tourism.integration.pojo.vo.FxDistQueryVO">
+        select
+        areaInfo.name as xName,
+        COALESCE (yInfo,0) as yInfo
+        from
+        tb_dict_area areaInfo
+        LEFT JOIN
+        (select
+        subMch.place_code as areaCode,
+        COUNT(orderInfo.order_id) as yInfo
+        from
+        tb_order orderInfo
+        LEFT JOIN tb_sub_mch subMch ON orderInfo.sale_sub_merchant_id = subMch.sub_mch_id
+        <where>
+            <if test="params != null">
+                <if test="params.beginTime != null and params.beginTime !=''">
+                    <![CDATA[ orderInfo.pay_time >= #{params.beginTime} ]]> and
+                </if>
+                <if test="params.endTime != null and params.endTime !=''">
+                    <![CDATA[ orderInfo.pay_time <= #{params.endTime} ]]> and
+                </if>
+                <if test="params.areaCode != null and params.areaCode != ''">
+                    subMch.place_code LIKE CONCAT(#{params.areaCode},'%') and
+                </if>
+            </if>
+            orderInfo.deleted = 0 and
+            orderInfo.status in (10,11,12,13,14,15,16,17,18,19,20,21,22) and
+            subMch.deleted = 0
+        </where>
+        GROUP BY subMch.place_code) as info ON areaInfo.code = info.areaCode
+        <where>
+            <if test="params != null">
+                <if test="params.areaCode != null and params.areaCode != ''">
+                    areaInfo.code LIKE CONCAT(#{params.areaCode},'%') and
+                </if>
+            </if>
+            areaInfo.county_code is not null
+        </where>
+    </select>
+
+    <select id="querySubMchSaleList" resultType="com.yjtech.wisdom.tourism.integration.pojo.bo.fxdist.FxDistSubMchSaleListInfo"
+            parameterType="com.yjtech.wisdom.tourism.integration.pojo.vo.FxDistQueryVO">
+        select
+        scenic.scenic_id as scenicId,
+        scenic.scenic_name as scenicName,
+        COALESCE (ROUND(SUM(orderInfo.current_price)/100,2),0) as number
+        from
+        tb_sub_mch subMch
+        LEFT JOIN tb_order orderInfo ON subMch.sub_mch_id = orderInfo.sale_sub_merchant_id
+        <where>
+            <include refid="base_order_subMch_query"/>
+        </where>
+        GROUP BY reservation.scenic_id
+        ORDER BY number DESC
+    </select>
+
+    <select id="querySaleAnalysisList" resultType="com.yjtech.wisdom.tourism.integration.pojo.bo.fxdist.FxDistSaleAnalysisBO"
+            parameterType="com.yjtech.wisdom.tourism.integration.pojo.vo.FxDistQueryVO">
+        SELECT
+        DATE_FORMAT( pay_time,#{params.sqlDateFormat}) AS time,
+        COALESCE ( ROUND( SUM( current_price ) / 100, 2 ), 0 ) AS currentInfo
+        FROM
+        ( SELECT belong_sub_merchant_id, current_price, pay_time FROM tb_order
+        <where>
+            <if test="params.beginTime != null and params.beginTime !=''">
+                and  <![CDATA[ pay_time >= #{params.beginTime} ]]>
+            </if>
+            <if test="params.endTime != null and params.endTime !=''">
+                and <![CDATA[ pay_time <= #{params.endTime} ]]>
+            </if>
+            and deleted = 0
+        </where>
+        ) a
+        INNER JOIN ( SELECT sub_mch_id FROM tb_sub_mch
+        <where>
+            <if test="params.areaCode != null and params.areaCode != ''">
+                AND county_code like CONCAT(#{params.areaCode},'%')
+            </if>
+            and deleted = 0
+        </where>
+        ) b ON a.belong_sub_merchant_id = b.sub_mch_id
+        GROUP BY
+        DATE_FORMAT( pay_time,#{params.sqlDateFormat} )
+    </select>
+
+    <select id="queryProductSaleList" resultType="com.yjtech.wisdom.tourism.integration.pojo.bo.fxdist.FxDistSaleRankListBO"
+            parameterType="com.yjtech.wisdom.tourism.integration.pojo.vo.FxDistQueryVO">
+        select
+        product.id as dataId,
+        product.name as dataName,
+        COALESCE (ROUND(SUM(orderInfo.current_price)/100,2),0) as sale
+        from
+        tb_order orderInfo
+        LEFT JOIN t_product product ON orderInfo.product_id = product.id
+        <where>
+            <if test="params != null">
+                <if test="params.beginTime != null and params.beginTime !=''">
+                    <![CDATA[ orderInfo.pay_time >= #{params.beginTime} ]]> and
+                </if>
+                <if test="params.endTime != null and params.endTime !=''">
+                    <![CDATA[ orderInfo.pay_time <= #{params.endTime} ]]> and
+                </if>
+                <if test="params.productCategoryId != null">
+                    <![CDATA[ orderInfo.business_type_id = #{params.productCategoryId} ]]> and
+                </if>
+            </if>
+            orderInfo.deleted = 0 and
+            product.deleted = 0
+        </where>
+        GROUP BY orderInfo.product_id
+        ORDER BY sale DESC
+    </select>
+
+    <select id="querySaleBySubMchList" resultType="decimal"
+            parameterType="com.yjtech.wisdom.tourism.integration.pojo.vo.FxDistQueryVO">
+        select
+        COALESCE (ROUND(SUM(orderInfo.current_price)/100,2),0)
+        from
+        tb_sub_mch subMch
+        LEFT JOIN tb_order orderInfo ON subMch.sub_mch_id = orderInfo.sale_sub_merchant_id
+        <where>
+            <if test="params != null">
+                <if test="params.beginTime != null and params.beginTime !=''">
+                    <![CDATA[ orderInfo.pay_time >= #{params.beginTime} ]]> and
+                </if>
+                <if test="params.endTime != null and params.endTime !=''">
+                    <![CDATA[ orderInfo.pay_time <= #{params.endTime} ]]> and
+                </if>
+                <if test="params.subMchIdList != null">
+                    subMch.sub_mch_id in
+                    <foreach collection="params.subMchIdList" item="item" index="index" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                    and
+                </if>
+            </if>
+            orderInfo.deleted = 0 and
+            orderInfo.status in (10,11,12,13,14,15,16,17,18,19,20,21,22) and
+            subMch.deleted = 0
+        </where>
+    </select>
+
+    <sql id="base_order_subMch_query">
+        <if test="params != null">
+            <if test="params.beginTime != null and params.beginTime !=''">
+                <![CDATA[ orderInfo.pay_time >= #{params.beginTime} ]]> and
+            </if>
+            <if test="params.endTime != null and params.endTime !=''">
+                <![CDATA[ orderInfo.pay_time <= #{params.endTime} ]]> and
+            </if>
+            <if test="params.areaCode != null and params.areaCode != ''">
+                subMch.place_code LIKE CONCAT(#{params.areaCode},'%') and
+            </if>
+        </if>
+        orderInfo.deleted = 0 and
+        orderInfo.status in (10,11,12,13,14,15,16,17,18,19,20,21,22) and
+        subMch.deleted = 0
+    </sql>
+
+
+</mapper>

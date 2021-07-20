@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjtech.wisdom.tourism.integration.mapper.SmartTravelApiMapper">
+
+    <resultMap id="BaseResultMap" type="com.yjtech.wisdom.tourism.integration.pojo.bo.smarttravel.SmartTravelScenicInfoBO">
+        <id column="scenic_id" jdbcType="BIGINT" property="scenicId"/>
+        <result column="scenic_name" jdbcType="VARCHAR" property="scenicName"/>
+        <result column="company_id" jdbcType="BIGINT" property="companyId"/>
+        <result column="company_name" jdbcType="VARCHAR" property="companyName"/>
+        <result column="subtitle" jdbcType="VARCHAR" property="subtitle"/>
+        <result column="scenic_level" jdbcType="VARCHAR" property="scenicLevel"/>
+        <result column="telephone" jdbcType="VARCHAR" property="telephone"/>
+        <result column="opening_time" jdbcType="TIME" property="openingTime"/>
+        <result column="ending_time" jdbcType="TIME" property="endingTime"/>
+        <result column="traffic" jdbcType="VARCHAR" property="traffic"/>
+        <result column="tourist_information" jdbcType="VARCHAR" property="touristInformation"/>
+        <result column="sub_merchant_id" jdbcType="BIGINT" property="subMerchantId"/>
+        <result column="sub_merchant_name" jdbcType="VARCHAR" property="subMerchantName"/>
+        <result column="app_id" jdbcType="BIGINT" property="appId"/>
+        <result column="map_id" jdbcType="BIGINT" property="mapId"/>
+        <result column="area_code" jdbcType="VARCHAR" property="areaCode"/>
+        <result column="area_name" jdbcType="VARCHAR" property="areaName"/>
+        <result column="address" jdbcType="VARCHAR" property="address"/>
+        <result column="latitude" jdbcType="DECIMAL" property="latitude"/>
+        <result column="longitude" jdbcType="DECIMAL" property="longitude"/>
+        <result column="home_image" jdbcType="VARCHAR" property="homeImage"/>
+        <result column="dynamic_display" jdbcType="TINYINT" property="dynamicDisplay"/>
+        <result column="cover_path" jdbcType="VARCHAR" property="coverPath"/>
+        <result column="detail_path" jdbcType="VARCHAR" property="detailPath"
+                typeHandler="com.yjtech.wisdom.tourism.mybatis.typehandler.JsonTypeHandler"/>
+        <result column="introduction" jdbcType="VARCHAR" property="introduction"/>
+        <result column="province_code" jdbcType="VARCHAR" property="provinceCode"/>
+        <result column="city_code" jdbcType="VARCHAR" property="cityCode"/>
+        <result column="area_id" jdbcType="VARCHAR" property="areaId"/>
+        <result column="parent_id" jdbcType="BIGINT" property="parentId"/>
+        <result column="blong_place" jdbcType="VARCHAR" property="blongPlace"/>
+        <result column="type" jdbcType="VARCHAR" property="type"/>
+        <result column="prop_tag" jdbcType="VARCHAR" property="propTag"
+                typeHandler="com.yjtech.wisdom.tourism.mybatis.typehandler.JsonTypeHandler"/>
+        <result column="area_tag" jdbcType="VARCHAR" property="areaTag"
+                typeHandler="com.yjtech.wisdom.tourism.mybatis.typehandler.JsonTypeHandler"/>
+        <result column="open_start_month" jdbcType="INTEGER" property="openStartMonth"/>
+        <result column="open_end_month" jdbcType="INTEGER" property="openEndMonth"/>
+        <result column="hot_rate" jdbcType="INTEGER" property="hotRate"/>
+        <result column="three_map_url" jdbcType="VARCHAR" property="threeMapUrl"/>
+        <result column="popular" jdbcType="TINYINT" property="popular"/>
+        <result column="description" jdbcType="VARCHAR" property="description"/>
+        <result column="boundary" jdbcType="VARCHAR" property="boundary"
+                typeHandler="com.yjtech.wisdom.tourism.mybatis.typehandler.ListObjectJsonTypeHandler" javaType="com.yjtech.wisdom.tourism.integration.pojo.bo.smarttravel.SmartTravelScenicBoundaryInfo"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
+        <result column="project_only" jdbcType="TINYINT" property="projectOnly"/>
+        <result column="relate_maps" jdbcType="VARCHAR" property="relateMaps"
+                typeHandler="com.yjtech.wisdom.tourism.mybatis.typehandler.JsonTypeHandler"/>
+        <result column="relate_scenics" jdbcType="VARCHAR" property="relateScenics"
+                typeHandler="com.yjtech.wisdom.tourism.mybatis.typehandler.JsonTypeHandler"/>
+        <result column="relate_shops" jdbcType="VARCHAR" property="relateShops"
+                typeHandler="com.yjtech.wisdom.tourism.mybatis.typehandler.JsonTypeHandler"/>
+    </resultMap>
+
+
+    <select id="queryReservationStatistics" resultType="com.yjtech.wisdom.tourism.integration.pojo.bo.smarttravel.SmartTravelReservationStatisticsBO"
+            parameterType="com.yjtech.wisdom.tourism.integration.pojo.vo.SmartTravelQueryVO">
+        SELECT
+            sum( ifnull( reservation.reservation_num, 0 ) ) AS reservation_num,
+            sum( IF ( reservation.`status` = 1, reservation.reservation_num, 0 ) ) AS scan_num
+        FROM
+            tb_reservation_record reservation,
+            tb_scenic_info b
+        <where>
+            reservation.scenic_id = b.scenic_id
+            AND reservation.`status` IN (-1,0,1,3,4)
+            <if test="params != null">
+                <if test="params.areaCode != null and params.areaCode != ''">
+                    AND b.area_code like CONCAT(#{params.areaCode},'%')
+                </if>
+                <if test="params.beginTime != null and params.beginTime !=''">
+                    AND <![CDATA[ reservation.reservation_date >= #{params.beginTime} ]]>
+                </if>
+                <if test="params.endTime != null and params.endTime !=''">
+                    AND <![CDATA[ reservation.reservation_date <= #{params.endTime} ]]>
+                </if>
+            </if>
+        </where>
+    </select>
+
+    <select id="queryScenicList" resultMap="BaseResultMap">
+        SELECT
+        *
+        FROM
+            tb_scenic_info
+        <where>
+            <if test="params != null">
+                <if test="params.areaCode != null and params.areaCode != ''">
+                    area_code LIKE CONCAT(#{params.areaCode},'%') and
+                </if>
+            </if>
+            deleted = 0
+        </where>
+    </select>
+
+    <select id="queryScenicReservationList" resultType="com.yjtech.wisdom.tourism.integration.pojo.bo.smarttravel.SmartTravelReservationRankListBO"
+            parameterType="com.yjtech.wisdom.tourism.integration.pojo.vo.SmartTravelQueryVO">
+        select
+        scenic.scenic_id as dataId,
+        scenic.scenic_name as dataName,
+        COALESCE (COUNT(reservation.id),0) as number
+        from
+        tb_reservation_record reservation
+        LEFT JOIN tb_scenic_info scenic ON reservation.scenic_id = scenic.scenic_id
+        <where>
+            <if test="params != null">
+                <if test="params.beginTime != null and params.beginTime !=''">
+                    <![CDATA[ reservation.reservation_date >= #{params.beginTime} ]]> and
+                </if>
+                <if test="params.endTime != null and params.endTime !=''">
+                    <![CDATA[ reservation.reservation_date <= #{params.endTime} ]]> and
+                </if>
+                <if test="params.areaCode != null and params.areaCode != ''">
+                    scenic.area_code LIKE CONCAT(#{params.areaCode},'%') and
+                </if>
+            </if>
+            scenic.deleted = 0 and
+            scenic.status = 1 and
+            reservation.deleted = 0
+        </where>
+        GROUP BY reservation.scenic_id
+        ORDER BY number DESC
+    </select>
+
+    <select id="queryAreaReservationList" resultType="com.yjtech.wisdom.tourism.integration.pojo.bo.smarttravel.SmartTravelAreaReservationListBO"
+            parameterType="com.yjtech.wisdom.tourism.integration.pojo.vo.SmartTravelQueryVO">
+        select
+        areaInfo.name as xName,
+        COALESCE (yInfo,0) as yInfo
+        from
+        tb_area_info areaInfo
+        LEFT JOIN
+        (select
+        scenic.area_code as areaCode,
+        COUNT(reservation.id) as yInfo
+        from
+        tb_scenic_info scenic
+        LEFT JOIN tb_reservation_record reservation ON scenic.scenic_id = reservation.scenic_id
+        <where>
+            <if test="params != null">
+                <if test="params.beginTime != null and params.beginTime !=''">
+                    <![CDATA[ reservation.reservation_date >= #{params.beginTime} ]]> and
+                </if>
+                <if test="params.endTime != null and params.endTime !=''">
+                    <![CDATA[ reservation.reservation_date <= #{params.endTime} ]]> and
+                </if>
+                <if test="params.areaCode != null and params.areaCode != ''">
+                    scenic.area_code LIKE CONCAT(#{params.areaCode},'%') and
+                </if>
+            </if>
+            scenic.deleted = 0 and
+            scenic.status = 1 and
+            reservation.deleted = 0
+        </where>
+        GROUP BY scenic.area_code) as info ON areaInfo.code = info.areaCode
+        <where>
+            <if test="params != null">
+                <if test="params.areaCode != null and params.areaCode != ''">
+                    areaInfo.code LIKE CONCAT(#{params.areaCode},'%') and
+                </if>
+            </if>
+            areaInfo.county_code is not null
+        </where>
+        ORDER BY yInfo DESC
+    </select>
+
+    <select id="queryScenicReservationAnalysisList" resultType="com.yjtech.wisdom.tourism.integration.pojo.bo.smarttravel.SmartTravelScenicReservationAnalysisBO"
+            parameterType="com.yjtech.wisdom.tourism.integration.pojo.vo.SmartTravelQueryVO">
+        SELECT
+        DATE_FORMAT( reservation_date, #{params.sqlDateFormat} ) AS time,
+        COALESCE(COUNT( 1 ),0) AS currentInfo
+        FROM
+        ( SELECT scenic_id, reservation_date FROM `tb_reservation_record`
+        <where>
+            <if test="params.beginTime != null and params.beginTime !=''">
+                and <![CDATA[ reservation_date >= #{params.beginTime} ]]>
+            </if>
+            <if test="params.endTime != null and params.endTime !=''">
+                and <![CDATA[ reservation_date <= #{params.endTime} ]]>
+            </if>
+            and deleted = 0
+        </where>
+        ) a
+        INNER JOIN
+        ( SELECT scenic_id FROM tb_scenic_info
+        <where>
+            <if test="params.areaCode != null and params.areaCode != ''">
+                AND area_code like CONCAT(#{params.areaCode},'%')
+            </if>
+            and deleted = 0
+        </where>
+        ) b ON a.scenic_id = b.scenic_id
+        GROUP BY
+        DATE_FORMAT( reservation_date, #{params.sqlDateFormat} )
+    </select>
+
+
+</mapper>

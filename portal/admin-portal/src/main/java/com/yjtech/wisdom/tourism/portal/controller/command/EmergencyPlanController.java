@@ -4,11 +4,11 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.yjtech.wisdom.tourism.command.dto.EmergencyPlanCreateDto;
-import com.yjtech.wisdom.tourism.command.dto.EmergencyPlanUpdateDto;
-import com.yjtech.wisdom.tourism.command.entity.EmergencyPlanEntity;
-import com.yjtech.wisdom.tourism.command.query.EmergencyPlanQuery;
-import com.yjtech.wisdom.tourism.command.service.EmergencyPlanService;
+import com.yjtech.wisdom.tourism.command.dto.plan.EmergencyPlanCreateDto;
+import com.yjtech.wisdom.tourism.command.dto.plan.EmergencyPlanUpdateDto;
+import com.yjtech.wisdom.tourism.command.entity.plan.EmergencyPlanEntity;
+import com.yjtech.wisdom.tourism.command.query.plan.EmergencyPlanQuery;
+import com.yjtech.wisdom.tourism.command.service.plan.EmergencyPlanService;
 import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.common.utils.DeleteParam;
@@ -38,6 +38,11 @@ public class EmergencyPlanController {
     @Autowired
     private EmergencyPlanService emergencyPlanService;
 
+    /**
+     * 列表
+     * @param query
+     * @return
+     */
     @PostMapping("/queryForList")
     public JsonResult<List<EmergencyPlanEntity>> queryForList(@RequestBody EmergencyPlanQuery query) {
         LambdaQueryWrapper<EmergencyPlanEntity> queryWrapper = new LambdaQueryWrapper<>();
@@ -47,6 +52,11 @@ public class EmergencyPlanController {
         return JsonResult.success(list);
     }
 
+    /**
+     * 分页列表
+     * @param query
+     * @return
+     */
     @PostMapping("/queryForPage")
     public JsonResult<IPage<EmergencyPlanEntity>> queryForPage(@RequestBody EmergencyPlanQuery query) {
         LambdaQueryWrapper<EmergencyPlanEntity> queryWrapper =emergencyPlanService.getQueryWrapper(query);
