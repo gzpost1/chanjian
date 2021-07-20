@@ -77,7 +77,7 @@ spring:
   redis:
     database: 12
     # 地址
-    host: redis
+    host: redis.test-standard-integrated
     # 端口，默认为6379
     port: 6379
     # 密码
