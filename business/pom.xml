@@ -18,7 +18,8 @@
         <module>business-wechat</module>
         <module>business-weather</module>
         <module>business-resource-management</module>
-        <module>business-event</module>
+        <module>business-command</module>
+        <module>business-integration</module>
         <module>business-country-tour</module>
     </modules>
 

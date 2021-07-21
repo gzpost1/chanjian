@@ -73,9 +73,4 @@ public class WifiEntity extends BaseEntity {
     @TableField(value = "`status`")
     private Byte status;
 
-    /**
-     * 图标地址
-     */
-    @TableField(exist = false)
-    private String iconUrl;
 }

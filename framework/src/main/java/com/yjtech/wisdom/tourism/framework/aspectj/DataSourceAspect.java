@@ -25,37 +25,40 @@ import java.util.Objects;
 @Order(1)
 @Component
 public class DataSourceAspect {
-  protected Logger logger = LoggerFactory.getLogger(getClass());
+    protected Logger logger = LoggerFactory.getLogger(getClass());
 
-  @Pointcut(
-      "@annotation(com.yjtech.wisdom.tourism.common.annotation.DataSource)"
-          + "|| @within(com.yjtech.wisdom.tourism.common.annotation.DataSource)")
-  public void dsPointCut() {}
-
-  @Around("dsPointCut()")
-  public Object around(ProceedingJoinPoint point) throws Throwable {
-    DataSource dataSource = getDataSource(point);
-
-    if (StringUtils.isNotNull(dataSource)) {
-      DynamicDataSourceContextHolder.setDataSourceType(dataSource.value().name());
+    @Pointcut(
+            "@annotation(com.yjtech.wisdom.tourism.common.annotation.DataSource)"
+                    + "|| @within(com.yjtech.wisdom.tourism.common.annotation.DataSource)")
+    public void dsPointCut() {
     }
 
-    try {
-      return point.proceed();
-    } finally {
-      // 销毁数据源 在执行方法之后
-      DynamicDataSourceContextHolder.clearDataSourceType();
-    }
-  }
+    @Around("dsPointCut()")
+    public Object around(ProceedingJoinPoint point) throws Throwable {
+        DataSource dataSource = getDataSource(point);
 
-  /** 获取需要切换的数据源 */
-  public DataSource getDataSource(ProceedingJoinPoint point) {
-    MethodSignature signature = (MethodSignature) point.getSignature();
-    DataSource dataSource = AnnotationUtils.findAnnotation(signature.getMethod(), DataSource.class);
-    if (Objects.nonNull(dataSource)) {
-      return dataSource;
+        if (StringUtils.isNotNull(dataSource)) {
+            DynamicDataSourceContextHolder.setDataSourceType(dataSource.value().name());
+        }
+
+        try {
+            return point.proceed();
+        } finally {
+            // 销毁数据源 在执行方法之后
+            DynamicDataSourceContextHolder.clearDataSourceType();
+        }
     }
 
-    return AnnotationUtils.findAnnotation(signature.getDeclaringType(), DataSource.class);
-  }
+    /**
+     * 获取需要切换的数据源
+     */
+    public DataSource getDataSource(ProceedingJoinPoint point) {
+        MethodSignature signature = (MethodSignature) point.getSignature();
+        DataSource dataSource = AnnotationUtils.findAnnotation(signature.getMethod(), DataSource.class);
+        if (Objects.nonNull(dataSource)) {
+            return dataSource;
+        }
+
+        return AnnotationUtils.findAnnotation(signature.getDeclaringType(), DataSource.class);
+    }
 }

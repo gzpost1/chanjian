@@ -109,9 +109,4 @@ public class BroadcastEntity extends MyBaseEntity {
     @TableField(exist = false)
     private Integer volume = 1;
 
-    /**
-     * 图标地址
-     */
-    @TableField(exist = false)
-    private String iconUrl;
 }

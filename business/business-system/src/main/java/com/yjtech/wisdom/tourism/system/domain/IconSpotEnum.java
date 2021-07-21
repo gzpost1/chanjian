@@ -9,45 +9,30 @@ import lombok.Getter;
  */
 public enum IconSpotEnum {
     /**
-     * 闸机
+     * 景区
      */
-    TURNSTILE("闸机", "1"),
+    SCENIC("景区", "1"),
     /**
-     * 停车场
+     * 酒店
      */
-    DEPOT("停车场", "2"),
+    HOTEL("酒店", "2"),
+    /**
+     * 乡村游
+     */
+    COUNTRY("乡村游", "3"),
+    /**
+     * 文博场馆
+     */
+    MUSEUM("文博场馆", "4"),
     /**
      * 视频监控
      */
-    VIDEO("视频监控", "3"),
+    VIDEO("视频监控", "5"),
     /**
-     * wifi
+     * 应急事件
      */
-    WIFI("wifi", "4"),
-    /**
-     * 报警柱
-     */
-    ALARM("报警柱", "5"),
-    /**
-     * 水文
-     */
-    HYDROLOGICAL("水文", "6"),
-    /**
-     * 广播
-     */
-    BROADCAST("广播", "7"),
-    /**
-     * 厕所
-     */
-    TOILET("厕所", "8"),
-    /**
-     * 事件
-     */
-    EVENT("事件", "9"),
-    /**
-     * 定位设备
-     */
-    LOCATION("定位设备", "10");
+    EVENT("应急事件", "6");
+
 
     @Getter
     private String value;

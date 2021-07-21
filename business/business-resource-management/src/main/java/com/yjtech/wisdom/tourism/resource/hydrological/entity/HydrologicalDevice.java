@@ -80,9 +80,4 @@ public class HydrologicalDevice extends BaseEntity {
      * */
     private Byte equipStatus;
 
-    /**
-     * 状态图标url
-     */
-    @TableField(exist = false)
-    private String iconUrl;
 }

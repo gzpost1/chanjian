@@ -107,7 +107,6 @@ public class WifiScreenController {
         if(CollectionUtils.isEmpty(list)){
             return JsonResult.success(new ArrayList<>());
         }
-        list.forEach(item -> item.setIconUrl(iconService.queryIconUrl(IconSpotEnum.WIFI,item.getEquipStatus().toString())));
         return JsonResult.success(list);
     }
 

@@ -64,10 +64,4 @@ public class Turnstile extends BaseEntity {
      *  设备状态(0:离线, 1:在线)
      * */
     private Byte equipStatus;
-
-    /**
-     * 状态图标url
-     */
-    @TableField(exist = false)
-    private String iconUrl;
 }

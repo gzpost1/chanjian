@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjtech.wisdom.tourism.integration.mapper.TbYjwlHotelInfoMapper">
+
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.yjtech.wisdom.tourism.integration.entity.TbYjwlHotelInfoEntity">
+        <id column="id" property="id"/>
+        <result column="data_source" property="dataSource"/>
+        <result column="hotel_id" property="hotelId"/>
+        <result column="meituan_hotel_id" property="meituanHotelId"/>
+        <result column="ctrip_hotel_id" property="ctripHotelId"/>
+        <result column="yjwl_hotel_id" property="yjwlHotelId"/>
+        <result column="relate_status" property="relateStatus"/>
+        <result column="hotel_name" property="hotelName"/>
+        <result column="hotel_type" property="hotelType"/>
+        <result column="hotel_type_name" property="hotelTypeName"/>
+        <result column="hotel_star" property="hotelStar"/>
+        <result column="hotel_star_name" property="hotelStarName"/>
+        <result column="hotel_score" property="hotelScore"/>
+        <result column="brand_id" property="brandId"/>
+        <result column="brand_name" property="brandName"/>
+        <result column="hotel_group_id" property="hotelGroupId"/>
+        <result column="hotel_group_name" property="hotelGroupName"/>
+        <result column="business_name" property="businessName"/>
+        <result column="theme_tag" property="themeTag"/>
+        <result column="theme_tag_name" property="themeTagName"/>
+        <result column="hotel_pic_url" property="hotelPicUrl"/>
+        <result column="area_code" property="areaCode"/>
+        <result column="area_name" property="areaName"/>
+        <result column="address" property="address"/>
+        <result column="longitude" property="longitude"/>
+        <result column="latitude" property="latitude"/>
+        <result column="pracice_date" property="praciceDate"/>
+        <result column="fitment_date" property="fitmentDate"/>
+        <result column="telephone" property="telephone"/>
+        <result column="room_quantity" property="roomQuantity"/>
+        <result column="content" property="content"/>
+        <result column="bookable" property="bookable"/>
+        <result column="close_status" property="closeStatus"/>
+        <result column="close_status_name" property="closeStatusName"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="deleted" property="deleted"/>
+    </resultMap>
+
+    <select id="list" resultMap="BaseResultMap"
+            parameterType="com.yjtech.wisdom.tourism.integration.entity.TbYjwlHotelInfoEntity">
+        select
+        <include refid="Base_Column_List"/>
+        from tb_yjwl_hotel_info
+        <where>
+            <include refid="dynamic_where"/>
+        </where>
+    </select>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, data_source, hotel_id, meituan_hotel_id, ctrip_hotel_id, yjwl_hotel_id, relate_status, hotel_name, hotel_type, hotel_type_name, hotel_star, hotel_star_name, hotel_score, brand_id, brand_name, hotel_group_id, hotel_group_name, business_name, theme_tag, theme_tag_name, hotel_pic_url, area_code, area_name, address, longitude, latitude, pracice_date, fitment_date, telephone, room_quantity, content, bookable, close_status, close_status_name, status, create_time, update_time, create_user, update_user, deleted
+    </sql>
+
+    <sql id="dynamic_where">
+        <if test="params!=null">
+            <if test=" params.id != null">
+                and id = #{params.id}
+            </if>
+            <if test=" params.dataSource != null">
+                and data_source = #{params.dataSource}
+            </if>
+            <if test=" params.hotelId != null">
+                and hotel_id = #{params.hotelId}
+            </if>
+            <if test=" params.meituanHotelId != null">
+                and meituan_hotel_id = #{params.meituanHotelId}
+            </if>
+            <if test=" params.ctripHotelId != null">
+                and ctrip_hotel_id = #{params.ctripHotelId}
+            </if>
+            <if test=" params.yjwlHotelId != null">
+                and yjwl_hotel_id = #{params.yjwlHotelId}
+            </if>
+            <if test=" params.relateStatus != null">
+                and relate_status = #{params.relateStatus}
+            </if>
+            <if test=" params.hotelName != null and params.hotelName.trim() != ''">
+                and hotel_name like CONCAT('%','${params.hotelName}','%' )
+            </if>
+            <if test=" params.hotelType != null and params.hotelType.trim() != ''">
+                and hotel_type like CONCAT('%','${params.hotelType}','%' )
+            </if>
+            <if test=" params.hotelTypeName != null and params.hotelTypeName.trim() != ''">
+                and hotel_type_name like CONCAT('%','${params.hotelTypeName}','%' )
+            </if>
+            <if test=" params.hotelStar != null and params.hotelStar.trim() != ''">
+                and hotel_star like CONCAT('%','${params.hotelStar}','%' )
+            </if>
+            <if test=" params.hotelStarName != null and params.hotelStarName.trim() != ''">
+                and hotel_star_name like CONCAT('%','${params.hotelStarName}','%' )
+            </if>
+            <if test=" params.hotelScore != null">
+                and hotel_score = #{params.hotelScore}
+            </if>
+            <if test=" params.brandId != null">
+                and brand_id = #{params.brandId}
+            </if>
+            <if test=" params.brandName != null and params.brandName.trim() != ''">
+                and brand_name like CONCAT('%','${params.brandName}','%' )
+            </if>
+            <if test=" params.hotelGroupId != null">
+                and hotel_group_id = #{params.hotelGroupId}
+            </if>
+            <if test=" params.hotelGroupName != null and params.hotelGroupName.trim() != ''">
+                and hotel_group_name like CONCAT('%','${params.hotelGroupName}','%' )
+            </if>
+            <if test=" params.businessName != null and params.businessName.trim() != ''">
+                and business_name like CONCAT('%','${params.businessName}','%' )
+            </if>
+            <if test=" params.themeTag != null and params.themeTag.trim() != ''">
+                and theme_tag like CONCAT('%','${params.themeTag}','%' )
+            </if>
+            <if test=" params.themeTagName != null and params.themeTagName.trim() != ''">
+                and theme_tag_name like CONCAT('%','${params.themeTagName}','%' )
+            </if>
+            <if test=" params.hotelPicUrl != null and params.hotelPicUrl.trim() != ''">
+                and hotel_pic_url like CONCAT('%','${params.hotelPicUrl}','%' )
+            </if>
+            <if test=" params.areaCode != null and params.areaCode.trim() != ''">
+                and area_code like CONCAT('${params.areaCode}','%' )
+            </if>
+            <if test=" params.areaName != null and params.areaName.trim() != ''">
+                and area_name like CONCAT('%','${params.areaName}','%' )
+            </if>
+            <if test=" params.address != null and params.address.trim() != ''">
+                and address like CONCAT('%','${params.address}','%' )
+            </if>
+            <if test=" params.longitude != null">
+                and longitude = #{params.longitude}
+            </if>
+            <if test=" params.latitude != null">
+                and latitude = #{params.latitude}
+            </if>
+            <if test=" params.praciceDate != null and params.praciceDate.trim() != ''">
+                and pracice_date like CONCAT('%','${params.praciceDate}','%' )
+            </if>
+            <if test=" params.fitmentDate != null and params.fitmentDate.trim() != ''">
+                and fitment_date like CONCAT('%','${params.fitmentDate}','%' )
+            </if>
+            <if test=" params.telephone != null and params.telephone.trim() != ''">
+                and telephone like CONCAT('%','${params.telephone}','%' )
+            </if>
+            <if test=" params.roomQuantity != null">
+                and room_quantity = #{params.roomQuantity}
+            </if>
+            <if test=" params.content != null">
+                and content = #{params.content}
+            </if>
+            <if test=" params.bookable != null">
+                and bookable = #{params.bookable}
+            </if>
+            <if test=" params.closeStatus != null">
+                and close_status = #{params.closeStatus}
+            </if>
+            <if test=" params.closeStatusName != null and params.closeStatusName.trim() != ''">
+                and close_status_name like CONCAT('%','${params.closeStatusName}','%' )
+            </if>
+            <if test=" params.status != null">
+                and status = #{params.status}
+            </if>
+            <if test=" params.createTime != null">
+                <!--  and  create_time between #{params.beginDate} and #{params.endDate}  -->
+                and create_time = #{params.createTime}
+            </if>
+            <if test=" params.updateTime != null">
+                <!--  and  update_time between #{params.beginDate} and #{params.endDate}  -->
+                and update_time = #{params.updateTime}
+            </if>
+            <if test=" params.createUser != null">
+                and create_user = #{params.createUser}
+            </if>
+            <if test=" params.updateUser != null">
+                and update_user = #{params.updateUser}
+            </if>
+            <if test=" params.deleted != null">
+                and deleted = #{params.deleted}
+            </if>
+        </if>
+    </sql>
+
+    <select id="querySelfHotelSaleList" resultType="com.yjtech.wisdom.tourism.integration.pojo.bo.hotel.HotelSaleRankListBO"
+            parameterType="com.yjtech.wisdom.tourism.integration.pojo.vo.HotelQueryVO">
+        select
+        selfHotel.hotel_id as dataId,
+        selfHotel.hotel_name as dataName,
+        COALESCE (ROUND(SUM(selfOrder.paid_amount)/100,2),0) as sale
+        from
+        tb_self_order selfOrder
+        LEFT JOIN tb_self_hotel_info selfHotel ON selfOrder.hotel_id = selfHotel.hotel_id
+        <where>
+            <if test="params != null">
+                <if test="params.beginTime != null and params.beginTime !=''">
+                    <![CDATA[ selfOrder.pay_time >= #{params.beginTime} ]]> and
+                </if>
+                <if test="params.endTime != null and params.endTime !=''">
+                    <![CDATA[ selfOrder.pay_time <= #{params.endTime} ]]> and
+                </if>
+                <if test="params.areaCode != null and params.areaCode != ''">
+                    selfHotel.area_code LIKE CONCAT(#{params.areaCode},'%') and
+                </if>
+                selfOrder.deleted = 0 and
+                selfOrder.pay_status = 14 and
+                selfHotel.deleted = 0
+            </if>
+        </where>
+        GROUP BY selfHotel.hotel_name
+        ORDER BY sale DESC
+    </select>
+
+    <select id="queryYjwlHotelSaleList" resultType="com.yjtech.wisdom.tourism.integration.pojo.bo.hotel.HotelSaleRankListBO"
+            parameterType="com.yjtech.wisdom.tourism.integration.pojo.vo.HotelQueryVO">
+        select
+        yjwlHotel.hotel_id as dataId,
+        yjwlHotel.hotel_name as dataName,
+        COALESCE (ROUND(SUM(yjwlOrder.paid_amount)/100,2),0) as sale
+        from
+        tb_yjwl_order yjwlOrder
+        LEFT JOIN tb_yjwl_hotel_info yjwlHotel ON yjwlOrder.hotel_id = yjwlHotel.hotel_id
+        <where>
+            <if test="params != null">
+                <if test="params.beginTime != null and params.beginTime !=''">
+                    <![CDATA[ yjwlOrder.pay_time >= #{params.beginTime} ]]> and
+                </if>
+                <if test="params.endTime != null and params.endTime !=''">
+                    <![CDATA[ yjwlOrder.pay_time <= #{params.endTime} ]]> and
+                </if>
+                <if test="params.areaCode != null and params.areaCode != ''">
+                    yjwlHotel.area_code LIKE CONCAT(#{params.areaCode},'%') and
+                </if>
+                yjwlOrder.deleted = 0 and
+                yjwlOrder.order_status in (20, 21, 23) and
+                yjwlHotel.deleted = 0
+            </if>
+        </where>
+        GROUP BY yjwlHotel.hotel_name
+        ORDER BY sale DESC
+    </select>
+
+    <select id="queryHotelSaleList" resultType="com.yjtech.wisdom.tourism.integration.pojo.bo.hotel.HotelSaleRankListBO"
+            parameterType="com.yjtech.wisdom.tourism.integration.pojo.vo.HotelQueryVO">
+        select
+        selfHotel.hotel_id as dataId,
+        selfHotel.hotel_name as dataName,
+        COALESCE (ROUND(SUM(selfOrder.paid_amount)/100,2),0) as sale
+        from
+        tb_self_order selfOrder
+        LEFT JOIN tb_self_hotel_info selfHotel ON selfOrder.hotel_id = selfHotel.hotel_id
+        <where>
+            <if test="params != null">
+                <if test="params.beginTime != null and params.beginTime !=''">
+                    <![CDATA[ selfOrder.pay_time >= #{params.beginTime} ]]> and
+                </if>
+                <if test="params.endTime != null and params.endTime !=''">
+                    <![CDATA[ selfOrder.pay_time <= #{params.endTime} ]]> and
+                </if>
+                <if test="params.areaCode != null and params.areaCode != ''">
+                    selfHotel.area_code LIKE CONCAT(#{params.areaCode},'%') and
+                </if>
+                selfOrder.deleted = 0 and
+                selfOrder.pay_status = 14 and
+                selfHotel.deleted = 0
+            </if>
+        </where>
+        GROUP BY selfHotel.hotel_name
+        UNION
+        select
+        yjwlHotel.hotel_id as dataId,
+        yjwlHotel.hotel_name as dataName,
+        COALESCE (ROUND(SUM(yjwlOrder.paid_amount)/100,2),0) as sale
+        from
+        tb_yjwl_order yjwlOrder
+        LEFT JOIN tb_yjwl_hotel_info yjwlHotel ON yjwlOrder.hotel_id = yjwlHotel.hotel_id
+        <where>
+            <if test="params != null">
+                <if test="params.beginTime != null and params.beginTime !=''">
+                    <![CDATA[ yjwlOrder.pay_time >= #{params.beginTime} ]]> and
+                </if>
+                <if test="params.endTime != null and params.endTime !=''">
+                    <![CDATA[ yjwlOrder.pay_time <= #{params.endTime} ]]> and
+                </if>
+                <if test="params.areaCode != null and params.areaCode != ''">
+                    yjwlHotel.area_code LIKE CONCAT(#{params.areaCode},'%') and
+                </if>
+                yjwlOrder.deleted = 0 and
+                yjwlOrder.order_status in (20, 21, 23) and
+                yjwlHotel.deleted = 0
+            </if>
+        </where>
+        GROUP BY yjwlHotel.hotel_name
+        ORDER BY sale DESC
+    </select>
+    <select id="hotelStatiscs" resultType="com.yjtech.wisdom.tourism.integration.pojo.vo.HotelStaticsVo">
+        SELECT count(hotel_type) num,hotel_type from (
+        select distinct
+        SUBSTRING_INDEX(SUBSTRING_INDEX(a.hotel_type,',',b.help_topic_id + 1),',', -1 ) hotel_type,hotel_type_name,id
+        from tb_yjwl_hotel_info a
+        join mysql.help_topic b
+        on b.help_topic_id  <![CDATA[<]]>  (LENGTH(a.hotel_type) - length(replace(a.hotel_type,',','')) + 1)
+        <where>
+            <if test="params.areaCode !=null and params.areaCode !=''">
+                a.area_code like CONCAT(#{params.areaCode},'%')
+            </if>
+        </where>
+         ) a group by hotel_type;
+    </select>
+
+</mapper>
