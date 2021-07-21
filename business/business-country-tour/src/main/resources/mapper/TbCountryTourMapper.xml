@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjtech.wisdom.tourism.mapper.TbCountryTourMapper">
+
+    <resultMap id="BaseResultMap" type="com.yjtech.wisdom.tourism.entity.TbCountryTour">
+        <result property="id" column="id" jdbcType="BIGINT"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="type" column="type" jdbcType="TINYINT"/>
+        <result property="address" column="address" jdbcType="VARCHAR"/>
+        <result property="longitude" column="longitude" jdbcType="DECIMAL"/>
+        <result property="latitude" column="latitude" jdbcType="DECIMAL"/>
+        <result property="openStartMonth" column="open_start_month" jdbcType="INTEGER"/>
+        <result property="openEndMonth" column="open_end_month" jdbcType="INTEGER"/>
+        <result property="openStartTime" column="open_start_time" jdbcType="TIME"/>
+        <result property="openEndTime" column="open_end_time" jdbcType="TIME"/>
+        <result property="phone" column="phone" jdbcType="VARCHAR"/>
+        <result property="cover" column="cover" jdbcType="VARCHAR"/>
+        <result property="images" column="images" jdbcType="VARCHAR"/>
+        <result property="description" column="description" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="createUser" column="create_user" jdbcType="BIGINT"/>
+        <result property="updateUser" column="update_user" jdbcType="BIGINT"/>
+        <result property="status" column="status" jdbcType="BOOLEAN"/>
+        <result property="deleted" column="deleted" jdbcType="BOOLEAN"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,name,type,
+        address,longitude,latitude,
+        open_start_month,open_end_month,open_start_time,
+        open_end_time,phone,cover,
+        images,description,create_time,
+        update_time,create_user,update_user,
+        status,deleted
+    </sql>
+
+    <select id="statistic" resultType="com.yjtech.wisdom.tourism.common.bean.SelectVo">
+        select type as id, cast((count * 100 / sum) as decimal(38, 2)) as value
+        from (select type, count(*) as count
+              from tb_country_tour
+              where deleted = 0
+                and status = 1
+              group by type
+             ) a
+                 join (
+            select count(*) as sum
+            from tb_country_tour
+            where deleted = 0
+              and status = 1
+        ) b
+    </select>
+</mapper>
