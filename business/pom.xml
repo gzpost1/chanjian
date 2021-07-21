@@ -21,6 +21,7 @@
         <module>business-command</module>
         <module>business-integration</module>
         <module>business-country-tour</module>
+        <module>business-message</module>
     </modules>
 
 </project>
