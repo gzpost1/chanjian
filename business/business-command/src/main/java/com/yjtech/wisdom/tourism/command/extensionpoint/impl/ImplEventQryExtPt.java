@@ -3,9 +3,7 @@ package com.yjtech.wisdom.tourism.command.extensionpoint.impl;
 import com.yjtech.wisdom.tourism.command.extensionpoint.EventExtensionConstant;
 import com.yjtech.wisdom.tourism.command.extensionpoint.EventQryExtPt;
 import com.yjtech.wisdom.tourism.command.query.event.EventSumaryQuery;
-import com.yjtech.wisdom.tourism.command.service.event.EventDailySummaryService;
-import com.yjtech.wisdom.tourism.command.service.event.EventLevelDailySummaryService;
-import com.yjtech.wisdom.tourism.command.service.event.EventTypeDailySummaryService;
+import com.yjtech.wisdom.tourism.command.service.event.EventService;
 import com.yjtech.wisdom.tourism.command.vo.event.EventTrendVO;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
 import com.yjtech.wisdom.tourism.extension.Extension;
@@ -26,32 +24,27 @@ public class ImplEventQryExtPt implements EventQryExtPt {
 
 
     @Autowired
-    private EventDailySummaryService eventDailySummaryService;
+    private EventService eventService;
 
-    @Autowired
-    private EventTypeDailySummaryService eventTypeDailySummaryService;
-
-    @Autowired
-    private EventLevelDailySummaryService eventLevelDailySummaryService;
 
     @Override
     public List<BaseVO> queryEventQuantity() {
-        return eventDailySummaryService.queryEventQuantity();
+        return eventService.queryEventQuantity();
     }
 
     @Override
     public List<EventTrendVO> querySaleTrend(EventSumaryQuery query) {
-        return eventDailySummaryService.getBaseMapper().queryTrend(query);
+        return eventService.getBaseMapper().queryTrend(query);
     }
 
     @Override
     public List<BaseVO> queryEventType(EventSumaryQuery query) {
-        return eventTypeDailySummaryService.queryEventType(query);
+        return eventService.queryEventType(query);
     }
 
     @Override
     public List<BaseVO> queryEventLevel(EventSumaryQuery query) {
-        return eventLevelDailySummaryService.queryEventLevel(query);
+        return eventService.queryEventLevel(query);
     }
 
 

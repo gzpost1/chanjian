@@ -2,6 +2,23 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yjtech.wisdom.tourism.command.mapper.event.EventMapper">
 
+    <sql id="condition_sql_where">
+        <if test="params.year != null">
+            and year = #{params.year}
+        </if>
+        <if test="params.month != null">
+            and month = #{params.month}
+        </if>
+        <if test="params.day != null">
+            and day = #{params.day}
+        </if>
+        <if test="params.hour != null">
+            and hour = #{params.hour}
+        </if>
+        <if test="params.beginTime != null and params.endTime != null">
+            and event_date >= #{params.beginTime} and event_date <![CDATA[<=]]> #{params.endTime}
+        </if>
+    </sql>
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.yjtech.wisdom.tourism.command.vo.event.AppEventDetail">
@@ -83,5 +100,87 @@
             <where>
                 id = #{id}
             </where>
+    </select>
+
+
+
+
+    <select id="queryUserById" resultType="com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysUser">
+        select * from sys_user
+        <foreach collection="userIds" item="userId" open="where user_id in (" separator="," close=")">
+            #{userId}
+        </foreach>
+    </select>
+
+
+    <select id="queryQuantity" resultType="integer"
+            parameterType="com.yjtech.wisdom.tourism.command.query.event.EventSumaryQuery">
+        SELECT
+        COALESCE(count( 1 ),0) AS quantity
+        FROM
+        tb_event
+        <where>
+            <if test="params.beginTime != null and params.endTime != null">
+                and event_date >= #{params.beginTime} and event_date <![CDATA[<]]> #{params.endTime}
+            </if>
+        </where>
+    </select>
+
+    <select id="queryTrend" resultType="com.yjtech.wisdom.tourism.command.vo.event.EventTrendVO"
+            parameterType="com.yjtech.wisdom.tourism.command.query.event.EventSumaryQuery">
+        SELECT
+        DATE_FORMAT( event_date, #{params.sqlDateFormat} ) AS time,
+        COALESCE(count( 1 ),0) AS quantity
+        FROM
+        tb_event
+        <where>
+            <include refid="condition_sql_where"></include>
+        </where>
+        GROUP BY
+        DATE_FORMAT( event_date, #{params.sqlDateFormat} )
+    </select>
+
+    <select id="queryQuantityByStatus" resultType="integer"
+            parameterType="com.yjtech.wisdom.tourism.command.query.event.EventSumaryQuery">
+        SELECT
+        COALESCE(count( 1 ),0) AS quantity
+        FROM
+        tb_event
+        <where>
+            <if test="params.beginTime != null and params.endTime != null">
+                and tb_event >= #{params.beginTime} and tb_event <![CDATA[<]]> #{params.endTime}
+            </if>
+            <if test="params.eventStatus != null and params.eventStatus != ''">
+                and event_status = #{params.eventStatus}
+            </if>
+        </where>
+    </select>
+
+    <select id="queryEventType" resultType="com.yjtech.wisdom.tourism.common.bean.BasePercentVO"
+            parameterType="com.yjtech.wisdom.tourism.command.query.event.EventSumaryQuery">
+        SELECT
+        event_type name,
+        count(1) AS value
+        FROM
+        tb_event
+        <where>
+            <include refid="condition_sql_where"></include>
+        </where>
+        GROUP BY
+        event_type
+    </select>
+
+    <select id="queryEventLevel" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO"
+            parameterType="com.yjtech.wisdom.tourism.command.query.event.EventSumaryQuery">
+        SELECT
+        event_level name,
+        count(1) AS value
+        FROM
+        tb_event
+        <where>
+            <include refid="condition_sql_where"></include>
+        </where>
+        GROUP BY
+        event_level
     </select>
 </mapper>

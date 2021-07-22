@@ -3,17 +3,23 @@ package com.yjtech.wisdom.tourism.command.service.event;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.common.collect.Lists;
 import com.yjtech.wisdom.tourism.command.dto.event.EventCreateDto;
 import com.yjtech.wisdom.tourism.command.dto.event.EventUpdateDto;
 import com.yjtech.wisdom.tourism.command.entity.event.EventEntity;
 import com.yjtech.wisdom.tourism.command.mapper.event.EventMapper;
 import com.yjtech.wisdom.tourism.command.query.event.EventQuery;
+import com.yjtech.wisdom.tourism.command.query.event.EventSumaryQuery;
 import com.yjtech.wisdom.tourism.command.vo.event.AppEventDetail;
 import com.yjtech.wisdom.tourism.command.vo.event.EventListVO;
+import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
+import com.yjtech.wisdom.tourism.common.bean.BaseVO;
 import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.common.constant.EventContants;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.common.utils.AssertUtil;
+import com.yjtech.wisdom.tourism.common.utils.MathUtil;
+import com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysDictData;
 import com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysUser;
 import com.yjtech.wisdom.tourism.infrastructure.utils.DictUtils;
 import com.yjtech.wisdom.tourism.infrastructure.utils.SecurityUtils;
@@ -24,11 +30,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.validation.Valid;
+import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.TemporalAdjusters;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -41,6 +48,85 @@ import java.util.stream.Collectors;
  */
 @Service
 public class EventService extends ServiceImpl<EventMapper, EventEntity> {
+
+
+    public List<BaseVO> queryEventQuantity(){
+        ArrayList<BaseVO> result = Lists.newArrayList();
+        LocalDate now = LocalDate.now();
+        EventSumaryQuery monthQuery = new EventSumaryQuery();
+        monthQuery.setBeginTime( LocalDateTime.of(now.with(TemporalAdjusters.firstDayOfMonth()), LocalTime.MIN));
+        monthQuery.setEndTime( LocalDateTime.of(now, LocalTime.MAX));
+        Integer month = this.getBaseMapper().queryQuantity(monthQuery);
+        result.add(BaseVO.builder().name("month").value(String.valueOf(month)).build());
+
+        EventSumaryQuery yearQuery = new EventSumaryQuery();
+        yearQuery.setBeginTime( LocalDateTime.of(now.with(TemporalAdjusters.firstDayOfYear()), LocalTime.MIN));
+        yearQuery.setEndTime( LocalDateTime.of(now, LocalTime.MAX));
+        Integer year = this.getBaseMapper().queryQuantity(yearQuery);
+        result.add(BaseVO.builder().name("year").value(String.valueOf(year)).build());
+
+        EventSumaryQuery statusQuery = new EventSumaryQuery();
+        statusQuery.setEventStatus(EventContants.UNTREATED);
+        Integer untreated = this.getBaseMapper().queryQuantityByStatus(statusQuery);
+
+        statusQuery.setEventStatus(EventContants.PROCESSED);
+        Integer processed = this.getBaseMapper().queryQuantityByStatus(statusQuery);
+        BigDecimal sum = new BigDecimal(String.valueOf(untreated + processed));
+
+        double untreatedRate = sum.compareTo(BigDecimal.ZERO) == 0 ? 0D : MathUtil.calPercent(new BigDecimal(String.valueOf(untreated)), sum, 1).doubleValue();
+        result.add(BasePercentVO.builder().name("untreated").value(String.valueOf(untreated))
+                .rate(untreatedRate).build());
+
+        double processedRate = sum.compareTo(BigDecimal.ZERO) == 0 ? 0D : MathUtil.calPercent(new BigDecimal(String.valueOf(processed)), sum, 1).doubleValue();
+        result.add(BasePercentVO.builder().name("processed").value(String.valueOf(processed))
+                .rate(processedRate).build());
+        return result;
+    }
+
+    public List<BaseVO> queryEventType(EventSumaryQuery query) {
+
+        List<BasePercentVO> list = Optional.ofNullable(this.getBaseMapper().queryEventType(query)).orElse(Lists.newArrayList());
+        BigDecimal sum = list.stream().map(vo -> new BigDecimal(vo.getValue())).reduce(BigDecimal.ZERO, BigDecimal::add);
+        //补全数据  没有的类型补为0
+        Map<String, String> map = list.stream().collect(Collectors.toMap(item -> item.getName(), item -> item.getValue()));
+        List<SysDictData> dictCache = DictUtils.getDictCache(EventContants.EVENT_TYPE);
+        ArrayList<BaseVO> result = Lists.newArrayList();
+        for (SysDictData sysDictData : dictCache) {
+            if (map.containsKey(sysDictData.getDictValue())) {
+                double value = sum.compareTo(BigDecimal.ZERO) == 0 ? 0D : MathUtil.calPercent(new BigDecimal(map.get(sysDictData.getDictValue())), sum, 1).doubleValue();
+                result.add(BasePercentVO.builder().name(sysDictData.getDictLabel()).value(map.get(sysDictData.getDictValue()))
+                        .rate(value).build());
+            } else {
+                double value = sum.compareTo(BigDecimal.ZERO) == 0 ? 0D : MathUtil.calPercent(new BigDecimal("0"), sum, 1).doubleValue();
+                result.add(BasePercentVO.builder().name(sysDictData.getDictLabel()).value("0")
+                        .rate(value).build());
+            }
+        }
+        return result;
+    }
+
+
+    public List<BaseVO> queryEventLevel(EventSumaryQuery query){
+
+        List<BaseVO> list = Optional.ofNullable(this.getBaseMapper().queryEventLevel(query)).orElse(Lists.newArrayList());
+        Map<String, String> map = list.stream().collect(Collectors.toMap(item -> item.getName(), item -> item.getValue()));
+        BigDecimal sum = list.stream().map(vo -> new BigDecimal(vo.getValue())).reduce(BigDecimal.ZERO, BigDecimal::add);
+        //补全数据  没有的类型补为0
+        List<SysDictData> dictCache = DictUtils.getDictCache(EventContants.EVENT_LEVEL);
+        ArrayList<BaseVO> result = Lists.newArrayList();
+        for(SysDictData sysDictData:dictCache){
+            if(map.containsKey(sysDictData.getDictValue())){
+                double value = sum.compareTo(BigDecimal.ZERO) == 0 ? 0D : MathUtil.calPercent(new BigDecimal(map.get(sysDictData.getDictValue())), sum, 1).doubleValue();
+                result.add(BasePercentVO.builder().name(sysDictData.getDictLabel()).value(map.get(sysDictData.getDictValue()))
+                        .rate(value).build());
+            }else {
+                double value = sum.compareTo(BigDecimal.ZERO) == 0 ? 0D : MathUtil.calPercent(new BigDecimal("0"), sum, 1).doubleValue();
+                result.add(BasePercentVO .builder().name(sysDictData.getDictLabel()).value("0")
+                        .rate(value).build());
+            }
+        }
+        return result;
+    }
 
     public EventEntity create(EventCreateDto createDto) {
         AssertUtil.isFalse(createDto.getEventDate().isAfter(LocalDate.now()), "事件日期只能选择早于或等于当前日期的日期");
