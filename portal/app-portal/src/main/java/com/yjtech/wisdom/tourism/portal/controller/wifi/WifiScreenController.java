@@ -133,7 +133,7 @@ public class WifiScreenController {
     public JsonResult<List<BaseValueVO>> queryCurrentConnectNum(@RequestBody @Valid WifiSummaryQuery query){
         query.setWifiType(2);
         List<WifiBaseDto> dtoList = summaryService.getBaseMapper().queryCurrentConnectNum(query);
-        return JsonResult.success(AnalysisUtils.MultipleBuildAnalysis(query, dtoList,WifiBaseDto::getQuantity));
+        return JsonResult.success(AnalysisUtils.MultipleBuildAnalysis(query, dtoList,true,WifiBaseDto::getQuantity));
     }
 
     /**

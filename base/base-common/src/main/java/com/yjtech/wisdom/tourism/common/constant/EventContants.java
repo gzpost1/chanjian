@@ -24,6 +24,11 @@ public class EventContants {
     public static  final  String EVENT_TYPE = "event_type";
 
     /**
+     * 事件指派状态 key
+     */
+    public static  final  String EVENT_APPOINT_STATUS = "event_appoint_status";
+
+    /**
      * 处理状态
      */
     public static  final  String EVENT_STATUS = "event_status";
@@ -124,5 +129,17 @@ public class EventContants {
      * App上报
      */
     public static final String APP_SOURCE = "3";
+
+
+    /**
+     * 未指派
+     */
+    public static final String UNASSIGNED = "1";
+
+    /**
+     * 已指派
+     */
+    public static final String ASSIGNED = "2";
+
 
 }

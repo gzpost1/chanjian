@@ -3,6 +3,7 @@ package com.yjtech.wisdom.tourism.common.enums;
 import lombok.Getter;
 
 import java.time.temporal.ChronoUnit;
+import java.util.Calendar;
 
 /**
  * 趋势时间类型
@@ -46,15 +47,15 @@ public enum AnalysisDateTypeEnum {
     @Getter
     private ChronoUnit chronoUnit;
     @Getter
-    private  String coordinateJavaDateFormat;
+    private  String coorJavaDateFormat;
 
-    AnalysisDateTypeEnum(Byte value, String describe, String javaDateFormat, String sqlDateFormat, ChronoUnit chronoUnit, String coordinateJavaDateFormat) {
+    AnalysisDateTypeEnum(Byte value, String describe, String javaDateFormat, String sqlDateFormat, ChronoUnit chronoUnit, String coorJavaDateFormat) {
         this.value = value;
         this.describe = describe;
         this.javaDateFormat = javaDateFormat;
         this.sqlDateFormat = sqlDateFormat;
         this.chronoUnit = chronoUnit;
-        this.coordinateJavaDateFormat = coordinateJavaDateFormat;
+        this.coorJavaDateFormat = coorJavaDateFormat;
     }
 
     /**
