@@ -99,19 +99,11 @@ public class IconService extends ServiceImpl<IconMapper, Icon> {
 
         Icon icon = baseMapper.queryIconByType(iconSpotEnum.getValue());
 
-        List<IconDetail> iconDetails = null;
-        if (Objects.isNull(icon) || CollectionUtils.isEmpty(iconDetails = icon.getValue())) {
+        if (Objects.isNull(icon)) {
             return null;
         }
 
-        // 查询对应状态的图标url
-        for (IconDetail detail : iconDetails) {
-            if (detail.getStatus().equals(status)) {
-                return detail.getUrl();
-            }
-        }
-
-        return null;
+        return icon.getUrl();
     }
 
 }

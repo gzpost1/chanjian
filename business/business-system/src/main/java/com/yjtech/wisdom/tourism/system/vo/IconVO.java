@@ -34,18 +34,7 @@ public class IconVO extends BaseEntity {
     private String typeLabel;
 
     /**
-     * 图标类型, 来自字典表(普通设备、事件、单兵...)
+     * 图标url
      */
-    @NotBlank(message = "图标类型不能为空", groups = {UpdateGroup.class, CreateGroup.class})
-    private String iconType;
-
-    /**
-     * 图标类型名称, 创建、编辑不传
-     */
-    private String iconTypeLabel;
-
-    /**
-     * 图标明细
-     */
-    private List<IconDetail> value;
+    private String url;
 }

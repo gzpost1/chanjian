@@ -229,13 +229,7 @@ public class SystemconfigMenuService extends ServiceImpl<SystemconfigMenuMapper,
             if (CollectionUtils.isNotEmpty(icons)) {
                 //首先匹配点位类型
                 icons.stream().filter(i -> StringUtils.equals(pointDatavVo.getPointType(), i.getType())).forEach(i -> {
-                    if (CollectionUtils.isNotEmpty(i.getValue())) {
-                        for (IconDetail icondetail : i.getValue()) {
-                            if (StringUtils.equals(icondetail.getPosition(), "首页导航")) {
-                                pointDatavVo.getValue().add(icondetail);
-                            }
-                        }
-                    }
+                    pointDatavVo.setValue(i.getUrl());
                 });
             }
         }

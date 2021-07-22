@@ -33,8 +33,8 @@ public class SysDept extends BaseEntity {
   private String deptName;
 
   /** 显示顺序 */
-  @NotBlank(message = "显示顺序不能为空")
-  private String orderNum;
+//  @NotBlank(message = "显示顺序不能为空")
+  private String orderNum = "0";
 
   /** 负责人 */
   private String leader;

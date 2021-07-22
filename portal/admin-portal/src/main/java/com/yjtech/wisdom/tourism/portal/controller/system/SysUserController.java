@@ -135,7 +135,7 @@ public class SysUserController extends BaseController {
     userService.checkUserAllowed(user);
     // 使用默认邮箱、默认部门
     user.setEmail("default@default.com");
-    user.setDeptId(100L);
+//    user.setDeptId(100L);
     if (UserConstants.NOT_UNIQUE.equals(userService.checkPhoneUnique(user))) {
       return JsonResult.error("修改用户'" + user.getUserName() + "'失败，手机号码已存在");
 //    } else if (UserConstants.NOT_UNIQUE.equals(userService.checkEmailUnique(user))) {

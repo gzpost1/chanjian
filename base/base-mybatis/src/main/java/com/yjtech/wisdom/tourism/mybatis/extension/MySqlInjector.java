@@ -23,6 +23,7 @@ public class MySqlInjector extends DefaultSqlInjector {
     methodList.add(new LogicDeleteByIdWithFill());
     methodList.add(new InsertBatchIgnoreInto());
     methodList.add(new ReplaceBatchInto());
+    methodList.add(new com.yjtech.wisdom.tourism.mybatis.extension.methods.additional.List());
 
     return methodList;
   }
