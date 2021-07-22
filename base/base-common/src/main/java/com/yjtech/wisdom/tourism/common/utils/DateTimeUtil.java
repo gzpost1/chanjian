@@ -4,6 +4,7 @@ package com.yjtech.wisdom.tourism.common.utils;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
+import org.springframework.util.Assert;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -11,10 +12,7 @@ import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Stream;
 
 public class DateTimeUtil {
@@ -221,15 +219,62 @@ public class DateTimeUtil {
     return monthList;
   }
 
-  public static void main(String[] args) {
-    System.out.println(get24Hours());
-    System.out.println(get31Days());
-    System.out.println(get12Months());
-  }
-
   public static LocalDateTime strISO8601ToLocalDateTime(String iso8601) {
     ZonedDateTime zdt = ZonedDateTime.parse(iso8601);
     LocalDateTime ldt = zdt.toLocalDateTime();
     return ldt;
   }
+
+  /**
+   * 将Long类型的时间戳转换成String 类型的时间格式，时间格式为：yyyy-MM-dd HH:mm:ss
+   */
+  public static String convertTimeToString(Long time){
+    Assert.notNull(time, "time is null");
+    DateTimeFormatter ftf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    return ftf.format(LocalDateTime.ofInstant(Instant.ofEpochMilli(time),ZoneId.systemDefault()));
+  }
+
+  /**
+   * 将时间格式为：yyyy-MM-dd HH:mm:ss 转换为 Long类型的时间戳格式，
+   */
+  public static Long convertTimeToTimestamp(String time){
+    Assert.notNull(time, "time is null");
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    Date date = null;
+    try {
+      date = simpleDateFormat.parse(time);
+    } catch (ParseException e) {
+      e.printStackTrace();
+    }
+    return date.getTime();
+  }
+
+  /**
+   * 获取当前时间的 上月日期
+   *
+   * @return
+   */
+  public static String getLastMonth() {
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTime(new Date());
+    calendar.add(Calendar.MONTH, -1);
+    Date date3 = calendar.getTime();
+    SimpleDateFormat format3= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    return format3.format(date3);
+  }
+
+  /**
+   * 获取当前时间的 前一天日期
+   *
+   * @return
+   */
+  public static String getLastDay() {
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTime(new Date());
+    calendar.add(Calendar.HOUR_OF_DAY, -24);
+    Date date3 = calendar.getTime();
+    SimpleDateFormat format3= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    return format3.format(date3);
+  }
+
 }
