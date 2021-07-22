@@ -3,23 +3,29 @@ package com.yjtech.wisdom.tourism.portal.controller.command;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.common.collect.Lists;
 import com.yjtech.wisdom.tourism.command.dto.event.EventAppointDto;
 import com.yjtech.wisdom.tourism.command.dto.event.EventUpdateDto;
-import com.yjtech.wisdom.tourism.command.entity.event.EventAppointEntity;
 import com.yjtech.wisdom.tourism.command.entity.event.EventEntity;
+import com.yjtech.wisdom.tourism.command.entity.plan.EmergencyPlanEntity;
 import com.yjtech.wisdom.tourism.command.query.event.EventQuery;
 import com.yjtech.wisdom.tourism.command.service.event.EventAppointService;
 import com.yjtech.wisdom.tourism.command.service.event.EventService;
+import com.yjtech.wisdom.tourism.command.service.plan.EmergencyPlanService;
+import com.yjtech.wisdom.tourism.command.vo.event.AppEmergencyPlanVO;
+import com.yjtech.wisdom.tourism.command.vo.event.AppEventDetail;
 import com.yjtech.wisdom.tourism.command.vo.event.EventListVO;
 import com.yjtech.wisdom.tourism.common.constant.EventContants;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.common.core.domain.UpdateStatusParam;
 import com.yjtech.wisdom.tourism.common.utils.AssertUtil;
 import com.yjtech.wisdom.tourism.common.utils.DeleteParam;
+import com.yjtech.wisdom.tourism.common.utils.IdParam;
 import com.yjtech.wisdom.tourism.common.utils.bean.BeanMapper;
 import com.yjtech.wisdom.tourism.infrastructure.utils.SecurityUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,8 +51,11 @@ public class EventController {
     @Autowired
     private EventAppointService eventAppointService;
 
+    @Autowired
+    private EmergencyPlanService emergencyPlanService;
+
     /**
-     * 待处理 已处理  分页列表
+     * 分页列表
      *
      * @param query
      * @return
@@ -60,11 +69,40 @@ public class EventController {
     }
 
     /**
+     * 详情
+     *
+     * @param idParam
+     * @return
+     */
+    @PreAuthorize("@ss.hasPermi('event:queryForDetail')")
+    @PostMapping("/queryForDetail")
+    public JsonResult<AppEventDetail> queryForDetail(@RequestBody @Valid IdParam idParam) {
+        AppEventDetail appEventDetail = eventService.getBaseMapper().queryForDetail(idParam.getId());
+        AssertUtil.isFalse(Objects.isNull(appEventDetail),"该记录不存在");
+        eventService.tranDict(Lists.newArrayList(appEventDetail));
+
+        //设置预案
+        if(Objects.nonNull(appEventDetail.getPlanId())){
+            EmergencyPlanEntity entity = emergencyPlanService.getById(appEventDetail.getPlanId());
+            emergencyPlanService.tranDic(Lists.newArrayList(entity));
+            AppEmergencyPlanVO planVO = new AppEmergencyPlanVO();
+            BeanUtils.copyProperties(entity, planVO);
+            appEventDetail.setPlan(planVO);
+        }
+        //当前登录人是否是指定处理人员
+        LambdaQueryWrapper<EventEntity> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.apply("JSON_CONTAINS(appoint_handle_personnel,JSON_ARRAY({0}))",String.valueOf(SecurityUtils.getUserId()));
+        appEventDetail.setAppointPersonnel(eventService.count(queryWrapper) >0);
+        return JsonResult.success(appEventDetail);
+    }
+
+    /**
      * 指派
      *
      * @param dto
      * @return
      */
+    @PreAuthorize("@ss.hasPermi('event:appoint')")
     @PostMapping("/appoint")
     public JsonResult appoint(@RequestBody @Valid EventAppointDto dto) {
         //判断是否在指派人员中
@@ -91,6 +129,7 @@ public class EventController {
      * @param updateDto
      * @return
      */
+    @PreAuthorize("@ss.hasPermi('event:handle')")
     @PostMapping("/handle")
     public JsonResult handle(@RequestBody @Valid EventUpdateDto updateDto) {
         eventService.handle(updateDto);
@@ -102,6 +141,7 @@ public class EventController {
      * @param deleteParam
      * @return
      */
+    @PreAuthorize("@ss.hasPermi('event:deleted')")
     @PostMapping("/deleted")
     public JsonResult update(@RequestBody @Valid DeleteParam deleteParam) {
          eventService.removeById(deleteParam.getId());
@@ -113,6 +153,7 @@ public class EventController {
      * @param updateStatusParam
      * @return
      */
+    @PreAuthorize("@ss.hasPermi('event:updateStatus')")
     @PostMapping("/updateStatus")
     public JsonResult updateStatus(@RequestBody @Valid UpdateStatusParam updateStatusParam) {
         EventEntity entity = eventService.getById(updateStatusParam.getId());
