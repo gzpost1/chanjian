@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.common.collect.Lists;
 import com.yjtech.wisdom.tourism.command.dto.plan.EmergencyPlanCreateDto;
 import com.yjtech.wisdom.tourism.command.dto.plan.EmergencyPlanUpdateDto;
 import com.yjtech.wisdom.tourism.command.entity.plan.EmergencyPlanEntity;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -72,7 +74,9 @@ public class EmergencyPlanController {
      */
     @PostMapping("/queryForDetail")
     public JsonResult<EmergencyPlanEntity> queryForDetail(@RequestBody @Valid IdParam idParam) {
-        return JsonResult.success(emergencyPlanService.getById(idParam.getId()));
+        EmergencyPlanEntity entity = emergencyPlanService.getById(idParam.getId());
+        emergencyPlanService.tranDic(Lists.newArrayList(entity));
+        return JsonResult.success(entity);
     }
 
 

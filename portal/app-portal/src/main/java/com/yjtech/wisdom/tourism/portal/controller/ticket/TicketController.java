@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.google.common.collect.Lists;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
 import com.yjtech.wisdom.tourism.common.bean.BaseValueVO;
+import com.yjtech.wisdom.tourism.common.constant.Constants;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.common.utils.AnalysisUtils;
 import com.yjtech.wisdom.tourism.extension.BizScenario;
@@ -60,7 +61,7 @@ public class TicketController {
         // 定义业务+用例+场景
         List<SaleTrendVO> saleTrendVos = extensionExecutor.execute(TicketQryExtPt.class, buildBizScenario(query.getIsSimulation()),
                 extension -> extension.querySaleTrend(query));
-        return JsonResult.success(AnalysisUtils.MultipleBuildAnalysis(query, saleTrendVos, SaleTrendVO::getSaleQuantity));
+        return JsonResult.success(AnalysisUtils.MultipleBuildAnalysis(query, saleTrendVos,false, SaleTrendVO::getSaleQuantity));
     }
 
 
@@ -74,7 +75,12 @@ public class TicketController {
     public JsonResult<List<BaseValueVO>> queryVisitTrend(@RequestBody @Valid TicketSumaryQuery query) {
         List<SaleTrendVO> saleTrendVOS = extensionExecutor.execute(TicketQryExtPt.class, buildBizScenario(query.getIsSimulation()),
                 extension -> extension.queryVisitTrend(query));
-        List<BaseValueVO> baseVOs = AnalysisUtils.MultipleBuildAnalysis(query, saleTrendVOS, SaleTrendVO::getVisitQuantity);
+        //今日需要补齐未来时间  其他不需要
+        boolean future = false;
+        if(Objects.equals(Constants.HOUR,query.getType())){
+            future = true;
+        }
+        List<BaseValueVO> baseVOs = AnalysisUtils.MultipleBuildAnalysis(query, saleTrendVOS,future, SaleTrendVO::getVisitQuantity);
         List<BigDecimal> rate = Lists.newArrayList();
         for (BaseValueVO baseValueVO : baseVOs) {
             if (!"coordinate".equals(baseValueVO.getName())) {

@@ -3,6 +3,7 @@ package com.yjtech.wisdom.tourism.portal.controller.depot;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
 import com.yjtech.wisdom.tourism.common.bean.BaseValueVO;
+import com.yjtech.wisdom.tourism.common.constant.Constants;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.common.utils.AnalysisUtils;
 import com.yjtech.wisdom.tourism.resource.depot.entity.vo.DepotBaseVo;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 停车场
@@ -133,6 +135,11 @@ public class DepotScreenController {
     @PostMapping("/queryDepotTrend")
     public JsonResult<List<BaseValueVO>> queryDepotTrend(@RequestBody DepotSummaryQuery query) {
         List<DepotTrendVo> depotTrendVos = trendSummaryService.getBaseMapper().queryTrend(query);
-        return JsonResult.success(AnalysisUtils.MultipleBuildAnalysis(query, depotTrendVos, DepotTrendVo::getEnterQuantity, DepotTrendVo::getExitQuantity));
+        //今日需要补齐未来时间  其他不需要
+        boolean future = false;
+        if(Objects.equals(Constants.HOUR,query.getType())){
+            future = true;
+        }
+        return JsonResult.success(AnalysisUtils.MultipleBuildAnalysis(query, depotTrendVos,future, DepotTrendVo::getEnterQuantity, DepotTrendVo::getExitQuantity));
     }
 }

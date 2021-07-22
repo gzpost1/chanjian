@@ -137,6 +137,11 @@ public class Constants {
     public static final int BATCH_SIZE = 500;
 
     /**
+     * 小时
+     */
+    public static final Byte HOUR = 4;
+
+    /**
      * 状态
      * 0-启用
      */

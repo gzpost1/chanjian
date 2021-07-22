@@ -57,7 +57,7 @@ public class DepotService extends ServiceImpl<DepotMapper, DepotEntity> {
         query.setEndTime(LocalDateTime.now());
         query.setType((byte) 4);
         List<DepotTrendVo> depotTrendVos = trendSummaryService.getBaseMapper().queryTrend(query);
-        List<BaseValueVO> voList = AnalysisUtils.MultipleBuildAnalysis(query, depotTrendVos, DepotTrendVo::getEnterQuantity, DepotTrendVo::getExitQuantity);
+        List<BaseValueVO> voList = AnalysisUtils.MultipleBuildAnalysis(query, depotTrendVos,true, DepotTrendVo::getEnterQuantity, DepotTrendVo::getExitQuantity);
 
         return DepotScreenUseVo.builder()
                 .totalPercent(totalPercent)

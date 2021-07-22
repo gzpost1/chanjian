@@ -115,7 +115,11 @@ public enum ErrorCode implements IExceptionType {
   ERROR_DEVICE_NOT_EXIST("20002", "请求body不能为空"),
 
   REQUEST_HYDROLOGICAL_SYSTEM_FAILURE("20000", "request other hydrological system failure"),
-  REQUEST_BROADCAST_SYSTEM_FAILURE("13000", "request other broadcast system failure");
+  REQUEST_BROADCAST_SYSTEM_FAILURE("13000", "request other broadcast system failure"),
+
+  //事件
+  EVENT_NOT_EXIST("40001", "事件不存在");
+
 
   private String code;
   private String msg;
