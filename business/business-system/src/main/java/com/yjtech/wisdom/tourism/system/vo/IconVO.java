@@ -34,7 +34,7 @@ public class IconVO extends BaseEntity {
     private String typeLabel;
 
     /**
-     * 图标明细
+     * 图标url
      */
-    private List<IconDetail> value;
+    private String url;
 }

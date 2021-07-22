@@ -39,5 +39,5 @@ public class SystemconfigChartsPointDatavVo {
     /**
      * 图标明细
      */
-    private List<IconDetail> value = new ArrayList<>();
+    private String value;
 }

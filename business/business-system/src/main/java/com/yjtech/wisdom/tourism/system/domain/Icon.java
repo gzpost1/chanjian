@@ -36,9 +36,8 @@ public class Icon extends BaseEntity {
     private String typeLabel;
 
     /**
-     * 图标明细
+     * 图标url
      */
-    @TableField(value = "value",typeHandler = ListObjectJsonTypeHandler.class)
-    private List<IconDetail> value;
+    private String url;
 
 }

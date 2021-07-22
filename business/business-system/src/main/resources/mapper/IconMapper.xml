@@ -7,9 +7,7 @@
         <id property="id" column="id"/>
         <result property="type" column="type"/>
         <result property="typeLabel" column="type_label"/>
-        <result property="value" column="value"
-                javaType="com.yjtech.wisdom.tourism.system.domain.IconDetail"
-                typeHandler="com.yjtech.wisdom.tourism.mybatis.typehandler.ListObjectJsonTypeHandler"/>
+        <result property="url" column="url"/>
         <result property="createUser" column="create_user"/>
         <result property="createTime" column="create_time"/>
         <result property="updateUser" column="update_user"/>
