@@ -36,17 +36,6 @@ public class Icon extends BaseEntity {
     private String typeLabel;
 
     /**
-     * 图标类型, 字典值, 来自字典表(普通设备、事件、单兵...)
-     */
-    private String iconType;
-
-    /**
-     * 图标类型名称, 创建、编辑不传
-     */
-    @TableField(exist = false)
-    private String iconTypeLabel;
-
-    /**
      * 图标明细
      */
     @TableField(value = "value",typeHandler = ListObjectJsonTypeHandler.class)
