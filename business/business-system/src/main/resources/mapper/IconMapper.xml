@@ -7,8 +7,6 @@
         <id property="id" column="id"/>
         <result property="type" column="type"/>
         <result property="typeLabel" column="type_label"/>
-        <result property="iconType" column="icon_type"/>
-        <result property="iconTypeLabel" column="icon_type_label"/>
         <result property="value" column="value"
                 javaType="com.yjtech.wisdom.tourism.system.domain.IconDetail"
                 typeHandler="com.yjtech.wisdom.tourism.mybatis.typehandler.ListObjectJsonTypeHandler"/>
@@ -20,12 +18,10 @@
     </resultMap>
 
     <select id="queryForPage" resultMap="IconResult">
-        select ti.*, type_label, icon_type_label
+        select ti.*, type_label
         from tb_icon ti
         left join (select dict_label type_label, dict_value type_value
         from sys_dict_data where dict_type = #{spotQuery}) a on ti.type = a.type_value
-        left join (select dict_label icon_type_label, dict_value icon_type_value
-        from sys_dict_data where dict_type = #{imgQuery}) b on ti.icon_type = b.icon_type_value
         <where>
             deleted = 0
             <if test="type != null and type != ''">
@@ -36,12 +32,10 @@
     </select>
 
     <select id="queryForDetail" resultMap="IconResult">
-        select ti.*, type_label, icon_type_label
+        select ti.*, type_label
         from tb_icon ti
         left join (select dict_label type_label, dict_value type_value
         from sys_dict_data where dict_type = #{spotQuery}) a on ti.type = a.type_value
-        left join (select dict_label icon_type_label, dict_value icon_type_value
-        from sys_dict_data where dict_type = #{imgQuery}) b on ti.icon_type = b.icon_type_value
         <where>
             id = #{id}
         </where>
