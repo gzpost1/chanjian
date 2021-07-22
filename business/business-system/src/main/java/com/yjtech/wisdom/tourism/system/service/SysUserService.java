@@ -9,7 +9,6 @@ import com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysRole;
 import com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysUser;
 import com.yjtech.wisdom.tourism.infrastructure.core.page.TableSupport;
 import com.yjtech.wisdom.tourism.infrastructure.utils.SecurityUtils;
-import com.yjtech.wisdom.tourism.system.domain.SysConfig;
 import com.yjtech.wisdom.tourism.system.domain.SysPost;
 import com.yjtech.wisdom.tourism.system.domain.SysUserPost;
 import com.yjtech.wisdom.tourism.system.domain.SysUserRole;
@@ -75,6 +74,19 @@ public class SysUserService {
   public SysUser selectUserById(Long userId) {
     SysUser user = userMapper.selectUserById(userId);
     return user;
+  }
+
+  /**
+   * 通过用户ID列表查询用户昵称列表
+   *
+   * @param userIdList 用户ID列表
+   * @return 用户对象信息
+   */
+  public List<String> selectUserNameListById(List<?> userIdList) {
+    if(null == userIdList || userIdList.isEmpty()){
+      return new ArrayList<>();
+    }
+    return userMapper.selectUserNameListById(userIdList);
   }
 
   /**

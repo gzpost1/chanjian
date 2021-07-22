@@ -137,6 +137,18 @@ public class Constants {
     public static final int BATCH_SIZE = 500;
 
     /**
+     * 状态
+     * 0-启用
+     */
+    public static final Integer STATUS_NEGATIVE = 0;
+
+    /**
+     * 状态
+     * 1-禁用
+     */
+    public static final Integer STATUS_POSITIVE = 1;
+
+    /**
      * 数字常量
      */
     public static class NumberConstants{

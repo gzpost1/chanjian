@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjtech.wisdom.tourism.command.mapper.travelcomplaint.TravelComplaintMapper">
+
+    <resultMap id="BaseResultMap" type="com.yjtech.wisdom.tourism.command.entity.travelcomplaint.TravelComplaintEntity">
+        <!--@Table tb_travel_complaint-->
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="createUser" column="create_user" jdbcType="INTEGER"/>
+        <result property="updateUser" column="update_user" jdbcType="INTEGER"/>
+        <result property="deleted" column="deleted" jdbcType="TINYINT"/>
+        <result property="complaintType" column="complaint_type" jdbcType="TINYINT"/>
+        <result property="complaintObject" column="complaint_object" jdbcType="VARCHAR"/>
+        <result property="objectId" column="object_id" jdbcType="INTEGER"/>
+        <result property="location" column="location" jdbcType="VARCHAR"/>
+        <result property="longitude" column="longitude" jdbcType="DECIMAL"/>
+        <result property="latitude" column="latitude" jdbcType="DECIMAL"/>
+        <result property="contactUser" column="contact_user" jdbcType="VARCHAR"/>
+        <result property="contactMobile" column="contact_mobile" jdbcType="VARCHAR"
+                typeHandler="com.yjtech.wisdom.tourism.mybatis.typehandler.JsonTypeHandler"/>
+        <result property="complaintReason" column="complaint_reason" jdbcType="VARCHAR"/>
+        <result property="image" column="image" jdbcType="VARCHAR"
+                typeHandler="com.yjtech.wisdom.tourism.mybatis.typehandler.JsonTypeHandler"/>
+        <result property="status" column="status" jdbcType="TINYINT"/>
+        <result property="equipStatus" column="equip_status" jdbcType="TINYINT"/>
+        <result property="acceptUserId" column="accept_user_id" jdbcType="INTEGER"/>
+        <result property="acceptOrganization" column="accept_organization" jdbcType="VARCHAR"/>
+        <result property="acceptTime" column="accept_time" jdbcType="TIMESTAMP"/>
+        <result property="acceptResult" column="accept_result" jdbcType="VARCHAR"/>
+        <result property="assignAcceptUserId" column="assign_accept_user_id" jdbcType="VARCHAR"
+                typeHandler="com.yjtech.wisdom.tourism.mybatis.typehandler.JsonTypeHandler"/>
+    </resultMap>
+
+    <select id="queryEntityById" resultMap="BaseResultMap" parameterType="long">
+        select
+        id,
+        create_time,
+        update_time,
+        create_user,
+        update_user,
+        deleted,
+        complaint_type,
+        complaint_object,
+        object_id,
+        location,
+        longitude,
+        latitude,
+        contact_user,
+        contact_mobile,
+        complaint_reason,
+        image,
+        status,
+        equip_status,
+        accept_user_id,
+        (select nick_name from sys_user where user_id = accept_user_id and deleted = 0) as acceptUser,
+        accept_organization,
+        accept_time,
+        accept_result,
+        assign_accept_user_id
+        from
+        tb_travel_complaint complaint
+        <where>
+            id = #{id} and
+            deleted = 0
+        </where>
+    </select>
+
+    <select id="queryForPage" resultType="com.yjtech.wisdom.tourism.command.dto.travelcomplaint.TravelComplaintListDTO"
+            parameterType="com.yjtech.wisdom.tourism.command.vo.TravelComplaintQueryVO">
+        select
+        id as id,
+        CASE
+        WHEN complaint_type = 0 THEN complaint_object
+        WHEN complaint_type = 1 THEN '景区名称'
+        WHEN complaint_type = 2 THEN '酒店名称'
+        ELSE '其他' END as complaintObject,
+        object_id as objectId,
+        complaint_type as complaintType,
+        CASE
+        WHEN complaint_type = 0 THEN '其他'
+        WHEN complaint_type = 0 THEN '其他'
+        WHEN complaint_type = 0 THEN '其他'
+        ELSE '-' END as complaintTypeDesc,
+        status as status,
+        CASE
+        WHEN status = 0 THEN '待指派'
+        WHEN status = 1 THEN '待处理'
+        WHEN status = 2 THEN '已处理'
+        ELSE '-' END as statusDesc,
+        equip_status as equipStatus,
+        CASE
+        WHEN equip_status = 0 THEN '启用'
+        WHEN equip_status = 1 THEN '禁用'
+        ELSE '-' END as equipStatusDesc,
+        create_time as createTime
+        from
+        tb_travel_complaint
+        <where>
+            <if test="params != null">
+                <if test="params.complaintObject != null and params.complaintObject != '' and params.objectId = null">
+                    complaint_object LIKE CONCACT('%', '${params.complaintObject}', '%') and
+                </if>
+                <if test="params.objectId != null and (params.complaintObject = null or params.complaintObject = '')">
+                    object_id = #{params.object_id} and
+                </if>
+                <if test="params.complaintType != null">
+                    complaint_type = #{params.complaintType} and
+                </if>
+                <if test="params.status != null">
+                    status = #{params.status} and
+                </if>
+                <if test="params.equipStatus != null">
+                    equip_status = #{params.equipStatus} and
+                </if>
+                <if test="params.createUser != null">
+                    create_user = #{params.createUser} and
+                </if>
+                <if test="params.beginTime != null and params.endTime != null">
+                    create_time >= #{params.beginTime} and create_time <![CDATA[<=]]> #{params.endTime} and
+                </if>
+            </if>
+            deleted = 0
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+    <sql id="base_result">
+        id,
+        create_time,
+        update_time,
+        create_user,
+        update_user,
+        deleted,
+        complaint_type,
+        complaint_object,
+        object_id,
+        location,
+        longitude,
+        latitude,
+        contact_user,
+        contact_mobile,
+        complaint_reason,
+        image,
+        status,
+        equip_status,
+        accept_user_id,
+        accept_organization,
+        accept_time,
+        accept_result,
+        assign_accept_user_id
+    </sql>
+
+</mapper>
