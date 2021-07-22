@@ -205,8 +205,8 @@ public class HikUtils {
   public static JSONObject getPlaybackURLs() {
     JSONObject jsonBody = new JSONObject();
     jsonBody.put("cameraIndexCode", "18c846bba5304e59bfe127e350230d36");
-    jsonBody.put("beginTime", "2020-09-29T09:00:00.000+08:00");
-    jsonBody.put("endTime", "2020-09-29T09:30:00.000+08:00");
+    jsonBody.put("beginDate", "2020-09-29T09:00:00.000+08:00");
+    jsonBody.put("endDate", "2020-09-29T09:30:00.000+08:00");
 
     return fillRtspBody(jsonBody);
   }
