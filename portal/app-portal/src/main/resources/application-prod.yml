@@ -90,3 +90,8 @@ spring:
       database: industry-monitoring-standard
       username: industry
       password: yjwlindustry
+
+# 游客结构-区县大数据接口配置
+tourist:
+  # 区县大数据平台的请求地址
+  districtHost: https://tourism-bigdata.yunjingtech.cn/bigdata-api
