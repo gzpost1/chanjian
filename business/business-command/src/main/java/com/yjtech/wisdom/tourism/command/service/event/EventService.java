@@ -188,6 +188,7 @@ public class EventService extends ServiceImpl<EventMapper, EventEntity> {
         queryWrapper.like(StringUtils.isNotBlank(query.getName()), EventEntity::getName, query.getName());
         queryWrapper.eq(StringUtils.isNotBlank(query.getEventType()), EventEntity::getEventType, query.getEventType());
         queryWrapper.eq(StringUtils.isNotBlank(query.getEventStatus()), EventEntity::getEventStatus, query.getEventStatus());
+        queryWrapper.eq(Objects.nonNull(query.getStatus()), EventEntity::getStatus, query.getStatus());
         queryWrapper.ge(Objects.nonNull(query.getBeginTime()), EventEntity::getEventDate, query.getBeginTime());
         queryWrapper.le(Objects.nonNull(query.getEndTime()), EventEntity::getEventDate, query.getEndTime());
         queryWrapper.orderByAsc(EventEntity::getEventStatus);

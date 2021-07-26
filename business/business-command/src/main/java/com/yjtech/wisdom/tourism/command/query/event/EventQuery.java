@@ -33,6 +33,9 @@ public class EventQuery extends PageQuery {
 
     private Date endTime;
 
-
+    /**
+     * 状态(0:禁用,1:正常)
+     */
+    private Byte status;
 
 }
