@@ -73,11 +73,11 @@ public class EventService extends ServiceImpl<EventMapper, EventEntity> {
         Integer processed = this.getBaseMapper().queryQuantityByStatus(statusQuery);
         BigDecimal sum = new BigDecimal(String.valueOf(untreated + processed));
 
-        double untreatedRate = sum.compareTo(BigDecimal.ZERO) == 0 ? 0D : MathUtil.calPercent(new BigDecimal(String.valueOf(untreated)), sum, 1).doubleValue();
+        double untreatedRate = sum.compareTo(BigDecimal.ZERO) == 0 ? 0D : MathUtil.calPercent(new BigDecimal(String.valueOf(untreated)), sum, 3).doubleValue();
         result.add(BasePercentVO.builder().name("untreated").value(String.valueOf(untreated))
                 .rate(untreatedRate).build());
 
-        double processedRate = sum.compareTo(BigDecimal.ZERO) == 0 ? 0D : MathUtil.calPercent(new BigDecimal(String.valueOf(processed)), sum, 1).doubleValue();
+        double processedRate = sum.compareTo(BigDecimal.ZERO) == 0 ? 0D : MathUtil.calPercent(new BigDecimal(String.valueOf(processed)), sum, 3).doubleValue();
         result.add(BasePercentVO.builder().name("processed").value(String.valueOf(processed))
                 .rate(processedRate).build());
         return result;
@@ -93,11 +93,11 @@ public class EventService extends ServiceImpl<EventMapper, EventEntity> {
         ArrayList<BaseVO> result = Lists.newArrayList();
         for (SysDictData sysDictData : dictCache) {
             if (map.containsKey(sysDictData.getDictValue())) {
-                double value = sum.compareTo(BigDecimal.ZERO) == 0 ? 0D : MathUtil.calPercent(new BigDecimal(map.get(sysDictData.getDictValue())), sum, 1).doubleValue();
+                double value = sum.compareTo(BigDecimal.ZERO) == 0 ? 0D : MathUtil.calPercent(new BigDecimal(map.get(sysDictData.getDictValue())), sum, 3).doubleValue();
                 result.add(BasePercentVO.builder().name(sysDictData.getDictLabel()).value(map.get(sysDictData.getDictValue()))
                         .rate(value).build());
             } else {
-                double value = sum.compareTo(BigDecimal.ZERO) == 0 ? 0D : MathUtil.calPercent(new BigDecimal("0"), sum, 1).doubleValue();
+                double value = sum.compareTo(BigDecimal.ZERO) == 0 ? 0D : MathUtil.calPercent(new BigDecimal("0"), sum, 3).doubleValue();
                 result.add(BasePercentVO.builder().name(sysDictData.getDictLabel()).value("0")
                         .rate(value).build());
             }
@@ -116,11 +116,11 @@ public class EventService extends ServiceImpl<EventMapper, EventEntity> {
         ArrayList<BaseVO> result = Lists.newArrayList();
         for(SysDictData sysDictData:dictCache){
             if(map.containsKey(sysDictData.getDictValue())){
-                double value = sum.compareTo(BigDecimal.ZERO) == 0 ? 0D : MathUtil.calPercent(new BigDecimal(map.get(sysDictData.getDictValue())), sum, 1).doubleValue();
+                double value = sum.compareTo(BigDecimal.ZERO) == 0 ? 0D : MathUtil.calPercent(new BigDecimal(map.get(sysDictData.getDictValue())), sum, 3).doubleValue();
                 result.add(BasePercentVO.builder().name(sysDictData.getDictLabel()).value(map.get(sysDictData.getDictValue()))
                         .rate(value).build());
             }else {
-                double value = sum.compareTo(BigDecimal.ZERO) == 0 ? 0D : MathUtil.calPercent(new BigDecimal("0"), sum, 1).doubleValue();
+                double value = sum.compareTo(BigDecimal.ZERO) == 0 ? 0D : MathUtil.calPercent(new BigDecimal("0"), sum, 3).doubleValue();
                 result.add(BasePercentVO .builder().name(sysDictData.getDictLabel()).value("0")
                         .rate(value).build());
             }
