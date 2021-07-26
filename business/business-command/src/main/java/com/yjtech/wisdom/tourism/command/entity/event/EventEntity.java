@@ -106,16 +106,6 @@ public class EventEntity extends BaseEntity {
     @TableField(typeHandler = JsonTypeHandler.class)
     private List<String> appointHandlePersonnel;
 
-    /**
-     * 指派状态
-     */
-    private String appointStatus;
-
-    /**
-     * 指派状态名
-     */
-    @TableField(exist = false)
-    private String appointStatusName;
 
     /**
      * 实际处理人员

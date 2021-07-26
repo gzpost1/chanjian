@@ -113,9 +113,9 @@ public class EventController {
         synchronized(this) {
             EventEntity eventEntity = eventService.getById(dto.getId());
             AssertUtil.isFalse(Objects.isNull(eventEntity), "该事件不存在");
-            AssertUtil.isFalse(Objects.equals(eventEntity.getAppointStatus(), EventContants.ASSIGNED), "该事件已指派");
+            AssertUtil.isFalse(!Objects.equals(eventEntity.getEventStatus(), EventContants.UNASSIGNED), "该事件已指派");
             EventEntity entity = BeanMapper.map(dto, EventEntity.class);
-            entity.setAppointStatus(EventContants.ASSIGNED);
+            entity.setEventStatus(EventContants.UNTREATED);
             eventService.updateById(entity);
         }
         //TODO 发送消息

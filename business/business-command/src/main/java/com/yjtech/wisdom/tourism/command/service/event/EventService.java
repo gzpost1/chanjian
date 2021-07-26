@@ -132,10 +132,8 @@ public class EventService extends ServiceImpl<EventMapper, EventEntity> {
         AssertUtil.isFalse(createDto.getEventDate().isAfter(LocalDate.now()), "事件日期只能选择早于或等于当前日期的日期");
         EventEntity EventEntity = new EventEntity();
         BeanUtils.copyProperties(createDto, EventEntity);
-        //默认事件状态为未处理
-        EventEntity.setEventStatus(EventContants.UNTREATED);
-        //默认为未指派
-        EventEntity.setAppointStatus(EventContants.UNASSIGNED);
+        //默认事件状态为待指派
+        EventEntity.setEventStatus(EventContants.UNASSIGNED);
         this.save(EventEntity);
 
         //TODO 发送消息
@@ -192,8 +190,6 @@ public class EventService extends ServiceImpl<EventMapper, EventEntity> {
         queryWrapper.eq(StringUtils.isNotBlank(query.getEventStatus()), EventEntity::getEventStatus, query.getEventStatus());
         queryWrapper.ge(Objects.nonNull(query.getBeginTime()), EventEntity::getEventDate, query.getBeginTime());
         queryWrapper.le(Objects.nonNull(query.getEndTime()), EventEntity::getEventDate, query.getEndTime());
-        queryWrapper.eq(StringUtils.isNotBlank(query.getAppointStatus()), EventEntity::getAppointStatus, query.getAppointStatus());
-        queryWrapper.orderByAsc(EventEntity::getAppointStatus);
         queryWrapper.orderByAsc(EventEntity::getEventStatus);
         queryWrapper.orderByDesc(EventEntity::getCreateTime);
         return queryWrapper;
@@ -275,7 +271,6 @@ public class EventService extends ServiceImpl<EventMapper, EventEntity> {
                     vo.setEventTypeName(DictUtils.getDictLabel(EventContants.EVENT_TYPE, vo.getEventType()));
                     vo.setEventStatusName(DictUtils.getDictLabel(EventContants.EVENT_STATUS, String.valueOf(vo.getEventStatus())));
                     vo.setStatusName(Objects.equals(EntityConstants.ENABLED, vo.getStatus()) ? "启用" : "停用");
-                    vo.setAppointStatusName(DictUtils.getDictLabel(EventContants.EVENT_APPOINT_STATUS, vo.getAppointStatus()));
                 });
     }
 }

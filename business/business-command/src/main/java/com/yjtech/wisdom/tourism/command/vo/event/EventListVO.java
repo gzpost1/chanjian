@@ -69,15 +69,6 @@ public class EventListVO {
      */
     private String statusName;
 
-    /**
-     * 指派状态
-     */
-    private String appointStatus;
-
-    /**
-     * 指派状态名称
-     */
-    private String appointStatusName;
 
     /**
      * 指定处理人

@@ -39,6 +39,11 @@ public class EventContants {
     public static  final  String EVENT_SOURCE = "event_source";
 
     /**
+     * 未指派
+     */
+    public static final String UNASSIGNED = "0";
+
+    /**
      * 未处理
      */
     public static final String UNTREATED = "1";
@@ -131,15 +136,8 @@ public class EventContants {
     public static final String APP_SOURCE = "3";
 
 
-    /**
-     * 未指派
-     */
-    public static final String UNASSIGNED = "1";
 
-    /**
-     * 已指派
-     */
-    public static final String ASSIGNED = "2";
+
 
 
 }
