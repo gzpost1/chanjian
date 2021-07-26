@@ -98,6 +98,7 @@
             `tb_event`
             <where>
                 id = #{id}
+                and deleted = 0
             </where>
     </select>
 
