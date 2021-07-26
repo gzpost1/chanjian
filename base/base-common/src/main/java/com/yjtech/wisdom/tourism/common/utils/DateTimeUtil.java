@@ -219,6 +219,7 @@ public class DateTimeUtil {
     return monthList;
   }
 
+
   public static LocalDateTime strISO8601ToLocalDateTime(String iso8601) {
     ZonedDateTime zdt = ZonedDateTime.parse(iso8601);
     LocalDateTime ldt = zdt.toLocalDateTime();
@@ -261,6 +262,25 @@ public class DateTimeUtil {
     Date date3 = calendar.getTime();
     SimpleDateFormat format3= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     return format3.format(date3);
+  }
+
+  /**
+   * 获取当前时间的 上年日期
+   *
+   * @return
+   */
+  public static String getLastYearDate(String dateStr) {
+    Calendar calendar = Calendar.getInstance();
+    SimpleDateFormat format= new SimpleDateFormat("yyyy-MM-dd");
+    try {
+      Date parse = format.parse(dateStr);
+      calendar.setTime(parse);
+    } catch (ParseException e) {
+      e.printStackTrace();
+    }
+    calendar.add(Calendar.YEAR, -1);
+    Date newDate = calendar.getTime();
+    return format.format(newDate);
   }
 
   /**
