@@ -50,7 +50,6 @@
         <result column="appoint_handle_personnel" property="appointHandlePersonnel" typeHandler="com.yjtech.wisdom.tourism.mybatis.typehandler.JsonTypeHandler"/>
         <result column="event_status" property="eventStatus" />
         <result column="status" property="status" />
-        <result column="appoint_status" property="appointStatus" />
     </resultMap>
 
     <select id="queryUserById" resultType="com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysUser">
@@ -69,8 +68,7 @@
             event_date,
             address,
             status,
-            appoint_handle_personnel,
-            appoint_status
+            appoint_handle_personnel
         FROM
             `tb_event`
             ${ew.customSqlSegment}

@@ -8,6 +8,7 @@ import com.yjtech.wisdom.tourism.command.service.event.EventAppointService;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.common.utils.bean.BeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -57,6 +58,7 @@ public class EventAppointController {
      * @param createDto
      * @return
      */
+    @PreAuthorize("@ss.hasPermi('direct:event:set')")
     @PostMapping("/create")
     public JsonResult create(@RequestBody @Valid EventAppointCreateDto createDto) {
         EventAppointEntity entity = BeanMapper.map(createDto, EventAppointEntity.class);
@@ -71,6 +73,7 @@ public class EventAppointController {
      * @param updateDto
      * @return
      */
+    @PreAuthorize("@ss.hasPermi('direct:event:set')")
     @PostMapping("/update")
     public JsonResult update(@RequestBody @Valid EventAppointUpdateDto updateDto) {
         EventAppointEntity entity = BeanMapper.map(updateDto, EventAppointEntity.class);

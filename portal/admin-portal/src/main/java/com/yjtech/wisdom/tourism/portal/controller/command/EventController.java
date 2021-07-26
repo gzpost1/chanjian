@@ -74,7 +74,7 @@ public class EventController {
      * @param idParam
      * @return
      */
-    @PreAuthorize("@ss.hasPermi('event:queryForDetail')")
+    @PreAuthorize("@ss.hasPermi('direct:event:query')")
     @PostMapping("/queryForDetail")
     public JsonResult<AppEventDetail> queryForDetail(@RequestBody @Valid IdParam idParam) {
         AppEventDetail appEventDetail = eventService.getBaseMapper().queryForDetail(idParam.getId());
@@ -102,7 +102,7 @@ public class EventController {
      * @param dto
      * @return
      */
-    @PreAuthorize("@ss.hasPermi('event:appoint')")
+    @PreAuthorize("@ss.hasPermi('direct:event:appoint')")
     @PostMapping("/appoint")
     public JsonResult appoint(@RequestBody @Valid EventAppointDto dto) {
         //判断是否在指派人员中
@@ -129,7 +129,7 @@ public class EventController {
      * @param updateDto
      * @return
      */
-    @PreAuthorize("@ss.hasPermi('event:handle')")
+    @PreAuthorize("@ss.hasPermi('direct:event:edit')")
     @PostMapping("/handle")
     public JsonResult handle(@RequestBody @Valid EventUpdateDto updateDto) {
         eventService.handle(updateDto);
@@ -141,7 +141,7 @@ public class EventController {
      * @param deleteParam
      * @return
      */
-    @PreAuthorize("@ss.hasPermi('event:deleted')")
+    @PreAuthorize("@ss.hasPermi('direct:event:remove')")
     @PostMapping("/deleted")
     public JsonResult update(@RequestBody @Valid DeleteParam deleteParam) {
          eventService.removeById(deleteParam.getId());
@@ -153,7 +153,7 @@ public class EventController {
      * @param updateStatusParam
      * @return
      */
-    @PreAuthorize("@ss.hasPermi('event:updateStatus')")
+    @PreAuthorize("@ss.hasPermi('direct:event:isStop')")
     @PostMapping("/updateStatus")
     public JsonResult updateStatus(@RequestBody @Valid UpdateStatusParam updateStatusParam) {
         EventEntity entity = eventService.getById(updateStatusParam.getId());

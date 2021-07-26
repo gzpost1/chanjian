@@ -23,10 +23,6 @@ public class EventContants {
      */
     public static  final  String EVENT_TYPE = "event_type";
 
-    /**
-     * 事件指派状态 key
-     */
-    public static  final  String EVENT_APPOINT_STATUS = "event_appoint_status";
 
     /**
      * 处理状态
