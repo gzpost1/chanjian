@@ -214,6 +214,12 @@ public class EventService extends ServiceImpl<EventMapper, EventEntity> {
                     vo.setEventStatusName(DictUtils.getDictLabel(EventContants.EVENT_STATUS, String.valueOf(vo.getEventStatus())));
                 });
         Set<Long> userIds = list.stream().filter(vo -> Objects.nonNull(vo.getCreateUser())).map(AppEventDetail::getCreateUser).collect(Collectors.toSet());
+
+        for(AppEventDetail event : list){
+            if(CollectionUtils.isNotEmpty(event.getAppointHandlePersonnel())){
+                userIds.addAll(new HashSet(event.getAppointHandlePersonnel()));
+            }
+        }
         if (CollectionUtils.isEmpty(userIds)) {
             return;
         }
@@ -222,6 +228,14 @@ public class EventService extends ServiceImpl<EventMapper, EventEntity> {
             list.stream().map(vo -> {
                 SysUser sysUser = longSysUserMap.get(vo.getCreateUser());
                 vo.setCreateUserName(Objects.isNull(sysUser) ? null : sysUser.getNickName());
+                ArrayList<String> userName = Lists.newArrayList();
+                if(CollectionUtils.isNotEmpty(vo.getAppointHandlePersonnel())){
+                    for(String userId : vo.getAppointHandlePersonnel()){
+                        SysUser sysUser1 = longSysUserMap.get(Long.valueOf(userId));
+                        userName.add(Objects.isNull(sysUser1) ? null : sysUser.getNickName());
+                    }
+                }
+                vo.setAppointHandlePersonnel(userName);
                 return vo;
             }).collect(Collectors.toList());
         }

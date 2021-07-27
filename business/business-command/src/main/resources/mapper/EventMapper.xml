@@ -40,6 +40,7 @@
         <result column="handle_personnel" property="handlePersonnel" />
         <result column="handle_date" property="handleDate" />
         <result column="handle_results" property="handleResults" />
+        <result column="appoint_handle_personnel" property="appointHandlePersonnel" typeHandler="com.yjtech.wisdom.tourism.mybatis.typehandler.JsonTypeHandler"/>
     </resultMap>
 
     <resultMap id="EventListVOMap" type="com.yjtech.wisdom.tourism.command.vo.event.EventListVO">
@@ -93,7 +94,8 @@
             handle_personnel,
             handle_date,
             handle_results,
-            create_user
+            create_user,
+             appoint_handle_personnel
         FROM
             `tb_event`
             <where>
