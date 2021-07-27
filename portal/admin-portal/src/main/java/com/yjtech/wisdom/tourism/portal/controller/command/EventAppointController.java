@@ -6,6 +6,7 @@ import com.yjtech.wisdom.tourism.command.dto.event.EventAppointUpdateDto;
 import com.yjtech.wisdom.tourism.command.entity.event.EventAppointEntity;
 import com.yjtech.wisdom.tourism.command.service.event.EventAppointService;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
+import com.yjtech.wisdom.tourism.common.utils.AssertUtil;
 import com.yjtech.wisdom.tourism.common.utils.bean.BeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -61,6 +62,7 @@ public class EventAppointController {
     @PreAuthorize("@ss.hasPermi('direct:event:set')")
     @PostMapping("/create")
     public JsonResult create(@RequestBody @Valid EventAppointCreateDto createDto) {
+        AssertUtil.isFalse(eventAppointService.count() > 0,"数据已存在");
         EventAppointEntity entity = BeanMapper.map(createDto, EventAppointEntity.class);
         eventAppointService.save(entity);
         //TODO 发送消息
