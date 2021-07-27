@@ -91,7 +91,36 @@ spring:
       username: industry
       password: yjwlindustry
 
+# app消息推送配置
+tpns:
+  config:
+    androidAppId: 1500018471
+    androidSecretKey: 2aab961f5af78d8c7cf70b3fcc04ae23
+    iosAppId: 1600018472
+    iosSecretKey: dc932e7fce0b2ca6943fd2e8cb942dbf
+    connectTimeOut: 30
+    readTimeOut: 30
+    domainUrl: https://api.tpns.tencent.com/
+
+# 短信推送
+sms.wo:
+  cpcode: AAASIC
+  key: b76367f18e4b8871f787e5b07d90c9af
+  # templetid: 185409
+  # 旅游投诉短信模板
+  tourTemplateId:
+  # 应急事件短信模板
+  emergencyTemplateId:
+  url: http://rcsapi.wo.cn:8000/umcinterface/sendtempletmsg
+  msg:
+
 # 游客结构-区县大数据接口配置
 tourist:
   # 区县大数据平台的请求地址
   districtHost: https://tourism-bigdata.yunjingtech.cn/bigdata-api
+
+# 消息中心
+message:
+  dictType:
+    # 超级管理员数据字典类型
+    admin: super_admin_user_id
