@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.time.LocalDate;
 
 /**
  * 月客流趋势
@@ -35,10 +34,10 @@ public class MonthPassengerFlowDto implements Serializable {
     /**
      * 前一日
      */
-    private String beforeDay;
+    private String hbScale;
 
     /**
      * 去年今天
      */
-    private String lastYearDay;
+    private String tbScale;
 }

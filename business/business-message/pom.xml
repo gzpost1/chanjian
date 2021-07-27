@@ -13,7 +13,9 @@
 
     <properties>
         <xinge.version>1.2.4.2</xinge.version>
-        <base-common.version>1.0-SNAPSHOT</base-common.version>
+        <base-infrastructure.version>1.0-SNAPSHOT</base-infrastructure.version>
+        <framework.version>1.0-SNAPSHOT</framework.version>
+        <base-command.version>1.0-SNAPSHOT</base-command.version>
     </properties>
 
     <dependencies>
@@ -26,9 +28,21 @@
         </dependency>
 
         <dependency>
-            <artifactId>base-common</artifactId>
             <groupId>com.yjtech.wisdom.tourism</groupId>
-            <version>${base-common.version}</version>
+            <artifactId>base-infrastructure</artifactId>
+            <version>${base-infrastructure.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.yjtech.wisdom.tourism</groupId>
+            <artifactId>framework</artifactId>
+            <version>${framework.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.yjtech.wisdom.tourism</groupId>
+            <artifactId>business-command</artifactId>
+            <version>${base-command.version}</version>
         </dependency>
 
     </dependencies>

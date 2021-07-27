@@ -1,5 +1,4 @@
-package com.yjtech.wisdom.tourism.resource.lecture.entity;
-
+package com.yjtech.wisdom.tourism.message.admin.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -12,19 +11,19 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * 展演讲座管理
+ * 消息中心
  *
  * @author renguangqian
- * @date 2021/7/21 11:29
+ * @date 2021/7/23 10:05
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
-@TableName("tb_jz_lecture_manger")
-public class LectureEntity implements Serializable {
+@TableName("tb_message_center")
+public class MessageEntity implements Serializable {
 
-    private static final long serialVersionUID = 3847077007129548072L;
+    private static final long serialVersionUID = 3063663633871165100L;
 
     /**
      * id
@@ -33,64 +32,59 @@ public class LectureEntity implements Serializable {
     private Long id;
 
     /**
-     * 场展演讲座名称
+     * 事件Id
      */
-    private String lectureName;
+    private Long eventId;
 
     /**
-     * 场展演讲类型_通过字典管理配置
+     * 事件名称
      */
-    private String lectureType;
+    private String eventName;
 
     /**
-     * 关联场馆
+     * 事件类型 0:旅游投诉 1:应急事件
      */
-    private Long venueId;
+    private Integer eventType;
 
     /**
-     * 开放日期-开始日期
+     * 事件状态 0:待指派 1:待处理 2:已处理
      */
-    private String holdStartDate;
+    private Integer eventStatus;
 
     /**
-     * 开放日期-结束日期
+     * 事件发生日期/投诉时间
      */
-    private String holdEndDate;
+    private String eventHappenDate;
 
     /**
-     * 联系电话，多个用“,”分割
+     * 事件发生地址
      */
-    private String phone;
+    private String eventHappenAddress;
 
     /**
-     * 举办地点
+     * 上报人/投诉人姓名
      */
-    private String holdAddress;
+    private String eventHappenPerson;
 
     /**
-     * 经度
+     * 上报人/投诉人 用户id
      */
-    private String longitude;
+    private Long eventHappenPersonId;
 
     /**
-     * 纬度
+     * 上报人/投诉人 联系电话
      */
-    private String latitude;
+    private String eventHappenPersonPhone;
 
     /**
-     * 封面图片Url
+     * 事件/投诉 处理人Id
      */
-    private String frontPicUrl;
+    private Long eventDealPersonId;
 
     /**
-     * 其他图片Url，多张用“,”逗号分割
+     * 事件处理跳转的 URL
      */
-    private String otherPicUrl;
-
-    /**
-     * 简介
-     */
-    private String introduction;
+    private String eventDealUrl;
 
     /**
      * 创建时间
@@ -125,15 +119,4 @@ public class LectureEntity implements Serializable {
     private Byte deleted;
 
 
-    /**
-     * 启停用状态
-     */
-    @TableField(fill = FieldFill.INSERT)
-    private Byte status;
-
-    /**
-     * 讲座类型数量
-     */
-    @TableField(exist = false)
-    private Integer lectureTypeNumber;
 }

@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**
@@ -25,11 +26,13 @@ public class DateBaseVo extends PageQuery implements Serializable {
     /**
      * 开始时间
      */
+    @NotNull
     private String beginDate;
 
     /**
      * 结束时间
      */
+    @NotNull
     private String endDate;
 
 }
