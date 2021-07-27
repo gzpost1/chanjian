@@ -342,4 +342,17 @@ public class DateTimeUtil {
     }
     return monthStr;
   }
+
+  /**
+   * 获取当前年 的上月  yyyy-MM
+   *
+   * @return
+   */
+  public static String getCurrentLastMonthStr() {
+    Calendar calendar = Calendar.getInstance();
+    calendar.add(Calendar.MONTH, -1);
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+    return sdf.format(calendar.getTime());
+  }
+
 }

@@ -1,4 +1,4 @@
-package com.yjtech.wisdom.tourism.dto;
+package com.yjtech.wisdom.tourism.integration.pojo.bo.districtbigdata;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +17,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
-public class DistrictLoginDto implements Serializable {
+public class DistrictLoginBO implements Serializable {
 
     private static final long serialVersionUID = -8496355901949116891L;
 
