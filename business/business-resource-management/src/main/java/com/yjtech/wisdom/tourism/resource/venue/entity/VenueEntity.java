@@ -2,6 +2,7 @@ package com.yjtech.wisdom.tourism.resource.venue.entity;
 
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -128,6 +129,15 @@ public class VenueEntity implements Serializable {
      */
     @TableField(fill = FieldFill.INSERT)
     private Byte status;
+
+    /**
+     * 是否删除, 0:否, 1:是
+     */
+    @TableField(fill = FieldFill.INSERT)
+    @TableLogic
+    @JsonIgnore
+    private Byte deleted;
+
 
     /**
      * 场馆类型数量

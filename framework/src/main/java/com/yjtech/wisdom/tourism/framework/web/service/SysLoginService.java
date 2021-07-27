@@ -8,14 +8,17 @@ import com.yjtech.wisdom.tourism.common.exception.user.UserPasswordNotMatchExcep
 import com.yjtech.wisdom.tourism.common.utils.MessageUtils;
 import com.yjtech.wisdom.tourism.framework.manager.AsyncManager;
 import com.yjtech.wisdom.tourism.framework.manager.factory.AsyncFactory;
+import com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysUser;
 import com.yjtech.wisdom.tourism.infrastructure.core.domain.model.LoginUser;
 import com.yjtech.wisdom.tourism.redis.RedisCache;
+import com.yjtech.wisdom.tourism.system.service.SysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.Objects;
@@ -36,6 +39,9 @@ public class SysLoginService {
     @Autowired
     private RedisCache redisCache;
 
+    @Autowired
+    private SysUserService userService;
+
     /**
      * 登录验证
      *
@@ -45,7 +51,7 @@ public class SysLoginService {
      * @param uuid     唯一标识
      * @return 结果
      */
-    public String login(String username, String password, String code, String uuid,Boolean appUser) throws Exception {
+    public String login(String username, String password, String code, String uuid,Boolean appUser, String pushToken) throws Exception {
         //App用户不用验证码登录
 //        if (Objects.isNull(appUser) || !appUser) {
 //            String verifyKey = Constants.CAPTCHA_CODE_KEY + uuid;
@@ -93,7 +99,29 @@ public class SysLoginService {
                         AsyncFactory.recordLogininfor(
                                 username, Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success")));
         LoginUser loginUser = (LoginUser) authentication.getPrincipal();
+
+        // 保存pushToken-推送消息唯一标识
+        if (!StringUtils.isEmpty(pushToken)) {
+            SysUser sysUser = new SysUser();
+            sysUser.setUserId(loginUser.getUser().getUserId());
+            sysUser.setPushToken(pushToken);
+            userService.updateUserProfile(sysUser);
+        }
+
         // 生成token
         return tokenService.createToken(loginUser);
+    }
+
+    /**
+     * 登录验证
+     *
+     * @param username 用户名
+     * @param password 密码
+     * @param code     验证码
+     * @param uuid     唯一标识
+     * @return 结果
+     */
+    public String login(String username, String password, String code, String uuid,Boolean appUser) throws Exception {
+      return login(username, password, code, uuid, appUser, "");
     }
 }

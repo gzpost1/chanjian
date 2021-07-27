@@ -288,6 +288,26 @@ public class DateTimeUtil {
    *
    * @return
    */
+  public static String getBeforeDayDate(String dateStr) {
+    Calendar calendar = Calendar.getInstance();
+    SimpleDateFormat format= new SimpleDateFormat("yyyy-MM-dd");
+    try {
+      Date parse = format.parse(dateStr);
+      calendar.setTime(parse);
+    } catch (ParseException e) {
+      e.printStackTrace();
+    }
+    calendar.add(Calendar.DATE, -1);
+    Date newDate = calendar.getTime();
+    return format.format(newDate);
+  }
+
+
+  /**
+   * 获取当前时间的 前一天日期
+   *
+   * @return
+   */
   public static String getLastDay() {
     Calendar calendar = Calendar.getInstance();
     calendar.setTime(new Date());
@@ -297,4 +317,29 @@ public class DateTimeUtil {
     return format3.format(date3);
   }
 
+  /**
+   * 获取当前年份
+   *
+   * @return
+   */
+  public static String getCurrentYearStr() {
+    Calendar calendar = Calendar.getInstance();
+    int year = calendar.get(Calendar.YEAR);
+    return String.valueOf(year);
+  }
+
+  /**
+   * 获取当前月份
+   *
+   * @return
+   */
+  public static String getCurrentMonthStr() {
+    Calendar calendar = Calendar.getInstance();
+    int month = calendar.get(Calendar.MONTH) + 1;
+    String monthStr = String.valueOf(month);
+    if (month < 10) {
+      monthStr = "0" + month;
+    }
+    return monthStr;
+  }
 }

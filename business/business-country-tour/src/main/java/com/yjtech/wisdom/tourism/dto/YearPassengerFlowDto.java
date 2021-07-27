@@ -33,10 +33,17 @@ public class YearPassengerFlowDto implements Serializable {
      * 同比人数
      */
     private Integer tbNumber;
+
+    /**
+     * 同比比例
+     */
+    //private String hbScale;
+
     /**
      * 同比时间
      */
     private String tbDate;
+
     /**
      * 环比时间
      */
@@ -45,6 +52,11 @@ public class YearPassengerFlowDto implements Serializable {
      * 环比人数
      */
     private Integer hbNumber;
+
+    /**
+     * 环比比例
+     */
+    //private String hbScale;
 
     /**
      * 当前年
@@ -68,4 +80,6 @@ public class YearPassengerFlowDto implements Serializable {
      * 环比
      */
     private Double monthOnMonth;
+
+
 }

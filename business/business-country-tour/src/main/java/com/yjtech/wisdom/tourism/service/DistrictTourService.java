@@ -97,8 +97,61 @@ public class DistrictTourService {
      */
     public List<YearPassengerFlowDto> queryYearPassengerFlow (YearPassengerFlowVo vo) {
         String url = districtHost + DistrictPathEnum.YEAR_PASSENGER_FLOW.getPath();
-        String result = requestDistrict(url, vo, DistrictPathEnum.YEAR_PASSENGER_FLOW.getDesc());
-        return JSONObject.parseArray(String.valueOf(JsonUtils.getValueByKey(result, "data")), YearPassengerFlowDto.class);
+
+        List<YearPassengerFlowDto> result = JSONObject.parseArray(
+                String.valueOf(
+                        JsonUtils.getValueByKey(
+                                requestDistrict(url, vo, DistrictPathEnum.YEAR_PASSENGER_FLOW.getDesc()),
+                                "data"
+                        )
+                ),
+                YearPassengerFlowDto.class);
+
+        // 获取当前年份
+        String currentYearStr = DateTimeUtil.getCurrentYearStr();
+
+        // 是否获取数据标识 用于截取本年1月及以后的数据
+        boolean isStop = true;
+
+        List<YearPassengerFlowDto> resultList = Lists.newArrayList();
+
+        for (int i = 0; i < result.size(); i++) {
+            // 判断是本年一月的数据
+            YearPassengerFlowDto yearPassengerFlowDto = result.get(i);
+            if (currentYearStr.equals(yearPassengerFlowDto.getCurYear())
+                    && "01".equals(yearPassengerFlowDto.getCurDate().substring(yearPassengerFlowDto.getCurDate().length() - 2))) {
+                isStop = false;
+            }
+            else if (isStop) {
+                break;
+            }
+
+            // todo 计算比例相关逻辑
+           /* // 当月人数
+            Integer curNumber = yearPassengerFlowDto.getCurNumber();
+            //去年当月人数
+            Integer tbNumber = yearPassengerFlowDto.getTbNumber();
+            // 上月人数
+            Integer hbNumber = yearPassengerFlowDto.getHbNumber();
+
+            if (0 == curNumber) {
+                yearPassengerFlowDto.setTbScale("-");
+                yearPassengerFlowDto.setHbScale("-");
+            }
+            else {
+               // 今年和去年的比例-同比
+                String tbScale = MathUtil.calPercent(new BigDecimal(curNumber - tbNumber), new BigDecimal(curNumber), 2).toString();
+
+                // 当月和上月的比列-环比
+                String hbScale = MathUtil.calPercent(new BigDecimal(curNumber - hbNumber), new BigDecimal(curNumber)).toString();
+
+                yearPassengerFlowDto.setTbScale(tbScale);
+                yearPassengerFlowDto.setHbScale(hbScale);
+            }*/
+
+            resultList.add(yearPassengerFlowDto);
+        }
+        return resultList;
     }
 
     /**
@@ -109,6 +162,8 @@ public class DistrictTourService {
      */
     public List<MonthPassengerFlowDto> queryMonthPassengerFlow (MonthPassengerFlowVo vo) {
         String url = districtHost + DistrictPathEnum.MONTH_PASSENGER_FLOW.getPath();
+        // 日期往前设置一天
+        vo.setBeginDate(DateTimeUtil.getBeforeDayDate(vo.getBeginDate()));
         String result = requestDistrict(url, vo, DistrictPathEnum.MONTH_PASSENGER_FLOW.getDesc());
         // 当月数据
         List<MonthPassengerFlowDto> currentMonth = JSONObject.parseArray(String.valueOf(JsonUtils.getValueByKey(result, "data")), MonthPassengerFlowDto.class);
@@ -120,29 +175,47 @@ public class DistrictTourService {
         // 上月数据
         List<MonthPassengerFlowDto> lastMonth = JSONObject.parseArray(String.valueOf(JsonUtils.getValueByKey(result, "data")), MonthPassengerFlowDto.class);
 
+        // 结果数据
+        List<MonthPassengerFlowDto> resultList = Lists.newArrayList();
+
+        // 当前月份
+        String currentMonthStr = DateTimeUtil.getCurrentMonthStr();
+
+        // 是否获取数据标识 用于截取当前月1号之后的数据
+        boolean isStop = true;
+
         for (int i = 0; i < currentMonth.size(); i++) {
-            Integer currentNumber = currentMonth.get(i).getNumber();
-            // 如果当天数据为0， 则直接赋值为“-”
-            if (0 == currentNumber) {
-                currentMonth.get(i).setBeforeDay("-");
-                currentMonth.get(i).setLastYearDay("-");
+            String date = currentMonth.get(i).getDate();
+
+            // 判断是否是 1 日
+            if (currentMonthStr.equals(date.substring(5, 7)) && "01".equals(date.substring(date.length() - 2))) {
+                isStop = false;
+            }else if (isStop) {
                 break;
             }
-            Integer lastNumber = lastMonth.get(i).getNumber();
-            // 处理第一天 无数据
-            if (0 == i) {
-                currentMonth.get(i).setBeforeDay("-");
-            } else {
-                // 前一天的数据
-                Integer beforeNumber = currentMonth.get(i - 1).getNumber();
-                String beforeDay = MathUtil.calPercent(new BigDecimal(currentNumber - beforeNumber), new BigDecimal(currentNumber), 2).toString();
-                currentMonth.get(i).setBeforeDay(beforeDay);
+
+            // todo 计算比例相关逻辑
+            Integer currentNumber = currentMonth.get(i).getNumber();
+            // 如果当天数据为0， 则直接赋值为“-”
+            /*if (0 == currentNumber) {
+                currentMonth.get(i).setHbScale("-");
+                currentMonth.get(i).setTbScale("-");
             }
+            else {
+             Integer lastNumber = lastMonth.get(i).getNumber();
+
+            // 前一天的数据
+            Integer beforeNumber = currentMonth.get(i - 1).getNumber();
+            String beforeDay = MathUtil.calPercent(new BigDecimal(currentNumber - beforeNumber), new BigDecimal(currentNumber), 2).toString();
+            currentMonth.get(i).setHbScale(beforeDay);
 
             String LastYearDay = MathUtil.calPercent(new BigDecimal(currentNumber - lastNumber), new BigDecimal(currentNumber), 2).toString();
-            currentMonth.get(i).setLastYearDay(LastYearDay);
+            currentMonth.get(i).setTbScale(LastYearDay);
+            }*/
+
+            resultList.add(currentMonth.get(i));
         }
-        return currentMonth;
+        return resultList;
     }
 
 

@@ -2,6 +2,7 @@ package com.yjtech.wisdom.tourism.message.app.bo;
 
 import com.tencent.xinge.bean.Environment;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class TpnsPushBO implements Serializable {
 
     private static final long serialVersionUID = 6305410043903092990L;
