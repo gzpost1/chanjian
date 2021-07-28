@@ -118,6 +118,10 @@ sms.wo:
 tourist:
   # 区县大数据平台的请求地址
   districtHost: https://tourism-bigdata.yunjingtech.cn/bigdata-api
+  # 区县大数据 参数设置模块中 配置的账号key
+  configAccountKey: big_data_account
+  # 区县大数据 参数设置模块中 配置的密码key
+  configPasswordKey: big_data_password
 
 # 消息中心
 message:

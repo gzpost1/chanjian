@@ -1,32 +1,28 @@
 package com.yjtech.wisdom.tourism.service;
 
-import cn.hutool.http.HttpRequest;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.yjtech.wisdom.tourism.common.path.DistrictPathEnum;
 import com.yjtech.wisdom.tourism.common.utils.DateTimeUtil;
-import com.yjtech.wisdom.tourism.common.utils.DateUtils;
 import com.yjtech.wisdom.tourism.common.utils.JsonUtils;
-import com.yjtech.wisdom.tourism.common.utils.MathUtil;
-import com.yjtech.wisdom.tourism.dto.*;
-import com.yjtech.wisdom.tourism.dto.vo.UserVo;
+import com.yjtech.wisdom.tourism.dto.DataOverviewDto;
+import com.yjtech.wisdom.tourism.dto.MonthPassengerFlowDto;
+import com.yjtech.wisdom.tourism.dto.VisitorDto;
+import com.yjtech.wisdom.tourism.dto.YearPassengerFlowDto;
+import com.yjtech.wisdom.tourism.integration.service.DistrictBigDataService;
 import com.yjtech.wisdom.tourism.vo.DataOverviewVo;
 import com.yjtech.wisdom.tourism.vo.MonthPassengerFlowVo;
 import com.yjtech.wisdom.tourism.vo.VisitorVo;
 import com.yjtech.wisdom.tourism.vo.YearPassengerFlowVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * 游客结构-调用区县大数据
@@ -39,10 +35,7 @@ import java.util.concurrent.TimeUnit;
 public class DistrictTourService {
 
     @Autowired
-    private StringRedisTemplate redisTemplate;
-
-    @Value("${tourist.districtHost}")
-    private String districtHost;
+    private DistrictBigDataService districtBigDataService;
 
     /**
      * 查询游客总数据-数据总览
@@ -52,19 +45,17 @@ public class DistrictTourService {
      */
     public DataOverviewDto queryDataOverview (DataOverviewVo vo) {
 
-        String url = districtHost + DistrictPathEnum.DATA_OVERVIEW.getPath();
-
         // 10.到访全部游客
         vo.setStatisticsType("10");
-        long allTouristNum = Long.parseLong(String.valueOf(JsonUtils.getValueByKey(requestDistrict(url, vo, "到访全部游客"), "data")));
+        long allTouristNum = Long.parseLong(String.valueOf(JsonUtils.getValueByKey(districtBigDataService.requestDistrict(DistrictPathEnum.DATA_OVERVIEW.getPath(), vo, "到访全部游客"), "data")));
 
         // 11.到访省内游客
         vo.setStatisticsType("11");
-        long provinceInsideTouristNum = Long.parseLong(String.valueOf(JsonUtils.getValueByKey(requestDistrict(url, vo, "到访省内游客"), "data")));
+        long provinceInsideTouristNum = Long.parseLong(String.valueOf(JsonUtils.getValueByKey(districtBigDataService.requestDistrict(DistrictPathEnum.DATA_OVERVIEW.getPath(), vo, "到访省内游客"), "data")));
 
         // 12.到访省外游客
         vo.setStatisticsType("12");
-        long provinceOutsideTouristNum = Long.parseLong(String.valueOf(JsonUtils.getValueByKey(requestDistrict(url, vo, "到访省外游客"), "data")));
+        long provinceOutsideTouristNum = Long.parseLong(String.valueOf(JsonUtils.getValueByKey(districtBigDataService.requestDistrict(DistrictPathEnum.DATA_OVERVIEW.getPath(), vo, "到访省外游客"), "data")));
 
         return DataOverviewDto.builder()
                 .allTouristNum(allTouristNum)
@@ -83,8 +74,7 @@ public class DistrictTourService {
      * @return
      */
     public IPage<VisitorDto> queryVisitor (VisitorVo vo) {
-        String url = districtHost + DistrictPathEnum.TOURISTS_SOURCE.getPath();
-        String result = requestDistrict(url, vo, "省级游客来源");
+        String result = districtBigDataService.requestDistrict(DistrictPathEnum.TOURISTS_SOURCE.getPath(), vo, "省级游客来源");
         List<VisitorDto> visitorDtoList = JSONObject.parseArray(String.valueOf(JsonUtils.getValueByKey(result, "data")), VisitorDto.class);
         return page(vo.getPageNo(), vo.getPageSize(), visitorDtoList);
     }
@@ -96,12 +86,10 @@ public class DistrictTourService {
      * @return
      */
     public List<YearPassengerFlowDto> queryYearPassengerFlow (YearPassengerFlowVo vo) {
-        String url = districtHost + DistrictPathEnum.YEAR_PASSENGER_FLOW.getPath();
-
         List<YearPassengerFlowDto> result = JSONObject.parseArray(
                 String.valueOf(
                         JsonUtils.getValueByKey(
-                                requestDistrict(url, vo, DistrictPathEnum.YEAR_PASSENGER_FLOW.getDesc()),
+                                districtBigDataService.requestDistrict(DistrictPathEnum.YEAR_PASSENGER_FLOW.getPath(), vo, DistrictPathEnum.YEAR_PASSENGER_FLOW.getDesc()),
                                 "data"
                         )
                 ),
@@ -161,10 +149,9 @@ public class DistrictTourService {
      * @return
      */
     public List<MonthPassengerFlowDto> queryMonthPassengerFlow (MonthPassengerFlowVo vo) {
-        String url = districtHost + DistrictPathEnum.MONTH_PASSENGER_FLOW.getPath();
         // 日期往前设置一天
         vo.setBeginDate(DateTimeUtil.getBeforeDayDate(vo.getBeginDate()));
-        String result = requestDistrict(url, vo, DistrictPathEnum.MONTH_PASSENGER_FLOW.getDesc());
+        String result = districtBigDataService.requestDistrict(DistrictPathEnum.MONTH_PASSENGER_FLOW.getPath(), vo, DistrictPathEnum.MONTH_PASSENGER_FLOW.getDesc());
         // 当月数据
         List<MonthPassengerFlowDto> currentMonth = JSONObject.parseArray(String.valueOf(JsonUtils.getValueByKey(result, "data")), MonthPassengerFlowDto.class);
 
@@ -216,76 +203,6 @@ public class DistrictTourService {
             resultList.add(currentMonth.get(i));
         }
         return resultList;
-    }
-
-
-
-    /**
-     * 区县大数据请求方法
-     *
-     * @param vo
-     * @param <Vo>
-     * @return
-     */
-    private<Vo extends UserVo> String requestDistrict (String url, Vo vo, String desc) {
-        // token生成规则
-        String tokenKey = vo.getUserId() + "_" + DateUtils.dateTime();
-        String token = getToken(vo, tokenKey);
-
-        log.info("【{}】-请求URL：{}", desc, url);
-        log.info("【{}】-请求入参：{}", desc, JSONObject.toJSONString(vo));
-        String result = HttpRequest.post(url)
-                .header("Content-Type", "application/json")
-                .header("Authorization", token)
-                .body(JSONObject.toJSONString(vo))
-                .execute()
-                .body();
-        log.info("【{}】-请求返回：{}", desc, result);
-
-        return result;
-    }
-
-    /**
-     * 区县大数据获取token
-     *
-     * @param vo
-     * @param tokenKey
-     * @param <Vo>
-     * @return
-     */
-    private <Vo extends UserVo> String getToken(Vo vo, String tokenKey) {
-        // redis获取 token
-        String token = redisTemplate.opsForValue().get(tokenKey);
-
-        // token为空 则重新登录获取
-        if (StringUtils.isEmpty(token)) {
-            log.info("【区县大数据】token失效，重新登录！");
-            // 进行登录获取有效token
-            String loginUlr = districtHost + DistrictPathEnum.LOGIN.getPath();
-            log.info("【区县大数据】-登录接口URL：{}", loginUlr);
-            log.info("【区县大数据】-用户名：{}", vo.getUserName());
-            log.info("【区县大数据】-密码：{}", vo.getPassword());
-
-            // 构建登录请求参数
-            DistrictLoginDto districtLoginDto = DistrictLoginDto.builder()
-                    .account(vo.getUserName())
-                    .password(vo.getPassword())
-                    .loginType(3)
-                    .build();
-
-            String result = HttpRequest.post(loginUlr)
-                    .header("Content-Type", "application/json")
-                    .body(JSONObject.toJSONString(districtLoginDto))
-                    .execute()
-                    .body();
-            log.info("【区县大数据】-返回结果：{}", result);
-            String authorization = "Bearer " + JsonUtils.getValueByKey(result, "authorization");
-            log.info("【区县大数据】-Authorization：{}", authorization);
-            // 8小时过期
-            redisTemplate.opsForValue().set(tokenKey, authorization, 7, TimeUnit.HOURS);
-        }
-        log.info("【区县大数据】token：{}", token);
-        return token;
     }
 
     /**
