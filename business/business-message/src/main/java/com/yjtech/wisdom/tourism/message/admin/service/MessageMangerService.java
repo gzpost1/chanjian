@@ -124,7 +124,7 @@ public class MessageMangerService extends ServiceImpl<MessageMapper, MessageEnti
             throw new CustomException("事件ID不存在，请先初始化事件！");
         }
 
-        Long[] eventDealPersonId = vo.getEventDealPersonId();
+        Long[] eventDealPersonId = vo.getEventDealPersonIdArray();
         String eventDealPersonIdStr = "";
         for (Long dealId : eventDealPersonId) {
             eventDealPersonIdStr += "," + dealId;
@@ -159,7 +159,7 @@ public class MessageMangerService extends ServiceImpl<MessageMapper, MessageEnti
                     );
                     // 0-后台
                     recordEntity.setSendType(0);
-                    recordEntity.setSendObject(JSONObject.toJSONString(vo.getEventDealPersonId()));
+                    recordEntity.setSendObject(JSONObject.toJSONString(vo.getEventDealPersonIdArray()));
                     if (updateRecords > 0) {
                         recordEntity.setSuccess((byte) 1);
                     }else {
@@ -290,7 +290,7 @@ public class MessageMangerService extends ServiceImpl<MessageMapper, MessageEnti
             // 被指派处理人员
             case EVENT_DEAL_PERSON :
                 //由于可能有多个处理人员，每个处理人员id采用逗号“,”分割，采用模糊匹配
-                queryWrapper.like(!StringUtils.isEmpty(userId), "eventDealPersonId", userId);
+                queryWrapper.like(!StringUtils.isEmpty(userId), "eventDealPersonIdArray", userId);
                 break;
 
             default:

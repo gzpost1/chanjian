@@ -1,5 +1,6 @@
 package com.yjtech.wisdom.tourism.message.admin.vo;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -77,12 +78,26 @@ public class InitMessageVo implements Serializable {
     private String eventHappenPersonPhone;
 
     /**
-     * 事件/投诉 处理人Id，若有多个，采用逗号“,”分割id
+     * 事件/投诉 处理人Id
      */
-    private Long eventDealPersonId;
+    @TableField(exist = false)
+    private Long[] eventDealPersonIdArray;
+
+    /**
+     * 事件/投诉 处理人Id
+     */
+    private String eventDealPersonId;
 
     /**
      * 事件处理跳转的 URL
      */
     private String eventDealUrl;
+
+    public void setEventDealPersonId(String eventDealPersonId) {
+        String tmp = "";
+        for (Long id : eventDealPersonIdArray) {
+            tmp += id + ",";
+        }
+        this.eventDealPersonId = tmp;
+    }
 }

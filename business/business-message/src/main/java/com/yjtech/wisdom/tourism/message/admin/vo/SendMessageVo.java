@@ -44,7 +44,7 @@ public class SendMessageVo implements Serializable {
     /**
      * 事件处理人Id
      */
-    private Long[] eventDealPersonId;
+    private Long[] eventDealPersonIdArray;
 
 
 }
