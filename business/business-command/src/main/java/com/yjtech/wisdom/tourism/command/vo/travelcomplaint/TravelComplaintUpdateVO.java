@@ -1,29 +1,33 @@
-package com.yjtech.wisdom.tourism.command.vo;
+package com.yjtech.wisdom.tourism.command.vo.travelcomplaint;
 
 import lombok.Data;
 import org.hibernate.validator.constraints.Range;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
 /**
- * 旅游投诉(TbTravelComplaint)实体类
+ * 旅游投诉 更新VO
  *
- * @author horadirm
- * @since 2021-07-21 09:03:46
+ * @Author horadirm
+ * @Date 2021/7/28 17:19
  */
 @Data
-public class TravelComplaintCreateVO implements Serializable {
+public class TravelComplaintUpdateVO implements Serializable {
 
-    private static final long serialVersionUID = 5766579553051762821L;
+    private static final long serialVersionUID = -5010890473206696356L;
+
+    /**
+     * id
+     */
+    @NotNull(message = "id不能为空")
+    private Long id;
 
     /**
      * 投诉类型（0-其他 1-景区 2-酒店）
      */
-    @NotNull(message = "投诉类型不能为空")
     @Range(min = 0, max = 2, message = "投诉类型不合法")
     private Byte complaintType;
 
@@ -65,7 +69,6 @@ public class TravelComplaintCreateVO implements Serializable {
     /**
      * 投诉原因
      */
-    @NotBlank(message = "投诉对象id不能为空")
     private String complaintReason;
 
     /**

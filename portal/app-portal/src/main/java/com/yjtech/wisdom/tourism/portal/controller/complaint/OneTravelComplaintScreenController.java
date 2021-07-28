@@ -34,7 +34,7 @@ public class OneTravelComplaintScreenController {
      * @return
      */
     @PostMapping("queryTotal")
-    public JsonResult queryTotal(@RequestBody @Valid OneTravelQueryVO vo) {
+    public JsonResult queryTotal(@RequestBody OneTravelQueryVO vo) {
         return JsonResult.success(oneTravelApiService.queryComplaintStatistics(vo));
     }
 
