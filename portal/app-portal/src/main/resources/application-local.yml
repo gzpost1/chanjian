@@ -115,3 +115,8 @@ sms.wo:
   url: http://rcsapi.wo.cn:8000/umcinterface/sendtempletmsg
   msg:
 
+# 消息中心
+message:
+  dictType:
+    # 超级管理员数据字典类型
+    admin: super_admin_user_id
