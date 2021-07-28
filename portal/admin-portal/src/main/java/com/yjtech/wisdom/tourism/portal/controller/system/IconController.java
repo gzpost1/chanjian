@@ -97,7 +97,7 @@ public class IconController {
     @PostMapping("delete")
     public JsonResult<?> delete(@RequestBody @Validated IdParam idParam) {
         Icon icon = iconService.getIconById(idParam.getId());
-        iconService.removeById(icon.getId());
+        iconService.removeIcon(icon);
         return JsonResult.success();
     }
 }
