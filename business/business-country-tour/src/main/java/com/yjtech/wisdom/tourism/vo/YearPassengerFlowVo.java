@@ -16,7 +16,7 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class YearPassengerFlowVo extends UserVo implements Serializable {
+public class YearPassengerFlowVo implements Serializable {
 
     private static final long serialVersionUID = 8096805950615093800L;
 
