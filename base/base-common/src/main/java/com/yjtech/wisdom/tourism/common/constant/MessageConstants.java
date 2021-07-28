@@ -11,25 +11,40 @@ public class MessageConstants {
     /**
      * 事件类型_旅游投诉
      */
-    private final static String EVENT_TYPE_TOUR = "0";
+    public final static Byte EVENT_TYPE_TOUR = 0;
 
     /**
      * 事件类型_应急事件
      */
-    private final static String EVENT_TYPE_EMERGENCY = "1";
+    public final static Byte EVENT_TYPE_EMERGENCY = 1;
 
     /**
      * 事件状态_待指派
      */
-    private final static Integer EVENT_STATUS_APPOINT = 0;
+    public final static Integer EVENT_STATUS_APPOINT = 0;
 
     /**
      * 事件状态_待处理
      */
-    private final static Integer EVENT_STATUS_DEAL = 1;
+    public final static Integer EVENT_STATUS_DEAL = 1;
 
     /**
      * 事件状态_已处理
      */
-    private final static Integer EVENT_STATUS_COMPLETE = 2;
+    public final static Integer EVENT_STATUS_COMPLETE = 2;
+
+
+    /**
+     * 应急事件消息 title
+     */
+    public final static String event_message = "突发应急事件，请指定专人进行处理！";
+
+    /**
+     * 应急事件消息 content
+     */
+    public final static String event_content = "事件名称：%s";
+
+
+
+
 }
