@@ -135,8 +135,6 @@ public class EventService extends ServiceImpl<EventMapper, EventEntity> {
         //默认事件状态为待指派
         EventEntity.setEventStatus(EventContants.UNASSIGNED);
         this.save(EventEntity);
-
-        //TODO 发送消息
         return EventEntity;
     }
 

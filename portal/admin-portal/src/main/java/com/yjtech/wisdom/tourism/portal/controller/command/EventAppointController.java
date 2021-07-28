@@ -65,7 +65,6 @@ public class EventAppointController {
         AssertUtil.isFalse(eventAppointService.count() > 0,"数据已存在");
         EventAppointEntity entity = BeanMapper.map(createDto, EventAppointEntity.class);
         eventAppointService.save(entity);
-        //TODO 发送消息
         return JsonResult.ok();
     }
 
@@ -80,7 +79,6 @@ public class EventAppointController {
     public JsonResult update(@RequestBody @Valid EventAppointUpdateDto updateDto) {
         EventAppointEntity entity = BeanMapper.map(updateDto, EventAppointEntity.class);
         eventAppointService.updateById(entity);
-        //TODO 发送消息
         return JsonResult.ok();
     }
 
