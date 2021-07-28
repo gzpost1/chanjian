@@ -126,6 +126,8 @@ tourist:
   configAccountKey: big_data_account
   # 区县大数据 参数设置模块中 配置的密码key
   configPasswordKey: big_data_password
+  # 区县大数据 参数设置模块中 配置的 行政区划编号 key
+  configAreaCodeKey: big_data_area_code
 
 # 消息中心
 message:
