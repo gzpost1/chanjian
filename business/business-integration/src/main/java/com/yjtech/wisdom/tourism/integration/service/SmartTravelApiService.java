@@ -71,4 +71,13 @@ public class SmartTravelApiService {
         return smartTravelApiMapper.queryAreaReservationList(vo);
     }
 
+    /**
+     * 查询区域景区数量
+     * @param vo
+     * @return
+     */
+    public Integer queryScenicCountByArea(SmartTravelQueryVO vo){
+        return smartTravelApiMapper.queryScenicCountByArea(vo);
+    }
+
 }

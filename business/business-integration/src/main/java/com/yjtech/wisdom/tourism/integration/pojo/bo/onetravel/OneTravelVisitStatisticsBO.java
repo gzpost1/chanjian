@@ -14,30 +14,26 @@ import java.math.BigDecimal;
 @Data
 public class OneTravelVisitStatisticsBO implements Serializable {
 
-     private static final long serialVersionUID = 1988684783677042296L;
+     private static final long serialVersionUID = 5054947769241665433L;
 
      /**
-      * 区域编码
+      * 使用总人数
       */
-     private String code;
+     private BigDecimal userTotal;
 
      /**
-      * 区域名称
+      * 今日活跃用户
       */
-     private String name;
+     private BigDecimal todayActiveUser;
 
      /**
-      * 访问次数
+      * 昨日活跃用户
       */
-     private Long value;
+     private BigDecimal yesterdayActiveUser;
 
      /**
-      * 经度
+      * 总访问次数
       */
-     private BigDecimal longitude;
+     private BigDecimal visitTotal;
 
-     /**
-      * 纬度
-      */
-     private BigDecimal latitude;
 }

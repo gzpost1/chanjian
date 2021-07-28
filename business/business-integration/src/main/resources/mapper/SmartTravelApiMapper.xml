@@ -199,5 +199,59 @@
         DATE_FORMAT( reservation_date, #{params.sqlDateFormat} )
     </select>
 
+    <select id="queryScenicReservationAnalysisList" resultType="com.yjtech.wisdom.tourism.integration.pojo.bo.smarttravel.SmartTravelScenicReservationAnalysisBO"
+            parameterType="com.yjtech.wisdom.tourism.integration.pojo.vo.SmartTravelQueryVO">
+        SELECT
+        DATE_FORMAT( reservation_date, #{params.sqlDateFormat} ) AS time,
+        COALESCE(COUNT( 1 ),0) AS currentInfo
+        FROM
+        ( SELECT scenic_id, reservation_date FROM `tb_reservation_record`
+        <where>
+            <if test="params.beginTime != null and params.beginTime !=''">
+                and <![CDATA[ reservation_date >= #{params.beginTime} ]]>
+            </if>
+            <if test="params.endTime != null and params.endTime !=''">
+                and <![CDATA[ reservation_date <= #{params.endTime} ]]>
+            </if>
+            and deleted = 0
+        </where>
+        ) a
+        INNER JOIN
+        ( SELECT scenic_id FROM tb_scenic_info
+        <where>
+            <if test="params.areaCode != null and params.areaCode != ''">
+                AND area_code like CONCAT(#{params.areaCode},'%')
+            </if>
+            and deleted = 0
+        </where>
+        ) b ON a.scenic_id = b.scenic_id
+        GROUP BY
+        DATE_FORMAT( reservation_date, #{params.sqlDateFormat} )
+    </select>
+
+    <select id="queryScenicCountByArea" resultType="integer"
+            parameterType="com.yjtech.wisdom.tourism.integration.pojo.vo.SmartTravelQueryVO">
+        select
+        COUNT(scenic_id)
+        from
+        tb_scenic_info
+        <where>
+            <if test="params != null">
+                <if test="params.areaCode != null and params.areaCode != ''">
+                    area_id LIKE CONCAT(#{params.areaCode},'%') and
+                </if>
+                <if test="params.beginTime != null and params.beginTime != ''">
+                    <![CDATA[ LEFT(create_time,10) >= #{params.beginTime} ]]> and
+                </if>
+                <if test="params.endTime != null and params.endTime != ''">
+                    <![CDATA[ LEFT(create_time,10) <= #{params.endTime} ]]> and
+                </if>
+                <if test="params.validStatus != null">
+                    status = #{params.validStatus} and
+                </if>
+            </if>
+            deleted = 0
+        </where>
+    </select>
 
 </mapper>

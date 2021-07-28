@@ -4,6 +4,7 @@ import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.yjtech.wisdom.tourism.common.bean.AreaBaseVO;
 import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
+import com.yjtech.wisdom.tourism.integration.pojo.bo.onetravel.OneTravelAreaVisitStatisticsBO;
 import com.yjtech.wisdom.tourism.integration.pojo.bo.onetravel.OneTravelComplaintListBO;
 import com.yjtech.wisdom.tourism.integration.pojo.bo.onetravel.OneTravelMagicVisitPvBO;
 import com.yjtech.wisdom.tourism.integration.pojo.bo.onetravel.OneTravelVisitStatisticsBO;
@@ -22,17 +23,23 @@ import java.util.List;
 public interface OneTravelApiMapper {
 
     /**
+     * 查询访问统计
+     * @return
+     */
+    OneTravelVisitStatisticsBO queryVisitStatistics();
+
+    /**
      * 查询市级访问统计
      * @param params
      * @return
      */
-    List<OneTravelVisitStatisticsBO> queryVisitStatistics(@Param("params") AreaBaseVO params);
+    List<OneTravelAreaVisitStatisticsBO> queryCityVisitStatistics(@Param("params") AreaBaseVO params);
 
     /**
      * 查询所有省级、直辖市、自治区、特别行政区访问统计
      * @return
      */
-    List<OneTravelVisitStatisticsBO> queryProvinceVisitStatistics();
+    List<OneTravelAreaVisitStatisticsBO> queryProvinceVisitStatistics();
 
     /**
      * 查询一码游补充数据
@@ -73,6 +80,12 @@ public interface OneTravelApiMapper {
      * @return
      */
     List<BasePercentVO> queryComplaintDistribution(@Param("params") OneTravelQueryVO params);
+
+    /**
+     * 查询用户年龄分布
+     * @return
+     */
+    List<BasePercentVO> queryUserAgeDistribution();
 
 
 

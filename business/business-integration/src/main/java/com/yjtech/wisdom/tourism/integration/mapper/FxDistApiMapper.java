@@ -1,6 +1,7 @@
 package com.yjtech.wisdom.tourism.integration.mapper;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
+import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
 import com.yjtech.wisdom.tourism.integration.pojo.bo.fxdist.*;
 import com.yjtech.wisdom.tourism.integration.pojo.vo.FxDistQueryVO;
 import org.apache.ibatis.annotations.Param;
@@ -37,20 +38,6 @@ public interface FxDistApiMapper {
      * @return
      */
     Integer queryProductCountByArea(@Param("params") FxDistQueryVO params);
-
-    /**
-     * 查询区域订单总数数量
-     * @param params
-     * @return
-     */
-    Integer queryOrderCountByArea(@Param("params") FxDistQueryVO params);
-
-    /**
-     * 查询区域订单总额
-     * @param params
-     * @return
-     */
-    Integer queryOrderSumByArea(@Param("params") FxDistQueryVO params);
 
     /**
      * 查询区域销售额列表
@@ -93,5 +80,26 @@ public interface FxDistApiMapper {
      * @return
      */
     BigDecimal querySaleBySubMchList(@Param("params") FxDistQueryVO params);
+
+    /**
+     * 查询订单统计
+     * @param params
+     * @return
+     */
+    FxDistOrderStatisticsBO queryOrderStatistics(@Param("params") FxDistQueryVO params);
+
+    /**
+     * 查询商品订单分布
+     * @param params
+     * @return
+     */
+    List<BasePercentVO> queryOrderFromProductTypeDistribution(@Param("params") FxDistQueryVO params);
+
+    /**
+     * 查询商品交易额分布
+     * @param params
+     * @return
+     */
+    List<BasePercentVO> queryOrderSumFromProductTypeDistribution(@Param("params") FxDistQueryVO params);
 
 }
