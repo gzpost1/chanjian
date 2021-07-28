@@ -4,7 +4,7 @@ import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yjtech.wisdom.tourism.common.bean.AreaBaseVO;
-import com.yjtech.wisdom.tourism.common.bean.DistributionBaseInfo;
+import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
 import com.yjtech.wisdom.tourism.integration.mapper.OneTravelApiMapper;
 import com.yjtech.wisdom.tourism.integration.pojo.bo.onetravel.OneTravelComplaintListBO;
 import com.yjtech.wisdom.tourism.integration.pojo.bo.onetravel.OneTravelMagicVisitPvBO;
@@ -98,8 +98,10 @@ public class OneTravelApiService {
      * @return
      */
     @Transactional(readOnly = true)
-    public List<DistributionBaseInfo> queryComplaintDistribution(OneTravelQueryVO vo){
+    public List<BasePercentVO> queryComplaintDistribution(OneTravelQueryVO vo){
         return oneTravelApiMapper.queryComplaintDistribution(vo);
     }
+
+
 
 }

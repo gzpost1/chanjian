@@ -99,7 +99,9 @@
         operate_time as operateTime,
         operate_user_name as operateUser,
         evaluate_content as evaluateContent,
-        evaluate_time as evaluateTime
+        evaluate_time as evaluateTime,
+        longitude as longitude,
+        latitude as latitude
         from
         tb_complaint
         <where>
@@ -108,7 +110,7 @@
         ORDER BY complaint_time DESC
     </select>
 
-    <select id="queryComplaintDistribution" resultType="com.yjtech.wisdom.tourism.common.bean.DistributionBaseInfo"
+    <select id="queryComplaintDistribution" resultType="com.yjtech.wisdom.tourism.common.bean.BasePercentVO"
             parameterType="com.yjtech.wisdom.tourism.integration.pojo.vo.OneTravelQueryVO">
         select
         CASE
@@ -116,8 +118,8 @@
         WHEN status = 2 THEN '已处理'
         WHEN status = 3 THEN '已评价'
         ELSE '其他' END as name,
-        COUNT(id) as number,
-        COALESCE (ROUND(COUNT(id)/total.totalNum, 4),0) as percent
+        COUNT(id) as value,
+        COALESCE (ROUND(COUNT(id)/total.totalNum, 3)*100,0) as rate
         from
         tb_complaint as complaint
         INNER JOIN

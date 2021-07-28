@@ -5,6 +5,7 @@ import com.yjtech.wisdom.tourism.mybatis.typehandler.JsonTypeHandler;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -94,5 +95,15 @@ public class OneTravelComplaintListBO implements Serializable {
      * 评价时间
      */
     private Date evaluateTime;
+
+    /**
+     * 经度
+     */
+    private BigDecimal longitude;
+
+    /**
+     * 纬度
+     */
+    private BigDecimal latitude;
 
 }

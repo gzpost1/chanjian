@@ -1,4 +1,4 @@
-package com.yjtech.wisdom.tourism.portal.controller.travelcomplaint;
+package com.yjtech.wisdom.tourism.portal.controller.complaint;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.yjtech.wisdom.tourism.command.dto.travelcomplaint.TravelComplaintDTO;

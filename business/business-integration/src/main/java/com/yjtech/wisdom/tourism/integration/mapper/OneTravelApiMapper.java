@@ -3,7 +3,7 @@ package com.yjtech.wisdom.tourism.integration.mapper;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.yjtech.wisdom.tourism.common.bean.AreaBaseVO;
-import com.yjtech.wisdom.tourism.common.bean.DistributionBaseInfo;
+import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
 import com.yjtech.wisdom.tourism.integration.pojo.bo.onetravel.OneTravelComplaintListBO;
 import com.yjtech.wisdom.tourism.integration.pojo.bo.onetravel.OneTravelMagicVisitPvBO;
 import com.yjtech.wisdom.tourism.integration.pojo.bo.onetravel.OneTravelVisitStatisticsBO;
@@ -72,7 +72,7 @@ public interface OneTravelApiMapper {
      * @param params
      * @return
      */
-    List<DistributionBaseInfo> queryComplaintDistribution(@Param("params") OneTravelQueryVO params);
+    List<BasePercentVO> queryComplaintDistribution(@Param("params") OneTravelQueryVO params);
 
 
 
