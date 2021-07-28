@@ -50,14 +50,16 @@
                     place_code LIKE CONCAT(#{params.areaCode},'%') and
                 </if>
                 <if test="params.beginTime != null and params.beginTime != ''">
-                    <![CDATA[ LEFT(create_time,10) >= #{params.beginTime} ]]> and
+                    <![CDATA[ create_time >= #{params.beginTime} ]]> and
                 </if>
                 <if test="params.endTime != null and params.endTime != ''">
-                    <![CDATA[ LEFT(create_time,10) <= #{params.endTime} ]]> and
+                    <![CDATA[ create_time <= #{params.endTime} ]]> and
+                </if>
+                <if test="params.validStatus != null">
+                    business_status = #{params.validStatus} and
                 </if>
             </if>
-            deleted = 0 and
-            business_status = 0
+            deleted = 0
         </where>
     </select>
 
@@ -79,29 +81,20 @@
                 <if test="params.endTime != null and params.endTime != ''">
                     <![CDATA[ product.create_time <= #{params.endTime} ]]> and
                 </if>
+                <if test="params.validStatus != null">
+                    product.status = params.validStatus and
+                </if>
             </if>
             product.deleted = 0 and
-            subMch.deleted = 0 and
-            product.status = 0
+            subMch.deleted = 0
         </where>
     </select>
 
-    <select id="queryOrderCountByArea" resultType="integer"
+    <select id="queryOrderStatistics" resultType="com.yjtech.wisdom.tourism.integration.pojo.bo.fxdist.FxDistOrderStatisticsBO"
             parameterType="com.yjtech.wisdom.tourism.integration.pojo.vo.FxDistQueryVO">
         select
-        COUNT(orderInfo.order_id)
-        from
-        tb_order orderInfo
-        LEFT JOIN tb_sub_mch subMch ON orderInfo.sale_sub_merchant_id = subMch.sub_mch_id
-        <where>
-            <include refid="base_order_subMch_query"/>
-        </where>
-    </select>
-
-    <select id="queryOrderSumByArea" resultType="integer"
-            parameterType="com.yjtech.wisdom.tourism.integration.pojo.vo.FxDistQueryVO">
-        select
-        COALESCE (ROUND(SUM(orderInfo.current_price)/100,2),0)
+        COALESCE (ROUND(SUM(orderInfo.current_price)/100,2),0) as orderSum,
+        COUNT(orderInfo.order_id) as orderCount
         from
         tb_order orderInfo
         LEFT JOIN tb_sub_mch subMch ON orderInfo.sale_sub_merchant_id = subMch.sub_mch_id
@@ -150,7 +143,6 @@
             areaInfo.county_code is not null
         </where>
     </select>
-
 
     <select id="queryAreaSaleCountList" resultType="com.yjtech.wisdom.tourism.integration.pojo.bo.fxdist.FxDistAreaSaleListBO"
             parameterType="com.yjtech.wisdom.tourism.integration.pojo.vo.FxDistQueryVO">
@@ -295,6 +287,60 @@
         </where>
     </select>
 
+    <select id="queryOrderFromProductTypeDistribution" resultType="com.yjtech.wisdom.tourism.common.bean.BasePercentVO">
+        select
+        CASE
+        WHEN business_type_id = 1 THEN '门票'
+        WHEN business_type_id = 3 THEN '券'
+        WHEN business_type_id = 4 THEN '酒店'
+        WHEN business_type_id = 5 THEN '特产'
+        ELSE '其他' END as name,
+        COUNT(order_id) as value,
+        COALESCE (ROUND(COUNT(order_id)/total.totalNum, 3)*100,0) as rate
+        from
+        tb_order
+        INNER JOIN
+        (select
+        COUNT(order_id) as totalNum
+        from
+        tb_order
+        <where>
+            <include refid="base_order_query"/>
+        </where>
+        ) as total ON 1 = 1
+        <where>
+            <include refid="base_order_query"/>
+        </where>
+        GROUP BY business_type_id
+    </select>
+
+    <select id="queryOrderSumFromProductTypeDistribution" resultType="com.yjtech.wisdom.tourism.common.bean.BasePercentVO">
+        select
+        CASE
+        WHEN business_type_id = 1 THEN '门票'
+        WHEN business_type_id = 3 THEN '券'
+        WHEN business_type_id = 4 THEN '酒店'
+        WHEN business_type_id = 5 THEN '特产'
+        ELSE '其他' END as name,
+        ROUND(SUM(current_price)/100,2) as value,
+        COALESCE (ROUND(ROUND(SUM(current_price)/100,2)/total.totalNum, 3)*100,0) as rate
+        from
+        tb_order
+        INNER JOIN
+        (select
+        ROUND(SUM(current_price)/100,2) as totalNum
+        from
+        tb_order
+        <where>
+            <include refid="base_order_query"/>
+        </where>
+        ) as total ON 1 = 1
+        <where>
+            <include refid="base_order_query"/>
+        </where>
+        GROUP BY business_type_id
+    </select>
+
     <sql id="base_order_subMch_query">
         <if test="params != null">
             <if test="params.beginTime != null and params.beginTime !=''">
@@ -306,11 +352,35 @@
             <if test="params.areaCode != null and params.areaCode != ''">
                 subMch.place_code LIKE CONCAT(#{params.areaCode},'%') and
             </if>
+            <if test="params.orderStatusList != null and params.orderStatusList.size > 0">
+                orderInfo.status in
+                <foreach collection="params.orderStatusList" item="orderStatus" open="(" separator="," close=")">
+                    #{orderStatus}
+                </foreach>
+                and
+            </if>
         </if>
         orderInfo.deleted = 0 and
-        orderInfo.status in (10,11,12,13,14,15,16,17,18,19,20,21,22) and
         subMch.deleted = 0
     </sql>
 
+    <sql id="base_order_query">
+        <if test="params != null">
+            <if test="params.beginTime != null and params.beginTime !=''">
+                <![CDATA[ order_time >= #{params.beginTime} ]]> and
+            </if>
+            <if test="params.endTime != null and params.endTime !=''">
+                <![CDATA[ order_time <= #{params.endTime} ]]> and
+            </if>
+            <if test="params.orderStatusList != null and params.orderStatusList.size > 0">
+                status in
+                <foreach collection="params.orderStatusList" item="orderStatus" open="(" separator="," close=")">
+                    #{orderStatus}
+                </foreach>
+                and
+            </if>
+        </if>
+        deleted = 0
+    </sql>
 
 </mapper>

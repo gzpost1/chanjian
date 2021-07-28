@@ -24,4 +24,9 @@ public class SmartTravelQueryVO extends TimeBaseQuery {
      */
     private Byte status;
 
+    /**
+     * 启/停用状态（0：启用 1：禁用）
+     */
+    private Byte validStatus;
+
 }

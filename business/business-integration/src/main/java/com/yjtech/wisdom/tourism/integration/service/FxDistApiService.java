@@ -2,9 +2,11 @@ package com.yjtech.wisdom.tourism.integration.service;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.google.common.collect.Lists;
+import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
 import com.yjtech.wisdom.tourism.common.constant.ProductTypeConstant;
 import com.yjtech.wisdom.tourism.integration.mapper.FxDistApiMapper;
 import com.yjtech.wisdom.tourism.integration.pojo.bo.fxdist.FxDistAreaSaleListBO;
+import com.yjtech.wisdom.tourism.integration.pojo.bo.fxdist.FxDistOrderStatisticsBO;
 import com.yjtech.wisdom.tourism.integration.pojo.bo.fxdist.FxDistPriceTypeBO;
 import com.yjtech.wisdom.tourism.integration.pojo.bo.fxdist.FxDistSaleRankListBO;
 import com.yjtech.wisdom.tourism.integration.pojo.bo.smarttravel.SmartTravelScenicInfoBO;
@@ -84,28 +86,6 @@ public class FxDistApiService {
     }
 
     /**
-     * 查询区域订单总数数量
-     *
-     * @param params
-     * @return
-     */
-    @Transactional(readOnly = true)
-    public Integer queryOrderCountByArea(FxDistQueryVO params) {
-        return fxDistApiMapper.queryOrderCountByArea(params);
-    }
-
-    /**
-     * 查询区域订单总额
-     *
-     * @param params
-     * @return
-     */
-    @Transactional(readOnly = true)
-    public Integer queryOrderSumByArea(FxDistQueryVO params) {
-        return fxDistApiMapper.queryOrderSumByArea(params);
-    }
-
-    /**
      * 查询区域销售额列表
      *
      * @param vo
@@ -136,6 +116,35 @@ public class FxDistApiService {
     @Transactional(readOnly = true)
     public List<FxDistSaleRankListBO> queryProductSaleList(FxDistQueryVO vo) {
         return fxDistApiMapper.queryProductSaleList(vo);
+    }
+
+    /**
+     * 查询订单统计
+     *
+     * @param vo
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public FxDistOrderStatisticsBO queryOrderStatistics(FxDistQueryVO vo) {
+        return fxDistApiMapper.queryOrderStatistics(vo);
+    }
+
+    /**
+     * 查询商品订单分布
+     * @param vo
+     * @return
+     */
+    public List<BasePercentVO> queryOrderFromProductTypeDistribution(FxDistQueryVO vo){
+        return fxDistApiMapper.queryOrderFromProductTypeDistribution(vo);
+    }
+
+    /**
+     * 查询商品交易额分布
+     * @param vo
+     * @return
+     */
+    public List<BasePercentVO> queryOrderSumFromProductTypeDistribution(FxDistQueryVO vo){
+        return fxDistApiMapper.queryOrderSumFromProductTypeDistribution(vo);
     }
 
     /**
