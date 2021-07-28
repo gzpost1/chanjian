@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>business</artifactId>
+        <groupId>com.yjtech.wisdom.tourism</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>business-decision-support</artifactId>
+
+    <properties>
+        <base-infrastructure.version>1.0-SNAPSHOT</base-infrastructure.version>
+        <business-system.version>1.0-SNAPSHOT</business-system.version>
+        <business-integration.version>1.0-SNAPSHOT</business-integration.version>
+    </properties>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>com.yjtech.wisdom.tourism</groupId>
+            <artifactId>business-system</artifactId>
+            <version>${business-system.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.yjtech.wisdom.tourism</groupId>
+            <artifactId>business-integration</artifactId>
+            <version>${business-integration.version}</version>
+        </dependency>
+
+    </dependencies>
+
+
+</project>

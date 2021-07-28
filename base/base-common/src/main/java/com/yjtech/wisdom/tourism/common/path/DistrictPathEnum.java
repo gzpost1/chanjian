@@ -33,6 +33,11 @@ public enum  DistrictPathEnum {
      */
     MONTH_PASSENGER_FLOW("/api/v1/tx/getdaytrend", "月客流趋势"),
 
+    /**
+     * 根据时间范围获取省内或省外或全国的到访或出访数据
+     */
+    VISIT_NUMBER("/api/v1/tx/totalnum", "根据时间范围获取省内或省外或全国的到访或出访数据"),
+
     ;
     /**
      * 路径

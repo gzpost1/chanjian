@@ -355,4 +355,31 @@ public class DateTimeUtil {
     return sdf.format(calendar.getTime());
   }
 
+  /**
+   * 获取当前年 的上月  的最后一天
+   *
+   * @return
+   */
+  public static String getCurrentLastMonthLastDayStr() {
+    Calendar calendar = Calendar.getInstance();
+    calendar.set(Calendar.DAY_OF_MONTH, 1);
+    calendar.add(Calendar.DATE, -1);
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    return sdf.format(calendar.getTime());
+  }
+
+  /**
+   * 获取当前年 的上月  的第一天
+   *
+   * @return
+   */
+  public static String getCurrentLastMonthFirstDayStr() {
+    Calendar calendar = Calendar.getInstance();
+    calendar.add(Calendar.MONTH, -1);
+    calendar.set(Calendar.DAY_OF_MONTH, 1);
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    return sdf.format(calendar.getTime());
+  }
+
+
 }
