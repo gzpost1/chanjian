@@ -37,9 +37,6 @@ public class List extends AbstractMethod {
             /* 普通查询 */
             selectColumns = table.getAllSqlSelect();
         }
-        if (!queryWrapper) {
-            return selectColumns;
-        }
         return selectColumns;
     }
 
