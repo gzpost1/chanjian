@@ -17,7 +17,7 @@
         <result property="openEndTime" column="open_end_time" jdbcType="TIME"/>
         <result property="phone" column="phone" jdbcType="VARCHAR"/>
         <result property="cover" column="cover" jdbcType="VARCHAR"/>
-        <result property="images" column="images" jdbcType="VARCHAR"/>
+        <result property="images" column="images" jdbcType="VARCHAR" typeHandler="com.yjtech.wisdom.tourism.mybatis.typehandler.JsonTypeHandler"/>
         <result property="description" column="description" jdbcType="VARCHAR"/>
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
