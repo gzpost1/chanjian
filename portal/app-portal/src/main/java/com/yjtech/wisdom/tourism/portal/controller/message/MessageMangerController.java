@@ -7,12 +7,12 @@ import com.yjtech.wisdom.tourism.message.admin.dto.MessageRecordDto;
 import com.yjtech.wisdom.tourism.message.admin.service.MessageMangerService;
 import com.yjtech.wisdom.tourism.message.admin.vo.QueryMessageVo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 /**
+ * 消息中心
+ *
  * @author renguangqian
  * @date 2021/7/29 15:12
  */
@@ -30,7 +30,7 @@ public class MessageMangerController {
      * @return
      */
     @PostMapping("queryPageMessage")
-    public JsonResult<IPage<MessageDto>> queryPageMessage (QueryMessageVo vo) {
+    public JsonResult<IPage<MessageDto>> queryPageMessage (@RequestBody @Validated QueryMessageVo vo) {
         return JsonResult.success(messageMangerService.queryPageMessage(vo, true));
     }
 
