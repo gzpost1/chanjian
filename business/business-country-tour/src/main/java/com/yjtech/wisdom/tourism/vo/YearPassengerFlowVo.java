@@ -1,6 +1,7 @@
 package com.yjtech.wisdom.tourism.vo;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -16,6 +17,7 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class YearPassengerFlowVo implements Serializable {
 
     private static final long serialVersionUID = 8096805950615093800L;
@@ -23,13 +25,12 @@ public class YearPassengerFlowVo implements Serializable {
     /**
      * 省市区域编号
      */
-    @NotNull(message="省市区域编号adcode不能为空")
     private String adcode;
 
     /**
      * 统计到访还是出访:0.到访(默认) 1.出访
      */
-    private String statisticsType="0";
+    private String statisticsType;
 
     /**
      * 趋势所在年月,默认根据当前时间,格式yyyy-MM-dd
