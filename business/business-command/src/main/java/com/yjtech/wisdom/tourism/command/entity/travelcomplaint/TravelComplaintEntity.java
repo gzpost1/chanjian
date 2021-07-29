@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.yjtech.wisdom.tourism.command.vo.TravelComplaintCreateVO;
+import com.yjtech.wisdom.tourism.command.vo.travelcomplaint.TravelComplaintCreateVO;
 import com.yjtech.wisdom.tourism.common.constant.Constants;
 import com.yjtech.wisdom.tourism.common.enums.TravelComplaintStatusEnum;
 import com.yjtech.wisdom.tourism.common.utils.IdWorker;

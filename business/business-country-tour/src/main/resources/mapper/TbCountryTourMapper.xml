@@ -38,7 +38,7 @@
     </sql>
 
     <select id="statistic" resultType="com.yjtech.wisdom.tourism.common.bean.SelectVo">
-        select type as id, cast((count * 100 / sum) as decimal(38, 2)) as value
+        select type as id, cast((count * 100 / sum) as decimal(38, 1)) as value
         from (select type, count(*) as count
               from tb_country_tour
               where deleted = 0

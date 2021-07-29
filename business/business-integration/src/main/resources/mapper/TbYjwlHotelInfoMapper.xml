@@ -200,10 +200,10 @@
         LEFT JOIN tb_self_hotel_info selfHotel ON selfOrder.hotel_id = selfHotel.hotel_id
         <where>
             <if test="params != null">
-                <if test="params.beginTime != null and params.beginTime !=''">
+                <if test="params.beginTime != null">
                     <![CDATA[ selfOrder.pay_time >= #{params.beginTime} ]]> and
                 </if>
-                <if test="params.endTime != null and params.endTime !=''">
+                <if test="params.endTime != null">
                     <![CDATA[ selfOrder.pay_time <= #{params.endTime} ]]> and
                 </if>
                 <if test="params.areaCode != null and params.areaCode != ''">
@@ -229,10 +229,10 @@
         LEFT JOIN tb_yjwl_hotel_info yjwlHotel ON yjwlOrder.hotel_id = yjwlHotel.hotel_id
         <where>
             <if test="params != null">
-                <if test="params.beginTime != null and params.beginTime !=''">
+                <if test="params.beginTime != null">
                     <![CDATA[ yjwlOrder.pay_time >= #{params.beginTime} ]]> and
                 </if>
-                <if test="params.endTime != null and params.endTime !=''">
+                <if test="params.endTime != null">
                     <![CDATA[ yjwlOrder.pay_time <= #{params.endTime} ]]> and
                 </if>
                 <if test="params.areaCode != null and params.areaCode != ''">
@@ -258,10 +258,10 @@
         LEFT JOIN tb_self_hotel_info selfHotel ON selfOrder.hotel_id = selfHotel.hotel_id
         <where>
             <if test="params != null">
-                <if test="params.beginTime != null and params.beginTime !=''">
+                <if test="params.beginTime != null">
                     <![CDATA[ selfOrder.pay_time >= #{params.beginTime} ]]> and
                 </if>
-                <if test="params.endTime != null and params.endTime !=''">
+                <if test="params.endTime != null">
                     <![CDATA[ selfOrder.pay_time <= #{params.endTime} ]]> and
                 </if>
                 <if test="params.areaCode != null and params.areaCode != ''">
@@ -283,10 +283,10 @@
         LEFT JOIN tb_yjwl_hotel_info yjwlHotel ON yjwlOrder.hotel_id = yjwlHotel.hotel_id
         <where>
             <if test="params != null">
-                <if test="params.beginTime != null and params.beginTime !=''">
+                <if test="params.beginTime != null">
                     <![CDATA[ yjwlOrder.pay_time >= #{params.beginTime} ]]> and
                 </if>
-                <if test="params.endTime != null and params.endTime !=''">
+                <if test="params.endTime != null">
                     <![CDATA[ yjwlOrder.pay_time <= #{params.endTime} ]]> and
                 </if>
                 <if test="params.areaCode != null and params.areaCode != ''">

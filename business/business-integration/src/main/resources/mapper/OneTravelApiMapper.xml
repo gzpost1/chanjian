@@ -194,11 +194,11 @@
 
     <sql id="base_query_condition">
         <if test="params != null">
-            <if test="params.beginTime != null and params.beginTime != ''">
-                <![CDATA[ LEFT(create_time,10) >= #{params.beginTime} ]]> and
+            <if test="params.beginTime != null">
+                <![CDATA[ create_time >= #{params.beginTime} ]]> and
             </if>
-            <if test="params.endTime != null and params.endTime != ''">
-                <![CDATA[ LEFT(create_time,10) <= #{params.endTime} ]]> and
+            <if test="params.endTime != null">
+                <![CDATA[ create_time <= #{params.endTime} ]]> and
             </if>
             <if test="params.complaintStatus != null and params.complaintStatus != ''">
                 <![CDATA[ status = #{params.complaintStatus} ]]> and

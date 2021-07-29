@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yjtech.wisdom.tourism.command.dto.travelcomplaint.TravelComplaintListDTO;
 import com.yjtech.wisdom.tourism.command.entity.travelcomplaint.TravelComplaintEntity;
-import com.yjtech.wisdom.tourism.command.vo.TravelComplaintQueryVO;
+import com.yjtech.wisdom.tourism.command.vo.travelcomplaint.TravelComplaintQueryVO;
 import org.apache.ibatis.annotations.Param;
 
 /**

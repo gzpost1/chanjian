@@ -12,10 +12,10 @@
         <where>
             deleted = 0
             <if test="params != null">
-                <if test="params.beginTime != null and params.beginTime != ''">
+                <if test="params.beginTime != null">
                     and <![CDATA[ create_time >= #{params.beginTime} ]]>
                 </if>
-                <if test="params.endTime != null and params.endTime != ''">
+                <if test="params.endTime != null">
                     and <![CDATA[ create_time <= #{params.endTime} ]]>
                 </if>
                 <if test="params.subMchId != null">
@@ -49,10 +49,10 @@
                 <if test="params.areaCode != null and params.areaCode != ''">
                     place_code LIKE CONCAT(#{params.areaCode},'%') and
                 </if>
-                <if test="params.beginTime != null and params.beginTime != ''">
+                <if test="params.beginTime != null">
                     <![CDATA[ create_time >= #{params.beginTime} ]]> and
                 </if>
-                <if test="params.endTime != null and params.endTime != ''">
+                <if test="params.endTime != null">
                     <![CDATA[ create_time <= #{params.endTime} ]]> and
                 </if>
                 <if test="params.validStatus != null">
@@ -75,10 +75,10 @@
                 <if test="params.areaCode != null and params.areaCode != ''">
                     subMch.place_code LIKE CONCAT(#{params.areaCode},'%') and
                 </if>
-                <if test="params.beginTime != null and params.beginTime != ''">
+                <if test="params.beginTime != null">
                     <![CDATA[ product.create_time >= #{params.beginTime} ]]> and
                 </if>
-                <if test="params.endTime != null and params.endTime != ''">
+                <if test="params.endTime != null">
                     <![CDATA[ product.create_time <= #{params.endTime} ]]> and
                 </if>
                 <if test="params.validStatus != null">
@@ -119,10 +119,10 @@
         LEFT JOIN tb_sub_mch subMch ON orderInfo.sale_sub_merchant_id = subMch.sub_mch_id
         <where>
             <if test="params != null">
-                <if test="params.beginTime != null and params.beginTime !=''">
+                <if test="params.beginTime != null">
                     <![CDATA[ orderInfo.pay_time >= #{params.beginTime} ]]> and
                 </if>
-                <if test="params.endTime != null and params.endTime !=''">
+                <if test="params.endTime != null">
                     <![CDATA[ orderInfo.pay_time <= #{params.endTime} ]]> and
                 </if>
                 <if test="params.areaCode != null and params.areaCode != ''">
@@ -160,10 +160,10 @@
         LEFT JOIN tb_sub_mch subMch ON orderInfo.sale_sub_merchant_id = subMch.sub_mch_id
         <where>
             <if test="params != null">
-                <if test="params.beginTime != null and params.beginTime !=''">
+                <if test="params.beginTime != null">
                     <![CDATA[ orderInfo.pay_time >= #{params.beginTime} ]]> and
                 </if>
-                <if test="params.endTime != null and params.endTime !=''">
+                <if test="params.endTime != null">
                     <![CDATA[ orderInfo.pay_time <= #{params.endTime} ]]> and
                 </if>
                 <if test="params.areaCode != null and params.areaCode != ''">
@@ -209,10 +209,10 @@
         FROM
         ( SELECT belong_sub_merchant_id, current_price, pay_time FROM tb_order
         <where>
-            <if test="params.beginTime != null and params.beginTime !=''">
+            <if test="params.beginTime != null">
                 and  <![CDATA[ pay_time >= #{params.beginTime} ]]>
             </if>
-            <if test="params.endTime != null and params.endTime !=''">
+            <if test="params.endTime != null">
                 and <![CDATA[ pay_time <= #{params.endTime} ]]>
             </if>
             and deleted = 0
@@ -241,10 +241,10 @@
         LEFT JOIN t_product product ON orderInfo.product_id = product.id
         <where>
             <if test="params != null">
-                <if test="params.beginTime != null and params.beginTime !=''">
+                <if test="params.beginTime != null">
                     <![CDATA[ orderInfo.pay_time >= #{params.beginTime} ]]> and
                 </if>
-                <if test="params.endTime != null and params.endTime !=''">
+                <if test="params.endTime != null">
                     <![CDATA[ orderInfo.pay_time <= #{params.endTime} ]]> and
                 </if>
                 <if test="params.productCategoryId != null">
@@ -267,10 +267,10 @@
         LEFT JOIN tb_order orderInfo ON subMch.sub_mch_id = orderInfo.sale_sub_merchant_id
         <where>
             <if test="params != null">
-                <if test="params.beginTime != null and params.beginTime !=''">
+                <if test="params.beginTime != null">
                     <![CDATA[ orderInfo.pay_time >= #{params.beginTime} ]]> and
                 </if>
-                <if test="params.endTime != null and params.endTime !=''">
+                <if test="params.endTime != null">
                     <![CDATA[ orderInfo.pay_time <= #{params.endTime} ]]> and
                 </if>
                 <if test="params.subMchIdList != null">
@@ -343,10 +343,10 @@
 
     <sql id="base_order_subMch_query">
         <if test="params != null">
-            <if test="params.beginTime != null and params.beginTime !=''">
+            <if test="params.beginTime != null">
                 <![CDATA[ orderInfo.pay_time >= #{params.beginTime} ]]> and
             </if>
-            <if test="params.endTime != null and params.endTime !=''">
+            <if test="params.endTime != null">
                 <![CDATA[ orderInfo.pay_time <= #{params.endTime} ]]> and
             </if>
             <if test="params.areaCode != null and params.areaCode != ''">
@@ -366,10 +366,10 @@
 
     <sql id="base_order_query">
         <if test="params != null">
-            <if test="params.beginTime != null and params.beginTime !=''">
+            <if test="params.beginTime != null">
                 <![CDATA[ order_time >= #{params.beginTime} ]]> and
             </if>
-            <if test="params.endTime != null and params.endTime !=''">
+            <if test="params.endTime != null">
                 <![CDATA[ order_time <= #{params.endTime} ]]> and
             </if>
             <if test="params.orderStatusList != null and params.orderStatusList.size > 0">

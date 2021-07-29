@@ -1,4 +1,4 @@
-package com.yjtech.wisdom.tourism.command.vo;
+package com.yjtech.wisdom.tourism.command.vo.travelcomplaint;
 
 import com.yjtech.wisdom.tourism.common.core.domain.PageQuery;
 import lombok.Data;

@@ -67,7 +67,7 @@
     </select>
 
     <select id="queryForPage" resultType="com.yjtech.wisdom.tourism.command.dto.travelcomplaint.TravelComplaintListDTO"
-            parameterType="com.yjtech.wisdom.tourism.command.vo.TravelComplaintQueryVO">
+            parameterType="com.yjtech.wisdom.tourism.command.vo.travelcomplaint.TravelComplaintQueryVO">
         select
         id as id,
         CASE
