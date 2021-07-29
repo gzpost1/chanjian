@@ -2,6 +2,7 @@ package com.yjtech.wisdom.tourism.integration.mapper;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.yjtech.wisdom.tourism.common.bean.AnalysisMonthChartInfo;
 import com.yjtech.wisdom.tourism.common.bean.AreaBaseVO;
 import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
 import com.yjtech.wisdom.tourism.integration.pojo.bo.onetravel.OneTravelAreaVisitStatisticsBO;
@@ -51,13 +52,13 @@ public interface OneTravelApiMapper {
      * 查询微信城市分布
      * @return
      */
-    Long userCityTotalSum();
+    Long queryUserCityTotalSum();
 
     /**
      * 查询微信省级、直辖市、自治区、特别行政区分布
      * @return
      */
-    Long userProvinceTotalSum();
+    Long queryUserProvinceTotalSum();
 
     /**
      * 查询投诉统计
@@ -86,6 +87,20 @@ public interface OneTravelApiMapper {
      * @return
      */
     List<BasePercentVO> queryUserAgeDistribution();
+
+    /**
+     * 查询一码游投诉今年搜索月趋势
+     * @param params
+     * @return
+     */
+    List<AnalysisMonthChartInfo> queryComplaintCurrentAnalysisMonthInfo(@Param("params") OneTravelQueryVO params);
+
+    /**
+     * 查询一码游投诉去年搜索月趋势
+     * @param params
+     * @return
+     */
+    List<AnalysisMonthChartInfo> queryComplaintLastAnalysisMonthInfo(@Param("params") OneTravelQueryVO params);
 
 
 

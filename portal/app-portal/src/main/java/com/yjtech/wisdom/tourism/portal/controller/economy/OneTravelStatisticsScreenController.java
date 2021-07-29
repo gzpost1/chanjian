@@ -1,5 +1,6 @@
 package com.yjtech.wisdom.tourism.portal.controller.economy;
 
+import com.yjtech.wisdom.tourism.common.bean.AnalysisBaseInfo;
 import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.integration.pojo.bo.OperationDataInfo;
@@ -105,6 +106,24 @@ public class OneTravelStatisticsScreenController {
     @PostMapping("queryOrderSumFromProductTypeDistribution")
     public JsonResult<List<BasePercentVO>> queryOrderSumFromProductTypeDistribution(@RequestBody @Valid FxDistQueryVO vo) {
         return JsonResult.success(fxDistApiService.queryOrderSumFromProductTypeDistribution(vo));
+    }
+
+    /**
+     * 查询本年订单趋势
+     * @return
+     */
+    @PostMapping("queryOrderAnalysis")
+    public JsonResult<List<AnalysisBaseInfo>> queryOrderAnalysis(@RequestBody @Valid FxDistQueryVO vo) {
+        return JsonResult.success(fxDistApiService.queryOrderAnalysis(vo));
+    }
+
+    /**
+     * 查询本年交易额趋势
+     * @return
+     */
+    @PostMapping("queryOrderSumAnalysis")
+    public JsonResult<List<AnalysisBaseInfo>> queryOrderSumAnalysis(@RequestBody @Valid FxDistQueryVO vo) {
+        return JsonResult.success(fxDistApiService.queryOrderSumAnalysis(vo));
     }
 
 }
