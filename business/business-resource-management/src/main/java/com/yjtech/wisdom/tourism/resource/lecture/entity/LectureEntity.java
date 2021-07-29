@@ -2,12 +2,12 @@ package com.yjtech.wisdom.tourism.resource.lecture.entity;
 
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -45,7 +45,7 @@ public class LectureEntity implements Serializable {
     /**
      * 关联场馆
      */
-    private String venueId;
+    private Long venueId;
 
     /**
      * 开放日期-开始日期
@@ -115,6 +115,15 @@ public class LectureEntity implements Serializable {
      */
     @TableField(fill = FieldFill.INSERT_UPDATE)
     private Long updateUser;
+
+    /**
+     * 是否删除, 0:否, 1:是
+     */
+    @TableField(fill = FieldFill.INSERT)
+    @TableLogic
+    @JsonIgnore
+    private Byte deleted;
+
 
     /**
      * 启停用状态

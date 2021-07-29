@@ -83,6 +83,9 @@ public class SysUser extends BaseEntity {
   /** 备注 */
   private String remark;
 
+  /** app推送数据所需的token */
+  private String pushToken;
+
   /** 创建时间 */
   @TableField(fill = FieldFill.INSERT)
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

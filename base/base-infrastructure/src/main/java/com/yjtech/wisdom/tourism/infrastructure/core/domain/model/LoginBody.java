@@ -22,4 +22,9 @@ public class LoginBody {
   private String uuid = "";
 
   private Boolean appUser;
+
+  /**
+   * 推送标识
+   */
+  private String pushToken;
 }

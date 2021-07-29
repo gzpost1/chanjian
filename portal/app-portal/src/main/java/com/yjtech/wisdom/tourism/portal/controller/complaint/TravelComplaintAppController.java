@@ -1,13 +1,13 @@
-package com.yjtech.wisdom.tourism.portal.controller.travelcomplaint;
+package com.yjtech.wisdom.tourism.portal.controller.complaint;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.yjtech.wisdom.tourism.command.dto.travelcomplaint.TravelComplaintDTO;
 import com.yjtech.wisdom.tourism.command.dto.travelcomplaint.TravelComplaintListDTO;
 import com.yjtech.wisdom.tourism.command.service.travelcomplaint.TravelComplaintService;
-import com.yjtech.wisdom.tourism.command.vo.TravelComplaintCreateVO;
-import com.yjtech.wisdom.tourism.command.vo.TravelComplaintDealVO;
-import com.yjtech.wisdom.tourism.command.vo.TravelComplaintQueryVO;
-import com.yjtech.wisdom.tourism.command.vo.TravelComplaintUpdateVO;
+import com.yjtech.wisdom.tourism.command.vo.travelcomplaint.TravelComplaintCreateVO;
+import com.yjtech.wisdom.tourism.command.vo.travelcomplaint.TravelComplaintDealVO;
+import com.yjtech.wisdom.tourism.command.vo.travelcomplaint.TravelComplaintQueryVO;
+import com.yjtech.wisdom.tourism.command.vo.travelcomplaint.TravelComplaintUpdateVO;
 import com.yjtech.wisdom.tourism.common.core.domain.IdParam;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.common.enums.TravelComplaintTypeEnum;
@@ -49,10 +49,8 @@ public class TravelComplaintAppController {
      */
     @PostMapping("create")
     public JsonResult create(@RequestBody @Valid TravelComplaintCreateVO vo) {
-        //当投诉类型为其他时，投诉对象不能为空；当投诉类型为非其他时，投诉对象id不能为空
-        Assert.isTrue((TravelComplaintTypeEnum.TRAVEL_COMPLAINT_TYPE_ELSE.getValue().equals(vo.getComplaintType()) && StringUtils.isNotBlank(vo.getComplaintObject()))
-                        || (!TravelComplaintTypeEnum.TRAVEL_COMPLAINT_TYPE_ELSE.getValue().equals(vo.getComplaintType()) && Objects.nonNull(vo.getObjectId())),
-                "新增旅游投诉失败：投诉对象或投诉对象id不能空");
+        //校验投诉类型
+        travelComplaintService.checkType(vo.getComplaintType(), vo.getComplaintObject(), vo.getObjectId());
         return JsonResult.success(travelComplaintService.create(vo));
     }
 
@@ -64,13 +62,8 @@ public class TravelComplaintAppController {
      */
     @PostMapping("update")
     public JsonResult update(@RequestBody @Valid TravelComplaintUpdateVO vo) {
-        if(null != vo.getComplaintType()){
-            //当投诉类型为其他时，投诉对象不能为空；当投诉类型为非其他时，投诉对象id不能为空
-            Assert.isTrue((TravelComplaintTypeEnum.TRAVEL_COMPLAINT_TYPE_ELSE.getValue().equals(vo.getComplaintType()) && StringUtils.isNotBlank(vo.getComplaintObject()))
-                            || (!TravelComplaintTypeEnum.TRAVEL_COMPLAINT_TYPE_ELSE.getValue().equals(vo.getComplaintType()) && Objects.nonNull(vo.getObjectId())),
-                    "新增旅游投诉失败：投诉对象不能空");
-        }
-
+        //校验投诉类型
+        travelComplaintService.checkType(vo.getComplaintType(), vo.getComplaintObject(), vo.getObjectId());
         return JsonResult.success(travelComplaintService.modify(vo));
     }
 

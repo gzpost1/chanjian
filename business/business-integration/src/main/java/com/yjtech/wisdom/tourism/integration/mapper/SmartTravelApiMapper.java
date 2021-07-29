@@ -53,4 +53,11 @@ public interface SmartTravelApiMapper {
      */
     List<SmartTravelScenicReservationAnalysisBO> queryScenicReservationAnalysisList(@Param("params") SmartTravelQueryVO params);
 
+    /**
+     * 查询区域景区数量
+     * @param params
+     * @return
+     */
+    Integer queryScenicCountByArea(@Param("params") SmartTravelQueryVO params);
+
 }

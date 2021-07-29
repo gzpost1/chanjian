@@ -18,6 +18,7 @@
         <if test="params.beginTime != null and params.endTime != null">
             and event_date >= #{params.beginTime} and event_date <![CDATA[<=]]> #{params.endTime}
         </if>
+        and deleted = 0
     </sql>
 
     <!-- 通用查询映射结果 -->
@@ -39,6 +40,7 @@
         <result column="handle_personnel" property="handlePersonnel" />
         <result column="handle_date" property="handleDate" />
         <result column="handle_results" property="handleResults" />
+        <result column="appoint_handle_personnel" property="appointHandlePersonnel" typeHandler="com.yjtech.wisdom.tourism.mybatis.typehandler.JsonTypeHandler"/>
     </resultMap>
 
     <resultMap id="EventListVOMap" type="com.yjtech.wisdom.tourism.command.vo.event.EventListVO">
@@ -50,7 +52,6 @@
         <result column="appoint_handle_personnel" property="appointHandlePersonnel" typeHandler="com.yjtech.wisdom.tourism.mybatis.typehandler.JsonTypeHandler"/>
         <result column="event_status" property="eventStatus" />
         <result column="status" property="status" />
-        <result column="appoint_status" property="appointStatus" />
     </resultMap>
 
     <select id="queryUserById" resultType="com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysUser">
@@ -69,8 +70,7 @@
             event_date,
             address,
             status,
-            appoint_handle_personnel,
-            appoint_status
+            appoint_handle_personnel
         FROM
             `tb_event`
             ${ew.customSqlSegment}
@@ -94,11 +94,13 @@
             handle_personnel,
             handle_date,
             handle_results,
-            create_user
+            create_user,
+             appoint_handle_personnel
         FROM
             `tb_event`
             <where>
                 id = #{id}
+                and deleted = 0
             </where>
     </select>
 
@@ -123,6 +125,7 @@
             <if test="params.beginTime != null and params.endTime != null">
                 and event_date >= #{params.beginTime} and event_date <![CDATA[<]]> #{params.endTime}
             </if>
+            and deleted = 0
         </where>
     </select>
 
@@ -153,6 +156,7 @@
             <if test="params.eventStatus != null and params.eventStatus != ''">
                 and event_status = #{params.eventStatus}
             </if>
+            and deleted = 0
         </where>
     </select>
 

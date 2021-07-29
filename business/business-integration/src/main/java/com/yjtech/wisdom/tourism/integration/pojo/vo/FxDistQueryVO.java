@@ -39,4 +39,14 @@ public class FxDistQueryVO extends TimeBaseQuery {
      */
     private Long productCategoryId;
 
+    /**
+     * 订单状态列表
+     */
+    private List<Byte> orderStatusList;
+
+    /**
+     * 启/停用状态（0：启用 1：禁用）
+     */
+    private Byte validStatus;
+
 }

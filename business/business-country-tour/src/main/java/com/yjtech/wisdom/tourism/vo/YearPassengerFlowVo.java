@@ -1,8 +1,6 @@
 package com.yjtech.wisdom.tourism.vo;
 
-import com.yjtech.wisdom.tourism.dto.vo.UserVo;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -18,7 +16,7 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class YearPassengerFlowVo extends UserVo implements Serializable {
+public class YearPassengerFlowVo implements Serializable {
 
     private static final long serialVersionUID = 8096805950615093800L;
 

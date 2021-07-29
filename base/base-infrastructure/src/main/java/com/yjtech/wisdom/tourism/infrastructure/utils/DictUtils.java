@@ -74,6 +74,9 @@ public class DictUtils {
    * @return 字典标签
    */
   public static String getDictLabel(String dictType, String dictValue, String separator) {
+    if(StringUtils.isBlank(dictValue)){
+      return null;
+    }
     StringBuilder propertyString = new StringBuilder();
     List<SysDictData> datas = getDictCache(dictType);
 

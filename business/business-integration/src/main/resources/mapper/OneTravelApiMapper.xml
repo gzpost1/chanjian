@@ -2,8 +2,49 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yjtech.wisdom.tourism.integration.mapper.OneTravelApiMapper">
 
-    <select id="queryVisitStatistics"
-            resultType="com.yjtech.wisdom.tourism.integration.pojo.bo.onetravel.OneTravelVisitStatisticsBO">
+    <select id="queryVisitStatistics" resultType="com.yjtech.wisdom.tourism.integration.pojo.bo.onetravel.OneTravelVisitStatisticsBO">
+        select
+        SUM(sum_visit_uv_new) as userTotal,
+        (select SUM(visit_times)
+        from tb_magic_visit_pv
+        <where>
+            year = YEAR(now()) and
+            month = MONTH(now()) and
+            day = DAY(now())
+        </where>) as todayActiveUser,
+        SUM(visit_uv) as yesterdayActiveUser,
+        SUM(sum_visit_pv) as visitTotal
+        from
+        tb_wx_visit_pv
+        <where>
+            deleted = 0
+        </where>
+    </select>
+
+    <select id="queryUserAgeDistribution" resultType="com.yjtech.wisdom.tourism.common.bean.BasePercentVO">
+        select
+        name as name,
+        SUM(value) as value,
+        COALESCE (ROUND(SUM(value)/total.totalNum, 3)*100,0) as rate
+        from
+        tb_wx_age_distribution
+        INNER JOIN
+        (select
+        SUM(value) as totalNum
+        from
+        tb_wx_age_distribution
+        <where>
+            deleted = 0
+        </where>
+        ) as total ON 1 = 1
+        <where>
+            deleted = 0
+        </where>
+        GROUP BY name
+    </select>
+
+    <select id="queryCityVisitStatistics"
+            resultType="com.yjtech.wisdom.tourism.integration.pojo.bo.onetravel.OneTravelAreaVisitStatisticsBO">
         SELECT
         a.NAME as name,
         VALUE,
@@ -32,7 +73,7 @@
     </select>
 
     <select id="queryProvinceVisitStatistics"
-            resultType="com.yjtech.wisdom.tourism.integration.pojo.bo.onetravel.OneTravelVisitStatisticsBO">
+            resultType="com.yjtech.wisdom.tourism.integration.pojo.bo.onetravel.OneTravelAreaVisitStatisticsBO">
         select
         CASE
         WHEN visitInfo.name = '香港' or visitInfo.name = '澳门' THEN CONCAT(visitInfo.name, '特别行政区')
@@ -99,7 +140,9 @@
         operate_time as operateTime,
         operate_user_name as operateUser,
         evaluate_content as evaluateContent,
-        evaluate_time as evaluateTime
+        evaluate_time as evaluateTime,
+        longitude as longitude,
+        latitude as latitude
         from
         tb_complaint
         <where>
@@ -108,7 +151,7 @@
         ORDER BY complaint_time DESC
     </select>
 
-    <select id="queryComplaintDistribution" resultType="com.yjtech.wisdom.tourism.common.bean.DistributionBaseInfo"
+    <select id="queryComplaintDistribution" resultType="com.yjtech.wisdom.tourism.common.bean.BasePercentVO"
             parameterType="com.yjtech.wisdom.tourism.integration.pojo.vo.OneTravelQueryVO">
         select
         CASE
@@ -116,8 +159,8 @@
         WHEN status = 2 THEN '已处理'
         WHEN status = 3 THEN '已评价'
         ELSE '其他' END as name,
-        COUNT(id) as number,
-        COALESCE (ROUND(COUNT(id)/total.totalNum, 4),0) as percent
+        COUNT(id) as value,
+        COALESCE (ROUND(COUNT(id)/total.totalNum, 3)*100,0) as rate
         from
         tb_complaint as complaint
         INNER JOIN
@@ -151,11 +194,11 @@
 
     <sql id="base_query_condition">
         <if test="params != null">
-            <if test="params.beginTime != null and params.beginTime != ''">
-                <![CDATA[ LEFT(create_time,10) >= #{params.beginTime} ]]> and
+            <if test="params.beginTime != null">
+                <![CDATA[ create_time >= #{params.beginTime} ]]> and
             </if>
-            <if test="params.endTime != null and params.endTime != ''">
-                <![CDATA[ LEFT(create_time,10) <= #{params.endTime} ]]> and
+            <if test="params.endTime != null">
+                <![CDATA[ create_time <= #{params.endTime} ]]> and
             </if>
             <if test="params.complaintStatus != null and params.complaintStatus != ''">
                 <![CDATA[ status = #{params.complaintStatus} ]]> and

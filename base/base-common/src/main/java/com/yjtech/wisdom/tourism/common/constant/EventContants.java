@@ -23,10 +23,6 @@ public class EventContants {
      */
     public static  final  String EVENT_TYPE = "event_type";
 
-    /**
-     * 事件指派状态 key
-     */
-    public static  final  String EVENT_APPOINT_STATUS = "event_appoint_status";
 
     /**
      * 处理状态
@@ -37,6 +33,11 @@ public class EventContants {
      * 事件来源
      */
     public static  final  String EVENT_SOURCE = "event_source";
+
+    /**
+     * 未指派
+     */
+    public static final String UNASSIGNED = "0";
 
     /**
      * 未处理
@@ -131,15 +132,8 @@ public class EventContants {
     public static final String APP_SOURCE = "3";
 
 
-    /**
-     * 未指派
-     */
-    public static final String UNASSIGNED = "1";
 
-    /**
-     * 已指派
-     */
-    public static final String ASSIGNED = "2";
+
 
 
 }

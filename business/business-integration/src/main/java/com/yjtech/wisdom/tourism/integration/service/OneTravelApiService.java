@@ -4,8 +4,9 @@ import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yjtech.wisdom.tourism.common.bean.AreaBaseVO;
-import com.yjtech.wisdom.tourism.common.bean.DistributionBaseInfo;
+import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
 import com.yjtech.wisdom.tourism.integration.mapper.OneTravelApiMapper;
+import com.yjtech.wisdom.tourism.integration.pojo.bo.onetravel.OneTravelAreaVisitStatisticsBO;
 import com.yjtech.wisdom.tourism.integration.pojo.bo.onetravel.OneTravelComplaintListBO;
 import com.yjtech.wisdom.tourism.integration.pojo.bo.onetravel.OneTravelMagicVisitPvBO;
 import com.yjtech.wisdom.tourism.integration.pojo.bo.onetravel.OneTravelVisitStatisticsBO;
@@ -29,14 +30,24 @@ public class OneTravelApiService {
     @Resource
     private OneTravelApiMapper oneTravelApiMapper;
 
+
+    /**
+     * 查询访问统计
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public OneTravelVisitStatisticsBO queryVisitStatistics(){
+        return oneTravelApiMapper.queryVisitStatistics();
+    }
+
     /**
      * 查询市级访问统计
      * @param vo
      * @return
      */
     @Transactional(readOnly = true)
-    public List<OneTravelVisitStatisticsBO> queryVisitStatistics(AreaBaseVO vo) {
-        List<OneTravelVisitStatisticsBO> visitStatisticsList = oneTravelApiMapper.queryVisitStatistics(vo);
+    public List<OneTravelAreaVisitStatisticsBO> queryCityVisitStatistics(AreaBaseVO vo) {
+        List<OneTravelAreaVisitStatisticsBO> visitStatisticsList = oneTravelApiMapper.queryCityVisitStatistics(vo);
 
         double Proportion = 0;
         OneTravelMagicVisitPvBO magicVisitPvEntity = oneTravelApiMapper.queryDailySum();
@@ -44,7 +55,7 @@ public class OneTravelApiService {
             Proportion = magicVisitPvEntity.getMagicData() / 10;
         }
 
-        for (OneTravelVisitStatisticsBO visitStatisticsBO : visitStatisticsList) {
+        for (OneTravelAreaVisitStatisticsBO visitStatisticsBO : visitStatisticsList) {
             visitStatisticsBO.setValue((long) (visitStatisticsBO.getValue() + visitStatisticsBO.getValue() * Proportion / oneTravelApiMapper.userCityTotalSum()));
         }
 
@@ -56,17 +67,17 @@ public class OneTravelApiService {
      * @return
      */
     @Transactional(readOnly = true)
-    public List<OneTravelVisitStatisticsBO> queryProvinceVisitStatistics() {
-        List<OneTravelVisitStatisticsBO> visitStatisticsList = oneTravelApiMapper.queryProvinceVisitStatistics();
+    public List<OneTravelAreaVisitStatisticsBO> queryProvinceVisitStatistics() {
+        List<OneTravelAreaVisitStatisticsBO> visitStatisticsList = oneTravelApiMapper.queryProvinceVisitStatistics();
 
-        double Proportion = 0;
+        double proportion = 0;
         OneTravelMagicVisitPvBO magicVisitPvEntity = oneTravelApiMapper.queryDailySum();
         if (magicVisitPvEntity != null) {
-            Proportion = magicVisitPvEntity.getMagicData() / 10;
+            proportion = magicVisitPvEntity.getMagicData() / 10.0;
         }
 
-        for (OneTravelVisitStatisticsBO visitStatisticsBO : visitStatisticsList) {
-            visitStatisticsBO.setValue((long) (visitStatisticsBO.getValue() + visitStatisticsBO.getValue() * Proportion / oneTravelApiMapper.userProvinceTotalSum()));
+        for (OneTravelAreaVisitStatisticsBO visitStatisticsBO : visitStatisticsList) {
+            visitStatisticsBO.setValue((long) (visitStatisticsBO.getValue() + visitStatisticsBO.getValue() * proportion / oneTravelApiMapper.userProvinceTotalSum()));
         }
 
         return visitStatisticsList;
@@ -98,8 +109,17 @@ public class OneTravelApiService {
      * @return
      */
     @Transactional(readOnly = true)
-    public List<DistributionBaseInfo> queryComplaintDistribution(OneTravelQueryVO vo){
+    public List<BasePercentVO> queryComplaintDistribution(OneTravelQueryVO vo){
         return oneTravelApiMapper.queryComplaintDistribution(vo);
+    }
+
+    /**
+     * 查询用户年龄分布
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public List<BasePercentVO> queryUserAgeDistribution(){
+        return oneTravelApiMapper.queryUserAgeDistribution();
     }
 
 }

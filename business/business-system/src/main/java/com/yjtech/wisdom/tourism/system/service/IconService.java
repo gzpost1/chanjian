@@ -9,6 +9,7 @@ import com.google.common.collect.Lists;
 import com.yjtech.wisdom.tourism.common.exception.CustomException;
 import com.yjtech.wisdom.tourism.common.exception.ErrorCode;
 import com.yjtech.wisdom.tourism.common.utils.StringUtils;
+import com.yjtech.wisdom.tourism.redis.RedisCache;
 import com.yjtech.wisdom.tourism.system.domain.Icon;
 import com.yjtech.wisdom.tourism.system.domain.IconDetail;
 import com.yjtech.wisdom.tourism.system.domain.IconSpotEnum;
@@ -40,8 +41,13 @@ public class IconService extends ServiceImpl<IconMapper, Icon> {
      */
     private static final String DICT_KEY_CONFIG_SPOT_TYPE = "config_spot_type";
 
+    private static final String ICON_REDIS_KEY = "system_icon:";
+
     @Autowired
     private SysDictDataService dictDataService;
+
+    @Autowired
+    private RedisCache redisCache;
 
     @Transactional(rollbackFor = Exception.class)
     public void replaceInto(List<Icon> list) {
@@ -50,6 +56,14 @@ public class IconService extends ServiceImpl<IconMapper, Icon> {
 
     public void saveIcon(Icon icon) {
         replaceInto(Lists.newArrayList(icon));
+
+        // 更新缓存
+        redisCache.setCacheObject(getCacheKey(icon.getType()), icon);
+    }
+
+    public void removeIcon(Icon icon) {
+        this.removeById(icon.getId());
+        redisCache.deleteObject(getCacheKey(icon.getType()));
     }
 
     public Icon getIconById(Long id) {
@@ -97,13 +111,24 @@ public class IconService extends ServiceImpl<IconMapper, Icon> {
             return null;
         }
 
-        Icon icon = baseMapper.queryIconByType(iconSpotEnum.getValue());
+        Icon icon = redisCache.getCacheObject(getCacheKey(iconSpotEnum.getValue()));
+        if (Objects.isNull(icon)) {
+            icon = baseMapper.queryIconByType(iconSpotEnum.getValue());
+            Optional.ofNullable(icon).ifPresent(entity -> {
+                // 更新缓存
+                redisCache.setCacheObject(getCacheKey(entity.getType()), entity);
+            });
+        }
 
         if (Objects.isNull(icon)) {
             return null;
         }
 
         return icon.getUrl();
+    }
+
+    private String getCacheKey(String type) {
+        return ICON_REDIS_KEY + "type_" + type;
     }
 
 }

@@ -73,10 +73,10 @@
                 <if test="params.areaCode != null and params.areaCode != ''">
                     AND b.area_code like CONCAT(#{params.areaCode},'%')
                 </if>
-                <if test="params.beginTime != null and params.beginTime !=''">
+                <if test="params.beginTime != null">
                     AND <![CDATA[ reservation.reservation_date >= #{params.beginTime} ]]>
                 </if>
-                <if test="params.endTime != null and params.endTime !=''">
+                <if test="params.endTime != null">
                     AND <![CDATA[ reservation.reservation_date <= #{params.endTime} ]]>
                 </if>
             </if>
@@ -109,10 +109,10 @@
         LEFT JOIN tb_scenic_info scenic ON reservation.scenic_id = scenic.scenic_id
         <where>
             <if test="params != null">
-                <if test="params.beginTime != null and params.beginTime !=''">
+                <if test="params.beginTime != null">
                     <![CDATA[ reservation.reservation_date >= #{params.beginTime} ]]> and
                 </if>
-                <if test="params.endTime != null and params.endTime !=''">
+                <if test="params.endTime != null">
                     <![CDATA[ reservation.reservation_date <= #{params.endTime} ]]> and
                 </if>
                 <if test="params.areaCode != null and params.areaCode != ''">
@@ -143,10 +143,10 @@
         LEFT JOIN tb_reservation_record reservation ON scenic.scenic_id = reservation.scenic_id
         <where>
             <if test="params != null">
-                <if test="params.beginTime != null and params.beginTime !=''">
+                <if test="params.beginTime != null">
                     <![CDATA[ reservation.reservation_date >= #{params.beginTime} ]]> and
                 </if>
-                <if test="params.endTime != null and params.endTime !=''">
+                <if test="params.endTime != null">
                     <![CDATA[ reservation.reservation_date <= #{params.endTime} ]]> and
                 </if>
                 <if test="params.areaCode != null and params.areaCode != ''">
@@ -177,10 +177,10 @@
         FROM
         ( SELECT scenic_id, reservation_date FROM `tb_reservation_record`
         <where>
-            <if test="params.beginTime != null and params.beginTime !=''">
+            <if test="params.beginTime != null">
                 and <![CDATA[ reservation_date >= #{params.beginTime} ]]>
             </if>
-            <if test="params.endTime != null and params.endTime !=''">
+            <if test="params.endTime != null">
                 and <![CDATA[ reservation_date <= #{params.endTime} ]]>
             </if>
             and deleted = 0
@@ -199,5 +199,29 @@
         DATE_FORMAT( reservation_date, #{params.sqlDateFormat} )
     </select>
 
+    <select id="queryScenicCountByArea" resultType="integer"
+            parameterType="com.yjtech.wisdom.tourism.integration.pojo.vo.SmartTravelQueryVO">
+        select
+        COUNT(scenic_id)
+        from
+        tb_scenic_info
+        <where>
+            <if test="params != null">
+                <if test="params.areaCode != null and params.areaCode != ''">
+                    area_id LIKE CONCAT(#{params.areaCode},'%') and
+                </if>
+                <if test="params.beginTime != null">
+                    <![CDATA[ create_time >= #{params.beginTime} ]]> and
+                </if>
+                <if test="params.endTime != null">
+                    <![CDATA[ create_time <= #{params.endTime} ]]> and
+                </if>
+                <if test="params.validStatus != null">
+                    status = #{params.validStatus} and
+                </if>
+            </if>
+            deleted = 0
+        </where>
+    </select>
 
 </mapper>

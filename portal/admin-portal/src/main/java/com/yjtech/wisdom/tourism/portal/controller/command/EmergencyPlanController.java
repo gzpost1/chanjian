@@ -26,9 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * <p>
- * 应急预案 前端控制器
- * </p>
+ * 应急预案
  *
  * @author wuyongchong
  * @since 2021-07-19

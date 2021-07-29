@@ -148,5 +148,8 @@ public class AppEventDetail implements Serializable {
      */
     private Boolean appointPersonnel;
 
-
+    /**
+     * 指定处理人
+     */
+    private List<String> appointHandlePersonnel;
 }

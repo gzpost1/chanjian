@@ -22,6 +22,7 @@
         <module>business-integration</module>
         <module>business-country-tour</module>
         <module>business-message</module>
+        <module>business-decision-support</module>
     </modules>
 
 </project>

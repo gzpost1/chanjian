@@ -73,11 +73,11 @@ public class EventService extends ServiceImpl<EventMapper, EventEntity> {
         Integer processed = this.getBaseMapper().queryQuantityByStatus(statusQuery);
         BigDecimal sum = new BigDecimal(String.valueOf(untreated + processed));
 
-        double untreatedRate = sum.compareTo(BigDecimal.ZERO) == 0 ? 0D : MathUtil.calPercent(new BigDecimal(String.valueOf(untreated)), sum, 1).doubleValue();
+        double untreatedRate = sum.compareTo(BigDecimal.ZERO) == 0 ? 0D : MathUtil.calPercent(new BigDecimal(String.valueOf(untreated)), sum, 3).doubleValue();
         result.add(BasePercentVO.builder().name("untreated").value(String.valueOf(untreated))
                 .rate(untreatedRate).build());
 
-        double processedRate = sum.compareTo(BigDecimal.ZERO) == 0 ? 0D : MathUtil.calPercent(new BigDecimal(String.valueOf(processed)), sum, 1).doubleValue();
+        double processedRate = sum.compareTo(BigDecimal.ZERO) == 0 ? 0D : MathUtil.calPercent(new BigDecimal(String.valueOf(processed)), sum, 3).doubleValue();
         result.add(BasePercentVO.builder().name("processed").value(String.valueOf(processed))
                 .rate(processedRate).build());
         return result;
@@ -93,11 +93,11 @@ public class EventService extends ServiceImpl<EventMapper, EventEntity> {
         ArrayList<BaseVO> result = Lists.newArrayList();
         for (SysDictData sysDictData : dictCache) {
             if (map.containsKey(sysDictData.getDictValue())) {
-                double value = sum.compareTo(BigDecimal.ZERO) == 0 ? 0D : MathUtil.calPercent(new BigDecimal(map.get(sysDictData.getDictValue())), sum, 1).doubleValue();
+                double value = sum.compareTo(BigDecimal.ZERO) == 0 ? 0D : MathUtil.calPercent(new BigDecimal(map.get(sysDictData.getDictValue())), sum, 3).doubleValue();
                 result.add(BasePercentVO.builder().name(sysDictData.getDictLabel()).value(map.get(sysDictData.getDictValue()))
                         .rate(value).build());
             } else {
-                double value = sum.compareTo(BigDecimal.ZERO) == 0 ? 0D : MathUtil.calPercent(new BigDecimal("0"), sum, 1).doubleValue();
+                double value = sum.compareTo(BigDecimal.ZERO) == 0 ? 0D : MathUtil.calPercent(new BigDecimal("0"), sum, 3).doubleValue();
                 result.add(BasePercentVO.builder().name(sysDictData.getDictLabel()).value("0")
                         .rate(value).build());
             }
@@ -116,11 +116,11 @@ public class EventService extends ServiceImpl<EventMapper, EventEntity> {
         ArrayList<BaseVO> result = Lists.newArrayList();
         for(SysDictData sysDictData:dictCache){
             if(map.containsKey(sysDictData.getDictValue())){
-                double value = sum.compareTo(BigDecimal.ZERO) == 0 ? 0D : MathUtil.calPercent(new BigDecimal(map.get(sysDictData.getDictValue())), sum, 1).doubleValue();
+                double value = sum.compareTo(BigDecimal.ZERO) == 0 ? 0D : MathUtil.calPercent(new BigDecimal(map.get(sysDictData.getDictValue())), sum, 3).doubleValue();
                 result.add(BasePercentVO.builder().name(sysDictData.getDictLabel()).value(map.get(sysDictData.getDictValue()))
                         .rate(value).build());
             }else {
-                double value = sum.compareTo(BigDecimal.ZERO) == 0 ? 0D : MathUtil.calPercent(new BigDecimal("0"), sum, 1).doubleValue();
+                double value = sum.compareTo(BigDecimal.ZERO) == 0 ? 0D : MathUtil.calPercent(new BigDecimal("0"), sum, 3).doubleValue();
                 result.add(BasePercentVO .builder().name(sysDictData.getDictLabel()).value("0")
                         .rate(value).build());
             }
@@ -132,13 +132,9 @@ public class EventService extends ServiceImpl<EventMapper, EventEntity> {
         AssertUtil.isFalse(createDto.getEventDate().isAfter(LocalDate.now()), "事件日期只能选择早于或等于当前日期的日期");
         EventEntity EventEntity = new EventEntity();
         BeanUtils.copyProperties(createDto, EventEntity);
-        //默认事件状态为未处理
-        EventEntity.setEventStatus(EventContants.UNTREATED);
-        //默认为未指派
-        EventEntity.setAppointStatus(EventContants.UNASSIGNED);
+        //默认事件状态为待指派
+        EventEntity.setEventStatus(EventContants.UNASSIGNED);
         this.save(EventEntity);
-
-        //TODO 发送消息
         return EventEntity;
     }
 
@@ -190,10 +186,10 @@ public class EventService extends ServiceImpl<EventMapper, EventEntity> {
         queryWrapper.like(StringUtils.isNotBlank(query.getName()), EventEntity::getName, query.getName());
         queryWrapper.eq(StringUtils.isNotBlank(query.getEventType()), EventEntity::getEventType, query.getEventType());
         queryWrapper.eq(StringUtils.isNotBlank(query.getEventStatus()), EventEntity::getEventStatus, query.getEventStatus());
+        queryWrapper.eq(Objects.nonNull(query.getStatus()), EventEntity::getStatus, query.getStatus());
+        queryWrapper.eq( EventEntity::getDeleted, EntityConstants.NOT_DELETED);
         queryWrapper.ge(Objects.nonNull(query.getBeginTime()), EventEntity::getEventDate, query.getBeginTime());
         queryWrapper.le(Objects.nonNull(query.getEndTime()), EventEntity::getEventDate, query.getEndTime());
-        queryWrapper.eq(StringUtils.isNotBlank(query.getAppointStatus()), EventEntity::getAppointStatus, query.getAppointStatus());
-        queryWrapper.orderByAsc(EventEntity::getAppointStatus);
         queryWrapper.orderByAsc(EventEntity::getEventStatus);
         queryWrapper.orderByDesc(EventEntity::getCreateTime);
         return queryWrapper;
@@ -216,6 +212,12 @@ public class EventService extends ServiceImpl<EventMapper, EventEntity> {
                     vo.setEventStatusName(DictUtils.getDictLabel(EventContants.EVENT_STATUS, String.valueOf(vo.getEventStatus())));
                 });
         Set<Long> userIds = list.stream().filter(vo -> Objects.nonNull(vo.getCreateUser())).map(AppEventDetail::getCreateUser).collect(Collectors.toSet());
+
+        for(AppEventDetail event : list){
+            if(CollectionUtils.isNotEmpty(event.getAppointHandlePersonnel())){
+                userIds.addAll(new HashSet(event.getAppointHandlePersonnel()));
+            }
+        }
         if (CollectionUtils.isEmpty(userIds)) {
             return;
         }
@@ -224,6 +226,14 @@ public class EventService extends ServiceImpl<EventMapper, EventEntity> {
             list.stream().map(vo -> {
                 SysUser sysUser = longSysUserMap.get(vo.getCreateUser());
                 vo.setCreateUserName(Objects.isNull(sysUser) ? null : sysUser.getNickName());
+                ArrayList<String> userName = Lists.newArrayList();
+                if(CollectionUtils.isNotEmpty(vo.getAppointHandlePersonnel())){
+                    for(String userId : vo.getAppointHandlePersonnel()){
+                        SysUser sysUser1 = longSysUserMap.get(Long.valueOf(userId));
+                        userName.add(Objects.isNull(sysUser1) ? null : sysUser.getNickName());
+                    }
+                }
+                vo.setAppointHandlePersonnel(userName);
                 return vo;
             }).collect(Collectors.toList());
         }
@@ -275,7 +285,6 @@ public class EventService extends ServiceImpl<EventMapper, EventEntity> {
                     vo.setEventTypeName(DictUtils.getDictLabel(EventContants.EVENT_TYPE, vo.getEventType()));
                     vo.setEventStatusName(DictUtils.getDictLabel(EventContants.EVENT_STATUS, String.valueOf(vo.getEventStatus())));
                     vo.setStatusName(Objects.equals(EntityConstants.ENABLED, vo.getStatus()) ? "启用" : "停用");
-                    vo.setAppointStatusName(DictUtils.getDictLabel(EventContants.EVENT_APPOINT_STATUS, vo.getAppointStatus()));
                 });
     }
 }

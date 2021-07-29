@@ -34,9 +34,8 @@ public class EventQuery extends PageQuery {
     private Date endTime;
 
     /**
-     * 指派状态  1未指派 2 已指派
+     * 状态(0:禁用,1:正常)
      */
-    private String appointStatus;
-
+    private Byte status;
 
 }
