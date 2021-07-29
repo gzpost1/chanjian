@@ -79,7 +79,7 @@ public class MessageEntity implements Serializable {
     /**
      * 事件/投诉 处理人Id
      */
-    private Long eventDealPersonId;
+    private String eventDealPersonId;
 
     /**
      * 事件处理跳转的 URL

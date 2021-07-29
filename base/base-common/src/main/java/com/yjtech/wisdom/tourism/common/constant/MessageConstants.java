@@ -44,6 +44,15 @@ public class MessageConstants {
      */
     public final static String event_content = "事件名称：%s";
 
+    /**
+     * 消息记录缓存key
+     */
+    public final static String MESSAGE_RECORD_NUM = "MESSAGE_RECORD_NUM_";
+
+     /**
+     * 消息列表查询类型_全部
+     */
+    public final static int MESSAGE_LIST_ALL = 0;
 
 
 
