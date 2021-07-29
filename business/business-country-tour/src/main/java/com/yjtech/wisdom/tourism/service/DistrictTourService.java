@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
+import com.yjtech.wisdom.tourism.common.constant.DistrictBigDataConstants;
 import com.yjtech.wisdom.tourism.common.path.DistrictPathEnum;
 import com.yjtech.wisdom.tourism.common.utils.DateTimeUtil;
 import com.yjtech.wisdom.tourism.common.utils.JsonUtils;
@@ -12,12 +13,14 @@ import com.yjtech.wisdom.tourism.dto.MonthPassengerFlowDto;
 import com.yjtech.wisdom.tourism.dto.VisitorDto;
 import com.yjtech.wisdom.tourism.dto.YearPassengerFlowDto;
 import com.yjtech.wisdom.tourism.integration.service.DistrictBigDataService;
+import com.yjtech.wisdom.tourism.system.service.SysConfigService;
 import com.yjtech.wisdom.tourism.vo.DataOverviewVo;
 import com.yjtech.wisdom.tourism.vo.MonthPassengerFlowVo;
 import com.yjtech.wisdom.tourism.vo.VisitorVo;
 import com.yjtech.wisdom.tourism.vo.YearPassengerFlowVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -36,6 +39,12 @@ public class DistrictTourService {
 
     @Autowired
     private DistrictBigDataService districtBigDataService;
+
+    @Autowired
+    private SysConfigService sysConfigService;
+
+    @Value("${tourist.configAreaCodeKey}")
+    private String configAreaCodeKey;
 
     /**
      * 查询游客总数据-数据总览
@@ -82,10 +91,14 @@ public class DistrictTourService {
     /**
      * 本年客流趋势
      *
-     * @param vo
      * @return
      */
-    public List<YearPassengerFlowDto> queryYearPassengerFlow (YearPassengerFlowVo vo) {
+    public List<YearPassengerFlowDto> queryYearPassengerFlow () {
+        String areaCode = sysConfigService.selectConfigByKey(configAreaCodeKey);
+        YearPassengerFlowVo vo = YearPassengerFlowVo.builder()
+                .adcode(areaCode)
+                .statisticsType(DistrictBigDataConstants.YEAR_PASSENGER_FLOW_VISIT_IN)
+                .build();
         List<YearPassengerFlowDto> result = JSONObject.parseArray(
                 String.valueOf(
                         JsonUtils.getValueByKey(
@@ -145,12 +158,16 @@ public class DistrictTourService {
     /**
      * 本月客流趋势
      *
-     * @param vo
      * @return
      */
-    public List<MonthPassengerFlowDto> queryMonthPassengerFlow (MonthPassengerFlowVo vo) {
-        // 日期往前设置一天
-        vo.setBeginDate(DateTimeUtil.getBeforeDayDate(vo.getBeginDate()));
+    public List<MonthPassengerFlowDto> queryMonthPassengerFlow () {
+        String areaCode = sysConfigService.selectConfigByKey(configAreaCodeKey);
+        MonthPassengerFlowVo vo = new MonthPassengerFlowVo();
+        vo.setAdcode(areaCode);
+        vo.setBeginDate(DateTimeUtil.getCurrentLastMonthLastDayStr());
+        vo.setEndDate(DateTimeUtil.getCurrentDate());
+        vo.setStatisticsType(DistrictBigDataConstants.MONTH_PASSENGER_FLOW_VISIT_IN);
+
         String result = districtBigDataService.requestDistrict(DistrictPathEnum.MONTH_PASSENGER_FLOW.getPath(), vo, DistrictPathEnum.MONTH_PASSENGER_FLOW.getDesc());
         // 当月数据
         List<MonthPassengerFlowDto> currentMonth = JSONObject.parseArray(String.valueOf(JsonUtils.getValueByKey(result, "data")), MonthPassengerFlowDto.class);

@@ -1,17 +1,22 @@
 package com.yjtech.wisdom.tourism.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.yjtech.wisdom.tourism.infrastructure.constant.EntityConstants;
+import com.yjtech.wisdom.tourism.mybatis.typehandler.JsonTypeHandler;
 import com.yjtech.wisdom.tourism.mybatis.typehandler.ListObjectJsonTypeHandler;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 乡村游
@@ -91,8 +96,8 @@ public class TbCountryTour implements Serializable {
     /**
      * 其他图片
      */
-    @TableField(value = "images",typeHandler = ListObjectJsonTypeHandler.class)
-    private String images;
+    @TableField(value = "images", typeHandler = JsonTypeHandler.class)
+    private List<String> images;
 
     /**
      * 简介
@@ -103,13 +108,17 @@ public class TbCountryTour implements Serializable {
      * 创建时间
      */
     @TableField(fill = FieldFill.INSERT)
-    private Date createTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createTime;
 
     /**
      * 更新时间
      */
     @TableField(fill = FieldFill.INSERT_UPDATE)
-    private Date updateTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime updateTime;
 
     /**
      * 创建人ID

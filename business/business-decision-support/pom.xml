@@ -15,6 +15,7 @@
         <base-infrastructure.version>1.0-SNAPSHOT</base-infrastructure.version>
         <business-system.version>1.0-SNAPSHOT</business-system.version>
         <business-integration.version>1.0-SNAPSHOT</business-integration.version>
+        <business-country-tour.version>1.0-SNAPSHOT</business-country-tour.version>
     </properties>
 
     <dependencies>
@@ -29,6 +30,12 @@
             <groupId>com.yjtech.wisdom.tourism</groupId>
             <artifactId>business-integration</artifactId>
             <version>${business-integration.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.yjtech.wisdom.tourism</groupId>
+            <artifactId>business-country-tour</artifactId>
+            <version>${business-country-tour.version}</version>
         </dependency>
 
     </dependencies>

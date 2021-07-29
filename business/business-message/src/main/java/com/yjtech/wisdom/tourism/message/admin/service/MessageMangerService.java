@@ -141,13 +141,14 @@ public class MessageMangerService extends ServiceImpl<MessageMapper, MessageEnti
      * @param eventDealPersonIdStr
      */
     public void sendAndRecord(SendMessageVo vo, MessageEntity messageEntity, Long[] eventDealPersonId, String eventDealPersonIdStr) {
-        // 历史记录
-        MessageRecordEntity recordEntity = MessageRecordEntity.builder()
-                .content(vo.getContent())
-                .eventId(vo.getEventId())
-                .build();
 
         for (Integer sendType : vo.getSendType()) {
+            // 历史记录
+            MessageRecordEntity recordEntity = MessageRecordEntity.builder()
+                    .content(vo.getContent())
+                    .eventId(vo.getEventId())
+                    .build();
+
             switch (sendType) {
                 // 后台
                 case 0:
