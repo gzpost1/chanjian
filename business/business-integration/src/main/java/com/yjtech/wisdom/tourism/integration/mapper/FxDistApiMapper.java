@@ -1,6 +1,7 @@
 package com.yjtech.wisdom.tourism.integration.mapper;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
+import com.yjtech.wisdom.tourism.common.bean.AnalysisMonthChartInfo;
 import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
 import com.yjtech.wisdom.tourism.integration.pojo.bo.fxdist.*;
 import com.yjtech.wisdom.tourism.integration.pojo.vo.FxDistQueryVO;
@@ -101,5 +102,33 @@ public interface FxDistApiMapper {
      * @return
      */
     List<BasePercentVO> queryOrderSumFromProductTypeDistribution(@Param("params") FxDistQueryVO params);
+
+    /**
+     * 查询订单量今年搜索月趋势
+     * @param params
+     * @return
+     */
+    List<AnalysisMonthChartInfo> queryOrderCurrentAnalysisMonthInfo(@Param("params") FxDistQueryVO params);
+
+    /**
+     * 查询订单量去年搜索月趋势
+     * @param params
+     * @return
+     */
+    List<AnalysisMonthChartInfo> queryOrderLastAnalysisMonthInfo(@Param("params") FxDistQueryVO params);
+
+    /**
+     * 查询订单总额今年搜索月趋势
+     * @param params
+     * @return
+     */
+    List<AnalysisMonthChartInfo> queryOrderSumCurrentAnalysisMonthInfo(@Param("params") FxDistQueryVO params);
+
+    /**
+     * 查询订单总额去年搜索月趋势
+     * @param params
+     * @return
+     */
+    List<AnalysisMonthChartInfo> queryOrderSumLastAnalysisMonthInfo(@Param("params") FxDistQueryVO params);
 
 }

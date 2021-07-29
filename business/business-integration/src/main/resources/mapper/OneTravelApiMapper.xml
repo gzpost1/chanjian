@@ -179,17 +179,96 @@
     </select>
 
     <!-- 查询微信城市分布 -->
-    <select id="userCityTotalSum" resultType="long">
+    <select id="queryUserCityTotalSum" resultType="long">
         SELECT
         SUM(value) as sumValue
         FROM tb_wx_city_distributed
     </select>
 
     <!-- 查询微信省级、直辖市、自治区、特别行政区分布 -->
-    <select id="userProvinceTotalSum" resultType="long">
+    <select id="queryUserProvinceTotalSum" resultType="long">
         SELECT
         SUM(value) as sumValue
         FROM tb_wx_user_world
+    </select>
+
+    <!-- 查询一码游投诉今年搜索月趋势 -->
+    <select id="queryComplaintCurrentAnalysisMonthInfo" parameterType="com.yjtech.wisdom.tourism.integration.pojo.vo.OneTravelQueryVO"
+            resultType="com.yjtech.wisdom.tourism.common.bean.AnalysisMonthChartInfo">
+        SELECT
+        DATE_FORMAT(a.complaint_time,#{params.sqlDateFormat}) as time,
+        COUNT(a.id) as count,
+        ROUND(((COUNT(a.id) -
+        (select
+        COUNT(id)
+        from
+        tb_complaint
+        <where>
+            <if test="params.areaCode != null and params.areaCode != ''">
+                area_code like CONCAT('${params.areaCode}','%' ) and
+            </if>
+            complaint_time like concat(left((SELECT DATE_SUB(a.complaint_time,INTERVAL 1 YEAR)),7),'%') and
+            deleted = 0
+        </where>
+        ))/(select COUNT(id)
+        from
+        tb_complaint
+        <where>
+            <if test="params.areaCode != null and params.areaCode != ''">
+                area_code like CONCAT('${params.areaCode}','%' ) and
+            </if>
+            complaint_time like concat(left((SELECT DATE_SUB(a.complaint_time,INTERVAL 1 YEAR)),7),'%')and
+            deleted = 0
+        </where>
+        )),3)*100 as same,
+        ROUND(((COUNT(a.id) -
+        (select COUNT(id)
+        from
+        tb_complaint
+        <where>
+            <if test="params.areaCode != null and params.areaCode != ''">
+                area_code like CONCAT('${params.areaCode}','%' ) and
+            </if>
+            complaint_time like concat(left((SELECT DATE_SUB(a.complaint_time,INTERVAL 1 MONTH)),7),'%')and
+            deleted = 0
+        </where>
+        ))/(select COUNT(id)
+        from
+        tb_complaint
+        <where>
+            <if test="params.areaCode != null and params.areaCode != ''">
+                area_code like CONCAT('${params.areaCode}','%' ) and
+            </if>
+            complaint_time like concat(left((SELECT DATE_SUB(a.complaint_time,INTERVAL 1 MONTH)),7),'%')and
+            deleted = 0
+        </where>
+        )),3)*100 as sequential
+        from tb_complaint a
+        <where>
+            <if test="params.areaCode != null and params.areaCode != ''">
+                area_code like CONCAT('${params.areaCode}','%' ) and
+            </if>
+            <![CDATA[ a.complaint_time >= CONCAT(YEAR(now()),'-01-01 00:00:00') and ]]>
+            <![CDATA[ a.complaint_time <= CONCAT(YEAR(now()),'-12-31 23:59:59') and ]]>
+            deleted = 0
+        </where>
+        GROUP BY DATE_FORMAT(a.complaint_time,#{params.sqlDateFormat})
+    </select>
+
+    <!-- 查询一码游投诉去年搜索月趋势 -->
+    <select id="queryComplaintLastAnalysisMonthInfo" parameterType="com.yjtech.wisdom.tourism.integration.pojo.vo.OneTravelQueryVO"
+            resultType="com.yjtech.wisdom.tourism.common.bean.AnalysisMonthChartInfo">
+        SELECT
+        DATE_FORMAT(complaint_time,#{params.sqlDateFormat}) as time,
+        COUNT(id) as count
+        from tb_complaint
+        <where>
+            <if test="params.areaCode != null and params.areaCode != ''">
+                area_code like CONCAT('${params.areaCode}','%' ) and
+            </if>
+            complaint_time like concat(YEAR(now())-1,'%')
+        </where>
+        GROUP BY DATE_FORMAT(complaint_time,#{params.sqlDateFormat})
     </select>
 
     <sql id="base_query_condition">
