@@ -3,6 +3,7 @@ package com.yjtech.wisdom.tourism.entity;
 import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.yjtech.wisdom.tourism.infrastructure.constant.EntityConstants;
+import com.yjtech.wisdom.tourism.mybatis.typehandler.JsonTypeHandler;
 import com.yjtech.wisdom.tourism.mybatis.typehandler.ListObjectJsonTypeHandler;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -95,7 +96,7 @@ public class TbCountryTour implements Serializable {
     /**
      * 其他图片
      */
-    @TableField(value = "images", typeHandler = ListObjectJsonTypeHandler.class)
+    @TableField(value = "images", typeHandler = JsonTypeHandler.class)
     private List<String> images;
 
     /**
