@@ -3,8 +3,12 @@ package com.yjtech.wisdom.tourism.integration.service;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.yjtech.wisdom.tourism.common.bean.AnalysisBaseInfo;
+import com.yjtech.wisdom.tourism.common.bean.AnalysisMonthChartInfo;
 import com.yjtech.wisdom.tourism.common.bean.AreaBaseVO;
 import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
+import com.yjtech.wisdom.tourism.common.utils.AnalysisUtils;
+import com.yjtech.wisdom.tourism.common.utils.DateUtils;
 import com.yjtech.wisdom.tourism.integration.mapper.OneTravelApiMapper;
 import com.yjtech.wisdom.tourism.integration.pojo.bo.onetravel.OneTravelAreaVisitStatisticsBO;
 import com.yjtech.wisdom.tourism.integration.pojo.bo.onetravel.OneTravelComplaintListBO;
@@ -56,7 +60,7 @@ public class OneTravelApiService {
         }
 
         for (OneTravelAreaVisitStatisticsBO visitStatisticsBO : visitStatisticsList) {
-            visitStatisticsBO.setValue((long) (visitStatisticsBO.getValue() + visitStatisticsBO.getValue() * Proportion / oneTravelApiMapper.userCityTotalSum()));
+            visitStatisticsBO.setValue((long) (visitStatisticsBO.getValue() + visitStatisticsBO.getValue() * Proportion / oneTravelApiMapper.queryUserCityTotalSum()));
         }
 
         return visitStatisticsList;
@@ -77,7 +81,7 @@ public class OneTravelApiService {
         }
 
         for (OneTravelAreaVisitStatisticsBO visitStatisticsBO : visitStatisticsList) {
-            visitStatisticsBO.setValue((long) (visitStatisticsBO.getValue() + visitStatisticsBO.getValue() * proportion / oneTravelApiMapper.userProvinceTotalSum()));
+            visitStatisticsBO.setValue((long) (visitStatisticsBO.getValue() + visitStatisticsBO.getValue() * proportion / oneTravelApiMapper.queryUserProvinceTotalSum()));
         }
 
         return visitStatisticsList;
@@ -120,6 +124,23 @@ public class OneTravelApiService {
     @Transactional(readOnly = true)
     public List<BasePercentVO> queryUserAgeDistribution(){
         return oneTravelApiMapper.queryUserAgeDistribution();
+    }
+
+    /**
+     * 查询投诉趋势、同比、环比
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public List<AnalysisBaseInfo> queryComplaintAnalysis(OneTravelQueryVO vo){
+        //初始化当年月份信息
+        List<String> monthMarkList = DateUtils.getEveryMonthOfCurrentYear();
+
+        //获取当前年度月趋势信息
+        List<AnalysisMonthChartInfo> currentAnalysisMonthInfo = oneTravelApiMapper.queryComplaintCurrentAnalysisMonthInfo(vo);
+        //获取去年度月趋势信息
+        List<AnalysisMonthChartInfo> lastAnalysisMonthInfo = oneTravelApiMapper.queryComplaintLastAnalysisMonthInfo(vo);
+
+        return AnalysisUtils.buildAnalysisInfo(monthMarkList, currentAnalysisMonthInfo, lastAnalysisMonthInfo);
     }
 
 }

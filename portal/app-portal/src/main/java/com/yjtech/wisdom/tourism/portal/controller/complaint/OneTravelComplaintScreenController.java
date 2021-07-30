@@ -1,8 +1,10 @@
 package com.yjtech.wisdom.tourism.portal.controller.complaint;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.yjtech.wisdom.tourism.common.bean.AnalysisBaseInfo;
 import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
+import com.yjtech.wisdom.tourism.common.enums.AnalysisDateTypeEnum;
 import com.yjtech.wisdom.tourism.integration.pojo.bo.onetravel.OneTravelComplaintListBO;
 import com.yjtech.wisdom.tourism.integration.pojo.vo.OneTravelQueryVO;
 import com.yjtech.wisdom.tourism.integration.service.OneTravelApiService;
@@ -34,7 +36,7 @@ public class OneTravelComplaintScreenController {
      * @return
      */
     @PostMapping("queryTotal")
-    public JsonResult queryTotal(@RequestBody OneTravelQueryVO vo) {
+    public JsonResult queryTotal(@RequestBody @Valid OneTravelQueryVO vo) {
         return JsonResult.success(oneTravelApiService.queryComplaintStatistics(vo));
     }
 
@@ -56,6 +58,18 @@ public class OneTravelComplaintScreenController {
     @PostMapping("queryComplaintDistribution")
     public JsonResult<List<BasePercentVO>> queryComplaintDistribution(@RequestBody @Valid OneTravelQueryVO vo) {
         return JsonResult.success(oneTravelApiService.queryComplaintDistribution(vo));
+    }
+
+    /**
+     * 查询一码游本年投诉趋势
+     * @param vo
+     * @return
+     */
+    @PostMapping("queryComplaintAnalysis")
+    public JsonResult<List<AnalysisBaseInfo>> queryComplaintAnalysis(@RequestBody @Valid OneTravelQueryVO vo) {
+        //设置sql时间格式类型
+        vo.setSqlDateFormat(AnalysisDateTypeEnum.getItemByValue(vo.getType()).getSqlDateFormat());
+        return JsonResult.success(oneTravelApiService.queryComplaintAnalysis(vo));
     }
 
 

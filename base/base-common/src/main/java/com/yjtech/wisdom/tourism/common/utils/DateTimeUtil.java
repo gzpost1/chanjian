@@ -344,12 +344,41 @@ public class DateTimeUtil {
   }
 
   /**
+   * 获取上月
+   *
+   * @return
+   */
+  public static String getLastMonthStr() {
+    Calendar calendar = Calendar.getInstance();
+    int month = calendar.get(Calendar.MONTH);
+    String monthStr = String.valueOf(month);
+    if (month < 10) {
+      monthStr = "0" + month;
+    }
+    return monthStr;
+  }
+
+
+  /**
    * 获取当前年 的上月  yyyy-MM
    *
    * @return
    */
   public static String getCurrentLastMonthStr() {
     Calendar calendar = Calendar.getInstance();
+    calendar.add(Calendar.MONTH, -1);
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+    return sdf.format(calendar.getTime());
+  }
+
+  /**
+   * 获取上一年 的上月  yyyy-MM
+   *
+   * @return
+   */
+  public static String getLastYearLastMonthStr() {
+    Calendar calendar = Calendar.getInstance();
+    calendar.add(Calendar.YEAR, -1);
     calendar.add(Calendar.MONTH, -1);
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
     return sdf.format(calendar.getTime());
@@ -380,6 +409,57 @@ public class DateTimeUtil {
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     return sdf.format(calendar.getTime());
   }
+
+  /**
+   * 获取当前年 的本月  的第一天
+   *
+   * @return
+   */
+  public static String getCurrentMonthFirstDayStr() {
+    Calendar calendar = Calendar.getInstance();
+    calendar.add(Calendar.MONTH, 0);
+    calendar.set(Calendar.DAY_OF_MONTH, 1);
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    return sdf.format(calendar.getTime());
+  }
+
+  /**
+   * 获取当前年 的本月  的最后一天
+   *
+   * @return
+   */
+  public static String getCurrentMonthLastDayStr() {
+    Calendar calendar = Calendar.getInstance();
+    calendar.set(Calendar.DATE, 1);
+    calendar.roll(Calendar.DATE, -1);
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    return sdf.format(calendar.getTime());
+  }
+
+  /**
+   * 获取当 年月日
+   *
+   * @return
+   */
+  public static String getCurrentDate() {
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTime(new Date());
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    return sdf.format(calendar.getTime());
+  }
+
+  /**
+   * 获取当 年月
+   *
+   * @return
+   */
+  public static String getCurrentYearAndMonth() {
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTime(new Date());
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+    return sdf.format(calendar.getTime());
+  }
+
 
 
 }

@@ -4,20 +4,24 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
+import com.yjtech.wisdom.tourism.common.constant.DistrictBigDataConstants;
 import com.yjtech.wisdom.tourism.common.path.DistrictPathEnum;
 import com.yjtech.wisdom.tourism.common.utils.DateTimeUtil;
 import com.yjtech.wisdom.tourism.common.utils.JsonUtils;
+import com.yjtech.wisdom.tourism.common.utils.MathUtil;
 import com.yjtech.wisdom.tourism.dto.DataOverviewDto;
 import com.yjtech.wisdom.tourism.dto.MonthPassengerFlowDto;
 import com.yjtech.wisdom.tourism.dto.VisitorDto;
 import com.yjtech.wisdom.tourism.dto.YearPassengerFlowDto;
 import com.yjtech.wisdom.tourism.integration.service.DistrictBigDataService;
+import com.yjtech.wisdom.tourism.system.service.SysConfigService;
 import com.yjtech.wisdom.tourism.vo.DataOverviewVo;
 import com.yjtech.wisdom.tourism.vo.MonthPassengerFlowVo;
 import com.yjtech.wisdom.tourism.vo.VisitorVo;
 import com.yjtech.wisdom.tourism.vo.YearPassengerFlowVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -34,8 +38,16 @@ import java.util.List;
 @Slf4j
 public class DistrictTourService {
 
+    private static final long LIMIT_VALUE = 5L;
+
     @Autowired
     private DistrictBigDataService districtBigDataService;
+
+    @Autowired
+    private SysConfigService sysConfigService;
+
+    @Value("${tourist.configAreaCodeKey}")
+    private String configAreaCodeKey;
 
     /**
      * 查询游客总数据-数据总览
@@ -73,19 +85,32 @@ public class DistrictTourService {
      * @param vo
      * @return
      */
-    public IPage<VisitorDto> queryVisitor (VisitorVo vo) {
+    public IPage<VisitorDto> queryPageVisitor(VisitorVo vo) {
+        String areaCode = sysConfigService.selectConfigByKey(configAreaCodeKey);
+        vo.setAdcode(areaCode);
+        long pageNo = vo.getPageNo();
+        long pageSize = vo.getPageSize();
+        Long limit = pageNo * pageSize;
+        if (limit < LIMIT_VALUE) {
+            limit = LIMIT_VALUE;
+        }
+        vo.setLimit(limit.intValue());
         String result = districtBigDataService.requestDistrict(DistrictPathEnum.TOURISTS_SOURCE.getPath(), vo, "省级游客来源");
         List<VisitorDto> visitorDtoList = JSONObject.parseArray(String.valueOf(JsonUtils.getValueByKey(result, "data")), VisitorDto.class);
-        return page(vo.getPageNo(), vo.getPageSize(), visitorDtoList);
+        return page(pageNo, pageSize, visitorDtoList);
     }
 
     /**
      * 本年客流趋势
      *
-     * @param vo
      * @return
      */
-    public List<YearPassengerFlowDto> queryYearPassengerFlow (YearPassengerFlowVo vo) {
+    public List<YearPassengerFlowDto> queryYearPassengerFlow () {
+        String areaCode = sysConfigService.selectConfigByKey(configAreaCodeKey);
+        YearPassengerFlowVo vo = YearPassengerFlowVo.builder()
+                .adcode(areaCode)
+                .statisticsType(DistrictBigDataConstants.YEAR_PASSENGER_FLOW_VISIT_IN)
+                .build();
         List<YearPassengerFlowDto> result = JSONObject.parseArray(
                 String.valueOf(
                         JsonUtils.getValueByKey(
@@ -111,11 +136,11 @@ public class DistrictTourService {
                 isStop = false;
             }
             else if (isStop) {
-                break;
+                continue;
             }
 
             // todo 计算比例相关逻辑
-           /* // 当月人数
+            // 当月人数
             Integer curNumber = yearPassengerFlowDto.getCurNumber();
             //去年当月人数
             Integer tbNumber = yearPassengerFlowDto.getTbNumber();
@@ -131,26 +156,31 @@ public class DistrictTourService {
                 String tbScale = MathUtil.calPercent(new BigDecimal(curNumber - tbNumber), new BigDecimal(curNumber), 2).toString();
 
                 // 当月和上月的比列-环比
-                String hbScale = MathUtil.calPercent(new BigDecimal(curNumber - hbNumber), new BigDecimal(curNumber)).toString();
+                String hbScale = MathUtil.calPercent(new BigDecimal(curNumber - hbNumber), new BigDecimal(curNumber), 2).toString();
 
                 yearPassengerFlowDto.setTbScale(tbScale);
                 yearPassengerFlowDto.setHbScale(hbScale);
-            }*/
+            }
 
             resultList.add(yearPassengerFlowDto);
         }
+
         return resultList;
     }
 
     /**
      * 本月客流趋势
      *
-     * @param vo
      * @return
      */
-    public List<MonthPassengerFlowDto> queryMonthPassengerFlow (MonthPassengerFlowVo vo) {
-        // 日期往前设置一天
-        vo.setBeginDate(DateTimeUtil.getBeforeDayDate(vo.getBeginDate()));
+    public List<MonthPassengerFlowDto> queryMonthPassengerFlow () {
+        String areaCode = sysConfigService.selectConfigByKey(configAreaCodeKey);
+        MonthPassengerFlowVo vo = new MonthPassengerFlowVo();
+        vo.setAdcode(areaCode);
+        vo.setBeginDate(DateTimeUtil.getCurrentLastMonthLastDayStr());
+        vo.setEndDate(DateTimeUtil.getCurrentDate());
+        vo.setStatisticsType(DistrictBigDataConstants.MONTH_PASSENGER_FLOW_VISIT_IN);
+
         String result = districtBigDataService.requestDistrict(DistrictPathEnum.MONTH_PASSENGER_FLOW.getPath(), vo, DistrictPathEnum.MONTH_PASSENGER_FLOW.getDesc());
         // 当月数据
         List<MonthPassengerFlowDto> currentMonth = JSONObject.parseArray(String.valueOf(JsonUtils.getValueByKey(result, "data")), MonthPassengerFlowDto.class);
@@ -160,7 +190,8 @@ public class DistrictTourService {
         vo.setEndDate(DateTimeUtil.getLastYearDate(vo.getEndDate()));
 
         // 上月数据
-        List<MonthPassengerFlowDto> lastMonth = JSONObject.parseArray(String.valueOf(JsonUtils.getValueByKey(result, "data")), MonthPassengerFlowDto.class);
+        String lastYearResult = districtBigDataService.requestDistrict(DistrictPathEnum.MONTH_PASSENGER_FLOW.getPath(), vo, DistrictPathEnum.MONTH_PASSENGER_FLOW.getDesc());
+        List<MonthPassengerFlowDto> lastMonth = JSONObject.parseArray(String.valueOf(JsonUtils.getValueByKey(lastYearResult, "data")), MonthPassengerFlowDto.class);
 
         // 结果数据
         List<MonthPassengerFlowDto> resultList = Lists.newArrayList();
@@ -178,15 +209,15 @@ public class DistrictTourService {
             if (currentMonthStr.equals(date.substring(5, 7)) && "01".equals(date.substring(date.length() - 2))) {
                 isStop = false;
             }else if (isStop) {
-                break;
+                continue;
             }
 
             // todo 计算比例相关逻辑
             Integer currentNumber = currentMonth.get(i).getNumber();
             // 如果当天数据为0， 则直接赋值为“-”
-            /*if (0 == currentNumber) {
-                currentMonth.get(i).setHbScale("-");
+            if (0 == currentNumber) {
                 currentMonth.get(i).setTbScale("-");
+                currentMonth.get(i).setHbScale("-");
             }
             else {
              Integer lastNumber = lastMonth.get(i).getNumber();
@@ -198,7 +229,10 @@ public class DistrictTourService {
 
             String LastYearDay = MathUtil.calPercent(new BigDecimal(currentNumber - lastNumber), new BigDecimal(currentNumber), 2).toString();
             currentMonth.get(i).setTbScale(LastYearDay);
-            }*/
+            }
+            // 设置去年 数量、日期
+            currentMonth.get(i).setTbDate(lastMonth.get(i).getDate());
+            currentMonth.get(i).setTbNumber(lastMonth.get(i).getNumber());
 
             resultList.add(currentMonth.get(i));
         }

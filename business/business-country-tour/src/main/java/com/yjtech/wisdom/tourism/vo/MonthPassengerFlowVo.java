@@ -2,6 +2,7 @@ package com.yjtech.wisdom.tourism.vo;
 
 import com.yjtech.wisdom.tourism.dto.vo.DateBaseVo;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -24,7 +25,11 @@ public class MonthPassengerFlowVo extends DateBaseVo implements Serializable {
     /**
      * 统计类型:10.到访全部游客(默认),11.到访省内游客 12.到访省外游客 20.出访全部游客 21.出访省内游客 22.出访省外游客
      */
-    @NotNull(message="统计类型不能为空")
-    private String statisticsType="10";
+    private String statisticsType;
+
+    /**
+     * 区域编号
+     */
+    private String adcode;
 
 }
