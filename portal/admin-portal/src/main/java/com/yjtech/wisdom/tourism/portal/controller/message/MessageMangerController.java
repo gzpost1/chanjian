@@ -27,6 +27,6 @@ public class MessageMangerController {
 
     @PostMapping("queryPageMessage")
     public JsonResult<IPage<MessageDto>> queryPageMessage(@RequestBody @Validated QueryMessageVo vo) {
-        return JsonResult.success(messageMangerService.queryPageMessage(vo));
+        return JsonResult.success(messageMangerService.queryPageMessage(vo, true));
     }
 }
