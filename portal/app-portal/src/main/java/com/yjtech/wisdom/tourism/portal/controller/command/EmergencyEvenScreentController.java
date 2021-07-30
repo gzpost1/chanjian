@@ -100,6 +100,9 @@ public class EmergencyEvenScreentController {
         LambdaQueryWrapper queryWrapper = eventService.getQueryWrapper(query);
         IPage<EventEntity> pageResult = eventService.page(new Page<>(query.getPageNo(), query.getPageSize()), queryWrapper);
         eventService.tranDictEntity(pageResult.getRecords());
+        for (EventEntity entity:pageResult.getRecords()){
+            entity.setIconUrl(iconService.queryIconUrl(IconSpotEnum.EVENT,entity.getEventStatus()));
+        }
         return JsonResult.success(pageResult);
     }
 
