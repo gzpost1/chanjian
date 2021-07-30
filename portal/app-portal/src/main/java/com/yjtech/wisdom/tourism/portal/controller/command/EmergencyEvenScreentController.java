@@ -5,12 +5,16 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.yjtech.wisdom.tourism.command.entity.event.EventEntity;
+import com.yjtech.wisdom.tourism.command.entity.plan.EmergencyPlanEntity;
 import com.yjtech.wisdom.tourism.command.extensionpoint.EventExtensionConstant;
 import com.yjtech.wisdom.tourism.command.extensionpoint.EventQryExtPt;
 import com.yjtech.wisdom.tourism.command.query.event.EventCommonQuery;
 import com.yjtech.wisdom.tourism.command.query.event.EventQuery;
 import com.yjtech.wisdom.tourism.command.query.event.EventSumaryQuery;
 import com.yjtech.wisdom.tourism.command.service.event.EventService;
+import com.yjtech.wisdom.tourism.command.service.plan.EmergencyPlanService;
+import com.yjtech.wisdom.tourism.command.vo.event.AppEmergencyPlanVO;
+import com.yjtech.wisdom.tourism.command.vo.event.AppEventDetail;
 import com.yjtech.wisdom.tourism.command.vo.event.EventTrendVO;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
 import com.yjtech.wisdom.tourism.common.bean.BaseValueVO;
@@ -23,8 +27,10 @@ import com.yjtech.wisdom.tourism.common.utils.IdParam;
 import com.yjtech.wisdom.tourism.extension.BizScenario;
 import com.yjtech.wisdom.tourism.extension.ExtensionConstant;
 import com.yjtech.wisdom.tourism.extension.ExtensionExecutor;
+import com.yjtech.wisdom.tourism.infrastructure.utils.SecurityUtils;
 import com.yjtech.wisdom.tourism.system.domain.IconSpotEnum;
 import com.yjtech.wisdom.tourism.system.service.IconService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -48,6 +54,8 @@ import static com.yjtech.wisdom.tourism.common.exception.ErrorCode.EVENT_NOT_EXI
 @RequestMapping("/emergency/event/screen")
 public class EmergencyEvenScreentController {
 
+    @Autowired
+    private EmergencyPlanService emergencyPlanService;
 
     @Autowired
     private EventService eventService;
@@ -102,11 +110,20 @@ public class EmergencyEvenScreentController {
      * @return
      */
     @PostMapping("/queryForDetail")
-    public JsonResult<EventEntity> queryForDetail(@RequestBody @Valid IdParam idParam) {
-        EventEntity eventEntity = eventService.getById(idParam.getId());
-        AssertUtil.isFalse(Objects.isNull(eventEntity), new CustomException(EVENT_NOT_EXIST));
-        eventService.tranDictEntity(Lists.newArrayList(eventEntity));
-        return JsonResult.success(eventEntity);
+    public JsonResult<AppEventDetail> queryForDetail(@RequestBody @Valid IdParam idParam) {
+        AppEventDetail appEventDetail = eventService.getBaseMapper().queryForDetail(idParam.getId());
+        AssertUtil.isFalse(Objects.isNull(appEventDetail),"该记录不存在");
+        eventService.tranDict(Lists.newArrayList(appEventDetail));
+
+        //设置预案
+        if(Objects.nonNull(appEventDetail.getPlanId())){
+            EmergencyPlanEntity entity = emergencyPlanService.getById(appEventDetail.getPlanId());
+            emergencyPlanService.tranDic(Lists.newArrayList(entity));
+            AppEmergencyPlanVO planVO = new AppEmergencyPlanVO();
+            BeanUtils.copyProperties(entity, planVO);
+            appEventDetail.setPlan(planVO);
+        }
+        return JsonResult.success(appEventDetail);
     }
 
 
