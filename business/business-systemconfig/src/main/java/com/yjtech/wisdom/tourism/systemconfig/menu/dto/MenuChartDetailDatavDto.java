@@ -19,7 +19,7 @@ public class MenuChartDetailDatavDto {
     /**
      * 图表id
      */
-    private Long chartId;
+    private Long id;
 
     /**
      * chart_type 图标类型
@@ -67,7 +67,7 @@ public class MenuChartDetailDatavDto {
     private String pointType;
 
     /**
-     * menu_type 点位类型
+     *  点位图片
      */
     private String pointImgUrl;
 

@@ -18,6 +18,7 @@ import com.yjtech.wisdom.tourism.systemconfig.architecture.dto.SystemconfigArchi
 import com.yjtech.wisdom.tourism.systemconfig.architecture.entity.TbSystemconfigArchitectureEntity;
 import com.yjtech.wisdom.tourism.systemconfig.architecture.mapper.TbSystemconfigArchitectureMapper;
 import com.yjtech.wisdom.tourism.systemconfig.menu.dto.MenuChartDetailDatavDto;
+import com.yjtech.wisdom.tourism.systemconfig.menu.dto.MenuChartDetailDto;
 import com.yjtech.wisdom.tourism.systemconfig.menu.dto.SystemconfigChartsListDatavDto;
 import com.yjtech.wisdom.tourism.systemconfig.menu.entity.SystemconfigMenuEntity;
 import com.yjtech.wisdom.tourism.systemconfig.menu.service.SystemconfigMenuService;
@@ -196,9 +197,13 @@ public class TbSystemconfigArchitectureService extends ServiceImpl<TbSystemconfi
 
                             //更新为大屏的名称和坐标
                             for (MenuChartDetailDatavDto chart : charts) {
-
+                                for (MenuChartDetailDto chartDatum : nowPage.getChartData()) {
+                                    if(chart.getId().equals(chartDatum.getChartId())){
+                                        chart.setPointDatas(chartDatum.getPointDatas());
+                                    }
+                                }
                                 //设置列表
-                                List<SystemconfigChartsListDatavDto> systemconfigChartsListDatavDtos = cahrtListMaps.get(chart.getChartId());
+                                List<SystemconfigChartsListDatavDto> systemconfigChartsListDatavDtos = cahrtListMaps.get(chart.getId());
                                 List<SystemconfigChartsListDatavDto> chartList = new ArrayList<>();
                                 if (CollectionUtils.isNotEmpty(systemconfigChartsListDatavDtos)) {
                                     chartList = systemconfigChartsListDatavDtos.stream().sorted(Comparator.comparing(SystemconfigChartsListDatavDto::getSortNum)).collect(Collectors.toList());
