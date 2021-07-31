@@ -32,7 +32,7 @@ public class SystemconfigChartsEntity extends BaseEntity {
     private String chartType;
 
     /**
-     * menu_type 大屏菜单类型
+     * menu_type 页面类型
      */
     @TableField(value = "menu_type")
     private String menuType;
@@ -66,4 +66,29 @@ public class SystemconfigChartsEntity extends BaseEntity {
      */
     @TableField(value = "sample_img")
     private String sampleImg;
+
+    /**
+     * sample_img 点位类型 当图表类型选择列表时显示
+     */
+    @TableField(value = "point_type",updateStrategy = FieldStrategy.IGNORED)
+    private String pointType;
+
+    /**
+     *  是否有页面跳转 0-否,1-是
+     */
+    @TableField(value = "is_redirect")
+    private Byte isRedirect;
+
+    /**
+     * 跳转页面id
+     */
+    @TableField(value = "redirect_id",updateStrategy = FieldStrategy.IGNORED)
+    private String redirectId;
+
+    /**
+     *指标项
+     */
+    @TableField(value = "index_item",updateStrategy = FieldStrategy.IGNORED)
+    private String indexItem;
+
 }

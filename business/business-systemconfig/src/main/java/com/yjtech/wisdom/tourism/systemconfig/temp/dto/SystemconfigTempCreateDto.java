@@ -36,4 +36,5 @@ public class SystemconfigTempCreateDto {
     @NotEmpty(message = "模板数据不能为空")
     private Integer[][] tempData;
 
+    private String layoutJson;
 }

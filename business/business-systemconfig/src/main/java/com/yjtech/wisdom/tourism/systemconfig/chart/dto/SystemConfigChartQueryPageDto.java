@@ -18,13 +18,12 @@ public class SystemConfigChartQueryPageDto extends PageQuery {
     private String chartName;
 
     /**
-     * 大屏菜单类型名称
+     * 页面类型名称
      */
     private String menuName;
 
     /**
-     * 大屏菜单类型
+     * 页面类型
      */
-    @NotBlank(message = "大屏菜单类型不能为空")
     private String menuType;
 }

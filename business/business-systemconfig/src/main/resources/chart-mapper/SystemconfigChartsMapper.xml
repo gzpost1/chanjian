@@ -18,11 +18,15 @@
     <result column="create_user" jdbcType="BIGINT" property="createUser" />
     <result column="update_user" jdbcType="BIGINT" property="updateUser" />
     <result column="deleted" jdbcType="TINYINT" property="deleted" />
+    <result column="point_type" jdbcType="VARCHAR" property="pointType" />
+    <result column="is_redirect" jdbcType="TINYINT" property="isRedirect" />
+    <result column="redirect_id" jdbcType="BIGINT" property="redirectId" />
+    <result column="index_item" jdbcType="VARCHAR" property="indexItem" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
     id, `name`, chart_type, menu_type, service_url, commponent_type, list_type, is_simulation, 
-    sample_img, create_time, update_time, create_user, update_user, deleted
+    sample_img, create_time, update_time, create_user, update_user, deleted,point_type,is_redirect,redirect_id,index_item
   </sql>
 
   <select id="queryForPage" resultType="com.yjtech.wisdom.tourism.systemconfig.chart.vo.SystemconfigChartsVo">
@@ -42,7 +46,7 @@
       and b.dict_label like concat('%',#{params.menuName,jdbcType=VARCHAR},'%')
     </if>
     <if test="params != null and params.menuType != null and params.menuType != ''">
-      and b.dict_value = #{params.menuType}
+      and a.menu_type = #{params.menuType}
     </if>
     order by a.create_time desc,b.dict_sort
   </select>
@@ -72,4 +76,14 @@
     deleted = 0
     and chart_data like concat('%',#{id},'%')
     </select>
+
+  <select id="findMenuIsExistChart" resultType="java.lang.Integer">
+    select
+    count(1)
+    from
+    tb_systemconfig_charts
+    where
+    deleted = 0
+    and redirect_id = #{id}
+  </select>
 </mapper>

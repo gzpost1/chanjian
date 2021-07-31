@@ -1,6 +1,8 @@
 package com.yjtech.wisdom.tourism.portal.controller.systemconfig.charts;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.yjtech.wisdom.tourism.common.bean.BaseVO;
+import com.yjtech.wisdom.tourism.common.bean.SelectVo;
 import com.yjtech.wisdom.tourism.common.core.domain.IdParam;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.common.exception.ErrorCode;
@@ -13,15 +15,15 @@ import com.yjtech.wisdom.tourism.systemconfig.chart.dto.SystemconfigChartsUpdate
 import com.yjtech.wisdom.tourism.systemconfig.chart.dto.list.SystemconfigChartsListCreateDto;
 import com.yjtech.wisdom.tourism.systemconfig.chart.dto.list.SystemconfigChartsListQueryVo;
 import com.yjtech.wisdom.tourism.systemconfig.chart.dto.list.SystemconfigChartsListVo;
-import com.yjtech.wisdom.tourism.systemconfig.chart.dto.point.SystemconfigChartsPointCreateDto;
-import com.yjtech.wisdom.tourism.systemconfig.chart.dto.point.SystemconfigChartsPointVo;
 import com.yjtech.wisdom.tourism.systemconfig.chart.entity.SystemconfigChartsEntity;
 import com.yjtech.wisdom.tourism.systemconfig.chart.service.SystemconfigChartsListService;
 import com.yjtech.wisdom.tourism.systemconfig.chart.service.SystemconfigChartsPointService;
 import com.yjtech.wisdom.tourism.systemconfig.chart.service.SystemconfigChartsService;
 import com.yjtech.wisdom.tourism.systemconfig.chart.vo.SystemconfigChartsVo;
+import com.yjtech.wisdom.tourism.systemconfig.menu.service.SystemconfigMenuService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,7 +35,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * 后台管理-系统配置-图标库
+ * 后台管理-系统配置-图表库
  *
  * @author 李波
  * @description: 后台管理-系统配置-图标库
@@ -46,9 +48,9 @@ public class SystemConfigChartsController {
     @Autowired
     private SystemconfigChartsService systemconfigChartsService;
     @Autowired
-    private SystemconfigChartsPointService systemconfigChartsPointService;
-    @Autowired
     private SystemconfigChartsListService systemconfigChartsListService;
+    @Autowired
+    private SystemconfigMenuService systemconfigMenuService;
 
     /**
      * 分页
@@ -56,6 +58,7 @@ public class SystemConfigChartsController {
      * @param query
      * @return
      */
+    @PreAuthorize("@ss.hasPermi('chart:base:list')")
     @PostMapping("/queryForPage")
     public JsonResult<IPage<SystemconfigChartsVo>> queryForPage(@RequestBody SystemConfigChartQueryPageDto query) {
         return JsonResult.success(systemconfigChartsService.queryForPage(query));
@@ -79,6 +82,7 @@ public class SystemConfigChartsController {
      * @param createDto
      * @return
      */
+    @PreAuthorize("@ss.hasPermi('chart:base:add')")
     @PostMapping("/create")
     public JsonResult create(@RequestBody @Valid SystemconfigChartsCreateDto createDto) {
 
@@ -96,6 +100,7 @@ public class SystemConfigChartsController {
      * @param updateDto
      * @return
      */
+    @PreAuthorize("@ss.hasPermi('chart:base:edid')")
     @PostMapping("/update")
     public JsonResult update(@RequestBody @Valid SystemconfigChartsUpdateDto updateDto) {
 
@@ -108,11 +113,6 @@ public class SystemConfigChartsController {
             systemconfigChartsListService.removeChartListBYChartId(entity.getId());
         }
 
-        //如果不是点位，删除以前的点位配置
-        if (!StringUtils.equals(entity.getChartType(), "3")) {
-            systemconfigChartsPointService.removeChartPointBYChartId(entity.getId());
-        }
-
         return JsonResult.ok();
     }
 
@@ -122,6 +122,7 @@ public class SystemConfigChartsController {
      * @param idParam
      * @return
      */
+    @PreAuthorize("@ss.hasPermi('chart:base:remove')")
     @PostMapping("/delete")
     public JsonResult delete(@RequestBody @Valid IdParam idParam) {
 
@@ -133,30 +134,6 @@ public class SystemConfigChartsController {
             systemconfigChartsService.removeById(idParam.getId());
         }
 
-        return JsonResult.ok();
-    }
-
-    /**
-     * 获取图表的点位配置
-     *
-     * @param idParam
-     * @return
-     */
-    @PostMapping("/queryChartsPointsBYCharts")
-    public JsonResult<List<SystemconfigChartsPointVo>> queryChartsPointsBYCharts(@RequestBody @Valid IdParam idParam) {
-        return JsonResult.success(systemconfigChartsPointService.queryChartsPointsBYCharts(idParam.getId()));
-    }
-
-    /**
-     * 新增或者修改图表的点位配置
-     *
-     * @param list
-     * @return
-     */
-    @PostMapping("/saveOrUpdateChartsPointsBYCharts")
-    public JsonResult saveOrUpdateChartsPointsBYCharts(@RequestBody @Valid List<SystemconfigChartsPointCreateDto> list) {
-        AssertUtil.notEmpty(list, "点位配置不能为空");
-        systemconfigChartsPointService.saveOrUpdateChartsPointsBYCharts(list);
         return JsonResult.ok();
     }
 
@@ -184,4 +161,16 @@ public class SystemConfigChartsController {
         systemconfigChartsListService.saveOrUpdateListsPointsBYCharts(list);
         return JsonResult.ok();
     }
+
+    /**
+     * 大屏页面配置
+     *
+     * @param
+     * @return
+     */
+    @PostMapping("/queryPageList")
+    public JsonResult<List<BaseVO>> queryForDetail() {
+        return JsonResult.success(systemconfigMenuService.queryPageList());
+    }
+
 }

@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjtech.wisdom.tourism.systemconfig.architecture.mapper.TbSystemconfigArchitectureMapper">
+  <resultMap id="BaseResultMap" type="com.yjtech.wisdom.tourism.systemconfig.architecture.entity.TbSystemconfigArchitectureEntity">
+    <!--@mbg.generated-->
+    <!--@Table tb_systemconfig_architecture-->
+    <id column="menu_id" jdbcType="BIGINT" property="menuId" />
+    <result column="menu_name" jdbcType="VARCHAR" property="menuName" />
+    <result column="parent_id" jdbcType="BIGINT" property="parentId" />
+    <result column="page_id" jdbcType="BIGINT" property="pageId" />
+    <result column="first_id" jdbcType="BIGINT" property="firstId" />
+    <result column="secon_id" jdbcType="BIGINT" property="seconId" />
+    <result column="three_id" jdbcType="BIGINT" property="threeId" />
+    <result column="is_show" jdbcType="TINYINT" property="isShow" />
+    <result column="is_simulation" jdbcType="TINYINT" property="isSimulation" />
+    <result column="sort_num" jdbcType="INTEGER" property="sortNum" />
+    <result column="create_user" jdbcType="BIGINT" property="createUser" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_user" jdbcType="BIGINT" property="updateUser" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="deleted" jdbcType="TINYINT" property="deleted" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    menu_id, menu_name, parent_id, page_id, is_show, is_simulation, sort_num, create_user, 
+    create_time, update_user, update_time, deleted,first_id,secon_id,three_id
+  </sql>
+
+  <select id="queryForPage"
+          resultType="com.yjtech.wisdom.tourism.systemconfig.architecture.dto.SystemconfigArchitectureDto">
+    select
+    a.*,b.name as page_name
+    from
+            tb_systemconfig_architecture a
+    left join tb_systemconfig_menu b on a.page_id = b.id and b.deleted = 0
+    where
+    a.deleted = 0
+    <if test="params != null and params.menuName != null and params.menuName != ''">
+      and a.menu_name like concat('%', #{params.menuName}, '%')
+    </if>
+    <if test="params != null and params.pageName != null and params.pageName != ''">
+      and b.name like concat('%', #{params.pageName}, '%')
+    </if>
+    <if test="params != null and params.isShow != null">
+      and a.is_show = #{params.isShow}
+    </if>
+    <if test="params != null and params.querySql != null">
+      ${params.querySql}
+    </if>
+    <if test="params != null and params.menuId != null">
+      and a.parent_id = #{params.menuId}
+    </if>
+    order by a.first_id,a.sort_num,a.secon_id,a.sort_num asc
+  </select>
+
+  <select id="queryChildsByParent" resultType="java.lang.Integer">
+    select
+    count(menu_id)
+    from
+            tb_systemconfig_architecture
+    where
+    deleted = 0
+    and parent_id = #{parentId}
+  </select>
+
+  <select id="getFirstByParent" resultMap="BaseResultMap">
+    select
+    *
+    from
+    tb_systemconfig_architecture
+    where deleted = 0
+    and parent_id = #{parentId}
+  </select>
+
+  <select id="queryMaxAndMinByParendId" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO">
+    select
+    min(sort_num) as name,
+    max(sort_num) as value
+    from
+    tb_systemconfig_architecture
+    where
+    deleted = 0
+    and parent_id = #{parentId}
+  </select>
+
+  <update id="updateSortNum">
+    update tb_systemconfig_architecture a1
+            inner join tb_systemconfig_architecture a2
+            on a1.parent_id = a2.parent_id
+    <if test="params.status == '1'.toString() ">
+      and a1.sort_num + 1 = a2.sort_num
+      set a1.sort_num = a1.sort_num + 1,
+      a2.sort_num = a2.sort_num - 1
+    </if>
+    <if test="params.status == '0'.toString() ">
+      and a1.sort_num - 1 = a2.sort_num
+      set a1.sort_num = a1.sort_num - 1,
+      a2.sort_num = a2.sort_num + 1
+    </if>
+    where a1.menu_id = #{param1.id}
+      and a1.deleted = 0
+      and a2.deleted = 0
+  </update>
+
+  <select id="queryNameByPingtai" resultType="java.lang.String">
+    select
+    name
+    from
+            tb_platform
+    where
+    deleted = 0
+  </select>
+
+  <select id="getAreaTree" resultType="com.yjtech.wisdom.tourism.systemconfig.architecture.dto.MenuTreeNode">
+    SELECT
+    b.menu_id as id,
+    b.parent_id as parent_id,
+    b.menu_name as title,
+    b.page_id,
+    b.is_simulation,
+    b.is_show,
+    b.sort_num,
+    c.img_url
+    FROM
+    tb_systemconfig_architecture a
+    inner join tb_systemconfig_architecture b on a.first_id = b.first_id
+    left join tb_systemconfig_menu c on b.page_id = c.id
+    WHERE
+    a.deleted = 0 and
+    b.deleted = 0
+    AND a.parent_id = #{parentId}
+    ORDER BY b.first_id,b.sort_num,b.secon_id,b.sort_num,b.three_id,b.sort_num
+  </select>
+</mapper>

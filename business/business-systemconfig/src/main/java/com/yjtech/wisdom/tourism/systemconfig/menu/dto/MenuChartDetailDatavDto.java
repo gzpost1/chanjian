@@ -19,22 +19,12 @@ public class MenuChartDetailDatavDto {
     /**
      * 图表id
      */
-    private Long id;
-
-    /**
-     * 图表名称
-     */
-    private String name;
+    private Long chartId;
 
     /**
      * chart_type 图标类型
      */
     private String chartType;
-
-    /**
-     * menu_type 大屏菜单类型
-     */
-    private String menuType;
 
     /**
      * service_url 后端服务url
@@ -47,37 +37,43 @@ public class MenuChartDetailDatavDto {
     private String commponentType;
 
     /**
-     * list_type 当图表类型选择列表时显示
-     */
-    private String listType;
-
-    /**
-     * is_simulation 是否有模拟数据 1有 0无
-     */
-    private Byte isSimulation;
-
-    /**
-     * sample_img 示例图
-     */
-    private String sampleImg;
-
-    /**
      * 点位坐标[0,1,2]
      */
     private List<Integer> pointDatas;
 
     /**
-     * img_url 大屏缩略图
+     * 是否有页面跳转 0-否,1-是
      */
-    private String imgUrl;
+    private Byte isRedirect;
+
+    /**
+     * 跳转页面id
+     */
+    private String redirectId;
+
+    /**
+     * 跳转页面路径
+     */
+    private String redirectPath;
+
+    /**
+     * 指标项
+     */
+    private String indexItem;
+
+    /**
+     * menu_type 点位类型
+     */
+    private String pointType;
+
+    /**
+     * menu_type 点位类型
+     */
+    private String pointImgUrl;
 
     /**
      * 表格类型，展示那些字段
      */
     private List<SystemconfigChartsListDatavDto> listDatas = new ArrayList<>();
 
-    /**
-     * 点位导航展示那些点位
-     */
-    private List<SystemconfigChartsPointDatavVo> pointNavigationDatas = new ArrayList<>();
 }
