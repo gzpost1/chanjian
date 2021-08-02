@@ -1,0 +1,63 @@
+stages:
+- name: Build-test
+  steps:
+  - runScriptConfig:
+      image: harbor.yunjingtech.cn:30002/yj-base/maven:nexus3
+      shellScript: |-
+        mvn package -Dmaven.test.skip=true
+        ls
+- name: Publish-test-admin-portal
+  steps:
+  - publishImageConfig:
+      dockerfilePath: portal/admin-portal/Dockerfile
+      buildContext: portal/app-portal/
+      tag: test-standard-industry-monitor/test-admin-portal:${CICD_EXECUTION_SEQUENCE}
+      pushRemote: true
+      registry: harbor.yunjingtech.cn:30002
+    env:
+      PLUGIN_DEBUG: "true"
+      PLUGIN_INSECURE: "true"
+      PLUGIN_MIRROR: http://harbor.yunjingtech.cn:30002
+  when:
+    branch:
+      include:
+      - test
+- name: Deploy-test-admin-portal
+  steps:
+  - applyYamlConfig:
+      path: portal/admin-portal/deployment.yaml
+  when:
+    branch:
+      include:
+      - test
+- name: Publish-test-app-portal
+  steps:
+  - publishImageConfig:
+      dockerfilePath: portal/app-portal/Dockerfile
+      buildContext: portal/app-portal/
+      tag: test-standard-industry-monitor/test-app-portal:${CICD_EXECUTION_SEQUENCE}
+      pushRemote: true
+      registry: harbor.yunjingtech.cn:30002
+    env:
+      PLUGIN_DEBUG: "true"
+      PLUGIN_INSECURE: "true"
+      PLUGIN_MIRROR: http://harbor.yunjingtech.cn:30002
+  when:
+    branch:
+      include:
+      - test
+- name: Deploy-test-app-portal
+  steps:
+  - applyYamlConfig:
+      path: portal/app-portal/deployment.yaml
+  when:
+    branch:
+      include:
+      - test
+notification:
+  recipients:
+  - recipient: mr.|LanYue|ouDingDang|hsingwang
+    notifier: local:n-66ndw
+  condition:
+  - Success
+  - Failed
