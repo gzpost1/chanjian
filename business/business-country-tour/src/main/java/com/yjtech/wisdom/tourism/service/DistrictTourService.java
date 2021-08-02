@@ -155,6 +155,9 @@ public class DistrictTourService {
         // 获取当前年份
         String currentYearStr = DateTimeUtil.getCurrentYearStr() + "-01";
 
+        // 当前年月
+        String currentYearAndMonth = DateTimeUtil.getCurrentYearStr() + "-" + DateTimeUtil.getCurrentMonthStr();
+
         for (int i = 0; i < currentYear.size(); i++) {
             // 判断是本年一月的数据
             MonthPassengerFlowDto yearPassengerFlowDto = currentYear.get(i);
@@ -169,7 +172,7 @@ public class DistrictTourService {
             // todo 计算比例相关逻辑
             Integer currentNumber = currentYear.get(i).getNumber();
             // 如果当天数据为0， 则直接赋值为“-”
-            if (0 == currentNumber) {
+            if (0 == currentNumber || currentYearAndMonth.equals(date)) {
                 currentYear.get(i).setTbScale("-");
                 currentYear.get(i).setHbScale("-");
             }

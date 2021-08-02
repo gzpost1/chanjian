@@ -1,6 +1,7 @@
 package com.yjtech.wisdom.tourism.vo;
 
 import com.yjtech.wisdom.tourism.common.bean.TimeBaseQuery;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
@@ -14,6 +15,7 @@ import java.io.Serializable;
  */
 @Data
 @Builder
+@AllArgsConstructor
 public class PassengerFlowVo extends TimeBaseQuery implements Serializable {
 
     private static final long serialVersionUID = -8241097236142759430L;
