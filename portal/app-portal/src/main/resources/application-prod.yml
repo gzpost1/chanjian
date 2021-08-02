@@ -83,13 +83,13 @@ spring:
     # 密码
     password:
 
-  data:
-    mongodb:
-      host: mongo
-      port: 27017
-      database: industry-monitoring-standard
-      username: industry
-      password: yjwlindustry
+#  data:
+#    mongodb:
+#      host: mongo
+#      port: 27017
+#      database: industry-monitoring-standard
+#      username: industry
+#      password: yjwlindustry
 
 # 游客结构-区县大数据接口配置
 tourist:
