@@ -65,6 +65,10 @@ public class EventService extends ServiceImpl<EventMapper, EventEntity> {
         Integer year = this.getBaseMapper().queryQuantity(yearQuery);
         result.add(BaseVO.builder().name("year").value(String.valueOf(year)).build());
 
+        EventSumaryQuery totalQuery = new EventSumaryQuery();
+        Integer total = this.getBaseMapper().queryQuantity(totalQuery);
+        result.add(BaseVO.builder().name("total").value(String.valueOf(total)).build());
+
         EventSumaryQuery statusQuery = new EventSumaryQuery();
         statusQuery.setEventStatus(EventContants.UNTREATED);
         Integer untreated = this.getBaseMapper().queryQuantityByStatus(statusQuery);

@@ -84,6 +84,51 @@ public class AnalysisUtils {
 
 
     /**
+     * 补充时间 将时间为null的数据 补为0
+     * @param query
+     * @param analysisInfo
+     * @param future
+     * @param func
+     * @param <T>
+     * @return
+     */
+    public static <T extends BaseSaleTrendVO> List<Object> supplementTime(TimeBaseQuery query,
+                                                                                      List<T> analysisInfo,
+                                                                                      Boolean future,
+                                                                                      SFunction<T, ? extends Object> func) {
+        AssertUtil.isFalse(Objects.isNull(query.getBeginTime()) || Objects.isNull(query.getEndTime()), "起始时间或结束时间不能为空");
+        AnalysisDateTypeEnum analysisDateTypeEnum = AnalysisDateTypeEnum.getItemByValue(query.getType());
+
+        //初始化时间趋势
+        String javaDateFormat = analysisDateTypeEnum.getJavaDateFormat();
+        List<LocalDateTime> markList = getRangeToList(query.getBeginTime(), query.getEndTime(),javaDateFormat, analysisDateTypeEnum.getChronoUnit(),future);
+
+
+
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(javaDateFormat);
+
+            Map<String, Object> timeMap = Optional.ofNullable(analysisInfo).orElse(Lists.newArrayList())
+                    .stream().collect(Collectors.toMap(item -> item.getTime(), item -> func.apply(item)));
+            //值
+            List<Object> value = Lists.newArrayList();
+            for (LocalDateTime yearMark : markList) {
+                //前端要求 时间范围内没有补齐0  时间范围外不补任何数
+                if(query.getEndTime().isBefore(yearMark)){
+                    break;
+                }
+                Object quantity = timeMap.get(yearMark.format(dateTimeFormatter));
+                if (Objects.nonNull(quantity)) {
+                    value.add(quantity);
+                } else {
+                    value.add(0);
+                }
+            }
+
+
+        return value;
+    }
+
+    /**
      * 补齐过去时间  补齐未来时间
      * @param beginTime
      * @param endTime
