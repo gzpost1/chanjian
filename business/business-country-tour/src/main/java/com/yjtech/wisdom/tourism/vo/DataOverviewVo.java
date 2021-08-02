@@ -25,4 +25,9 @@ public class DataOverviewVo extends DateBaseVo implements Serializable {
      */
     private String statisticsType;
 
+    /**
+     * 区域编号
+     */
+    private String adcode;
+
 }

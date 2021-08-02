@@ -460,6 +460,18 @@ public class DateTimeUtil {
     return sdf.format(calendar.getTime());
   }
 
+  /**
+   * LocalDateTime时间转换
+   *
+   * @param localDateTime
+   * @param format
+   * @return
+   */
+  public static String transformDateTime(LocalDateTime localDateTime, String format) {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
+    return localDateTime.format(formatter);
+  }
+
 
 
 }

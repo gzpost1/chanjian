@@ -1,12 +1,10 @@
 package com.yjtech.wisdom.tourism.vo;
 
-import com.yjtech.wisdom.tourism.dto.vo.DateBaseVo;
+import com.yjtech.wisdom.tourism.common.bean.TimeBaseQuery;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**
@@ -18,7 +16,7 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class MonthPassengerFlowVo extends DateBaseVo implements Serializable {
+public class MonthPassengerFlowVo extends TimeBaseQuery implements Serializable {
 
     private static final long serialVersionUID = -7954661747066474209L;
 
@@ -32,4 +30,13 @@ public class MonthPassengerFlowVo extends DateBaseVo implements Serializable {
      */
     private String adcode;
 
+    /**
+     * 开始日期 - 不用传,使用beginTime
+     */
+    private String beginDate;
+
+    /**
+     * 结束日期- 不用传,使用endTime
+     */
+    private String endDate;
 }

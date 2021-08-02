@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
-import com.yjtech.wisdom.tourism.common.constant.DistrictBigDataConstants;
+import com.google.common.collect.Maps;
 import com.yjtech.wisdom.tourism.common.path.DistrictPathEnum;
 import com.yjtech.wisdom.tourism.common.utils.DateTimeUtil;
 import com.yjtech.wisdom.tourism.common.utils.JsonUtils;
@@ -12,13 +12,12 @@ import com.yjtech.wisdom.tourism.common.utils.MathUtil;
 import com.yjtech.wisdom.tourism.dto.DataOverviewDto;
 import com.yjtech.wisdom.tourism.dto.MonthPassengerFlowDto;
 import com.yjtech.wisdom.tourism.dto.VisitorDto;
-import com.yjtech.wisdom.tourism.dto.YearPassengerFlowDto;
 import com.yjtech.wisdom.tourism.integration.service.DistrictBigDataService;
 import com.yjtech.wisdom.tourism.system.service.SysConfigService;
 import com.yjtech.wisdom.tourism.vo.DataOverviewVo;
 import com.yjtech.wisdom.tourism.vo.MonthPassengerFlowVo;
+import com.yjtech.wisdom.tourism.vo.PassengerFlowVo;
 import com.yjtech.wisdom.tourism.vo.VisitorVo;
-import com.yjtech.wisdom.tourism.vo.YearPassengerFlowVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,7 +25,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 游客结构-调用区县大数据
@@ -56,6 +57,9 @@ public class DistrictTourService {
      * @return
      */
     public DataOverviewDto queryDataOverview (DataOverviewVo vo) {
+
+        String areaCode = sysConfigService.selectConfigByKey(configAreaCodeKey);
+        vo.setAdcode(areaCode);
 
         // 10.到访全部游客
         vo.setStatisticsType("10");
@@ -95,7 +99,7 @@ public class DistrictTourService {
             limit = LIMIT_VALUE;
         }
         vo.setLimit(limit.intValue());
-        String result = districtBigDataService.requestDistrict(DistrictPathEnum.TOURISTS_SOURCE.getPath(), vo, "省级游客来源");
+        String result = districtBigDataService.requestDistrict(DistrictPathEnum.TOURISTS_SOURCE.getPath(), vo, "游客来源");
         List<VisitorDto> visitorDtoList = JSONObject.parseArray(String.valueOf(JsonUtils.getValueByKey(result, "data")), VisitorDto.class);
         return page(pageNo, pageSize, visitorDtoList);
     }
@@ -105,34 +109,57 @@ public class DistrictTourService {
      *
      * @return
      */
-    public List<YearPassengerFlowDto> queryYearPassengerFlow () {
-        String areaCode = sysConfigService.selectConfigByKey(configAreaCodeKey);
-        YearPassengerFlowVo vo = YearPassengerFlowVo.builder()
-                .adcode(areaCode)
-                .statisticsType(DistrictBigDataConstants.YEAR_PASSENGER_FLOW_VISIT_IN)
-                .build();
-        List<YearPassengerFlowDto> result = JSONObject.parseArray(
-                String.valueOf(
-                        JsonUtils.getValueByKey(
-                                districtBigDataService.requestDistrict(DistrictPathEnum.YEAR_PASSENGER_FLOW.getPath(), vo, DistrictPathEnum.YEAR_PASSENGER_FLOW.getDesc()),
-                                "data"
-                        )
-                ),
-                YearPassengerFlowDto.class);
+    public List<MonthPassengerFlowDto> queryYearPassengerFlow (PassengerFlowVo vo) {
 
-        // 获取当前年份
-        String currentYearStr = DateTimeUtil.getCurrentYearStr();
+        String areaCode = sysConfigService.selectConfigByKey(configAreaCodeKey);
+        vo.setAdcode(areaCode);
+        // 今年数据
+        vo.setBeginDate(DateTimeUtil.transformDateTime(vo.getBeginTime().plusMonths(-1), "yyyy-MM-dd"));
+        vo.setEndDate(DateTimeUtil.transformDateTime(vo.getEndTime(), "yyyy-MM-dd"));
+
+        String result = districtBigDataService.requestDistrict(DistrictPathEnum.PASSENGER_FLOW.getPath(), vo, DistrictPathEnum.PASSENGER_FLOW.getDesc());
+
+        // 今年数据
+        List<MonthPassengerFlowDto> currentYear = JSONObject.parseArray(String.valueOf(JsonUtils.getValueByKey(result, "data")), MonthPassengerFlowDto.class);
+
+
+        // 修改去年
+        vo.setBeginDate(DateTimeUtil.transformDateTime(vo.getBeginTime().plusMonths(-13), "yyyy-MM-dd"));
+        vo.setEndDate(DateTimeUtil.transformDateTime(vo.getEndTime().plusMonths(-12), "yyyy-MM-dd"));
+
+        // 去年数据
+        String lastYearResult = districtBigDataService.requestDistrict(DistrictPathEnum.PASSENGER_FLOW.getPath(), vo, DistrictPathEnum.PASSENGER_FLOW.getDesc());
+        List<MonthPassengerFlowDto> lastYear = JSONObject.parseArray(String.valueOf(JsonUtils.getValueByKey(lastYearResult, "data")), MonthPassengerFlowDto.class);
+
+        // 结果数据
+        List<MonthPassengerFlowDto> resultList = Lists.newArrayList();
+
+        // 计算今年的个月总数
+        HashMap<String, Integer> currentYearMap = Maps.newLinkedHashMap();
+        // 计算今年的个月总数
+        HashMap<String, Integer> lastYearMap = Maps.newLinkedHashMap();
+        for (MonthPassengerFlowDto v : currentYear) {
+            countYearNumber(v, currentYearMap);
+        }
+        for (MonthPassengerFlowDto v : lastYear) {
+            countYearNumber(v, lastYearMap);
+        }
+        currentYear.clear();
+        lastYear.clear();
+        // 设置回list
+        currentYearMap.forEach((k, v) -> currentYear.add(MonthPassengerFlowDto.builder().number(v).date(k).build()));
+        lastYearMap.forEach((k, v) -> lastYear.add(MonthPassengerFlowDto.builder().number(v).date(k).build()));
 
         // 是否获取数据标识 用于截取本年1月及以后的数据
         boolean isStop = true;
+        // 获取当前年份
+        String currentYearStr = DateTimeUtil.getCurrentYearStr() + "-01";
 
-        List<YearPassengerFlowDto> resultList = Lists.newArrayList();
-
-        for (int i = 0; i < result.size(); i++) {
+        for (int i = 0; i < currentYear.size(); i++) {
             // 判断是本年一月的数据
-            YearPassengerFlowDto yearPassengerFlowDto = result.get(i);
-            if (currentYearStr.equals(yearPassengerFlowDto.getCurYear())
-                    && "01".equals(yearPassengerFlowDto.getCurDate().substring(yearPassengerFlowDto.getCurDate().length() - 2))) {
+            MonthPassengerFlowDto yearPassengerFlowDto = currentYear.get(i);
+            String date = yearPassengerFlowDto.getDate();
+            if (currentYearStr.equals(date)) {
                 isStop = false;
             }
             else if (isStop) {
@@ -140,32 +167,52 @@ public class DistrictTourService {
             }
 
             // todo 计算比例相关逻辑
-            // 当月人数
-            Integer curNumber = yearPassengerFlowDto.getCurNumber();
-            //去年当月人数
-            Integer tbNumber = yearPassengerFlowDto.getTbNumber();
-            // 上月人数
-            Integer hbNumber = yearPassengerFlowDto.getHbNumber();
-
-            if (0 == curNumber) {
-                yearPassengerFlowDto.setTbScale("-");
-                yearPassengerFlowDto.setHbScale("-");
+            Integer currentNumber = currentYear.get(i).getNumber();
+            // 如果当天数据为0， 则直接赋值为“-”
+            if (0 == currentNumber) {
+                currentYear.get(i).setTbScale("-");
+                currentYear.get(i).setHbScale("-");
             }
             else {
-               // 今年和去年的比例-同比
-                String tbScale = MathUtil.calPercent(new BigDecimal(curNumber - tbNumber), new BigDecimal(curNumber), 2).toString();
+                Integer lastNumber = lastYear.get(i).getNumber();
 
-                // 当月和上月的比列-环比
-                String hbScale = MathUtil.calPercent(new BigDecimal(curNumber - hbNumber), new BigDecimal(curNumber), 2).toString();
+                // 前一天的数据
+                Integer beforeNumber = currentYear.get(i - 1).getNumber();
+                String beforeDay = MathUtil.calPercent(new BigDecimal(currentNumber - beforeNumber), new BigDecimal(currentNumber), 2).toString();
+                currentYear.get(i).setHbScale(beforeDay);
 
-                yearPassengerFlowDto.setTbScale(tbScale);
-                yearPassengerFlowDto.setHbScale(hbScale);
+                String LastYearDay = MathUtil.calPercent(new BigDecimal(currentNumber - lastNumber), new BigDecimal(currentNumber), 2).toString();
+                currentYear.get(i).setTbScale(LastYearDay);
+
+                // 设置去年 数量
+                currentYear.get(i).setTbNumber(lastYear.get(i).getNumber());
             }
+            // 设置去年 日期
+            currentYear.get(i).setTbDate(lastYear.get(i).getDate());
 
-            resultList.add(yearPassengerFlowDto);
+            resultList.add(currentYear.get(i));
         }
 
         return resultList;
+    }
+
+    /**
+     * 计算各月总数
+     *
+     * @param currentYear
+     * @param currentYearMap
+     */
+    private void countYearNumber(MonthPassengerFlowDto currentYear, Map <String, Integer> currentYearMap) {
+        String dateStr = currentYear.getDate().substring(0, 7);
+        Integer number = currentYear.getNumber();
+
+        if (currentYearMap.containsKey(dateStr)) {
+            int old = Integer.parseInt(currentYearMap.get(dateStr).toString());
+            currentYearMap.put(dateStr, old + number);
+        }else {
+            currentYearMap.put(dateStr, number);
+        }
+
     }
 
     /**
@@ -173,24 +220,24 @@ public class DistrictTourService {
      *
      * @return
      */
-    public List<MonthPassengerFlowDto> queryMonthPassengerFlow () {
+    public List<MonthPassengerFlowDto> queryMonthPassengerFlow (MonthPassengerFlowVo vo) {
         String areaCode = sysConfigService.selectConfigByKey(configAreaCodeKey);
-        MonthPassengerFlowVo vo = new MonthPassengerFlowVo();
         vo.setAdcode(areaCode);
-        vo.setBeginDate(DateTimeUtil.getCurrentLastMonthLastDayStr());
-        vo.setEndDate(DateTimeUtil.getCurrentDate());
-        vo.setStatisticsType(DistrictBigDataConstants.MONTH_PASSENGER_FLOW_VISIT_IN);
+        vo.setBeginDate(DateTimeUtil.transformDateTime(vo.getBeginTime().plusDays(-1), "yyyy-MM-dd"));
+        vo.setEndDate(DateTimeUtil.transformDateTime(vo.getEndTime(), "yyyy-MM-dd"));
 
-        String result = districtBigDataService.requestDistrict(DistrictPathEnum.MONTH_PASSENGER_FLOW.getPath(), vo, DistrictPathEnum.MONTH_PASSENGER_FLOW.getDesc());
+        String result = districtBigDataService.requestDistrict(DistrictPathEnum.PASSENGER_FLOW.getPath(), vo, DistrictPathEnum.PASSENGER_FLOW.getDesc());
+
         // 当月数据
         List<MonthPassengerFlowDto> currentMonth = JSONObject.parseArray(String.valueOf(JsonUtils.getValueByKey(result, "data")), MonthPassengerFlowDto.class);
 
+
         // 修改上月日期
-        vo.setBeginDate(DateTimeUtil.getLastYearDate(vo.getBeginDate()));
-        vo.setEndDate(DateTimeUtil.getLastYearDate(vo.getEndDate()));
+        vo.setBeginDate(DateTimeUtil.transformDateTime(vo.getBeginTime().plusMonths(-1).plusDays(-1), "yyyy-MM-dd"));
+        vo.setEndDate(DateTimeUtil.transformDateTime(vo.getEndTime().plusMonths(-1), "yyyy-MM-dd"));
 
         // 上月数据
-        String lastYearResult = districtBigDataService.requestDistrict(DistrictPathEnum.MONTH_PASSENGER_FLOW.getPath(), vo, DistrictPathEnum.MONTH_PASSENGER_FLOW.getDesc());
+        String lastYearResult = districtBigDataService.requestDistrict(DistrictPathEnum.PASSENGER_FLOW.getPath(), vo, DistrictPathEnum.PASSENGER_FLOW.getDesc());
         List<MonthPassengerFlowDto> lastMonth = JSONObject.parseArray(String.valueOf(JsonUtils.getValueByKey(lastYearResult, "data")), MonthPassengerFlowDto.class);
 
         // 结果数据
@@ -229,10 +276,12 @@ public class DistrictTourService {
 
             String LastYearDay = MathUtil.calPercent(new BigDecimal(currentNumber - lastNumber), new BigDecimal(currentNumber), 2).toString();
             currentMonth.get(i).setTbScale(LastYearDay);
-            }
-            // 设置去年 数量、日期
-            currentMonth.get(i).setTbDate(lastMonth.get(i).getDate());
+
+            // 设置去年 数量
             currentMonth.get(i).setTbNumber(lastMonth.get(i).getNumber());
+            }
+            // 设置去年 日期
+            currentMonth.get(i).setTbDate(lastMonth.get(i).getDate());
 
             resultList.add(currentMonth.get(i));
         }
