@@ -37,9 +37,14 @@ public class InitMessageVo implements Serializable {
     private String eventName;
 
     /**
-     * 事件类型 0:旅游投诉 1:应急事件
+     * 事件来源类型 0:旅游投诉 1:应急事件
      */
     private Byte eventType;
+
+    /**
+     * 事件业务类型 由各业务模块自行定义传输，暂定中文传输，只做前端展示
+     */
+    private String eventBusinessTypeText;
 
     /**
      * 事件状态 0:待指派 1:待处理 2:已处理

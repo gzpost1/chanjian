@@ -42,6 +42,11 @@ public class MessageDto implements Serializable {
     private Byte eventType;
 
     /**
+     * 事件业务类型 由各业务模块自行定义传输，暂定中文传输，只做前端展示
+     */
+    private String eventBusinessTypeText;
+
+    /**
      * 事件状态 0:待指派 1:待处理 2:已处理
      */
     private Integer eventStatus;
