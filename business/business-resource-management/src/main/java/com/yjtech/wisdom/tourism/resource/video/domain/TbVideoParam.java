@@ -14,10 +14,10 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * 
+ * 视频设备
  *
  * @author MJ~
- * @since 2021-07-05
+ * @since 2021-08-02
  */
 @Data
 @Builder(toBuilder = true)
@@ -55,6 +55,16 @@ public class TbVideoParam extends PageQuery implements Serializable {
      * 经度
      */
     private String longitude;
+
+    /**
+     * 景区id
+     */
+    private Long secenicId;
+
+    /**
+     * 景区名字
+     */
+    private String secenicName;
 
     /**
      * 纬度
