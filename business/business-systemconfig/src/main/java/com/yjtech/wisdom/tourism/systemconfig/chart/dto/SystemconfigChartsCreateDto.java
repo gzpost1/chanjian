@@ -26,9 +26,14 @@ public class SystemconfigChartsCreateDto {
     private String chartType;
 
     /**
-     * menu_type 大屏菜单类型（字典 config_menu_type）
+     * menu_type 点位类型
      */
-    @NotBlank(message = "大屏菜单类型不能为空")
+    private String pointType;
+
+    /**
+     * menu_type 页面类型（字典 config_menu_type）
+     */
+    @NotBlank(message = "页面类型不能为空")
     private String menuType;
 
     /**
@@ -39,16 +44,16 @@ public class SystemconfigChartsCreateDto {
     private String serviceUrl;
 
     /**
-     * commponent_type 组件类型
-     */
-    @NotBlank(message = "组件类型不能为空")
-    private String commponentType;
-
-    /**
      * list_type 当图表类型选择列表时显示 字典键值
      */
     @Length(max = 256, message = "字典键值必须小于等于256位")
     private String listType;
+
+    /**
+     * commponent_type 组件类型
+     */
+    @NotBlank(message = "组件类型不能为空")
+    private String commponentType;
 
     /**
      * is_simulation 是否有模拟数据 1有 0无
@@ -61,4 +66,21 @@ public class SystemconfigChartsCreateDto {
      */
     @NotBlank(message = "示例图不能为空")
     private String sampleImg;
+
+    /**
+     * 是否有页面跳转 0-否,1-是
+     */
+    @NotNull(message = "是否有页面跳转不能为空")
+    private Byte isRedirect;
+
+    /**
+     * 跳转页面id
+     */
+    private String redirectId;
+
+    /**
+     * 指标项
+     */
+    private String indexItem;
+
 }

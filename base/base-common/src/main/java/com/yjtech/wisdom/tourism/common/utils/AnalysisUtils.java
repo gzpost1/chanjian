@@ -40,7 +40,7 @@ public class AnalysisUtils {
     public static <T extends BaseSaleTrendVO> List<BaseValueVO> MultipleBuildAnalysis(TimeBaseQuery query,
                                                                                       List<T> analysisInfo,
                                                                                       Boolean future,
-                                                                                      SFunction<T, ? extends Integer>... func) {
+                                                                                      SFunction<T, ? extends Object>... func) {
         AssertUtil.isFalse(Objects.isNull(query.getBeginTime()) || Objects.isNull(query.getEndTime()), "起始时间或结束时间不能为空");
         AnalysisDateTypeEnum analysisDateTypeEnum = AnalysisDateTypeEnum.getItemByValue(query.getType());
 
@@ -52,18 +52,18 @@ public class AnalysisUtils {
         ArrayList<BaseValueVO> baseValueVOS = Lists.newArrayList();
 
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(javaDateFormat);
-        for (SFunction<T, ? extends Integer> fun : func) {
+        for (SFunction<T, ? extends Object> fun : func) {
 
-            Map<String, Integer> timeMap = Optional.ofNullable(analysisInfo).orElse(Lists.newArrayList())
+            Map<String, Object> timeMap = Optional.ofNullable(analysisInfo).orElse(Lists.newArrayList())
                     .stream().collect(Collectors.toMap(item -> item.getTime(), item -> fun.apply(item)));
             //值
-            List<Integer> value = Lists.newArrayList();
+            List<Object> value = Lists.newArrayList();
             for (LocalDateTime yearMark : markList) {
                 //前端要求 时间范围内没有补齐0  时间范围外不补任何数
                 if(query.getEndTime().isBefore(yearMark)){
                     break;
                 }
-                Integer quantity = timeMap.get(yearMark.format(dateTimeFormatter));
+                Object quantity = timeMap.get(yearMark.format(dateTimeFormatter));
                 if (Objects.nonNull(quantity)) {
                     value.add(quantity);
                 } else {

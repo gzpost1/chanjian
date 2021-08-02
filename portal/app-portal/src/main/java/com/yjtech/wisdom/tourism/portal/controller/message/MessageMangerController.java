@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.*;
  * 消息中心
  *
  * @author renguangqian
- * @date 2021/7/27 11:30
+ * @date 2021/7/29 15:12
  */
 @RestController
-@RequestMapping("message")
+@RequestMapping("/api/message")
 public class MessageMangerController {
 
     @Autowired

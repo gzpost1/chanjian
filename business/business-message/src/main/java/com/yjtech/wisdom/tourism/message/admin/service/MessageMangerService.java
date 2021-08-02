@@ -3,7 +3,7 @@ package com.yjtech.wisdom.tourism.message.admin.service;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -13,6 +13,7 @@ import com.yjtech.wisdom.tourism.command.entity.event.EventAppointEntity;
 import com.yjtech.wisdom.tourism.command.mapper.event.EventAppointMapper;
 import com.yjtech.wisdom.tourism.common.bean.AssignUserInfo;
 import com.yjtech.wisdom.tourism.common.constant.CacheKeyContants;
+import com.yjtech.wisdom.tourism.common.constant.MessageConstants;
 import com.yjtech.wisdom.tourism.common.enums.MessageAppointStatusEnum;
 import com.yjtech.wisdom.tourism.common.exception.CustomException;
 import com.yjtech.wisdom.tourism.common.utils.ServletUtils;
@@ -21,11 +22,11 @@ import com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysDictData;
 import com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysUser;
 import com.yjtech.wisdom.tourism.infrastructure.core.domain.model.LoginUser;
 import com.yjtech.wisdom.tourism.message.admin.dto.MessageDto;
+import com.yjtech.wisdom.tourism.message.admin.dto.MessageRecordDto;
 import com.yjtech.wisdom.tourism.message.admin.entity.MessageEntity;
 import com.yjtech.wisdom.tourism.message.admin.entity.MessageRecordEntity;
 import com.yjtech.wisdom.tourism.message.admin.mapper.MessageMapper;
 import com.yjtech.wisdom.tourism.message.admin.mapper.MessageRecordMapper;
-import com.yjtech.wisdom.tourism.message.admin.vo.ChangeMessageStatusVo;
 import com.yjtech.wisdom.tourism.message.admin.vo.InitMessageVo;
 import com.yjtech.wisdom.tourism.message.admin.vo.QueryMessageVo;
 import com.yjtech.wisdom.tourism.message.admin.vo.SendMessageVo;
@@ -39,6 +40,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
@@ -85,7 +87,7 @@ public class MessageMangerService extends ServiceImpl<MessageMapper, MessageEnti
     /**
      * 查询消息列表
      */
-    public IPage<MessageDto> queryPageMessage (QueryMessageVo vo) {
+    public IPage<MessageDto> queryPageMessage (QueryMessageVo vo, boolean isRecord) {
 
         // 获取用户信息
         LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
@@ -98,19 +100,62 @@ public class MessageMangerService extends ServiceImpl<MessageMapper, MessageEnti
         QueryWrapper<MessageEntity> queryWrapper = new QueryWrapper<>();
         HandleEventDealStatus(vo.getQueryType(), userId, status, queryWrapper);
 
-        return baseMapper.selectPage(new Page<>(vo.getPageNo(), vo.getPageSize()), queryWrapper)
+        IPage<MessageDto> result = baseMapper.selectPage(new Page<>(vo.getPageNo(), vo.getPageSize()), queryWrapper)
                 .convert(v -> JSONObject.parseObject(JSONObject.toJSONString(v), MessageDto.class));
+
+        if (isRecord) {
+            // 设置 本次查询的结果记录总数
+            redisTemplate.opsForValue().set(MessageConstants.MESSAGE_RECORD_NUM + userId, result.getTotal());
+        }
+        return result;
+    }
+
+    /**
+     * GET 查询是否存在新的消息记录
+     *
+     * @return
+     */
+    public MessageRecordDto queryNewMessageNum () {
+        // 获取消息记录总数
+        IPage<MessageDto> page = queryPageMessage(QueryMessageVo.builder().queryType(MessageConstants.MESSAGE_LIST_ALL).build(), false);
+
+        Long userId = tokenService.getLoginUser(ServletUtils.getRequest()).getUser().getUserId();
+        String tokenStr = String.valueOf(redisTemplate.opsForValue().get(MessageConstants.MESSAGE_RECORD_NUM + userId));
+        if (com.yjtech.wisdom.tourism.common.utils.StringUtils.isEmpty(tokenStr)) {
+            redisTemplate.opsForValue().set(MessageConstants.MESSAGE_RECORD_NUM + userId, page.getTotal());
+            return MessageRecordDto.builder().isAdd(true).addNumber(page.getTotal()).build();
+        }
+        Long lastTimeTotal = Long.parseLong(tokenStr);
+
+        long total = page.getTotal();
+        long addNumber = Math.abs(total - lastTimeTotal);
+        if (addNumber > 0) {
+            return MessageRecordDto.builder().isAdd(true).addNumber(addNumber).build();
+        }
+        return MessageRecordDto.builder().isAdd(false).addNumber(0L).build();
     }
 
 
     /**
-     * 修改消息状态  根据事件id
+     * 事件完成时调用此接口 根据事件id
      */
-    public void changeMessageStatus (ChangeMessageStatusVo vo) {
-        baseMapper.update(null,
-                new LambdaUpdateWrapper<MessageEntity>()
-                        .eq(MessageEntity::getEventId, vo.getEventId())
-                        .set(MessageEntity::getEventStatus, vo.getEventStatus()));
+    public void changeMessageStatus (Long eventId) {
+        if (null == eventId) {
+            throw new CustomException("事件ID不能为空");
+        }
+        List<MessageEntity> messageEntities = baseMapper.selectList(
+                new LambdaQueryWrapper<MessageEntity>()
+                .eq(MessageEntity::getEventId, eventId)
+                .orderByDesc(MessageEntity::getCreateTime)
+        );
+        if (CollectionUtils.isEmpty(messageEntities)) {
+            throw new CustomException("消息中心不存在该事件!");
+        }
+        // 最新的一条
+        MessageEntity entity = messageEntities.get(0);
+        entity.setId(null);
+        entity.setEventStatus(MessageConstants.EVENT_STATUS_COMPLETE);
+        baseMapper.insert(entity);
     }
 
     /**
@@ -152,20 +197,19 @@ public class MessageMangerService extends ServiceImpl<MessageMapper, MessageEnti
             switch (sendType) {
                 // 后台
                 case 0:
-                    int updateRecords = baseMapper.update(null,
-                            new LambdaUpdateWrapper<MessageEntity>()
-                                    .eq(MessageEntity::getEventId, vo.getEventId())
-                                    // 处理人id 使用逗号“,”分割
-                                    .set(MessageEntity::getEventDealPersonId, messageEntity.getEventDealPersonId() + "," + eventDealPersonIdStr)
-                    );
+                    messageEntity.setEventDealPersonId(eventDealPersonIdStr);
+                    messageEntity.setEventStatus(MessageConstants.EVENT_STATUS_DEAL);
+                    messageEntity.setId(null);
+                    int records = baseMapper.insert(messageEntity);
+
                     // 0-后台
                     recordEntity.setSendType(0);
                     recordEntity.setSendObject(JSONObject.toJSONString(vo.getEventDealPersonIdArray()));
-                    if (updateRecords > 0) {
+                    if (records > 0) {
                         recordEntity.setSuccess((byte) 1);
                     }else {
                         //更新失败
-                        log.error("【发送通知-后台通知】更新失败-事件ID：{}",vo.getEventId());
+                        log.error("【发送通知-后台通知】插入失败-事件ID：{}",vo.getEventId());
                         // 失败记录
                         recordEntity.setSuccess((byte) 0);
                     }
@@ -239,8 +283,23 @@ public class MessageMangerService extends ServiceImpl<MessageMapper, MessageEnti
      * @param vo
      */
     public void initMessage (InitMessageVo vo) {
+        // 查询 该事件的消息是否存在
+        Integer count = baseMapper.selectCount(new LambdaQueryWrapper<MessageEntity>().eq(MessageEntity::getEventId, vo.getEventId()));
+        if (count > 0) {
+            throw new CustomException("初始化失败，该事件绑定的消息已存在！");
+        }
         MessageEntity messageEntity = JSONObject.parseObject(JSONObject.toJSONString(vo), MessageEntity.class);
         baseMapper.insert(messageEntity);
+    }
+
+    /**
+     * 根据事件id 修改当前消息内容
+     *
+     * @param vo
+     */
+    public void updataMessage (InitMessageVo vo) {
+        MessageEntity messageEntity = JSONObject.parseObject(JSONObject.toJSONString(vo), MessageEntity.class);
+        baseMapper.update(messageEntity, new UpdateWrapper<MessageEntity>().eq("eventId", vo.getEventId()));
     }
 
     /**

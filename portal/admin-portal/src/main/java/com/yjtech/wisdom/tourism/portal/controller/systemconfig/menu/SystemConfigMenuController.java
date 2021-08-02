@@ -1,16 +1,16 @@
 package com.yjtech.wisdom.tourism.portal.controller.systemconfig.menu;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.yjtech.wisdom.tourism.common.bean.BaseVO;
 import com.yjtech.wisdom.tourism.common.core.domain.IdParam;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
-import com.yjtech.wisdom.tourism.common.core.domain.UpdateStatusParam;
+import com.yjtech.wisdom.tourism.common.exception.ErrorCode;
 import com.yjtech.wisdom.tourism.common.utils.IdWorker;
 import com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysDictData;
 import com.yjtech.wisdom.tourism.system.service.SysDictTypeService;
 import com.yjtech.wisdom.tourism.systemconfig.chart.dto.SystemConfigChartQueryPageDto;
 import com.yjtech.wisdom.tourism.systemconfig.chart.service.SystemconfigChartsService;
 import com.yjtech.wisdom.tourism.systemconfig.chart.vo.SystemconfigChartsVo;
-import com.yjtech.wisdom.tourism.systemconfig.menu.dto.MenuSortDto;
 import com.yjtech.wisdom.tourism.systemconfig.menu.dto.SystemconfigMenuCreateDto;
 import com.yjtech.wisdom.tourism.systemconfig.menu.dto.SystemconfigMenuPageQueryDto;
 import com.yjtech.wisdom.tourism.systemconfig.menu.dto.SystemconfigMenuUpdateDto;
@@ -24,6 +24,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,6 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * 后台管理-系统配置-大屏菜单配置
@@ -63,31 +65,6 @@ public class SystemConfigMenuController {
     }
 
     /**
-     * 菜单展示排序-列表查询
-     *
-     * @param
-     * @return
-     */
-    @PostMapping("/queryForList")
-    public JsonResult<List<SystemconfigMenuPageVo>> queryForList() {
-        return JsonResult.success(systemconfigMenuService.queryForList());
-    }
-
-    /**
-     * 菜单展示排序-保存列表
-     *
-     * @param
-     * @return
-     */
-    @PostMapping("/saveSortList")
-    public JsonResult saveSortList(@RequestBody @Valid List<MenuSortDto> list) {
-
-        systemconfigMenuService.saveSortList(list);
-
-        return JsonResult.ok();
-    }
-
-    /**
      * 获取模板列表
      *
      * @param
@@ -99,7 +76,7 @@ public class SystemConfigMenuController {
     }
 
     /**
-     * 根据大屏菜单类型获取图表
+     * 根据页面类型获取图表
      *
      * @param
      * @return
@@ -127,6 +104,7 @@ public class SystemConfigMenuController {
      * @param createDto
      * @return
      */
+    @PreAuthorize("@ss.hasPermi('datav:page:add')")
     @PostMapping("/create")
     public JsonResult create(@RequestBody @Valid SystemconfigMenuCreateDto createDto) {
 
@@ -162,6 +140,7 @@ public class SystemConfigMenuController {
      * @param updateDto
      * @return
      */
+    @PreAuthorize("@ss.hasPermi('datav:page:edit')")
     @PostMapping("/update")
     public JsonResult update(@RequestBody @Valid SystemconfigMenuUpdateDto updateDto) {
 
@@ -178,9 +157,20 @@ public class SystemConfigMenuController {
      *
      * @param idParam
      * @return
+     * @todo
      */
+    @PreAuthorize("@ss.hasPermi('datav:page:remove')")
     @PostMapping("/delete")
     public JsonResult delete(@RequestBody @Valid IdParam idParam) {
+
+        //首先校验模板是否被使用，如果已经被使用则不可删除
+        int tempexistnums = Optional.ofNullable(systemconfigChartsService.findMenuIsExistChart(idParam.getId())).orElse(0);
+        //判断大屏架构是否存在应有该页面
+        int jiagouexistnum = Optional.ofNullable(systemconfigMenuService.findMenuIsExistJiagou(idParam.getId())).orElse(0);
+
+        if (tempexistnums > 0 || jiagouexistnum > 0) {
+            return JsonResult.error(ErrorCode.BUSINESS_EXCEPTION.code(), "已有大屏菜单或图表关联，请取消关联后删除");
+        }
 
         systemconfigMenuService.removeById(idParam.getId());
 
@@ -188,27 +178,13 @@ public class SystemConfigMenuController {
     }
 
     /**
-     * 更新模拟数据状态
+     * 图表配置-跳转页面
      *
-     * @param updateStatusParam
+     * @param
      * @return
      */
-    @PostMapping("/updateSimulationStatus")
-    public JsonResult updateSimulationStatus(@RequestBody @Valid UpdateStatusParam updateStatusParam) {
-        systemconfigMenuService.updateSimulationStatus(updateStatusParam);
-        return JsonResult.ok();
+    @PostMapping("/queryPageList")
+    public JsonResult<List<BaseVO>> queryForDetail() {
+        return JsonResult.success(systemconfigMenuService.queryPageList());
     }
-
-    /**
-     * 更新展示状态
-     *
-     * @param updateStatusParam
-     * @return
-     */
-    @PostMapping("/updateShowStatus")
-    public JsonResult updateShowStatus(@RequestBody @Valid UpdateStatusParam updateStatusParam) {
-        systemconfigMenuService.updateShowStatus(updateStatusParam);
-        return JsonResult.ok();
-    }
-
 }

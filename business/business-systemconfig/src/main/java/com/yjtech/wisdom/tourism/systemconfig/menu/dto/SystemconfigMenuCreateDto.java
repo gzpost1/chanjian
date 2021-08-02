@@ -56,11 +56,6 @@ public class SystemconfigMenuCreateDto {
     @Length(max = 255, message = "路由地址最多255位")
     private String routePath;
 
-    /**
-     * point_data 点位展示数据
-     */
-    @Valid
-    private List<MenuPointDetalDto> pointData;
 
     /**
      * chart_data 图表数据
@@ -68,4 +63,21 @@ public class SystemconfigMenuCreateDto {
     @Valid
     private List<MenuChartDetailDto> chartData;
 
+    /**
+     * 地图大小 1大 2小
+     */
+    @NotNull(message = "地图大小不能为空")
+    private Byte mapsizeType;
+
+    /**
+     *是否显示日期筛选 0否 1是
+     */
+    @NotNull(message = "是否显示日期筛选不能为空")
+    private Byte isShowdate;
+
+    /**
+     *是否显示返回按钮 0否 1是
+     */
+    @NotNull(message = "是否显示返回按钮不能为空")
+    private Byte isShowReturn;
 }

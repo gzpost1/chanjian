@@ -48,4 +48,6 @@ public class SystemconfigTempVo {
      */
     @TableField(value = "temp_data",typeHandler = JsonTypeHandler.class)
     private Integer[][] tempData;
+
+    private String layoutJson;
 }

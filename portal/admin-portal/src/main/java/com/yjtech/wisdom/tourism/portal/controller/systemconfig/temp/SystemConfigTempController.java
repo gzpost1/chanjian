@@ -15,6 +15,7 @@ import com.yjtech.wisdom.tourism.systemconfig.temp.service.SystemconfigTempServi
 import com.yjtech.wisdom.tourism.systemconfig.temp.vo.SystemconfigTempVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -66,6 +67,7 @@ public class SystemConfigTempController {
      * @param createDto
      * @return
      */
+    @PreAuthorize("@ss.hasPermi('datav:temp:add')")
     @PostMapping("/create")
     public JsonResult create(@RequestBody @Valid SystemconfigTempCreateDto createDto) {
         AssertUtil.isTrue(systemconfigTempService.findNameExist(createDto.getName(),null),"该模板名称已存在，请修改！");
@@ -85,6 +87,7 @@ public class SystemConfigTempController {
      * @param updateDto
      * @return
      */
+    @PreAuthorize("@ss.hasPermi('datav:temp:edit')")
     @PostMapping("/update")
     public JsonResult update(@RequestBody @Valid SystemconfigTempUpdateDto updateDto) {
         AssertUtil.isTrue(systemconfigTempService.findNameExist(updateDto.getName(),updateDto.getId()),"该模板名称已存在，请修改！");
@@ -110,6 +113,7 @@ public class SystemConfigTempController {
      * @param idParam
      * @return
      */
+    @PreAuthorize("@ss.hasPermi('datav:temp:remove')")
     @PostMapping("/delete")
     public JsonResult delete(@RequestBody @Valid IdParam idParam) {
         //首先校验模板是否被使用，如果已经被使用则不可删除

@@ -14,22 +14,23 @@
     <result column="create_user" jdbcType="BIGINT" property="createUser" />
     <result column="update_user" jdbcType="BIGINT" property="updateUser" />
     <result column="deleted" jdbcType="TINYINT" property="deleted" />
+    <result column="layout_json" jdbcType="LONGVARCHAR" property="layoutJson" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
     id, `name`, img_url, temp_data, create_time, update_time, create_user, update_user, 
-    deleted
+    deleted,layout_json
   </sql>
   <insert id="batchInsert" keyColumn="id" keyProperty="id" parameterType="map" useGeneratedKeys="true">
     <!--@mbg.generated-->
     insert into tb_systemconfig_temp
     (`name`, img_url, temp_data, create_time, update_time, create_user, update_user, 
-      deleted)
+      deleted,layout_json)
     values
     <foreach collection="list" item="item" separator=",">
       (#{item.name,jdbcType=VARCHAR}, #{item.imgUrl,jdbcType=VARCHAR}, #{item.tempData,jdbcType=LONGVARCHAR}, 
         #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateTime,jdbcType=TIMESTAMP}, #{item.createUser,jdbcType=BIGINT}, 
-        #{item.updateUser,jdbcType=BIGINT}, #{item.deleted,jdbcType=TINYINT})
+        #{item.updateUser,jdbcType=BIGINT}, #{item.deleted,jdbcType=TINYINT},#{item.layoutJson})
     </foreach>
   </insert>
 
@@ -40,11 +41,12 @@
     <result column="temp_data" jdbcType="LONGVARCHAR" property="tempData"
             typeHandler="com.yjtech.wisdom.tourism.mybatis.typehandler.JsonTypeHandler"/>
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="layout_json" jdbcType="LONGVARCHAR" property="layoutJson" />
   </resultMap>
 
   <select id="queryForPage" resultMap="detailMap">
     select
-        id, name, img_url, create_time,temp_data
+        id, name, img_url, create_time,temp_data,layout_json
     from
             tb_systemconfig_temp
     where
@@ -57,7 +59,7 @@
 
   <select id="queryForTempList" resultMap="detailMap">
     select
-    id, name, img_url, create_time,temp_data
+    id, name, img_url, create_time,temp_data,layout_json
     from
     tb_systemconfig_temp
     where
