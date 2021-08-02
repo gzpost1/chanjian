@@ -1,26 +1,28 @@
 package com.yjtech.wisdom.tourism.resource.video.entity;
 
-import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.yjtech.wisdom.tourism.common.enums.BeanValidationGroup;
-import com.yjtech.wisdom.tourism.common.utils.spring.SpringUtils;
-import com.yjtech.wisdom.tourism.infrastructure.constant.EntityConstants;
-import com.yjtech.wisdom.tourism.system.domain.IconSpotEnum;
-import com.yjtech.wisdom.tourism.system.service.IconService;
+import java.time.LocalDateTime;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableLogic;
+import com.baomidou.mybatisplus.annotation.TableField;
+import java.io.Serializable;
 import lombok.*;
 import lombok.experimental.Accessors;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
-
+import com.fasterxml.jackson.annotation.JsonInclude;
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
-import java.time.LocalDateTime;
+
+import com.yjtech.wisdom.tourism.infrastructure.constant.EntityConstants;
+import com.yjtech.wisdom.tourism.common.validator.BeanValidationGroup;
 /**
- * 
+ * 视频设备
  *
  * @author MJ~
- * @since 2021-07-05
+ * @since 2021-08-02
  */
 @Data
 @Builder(toBuilder = true)
@@ -62,6 +64,16 @@ public class TbVideoEntity extends Model<TbVideoEntity> {
     private String longitude;
 
     /**
+     * 景区id
+     */
+    private Long secenicId;
+
+    /**
+     * 景区名字
+     */
+    private String secenicName;
+
+    /**
      * 纬度
      */
     private String latitude;
@@ -75,14 +87,6 @@ public class TbVideoEntity extends Model<TbVideoEntity> {
      * 序号
      */
     private Integer sort;
-
-    @TableField(exist = false)
-    private String iconUrl;
-
-    public String getIconUrl() {
-        IconService iconService = SpringUtils.getBean("iconService");
-        return iconService.queryIconUrl(IconSpotEnum.VIDEO, String.valueOf(equipStatus));
-    }
 
     /**
      * 创建时间
@@ -146,6 +150,10 @@ public class TbVideoEntity extends Model<TbVideoEntity> {
     public static final String LOCATION = "location";
 
     public static final String LONGITUDE = "longitude";
+
+    public static final String SECENIC_ID = "secenic_id";
+
+    public static final String SECENIC_NAME = "secenic_name";
 
     public static final String LATITUDE = "latitude";
 

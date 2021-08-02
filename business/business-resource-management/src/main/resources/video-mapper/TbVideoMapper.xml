@@ -10,6 +10,8 @@
         <result column="name" property="name" />
         <result column="location" property="location" />
         <result column="longitude" property="longitude" />
+        <result column="secenic_id" property="secenicId" />
+        <result column="secenic_name" property="secenicName" />
         <result column="latitude" property="latitude" />
         <result column="url" property="url" />
         <result column="sort" property="sort" />
@@ -30,11 +32,12 @@
     <where>
       <include refid="dynamic_where" />
   </where>
+    order by equip_status desc,sort
 </select>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, device_id, name, location, longitude, latitude, url, sort, create_time, create_user, update_time, update_user, deleted, status, address, equip_status
+        id, device_id, name, location, longitude, secenic_id, secenic_name, latitude, url, sort, create_time, create_user, update_time, update_user, deleted, status, address, equip_status
     </sql>
 
 <sql id="dynamic_where">
@@ -53,6 +56,12 @@
     </if>
     <if test=" params.longitude != null and params.longitude.trim() != ''" >
              and longitude like CONCAT('%','${params.longitude}','%' )
+    </if>
+    <if test=" params.secenicId != null" >
+             and  secenic_id = #{params.secenicId}
+    </if>
+    <if test=" params.secenicName != null and params.secenicName.trim() != ''" >
+             and secenic_name like CONCAT('%','${params.secenicName}','%' )
     </if>
     <if test=" params.latitude != null and params.latitude.trim() != ''" >
              and latitude like CONCAT('%','${params.latitude}','%' )
