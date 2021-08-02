@@ -3,6 +3,7 @@ package com.yjtech.wisdom.tourism.portal.controller.complaint;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.yjtech.wisdom.tourism.command.dto.travelcomplaint.TravelComplaintDTO;
 import com.yjtech.wisdom.tourism.command.dto.travelcomplaint.TravelComplaintListDTO;
+import com.yjtech.wisdom.tourism.command.entity.travelcomplaint.TravelComplaintEntity;
 import com.yjtech.wisdom.tourism.command.service.travelcomplaint.TravelComplaintService;
 import com.yjtech.wisdom.tourism.command.vo.travelcomplaint.TravelComplaintCreateVO;
 import com.yjtech.wisdom.tourism.command.vo.travelcomplaint.TravelComplaintDealVO;
@@ -10,11 +11,15 @@ import com.yjtech.wisdom.tourism.command.vo.travelcomplaint.TravelComplaintQuery
 import com.yjtech.wisdom.tourism.command.vo.travelcomplaint.TravelComplaintUpdateVO;
 import com.yjtech.wisdom.tourism.common.bean.AssignUserInfo;
 import com.yjtech.wisdom.tourism.common.bean.DealUserInfo;
+import com.yjtech.wisdom.tourism.common.constant.CacheKeyContants;
 import com.yjtech.wisdom.tourism.common.core.domain.IdParam;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.common.utils.ServletUtils;
 import com.yjtech.wisdom.tourism.framework.web.service.TokenService;
 import com.yjtech.wisdom.tourism.infrastructure.core.domain.model.LoginUser;
+import com.yjtech.wisdom.tourism.message.admin.service.MessageMangerService;
+import com.yjtech.wisdom.tourism.message.admin.vo.InitMessageVo;
+import com.yjtech.wisdom.tourism.redis.RedisCache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,9 +39,13 @@ import javax.validation.Valid;
 public class TravelComplaintAdminController {
 
     @Autowired
+    private RedisCache redisCache;
+    @Autowired
     private TravelComplaintService travelComplaintService;
     @Autowired
     private TokenService tokenService;
+    @Autowired
+    private MessageMangerService messageMangerService;
 
 
     /**
@@ -49,7 +58,10 @@ public class TravelComplaintAdminController {
     public JsonResult create(@RequestBody @Valid TravelComplaintCreateVO vo) {
         //校验投诉类型
         travelComplaintService.checkType(vo.getComplaintType(), vo.getComplaintObject(), vo.getObjectId());
-        return JsonResult.success(travelComplaintService.create(vo));
+
+        TravelComplaintEntity entity = travelComplaintService.create(vo);
+
+        return JsonResult.success();
     }
 
     /**
@@ -124,5 +136,16 @@ public class TravelComplaintAdminController {
         travelComplaintService.refreshDealUser(vo);
         return JsonResult.success();
     }
+
+//    private void handleMessage(TravelComplaintEntity entity){
+//        if(null != entity){
+//            //构建消息初始化信息
+//            InitMessageVo initMessageVo = new InitMessageVo();
+//            //初始化消息
+//            messageMangerService.initMessage(initMessageVo);
+//            //获取指派人信息
+//            AssignUserInfo assignUserInfo = redisCache.getCacheObject(CacheKeyContants.KEY_ASSIGN_TRAVEL_COMPLAINT);
+//        }
+//    }
 
 }

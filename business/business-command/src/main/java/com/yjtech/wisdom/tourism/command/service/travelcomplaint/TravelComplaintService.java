@@ -44,9 +44,10 @@ import java.util.Objects;
 public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, TravelComplaintEntity> {
 
     @Autowired
-    private SysUserService sysUserService;
-    @Autowired
     private RedisCache redisCache;
+    @Autowired
+    private SysUserService sysUserService;
+
 
     /**
      * 新增
@@ -55,18 +56,13 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
      * @return
      */
     @Transactional(rollbackFor = Exception.class)
-    public int create(TravelComplaintCreateVO vo) {
+    public TravelComplaintEntity create(TravelComplaintCreateVO vo) {
         TravelComplaintEntity entity = new TravelComplaintEntity();
         entity.build(vo);
 
-        int result = baseMapper.insert(entity);
-        if(result > 0){
-            //获取指派人信息
-            AssignUserInfo assignUserInfo = redisCache.getCacheObject(CacheKeyContants.KEY_ASSIGN_TRAVEL_COMPLAINT);
-            //todo：向指派人发送消息
-        }
+        baseMapper.insert(entity);
 
-        return result;
+        return entity;
     }
 
     /**
@@ -228,6 +224,5 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
                     "新增旅游投诉失败：投诉对象或投诉对象id不能空");
         }
     }
-
 
 }

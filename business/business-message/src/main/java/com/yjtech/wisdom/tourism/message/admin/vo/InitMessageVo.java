@@ -1,6 +1,8 @@
 package com.yjtech.wisdom.tourism.message.admin.vo;
 
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.yjtech.wisdom.tourism.command.entity.travelcomplaint.TravelComplaintEntity;
+import com.yjtech.wisdom.tourism.common.enums.MessageEventTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -100,4 +102,15 @@ public class InitMessageVo implements Serializable {
         }
         this.eventDealPersonId = tmp;
     }
+
+    public void buildTravelComplaintInfo(TravelComplaintEntity entity){
+        setEventId(entity.getId().toString());
+        setEventName(entity.getComplaintObject());
+        setEventType(MessageEventTypeEnum.MESSAGE_EVENT_TYPE_TRAVEL_COMPLAINT.getValue());
+
+
+
+    }
+
+
 }
