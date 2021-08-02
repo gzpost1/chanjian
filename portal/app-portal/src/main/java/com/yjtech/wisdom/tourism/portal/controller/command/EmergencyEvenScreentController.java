@@ -152,10 +152,10 @@ public class EmergencyEvenScreentController {
      */
     @PostMapping("/queryTrend")
     public JsonResult<List<BaseValueVO>> querySaleTrend(@RequestBody @Valid EventSumaryQuery query){
-        List<EventTrendVO> trendVOS = extensionExecutor.execute(EventQryExtPt.class,
+        List<BaseValueVO> trendVOS = extensionExecutor.execute(EventQryExtPt.class,
                 buildBizScenario(EventExtensionConstant.EVENT_QUANTITY, query.getIsSimulation()),
                 extension -> extension.querySaleTrend(query));
-        return JsonResult.success(AnalysisUtils.MultipleBuildAnalysis(query,trendVOS,false, EventTrendVO::getQuantity));
+        return JsonResult.success(trendVOS);
     }
 
     /**
