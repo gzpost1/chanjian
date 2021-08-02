@@ -10,7 +10,7 @@ stages:
   steps:
   - publishImageConfig:
       dockerfilePath: portal/admin-portal/Dockerfile
-      buildContext: portal/app-portal/
+      buildContext: portal/admin-portal/
       tag: test-standard-industry-monitor/test-admin-portal:${CICD_EXECUTION_SEQUENCE}
       pushRemote: true
       registry: harbor.yunjingtech.cn:30002
