@@ -56,13 +56,11 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
      * @return
      */
     @Transactional(rollbackFor = Exception.class)
-    public TravelComplaintEntity create(TravelComplaintCreateVO vo) {
+    public int create(TravelComplaintCreateVO vo) {
         TravelComplaintEntity entity = new TravelComplaintEntity();
         entity.build(vo);
 
-        baseMapper.insert(entity);
-
-        return entity;
+        return baseMapper.insert(entity);
     }
 
     /**
