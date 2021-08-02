@@ -9,6 +9,7 @@ import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.common.utils.AssertUtil;
 import com.yjtech.wisdom.tourism.common.utils.bean.BeanMapper;
 import com.yjtech.wisdom.tourism.system.service.SysConfigService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -75,7 +76,8 @@ public class AudioMeetingController {
      * @return
      */
     @PostMapping("/logout")
-    public JsonResult logout(@RequestBody @Valid AudioMeetingDto createDto) {
+    public JsonResult logout(@RequestBody  AudioMeetingDto createDto) {
+        AssertUtil.isFalse(StringUtils.isBlank(createDto.getCode()), "会议编码不能为空");
         //时间超过8小时或会议人数小于1 视为会议结束
         LambdaQueryWrapper<AudioMeetingEntity> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(AudioMeetingEntity::getCode, createDto.getCode());

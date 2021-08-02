@@ -5,6 +5,7 @@ import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 /**
  *
@@ -21,13 +22,14 @@ public class AudioMeetingDto implements Serializable {
     */
     @NotBlank(message = "会议编号不能为空")
     @Length(max = 30,message = "会议编号长度必须小于30位")
+    @Pattern(regexp = "^[A-Za-z0-9]+$" ,message = "会议编号只能传英文和数字")
     private String code;
 
     /**
-    * 会议名称
+    * 密码
     */
-    @NotBlank(message = "会议名称不能为空")
-    @Length(max = 30,message = "会议名称长度必须小于30位")
+    @NotBlank(message = "密码不能为空")
+    @Length(max = 30,message = "密码长度必须小于30位")
     private String password;
 
 
