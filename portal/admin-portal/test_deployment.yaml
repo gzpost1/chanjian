@@ -35,7 +35,7 @@ metadata:
   name: admin-portal
   namespace: test-standard-industry-monitor
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
     - protocol: TCP
       port: 8080
