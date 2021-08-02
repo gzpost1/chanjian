@@ -32,6 +32,7 @@
     <where>
       <include refid="dynamic_where" />
   </where>
+    order by equip_status desc,sort
 </select>
 
     <!-- 通用查询结果列 -->
