@@ -1,5 +1,7 @@
 package com.yjtech.wisdom.tourism.command.service.travelcomplaint;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -9,13 +11,11 @@ import com.yjtech.wisdom.tourism.command.dto.travelcomplaint.TravelComplaintDTO;
 import com.yjtech.wisdom.tourism.command.dto.travelcomplaint.TravelComplaintListDTO;
 import com.yjtech.wisdom.tourism.command.entity.travelcomplaint.TravelComplaintEntity;
 import com.yjtech.wisdom.tourism.command.mapper.travelcomplaint.TravelComplaintMapper;
-import com.yjtech.wisdom.tourism.command.vo.travelcomplaint.TravelComplaintCreateVO;
-import com.yjtech.wisdom.tourism.command.vo.travelcomplaint.TravelComplaintDealVO;
-import com.yjtech.wisdom.tourism.command.vo.travelcomplaint.TravelComplaintQueryVO;
-import com.yjtech.wisdom.tourism.command.vo.travelcomplaint.TravelComplaintUpdateVO;
+import com.yjtech.wisdom.tourism.command.vo.travelcomplaint.*;
 import com.yjtech.wisdom.tourism.common.bean.AssignUserInfo;
 import com.yjtech.wisdom.tourism.common.bean.DealUserInfo;
 import com.yjtech.wisdom.tourism.common.constant.CacheKeyContants;
+import com.yjtech.wisdom.tourism.common.constant.Constants;
 import com.yjtech.wisdom.tourism.common.core.domain.StatusParam;
 import com.yjtech.wisdom.tourism.common.enums.TravelComplaintStatusEnum;
 import com.yjtech.wisdom.tourism.common.enums.TravelComplaintTypeEnum;
@@ -221,6 +221,24 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
                             || (!TravelComplaintTypeEnum.TRAVEL_COMPLAINT_TYPE_ELSE.getValue().equals(complaintType) && Objects.nonNull(objectId)),
                     "新增旅游投诉失败：投诉对象或投诉对象id不能空");
         }
+    }
+
+
+
+    /** ******************** 大屏 ******************** */
+
+    /**
+     *
+     * @param vo
+     * @return
+     */
+    public Integer queryTravelComplaintTotal(TravelComplaintScreenQueryVO vo){
+        LambdaQueryWrapper<TravelComplaintEntity> queryWrapper = new QueryWrapper<TravelComplaintEntity>().lambda()
+                .eq(TravelComplaintEntity::getEquipStatus, Objects.isNull(vo.getEquipStatus()) ? Constants.STATUS_NEGATIVE : vo.getEquipStatus())
+                .between(Objects.nonNull(vo.getBeginTime()) && Objects.nonNull(vo.getEndTime()), TravelComplaintEntity::getCreateTime, vo.getBeginTime(), vo.getEndTime())
+                ;
+
+        return baseMapper.selectCount(queryWrapper);
     }
 
 }
