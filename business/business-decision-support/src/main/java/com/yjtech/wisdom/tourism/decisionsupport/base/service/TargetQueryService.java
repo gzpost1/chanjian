@@ -2,15 +2,12 @@ package com.yjtech.wisdom.tourism.decisionsupport.base.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.google.common.collect.Lists;
 import com.yjtech.wisdom.tourism.common.constant.DecisionSupportConstants;
-import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
-import com.yjtech.wisdom.tourism.common.enums.MessageConfigItemEnum;
 import com.yjtech.wisdom.tourism.common.path.DistrictPathEnum;
 import com.yjtech.wisdom.tourism.common.utils.DateTimeUtil;
+import com.yjtech.wisdom.tourism.common.utils.JsonUtils;
 import com.yjtech.wisdom.tourism.common.utils.MathUtil;
 import com.yjtech.wisdom.tourism.decisionsupport.base.dto.LastMonthDto;
-import com.yjtech.wisdom.tourism.decisionsupport.base.dto.MessageConfigItemDto;
 import com.yjtech.wisdom.tourism.decisionsupport.base.dto.TargetDto;
 import com.yjtech.wisdom.tourism.decisionsupport.base.dto.WarnConfigDto;
 import com.yjtech.wisdom.tourism.decisionsupport.base.entity.WarnConfigEntity;
@@ -19,12 +16,11 @@ import com.yjtech.wisdom.tourism.decisionsupport.base.mapper.WarnConfigMapper;
 import com.yjtech.wisdom.tourism.decisionsupport.base.vo.VisitNumberVo;
 import com.yjtech.wisdom.tourism.decisionsupport.base.vo.WarnConfigVo;
 import com.yjtech.wisdom.tourism.dto.MonthPassengerFlowDto;
-import com.yjtech.wisdom.tourism.dto.YearPassengerFlowDto;
 import com.yjtech.wisdom.tourism.integration.service.DistrictBigDataService;
 import com.yjtech.wisdom.tourism.service.DistrictTourService;
 import com.yjtech.wisdom.tourism.system.service.PlatformService;
 import com.yjtech.wisdom.tourism.system.vo.PlatformVO;
-import com.yjtech.wisdom.tourism.vo.YearPassengerFlowVo;
+import com.yjtech.wisdom.tourism.vo.PassengerFlowVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -104,7 +100,7 @@ public class TargetQueryService {
     /**
      * 省外客流数据查询
      */
-    public JsonResult queryProvinceOutsideNumber () {
+    public String queryProvinceOutsideNumber () {
         String beginDate = DateTimeUtil.getCurrentLastMonthFirstDayStr();
         String endTime = DateTimeUtil.getCurrentLastMonthLastDayStr();
         // 请求参数构造
@@ -116,14 +112,19 @@ public class TargetQueryService {
         String result = districtBigDataService.requestDistrict(DistrictPathEnum.VISIT_NUMBER.getPath(),
                 visitNumberVo,
                 DistrictPathEnum.VISIT_NUMBER.getDesc());
-        return JSONObject.parseObject(result, JsonResult.class);
+        return String.valueOf(JsonUtils.getValueByKey(result, "data"));
     }
 
     /**
      * 省外客流环比数据查询
      */
     public String queryHbProvinceOutside () {
-        List<YearPassengerFlowDto> yearPassengerFlowDto = districtTourService.queryYearPassengerFlow();
+        List<MonthPassengerFlowDto> yearPassengerFlowDto = districtTourService.queryYearPassengerFlow(
+                PassengerFlowVo.builder()
+                        .beginDate(DateTimeUtil.getCurrentYearStr() + "-01-01 00:00:00")
+                        .endDate(DateTimeUtil.getCurrentYearStr() + "-12-31 23:59:59")
+                        .statisticsType("12")
+                        .build());
         // 上月 年月日期
         String currentLastMonthStr = DateTimeUtil.getCurrentLastMonthStr();
 
@@ -131,13 +132,16 @@ public class TargetQueryService {
         String hbScale = "-";
 
         for (int i = 0; i < yearPassengerFlowDto.size(); i++) {
-            YearPassengerFlowDto item = yearPassengerFlowDto.get(i);
+            if (i == 0) {
+                continue;
+            }
+            MonthPassengerFlowDto item = yearPassengerFlowDto.get(i);
 
-            if (i != 0 && currentLastMonthStr.equals(item.getCurDate())) {
+            if (currentLastMonthStr.equals(item.getDate())) {
                 // 上上月人数
-                Integer beforeNumber = yearPassengerFlowDto.get(i - 1).getCurNumber();
+                Integer beforeNumber = yearPassengerFlowDto.get(i - 1).getNumber();
                 // 上月人数
-                Integer curNumber = item.getCurNumber();
+                Integer curNumber = item.getNumber();
 
                 if (0 != curNumber) {
                     hbScale = MathUtil.divide(new BigDecimal(curNumber - beforeNumber), new BigDecimal(curNumber), 2).toString();
@@ -152,7 +156,12 @@ public class TargetQueryService {
      * 省外客流同比数据查询
      */
     public String queryTbProvinceOutside () {
-        List<YearPassengerFlowDto> yearPassengerFlowDto = districtTourService.queryYearPassengerFlow();
+        List<MonthPassengerFlowDto> yearPassengerFlowDto = districtTourService.queryYearPassengerFlow(
+                PassengerFlowVo.builder()
+                        .beginDate(DateTimeUtil.getCurrentYearStr() + "-01-01 00:00:00")
+                        .endDate(DateTimeUtil.getCurrentYearStr() + "-12-31 23:59:59")
+                        .statisticsType("12")
+                        .build());
 
         // 上月 年月日期
         String currentLastMonthStr = DateTimeUtil.getCurrentLastMonthStr();
@@ -170,13 +179,16 @@ public class TargetQueryService {
         Integer lastYearLastMonthNumber = 0;
 
         for (int i = 0; i < yearPassengerFlowDto.size(); i++) {
-            YearPassengerFlowDto item = yearPassengerFlowDto.get(i);
-
-            if (currentLastMonthStr.equals(item.getCurDate())) {
-                lastMonthNumber = item.getCurNumber();
+            if (i == 0) {
+                continue;
             }
-            else if (lastYearLastMonthStr.equals(item.getCurDate())) {
-                lastYearLastMonthNumber = item.getCurNumber();
+            MonthPassengerFlowDto item = yearPassengerFlowDto.get(i);
+
+            if (currentLastMonthStr.equals(item.getDate())) {
+                lastMonthNumber = item.getNumber();
+            }
+            else if (lastYearLastMonthStr.equals(item.getDate())) {
+                lastYearLastMonthNumber = item.getNumber();
             }
         }
 
@@ -187,20 +199,4 @@ public class TargetQueryService {
         return tbScale;
     }
 
-    /**
-     * GET 查询配置项
-     *
-     * @return
-     */
-    public List<MessageConfigItemDto> queryMessageConfigItem () {
-        List<MessageConfigItemDto> result = Lists.newArrayList();
-        for (MessageConfigItemEnum itemEnum : MessageConfigItemEnum.values()) {
-            MessageConfigItemDto item = MessageConfigItemDto.builder()
-                    .name(itemEnum.getName())
-                    .key(itemEnum.getKey())
-                    .build();
-            result.add(item);
-        }
-        return result;
-    }
 }

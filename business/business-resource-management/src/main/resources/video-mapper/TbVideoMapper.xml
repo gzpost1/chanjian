@@ -23,7 +23,15 @@
         <result column="status" property="status" />
         <result column="address" property="address" />
         <result column="equip_status" property="equipStatus" />
+        <association property="scenic" column="secenic_id"
+                     select="com.yjtech.wisdom.tourism.resource.video.mapper.TbVideoMapper.querySecenicInfoById"
+        />
     </resultMap>
+
+    <select id="querySecenicInfoById" resultType="com.yjtech.wisdom.tourism.resource.scenic.entity.ScenicEntity">
+        select name,emergency_contact,emergency_contact_phone from tb_scenic where id=#{secenicId}
+    </select>
+
 
 <select id="list" resultMap="BaseResultMap" parameterType="com.yjtech.wisdom.tourism.resource.video.entity.TbVideoEntity" >
     select

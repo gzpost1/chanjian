@@ -1,6 +1,7 @@
 package com.yjtech.wisdom.tourism.decisionsupport.business.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -70,24 +71,30 @@ public class DecisionWarnEntity implements Serializable {
      * 创建时间
      */
     @TableField(fill = FieldFill.INSERT)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonIgnore
     private Date createTime;
 
     /**
-     * 更新时间
+     * 修改时间
      */
-    @TableField(fill = FieldFill.INSERT_UPDATE)
+    @TableField(fill = FieldFill.UPDATE)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonIgnore
     private Date updateTime;
 
     /**
      * 创建人ID
      */
+    @JsonIgnore
     @TableField(fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改人ID
      */
-    @TableField(fill = FieldFill.INSERT_UPDATE)
+    @JsonIgnore
+    @TableField(fill = FieldFill.UPDATE)
     private Long updateUser;
 
 }
