@@ -9,7 +9,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.util.StringUtils;
 
-import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 
 /**
@@ -29,19 +28,16 @@ public class LectureVo extends PageQuery implements Serializable {
     /**
      * 场展演讲座名称
      */
-    @NotBlank
     private String lectureName;
 
     /**
      * 场展演讲类型_通过字典管理配置
      */
-    @NotBlank
     private String lectureType;
 
     /**
      * 关联场馆名称
      */
-    @NotBlank
     private String venueId;
 
     /**
