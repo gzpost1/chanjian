@@ -8,7 +8,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import com.yjtech.wisdom.tourism.common.constant.DecisionSupportConstants;
+import com.yjtech.wisdom.tourism.common.enums.DecisionSupportEnum;
 import com.yjtech.wisdom.tourism.common.utils.DateTimeUtil;
+import com.yjtech.wisdom.tourism.decisionsupport.base.service.TargetQueryService;
 import com.yjtech.wisdom.tourism.decisionsupport.business.dto.DecisionWarnItemDto;
 import com.yjtech.wisdom.tourism.decisionsupport.business.dto.DecisionWarnWrapperDto;
 import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionEntity;
@@ -21,6 +23,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +44,9 @@ public class DecisionSupportScreenService extends ServiceImpl<DecisionWarnMapper
 
     @Autowired
     private DecisionMapper decisionMapper;
+
+    @Autowired
+    private TargetQueryService targetQueryService;
 
     /**
      * 查询决策预警_分页
@@ -151,6 +158,13 @@ public class DecisionSupportScreenService extends ServiceImpl<DecisionWarnMapper
         for (DecisionEntity entity : list) {
             decisionWarnList.add(dealWarnConfigAndCompute(entity));
         }
+
+        // 综合概况由于需要统计所有数据，单独处理
+        DecisionWarnEntity comprehensiveEntity = dealComprehensive(list, decisionWarnList);
+        if (!ObjectUtils.isEmpty(comprehensiveEntity)) {
+            decisionWarnList.add(comprehensiveEntity);
+        }
+
         return decisionWarnList;
     }
 
@@ -161,382 +175,473 @@ public class DecisionSupportScreenService extends ServiceImpl<DecisionWarnMapper
      * @return
      */
     private DecisionWarnEntity dealWarnConfigAndCompute(DecisionEntity entity) {
-        int id = entity.getConfigId().intValue();
-
         DecisionWarnEntity result = DecisionWarnEntity.builder()
                 .targetId(entity.getTargetId())
                 .targetName(entity.getTargetName())
                 .warnName(entity.getConfigName())
+                // 话术处理
+                .conclusionText(dealConclusionText(entity.getConclusionText()))
                 .build();
+
+        // 文本类型处理
+        if (DecisionSupportConstants.DECISION_WARN_TYPE_TEXT.equals(entity.getConfigType())) {
+            result = dealText (entity, result);
+        }
+        // 数值类型处理
+        else {
+            result = dealNumber (entity, result);
+        }
+        return result;
+    }
+
+    /**
+     * 话术统一处理
+     *
+     * @param conclusionText
+     * @return
+     */
+    private String dealConclusionText(String conclusionText) {
+        String result = "";
+        if (!StringUtils.isEmpty(conclusionText)) {
+            // 平台简称
+            result = conclusionText.replaceAll(DecisionSupportEnum.PLATFORM_SIMPLE_NAME.getKey(), targetQueryService.queryPlatformSimpleName().getSimpleName());
+
+            // 统计年月
+            result = result.replaceAll(DecisionSupportEnum.YEAR_MONTH_STATISTICAL.getKey(), targetQueryService.queryLastMonth().getYearMonth());
+
+            // 省外游客数量
+            result = result.replaceAll(DecisionSupportEnum.PROVINCE_OUTSIDE_TOUR_NUM.getKey(), targetQueryService.queryProvinceOutsideNumber());
+
+            // 环比（较上月）
+            result = result.replaceAll(DecisionSupportEnum.PROVINCE_OUTSIDE_TOUR_HB.getKey(), targetQueryService.queryHbProvinceOutside());
+
+            // 同比（较去年同月）
+            result = result.replaceAll(DecisionSupportEnum.PROVINCE_OUTSIDE_TOUR_TB.getKey(), targetQueryService.queryTbProvinceOutside());
+        }
+        return result;
+    }
+
+    /**
+     * 数值类型 配置项处理
+     *
+     * @param entity
+     * @param result
+     * @return
+     */
+    private DecisionWarnEntity dealNumber(DecisionEntity entity, DecisionWarnEntity result) {
+        int id = entity.getConfigId().intValue();
 
         switch (id) {
 
-            // 综合概况_统计年月 （文本）
-            case DecisionSupportConstants.ZHGK_TJNY :
-            break;
-
-            // 综合概况_平台名称 （文本）
-            case DecisionSupportConstants.ZHGK_PTMC :
-            break;
-
-            // 综合概况_风险预警项数量 （数值）
-            case DecisionSupportConstants.ZHGK_FXYJXSL :
-            break;
-
-            // 综合概况_高风险项数量 （数值）
-            case DecisionSupportConstants.ZHGK_GFXXSL :
-            break;
-
-            // 综合概况_中风险项数量 （数值）
-            case DecisionSupportConstants.ZHGK_ZFXXSL :
-            break;
-
-            // 综合概况_低风险项数量 （数值）
-            case DecisionSupportConstants.ZHGK_DFXXSL :
-            break;
-
-            // 综合概况_高风险项指标项 （文本）
-            case DecisionSupportConstants.ZHGK_GFXXZBX :
-            break;
-
-            // 综合概况_中风险项指标项 （文本）
-            case DecisionSupportConstants.ZHGK_ZFXXZBX :
-            break;
-
-            // 综合概况_低风险项指标项 （文本）
-            case DecisionSupportConstants.ZHGK_XFXXZBX :
-            break;
-
-            // 省外游客_统计年月 （文本）
-            case DecisionSupportConstants.SWYK_TJNY :
-            break;
-
-            // 省外游客_平台简称 （文本）
-            case DecisionSupportConstants.SWYK_PTJC :
-            break;
-
             // 省外游客_省外游客数量 （数值）
             case DecisionSupportConstants.SWYK_SWYKSL :
-            break;
+                break;
 
             // 省外游客_环比变化（较上月） （数值）
             case DecisionSupportConstants.SWYK_HBBH :
-            break;
+                break;
 
             // 省外游客_同比变化（较去年同月） （数值）
             case DecisionSupportConstants.SWYK_TBBH :
-            break;
-
-            // 省内游客 _统计年月 （文本）
-            case DecisionSupportConstants.SNYK_TJNY :
-            break;
-
-            // 省内游客 _平台简称 （文本）
-            case DecisionSupportConstants.SNYK_PTJC :
-            break;
+                break;
 
             // 省内游客 _省内游客数量 （数值）
             case DecisionSupportConstants.SNYK_SNYKSL :
-            break;
+                break;
 
             // 省内游客 _环比变化（较上月） （数值）
             case DecisionSupportConstants.SNYK_HBBH :
-            break;
+                break;
 
             // 省内游客 _同比变化（较去年同月） （数值）
             case DecisionSupportConstants.SNYK_TBBH :
-            break;
-
-            // 整体游客 _统计年月 （文本）
-            case DecisionSupportConstants.ZTYK_TJNY :
-            break;
-
-            // 整体游客 _平台简称 （文本）
-            case DecisionSupportConstants.ZTYK_PTJC :
-            break;
+                break;
 
             // 整体游客 _整体游客数量 （数值）
             case DecisionSupportConstants.ZTYK_ZTYKSL :
-            break;
+                break;
 
             // 整体游客 _环比变化（较上月） （数值）
             case DecisionSupportConstants.ZTYK_HBBH :
-            break;
+                break;
 
             // 整体游客 _同比变化（较去年同月） （数值）
             case DecisionSupportConstants.ZTYK_TBBH :
-            break;
-
-            // 整体景区客流 _统计年月 （文本）
-            case DecisionSupportConstants.ZTJQKL_TJNY :
-            break;
-
-            // 整体景区客流 _平台简称 （文本）
-            case DecisionSupportConstants.ZTJQKL_PTJC :
-            break;
+                break;
 
             // 整体景区客流 _全部景区接待数量 （数值）
             case DecisionSupportConstants.ZTJQKL_QBJQJDSL :
-            break;
+                break;
 
             // 整体景区客流 _环比变化（较上月） （数值）
             case DecisionSupportConstants.ZTJQKL_HBBH :
-            break;
+                break;
 
             // 整体景区客流 _同比变化（较去年同月） （数值）
             case DecisionSupportConstants.ZTJQKL_TBBH :
-            break;
-
-            // 景区客流排行 _统计年月 （文本）
-            case DecisionSupportConstants.JQKLPH_TJNY :
-            break;
-
-            // 景区客流排行 _游客流失最多景区名称 （文本）
-            case DecisionSupportConstants.JQKLPH_YKLSZDJQMC :
-            break;
-
+                break;
             // 景区客流排行 _游客流失最多景区接待量 （数值）
             case DecisionSupportConstants.JQKLPH_YKLSZDJQJDL :
-            break;
+                break;
 
             // 景区客流排行 _环比变化（较上月） （数值）
             case DecisionSupportConstants.JQKLPH_HBBH :
-            break;
+                break;
 
             // 景区客流排行 _同比变化（较去年同月） （数值）
             case DecisionSupportConstants.JQKLPH_TBBH :
-            break;
-
-            // 景区客流排行 _其他游客流失景区名称 （文本）
-            case DecisionSupportConstants.JQKLPH_QTYKLSJQMC :
-            break;
-
-            // 整体景区满意度 _统计年月 （文本）
-            case DecisionSupportConstants.ZTJQMYD_TJNY :
-            break;
+                break;
 
             // 整体景区满意度 _整体景区评价数量 （数值）
             case DecisionSupportConstants.ZTJQMYD_ZTJQPJSL :
-            break;
+                break;
 
             // 整体景区满意度 _整体景区好评数量 （数值）
             case DecisionSupportConstants.ZTJQMYD_ZTJQHPSL :
-            break;
+                break;
 
             // 整体景区满意度 _整体景区满意度 （数值）
             case DecisionSupportConstants.ZTJQMYD_ZTJQMYD :
-            break;
+                break;
 
             // 整体景区满意度 _环比变化（较上月） （数值）
             case DecisionSupportConstants.ZTJQMYD_HBBH :
-            break;
+                break;
 
             // 整体景区满意度 _同比变化（较去年同月） （数值）
             case DecisionSupportConstants.ZTJQMYD_TBBH :
-            break;
-
-            // 景区满意度排行 _统计年月 （文本）
-            case DecisionSupportConstants.JQMYDPH_TJNY :
-            break;
-
-            // 景区满意度排行 _满意度下降最多景区名称 （文本）
-            case DecisionSupportConstants.JQMYDPH_MYDXJZDJQMC :
-            break;
+                break;
 
             // 景区满意度排行 _满意度下降最多景区评价量 （数值）
             case DecisionSupportConstants.JQMYDPH_MYDXJZDJQPJL :
-            break;
+                break;
 
             // 景区满意度排行 _满意度下降最多景区好评量 （数值）
             case DecisionSupportConstants.JQMYDPH_MYDXJZDJQHPL :
-            break;
+                break;
 
             // 景区满意度排行 _满意度下降最多景区满意度 （数值）
             case DecisionSupportConstants.JQMYDPH_MYDXJZDJQMYD :
-            break;
+                break;
 
             // 景区满意度排行 _环比变化（较上月） （数值）
             case DecisionSupportConstants.JQMYDPH_HBBH :
-            break;
+                break;
 
             // 景区满意度排行 _同比变化（较去年同月） （数值）
             case DecisionSupportConstants.JQMYDPH_TBBH :
-            break;
-
-            // 景区满意度排行 _其他满意度下降景区名称 （文本）
-            case DecisionSupportConstants.JQMYDPH_QTMYDXJJQMC :
-            break;
-
-            // 整体酒店民宿满意度 _统计年月 （文本）
-            case DecisionSupportConstants.ZTJDMSMYD_TJNY :
-            break;
+                break;
 
             // 整体酒店民宿满意度 _整体酒店民宿评价数量 （数值）
             case DecisionSupportConstants.ZTJDMSMYD_ZTJDMSPJSL :
-            break;
+                break;
 
             // 整体酒店民宿满意度 _整体酒店民宿好评数量 （数值）
             case DecisionSupportConstants.ZTJDMSMYD_ZTJDMSHPSL :
-            break;
+                break;
 
             // 整体酒店民宿满意度 _整体酒店民宿满意度 （数值）
             case DecisionSupportConstants.ZTJDMSMYD_ZTJDMSMYD :
-            break;
+                break;
 
             // 整体酒店民宿满意度 _环比变化（较上月） （数值）
             case DecisionSupportConstants.ZTJDMSMYD_HBBH :
-            break;
+                break;
 
             // 整体酒店民宿满意度 _同比变化（较去年同月） （数值）
             case DecisionSupportConstants.ZTJDMSMYD_TBBH :
-            break;
-
-            // 酒店民宿满意度排行 _统计年月 （文本）
-            case DecisionSupportConstants.JDMSMYDPH_TJNY :
-            break;
+                break;
 
             // 酒店民宿满意度排行 _满意度下降最多酒店民宿名称 （数值）
             case DecisionSupportConstants.JDMSMYDPH_MYDXJZDJDMSMC :
-            break;
+                break;
 
             // 酒店民宿满意度排行 _满意度下降最多酒店民宿评价量 （数值）
             case DecisionSupportConstants.JDMSMYDPH_MYDXJZDJDMSPJL :
-            break;
+                break;
 
             // 酒店民宿满意度排行 _满意度下降最多酒店民宿好评量 （数值）
             case DecisionSupportConstants.JDMSMYDPH_MYDXJZDJDMSHPL :
-            break;
+                break;
 
             // 酒店民宿满意度排行 _满意度下降最多酒店民宿满意度 （数值）
             case DecisionSupportConstants.JDMSMYDPH_MYDXJZDJDMSMYD :
-            break;
+                break;
 
             // 酒店民宿满意度排行 _环比变化（较上月） （数值）
             case DecisionSupportConstants.JDMSMYDPH_HBBH :
-            break;
+                break;
 
             // 酒店民宿满意度排行 _同比变化（较去年同月） （数值）
             case DecisionSupportConstants.JDMSMYDPH_TBBH :
-            break;
-
-            // 酒店民宿满意度排行 _其他满意度下降酒店民宿名称 （文本）
-            case DecisionSupportConstants.JDMSMYDPH_QTMYDXJJDMSMC :
-            break;
-
-            // 投诉量_统计年月 （文本）
-            case DecisionSupportConstants.TSL_TJNY :
-            break;
+                break;
 
             // 投诉量_一码游投诉数量 （数值）
             case DecisionSupportConstants.TSL_YMYTSL :
-            break;
+                break;
 
             // 投诉量_环比变化（较上月） （数值）
             case DecisionSupportConstants.TSL_HBBH :
-            break;
+                break;
 
             // 投诉量_同比变化（较去年同月） （数值）
             case DecisionSupportConstants.TSL_TBBH :
-            break;
-
-            // 订单量_统计年月 （文本）
-            case DecisionSupportConstants.DDL_TJNY :
-            break;
+                break;
 
             // 订单量_一码游订单数量 （数值）
             case DecisionSupportConstants.DDL_YMLDDSL :
-            break;
+                break;
 
             // 订单量_环比变化（较上月） （数值）
             case DecisionSupportConstants.DDL_HBBH :
-            break;
+                break;
 
             // 订单量_同比变化（较去年同月） （数值）
             case DecisionSupportConstants.DDL_TBBH :
-            break;
-
-            // 交易额_统计年月 （文本）
-            case DecisionSupportConstants.JYE_TJNY :
-            break;
+                break;
 
             // 交易额_一码游交易额 （数值）
             case DecisionSupportConstants.JYE_YMYJYE :
-            break;
+                break;
 
             // 交易额_环比变化（较上月） （数值）
             case DecisionSupportConstants.JYE_HBBH :
-            break;
+                break;
 
             // 交易额_同比变化（较去年同月） （数值）
             case DecisionSupportConstants.JYE_TBBH :
-            break;
-
-            // 旅游投诉_统计年月 （文本）
-            case DecisionSupportConstants.LYTS_TJNY :
-            break;
+                break;
 
             // 旅游投诉_旅游投诉数量 （数值）
             case DecisionSupportConstants.LYTS_YLTSSL :
-            break;
+                break;
 
             // 旅游投诉_环比变化（较上月） （数值）
             case DecisionSupportConstants.LYTS_HBBH :
-            break;
+                break;
 
             // 旅游投诉_同比变化（较去年同月） （数值）
             case DecisionSupportConstants.LYTS_TBBH :
-            break;
+                break;
 
-            // 应急事件统计_统计年月 （文本）
-            case DecisionSupportConstants.YJSJTJ_TJNY :
-            break;
 
             // 应急事件统计_应急事件数量 （数值）
             case DecisionSupportConstants.YJSJTJ_YJSJSL :
-            break;
+                break;
 
             // 应急事件统计_环比变化（较上月） （数值）
             case DecisionSupportConstants.YJSJTJ_HBBH :
-            break;
+                break;
 
             // 应急事件统计_同比变化（较去年同月） （数值）
             case DecisionSupportConstants.YJSJTJ_TBBH :
-            break;
-
-            // 高并发应急事件_统计年月 （文本）
-            case DecisionSupportConstants.GBFYJSJ_TJNY :
-            break;
+                break;
 
             // 高并发应急事件_应急事件数量 （数值）
             case DecisionSupportConstants.GBFYJSJ_YJSJSL :
-            break;
-
-            // 高并发应急事件_高发事件类型 （文本）
-            case DecisionSupportConstants.GBFYJSJ_GBFSJLX :
-            break;
+                break;
 
             // 高并发应急事件_高发事件类型环比变化（较上月） （数值）
             case DecisionSupportConstants.GBFYJSJ_GBFSJLXHBBH :
-            break;
+                break;
 
             // 高并发应急事件_高发事件类型同比变化（较去年同月） （数值）
             case DecisionSupportConstants.GBFYJSJ_GBFSJLXTBBH :
-            break;
-
-            // 高并发应急事件_高发事件等级 （文本）
-            case DecisionSupportConstants.GBFYJSJ_GBFSJDJ :
-            break;
+                break;
 
             // 高并发应急事件_高发事件等级环比变化（较上月） （数值）
             case DecisionSupportConstants.GBFYJSJ_GBFSJDJHBBH :
-            break;
+                break;
 
             // 高并发应急事件_高发事件等级同比变化（较去年同月） （数值）
             case DecisionSupportConstants.GBFYJSJ_GBFSJDJTBBH :
-            break;
+                break;
 
             default:
                 break;
+        }
+        return null;
+    }
+
+    /**
+     * 文本类 配置项处理
+     *
+     * @param entity
+     * @param result
+     * @return
+     */
+    private DecisionWarnEntity dealText(DecisionEntity entity, DecisionWarnEntity result) {
+        int id = entity.getConfigId().intValue();
+        result.setWarnName(entity.getConfigName());
+        switch (id) {
+
+            // 省外游客_统计年月 （文本）
+            case DecisionSupportConstants.SWYK_TJNY :
+                break;
+
+            // 省外游客_平台简称 （文本）
+            case DecisionSupportConstants.SWYK_PTJC :
+                break;
+            // 省内游客 _统计年月 （文本）
+            case DecisionSupportConstants.SNYK_TJNY :
+                break;
+
+            // 省内游客 _平台简称 （文本）
+            case DecisionSupportConstants.SNYK_PTJC :
+                break;
+
+            // 整体游客 _统计年月 （文本）
+            case DecisionSupportConstants.ZTYK_TJNY :
+                break;
+
+            // 整体游客 _平台简称 （文本）
+            case DecisionSupportConstants.ZTYK_PTJC :
+                break;
+
+            // 整体景区客流 _统计年月 （文本）
+            case DecisionSupportConstants.ZTJQKL_TJNY :
+                break;
+
+            // 整体景区客流 _平台简称 （文本）
+            case DecisionSupportConstants.ZTJQKL_PTJC :
+                break;
+
+            // 景区客流排行 _统计年月 （文本）
+            case DecisionSupportConstants.JQKLPH_TJNY :
+                break;
+
+            // 景区客流排行 _游客流失最多景区名称 （文本）
+            case DecisionSupportConstants.JQKLPH_YKLSZDJQMC :
+                break;
+
+            // 景区客流排行 _其他游客流失景区名称 （文本）
+            case DecisionSupportConstants.JQKLPH_QTYKLSJQMC :
+                break;
+
+            // 整体景区满意度 _统计年月 （文本）
+            case DecisionSupportConstants.ZTJQMYD_TJNY :
+                break;
+
+            // 景区满意度排行 _统计年月 （文本）
+            case DecisionSupportConstants.JQMYDPH_TJNY :
+                break;
+
+            // 景区满意度排行 _满意度下降最多景区名称 （文本）
+            case DecisionSupportConstants.JQMYDPH_MYDXJZDJQMC :
+                break;
+
+            // 景区满意度排行 _其他满意度下降景区名称 （文本）
+            case DecisionSupportConstants.JQMYDPH_QTMYDXJJQMC :
+                break;
+
+            // 整体酒店民宿满意度 _统计年月 （文本）
+            case DecisionSupportConstants.ZTJDMSMYD_TJNY :
+                break;
+
+            // 酒店民宿满意度排行 _统计年月 （文本）
+            case DecisionSupportConstants.JDMSMYDPH_TJNY :
+                break;
+
+            // 酒店民宿满意度排行 _其他满意度下降酒店民宿名称 （文本）
+            case DecisionSupportConstants.JDMSMYDPH_QTMYDXJJDMSMC :
+                break;
+
+            // 投诉量_统计年月 （文本）
+            case DecisionSupportConstants.TSL_TJNY :
+                break;
+
+            // 订单量_统计年月 （文本）
+            case DecisionSupportConstants.DDL_TJNY :
+                break;
+
+            // 交易额_统计年月 （文本）
+            case DecisionSupportConstants.JYE_TJNY :
+                break;
+
+            // 旅游投诉_统计年月 （文本）
+            case DecisionSupportConstants.LYTS_TJNY :
+                break;
+
+            // 应急事件统计_统计年月 （文本）
+            case DecisionSupportConstants.YJSJTJ_TJNY :
+                break;
+            // 高并发应急事件_统计年月 （文本）
+            case DecisionSupportConstants.GBFYJSJ_TJNY :
+                break;
+
+            // 高并发应急事件_高发事件类型 （文本）
+            case DecisionSupportConstants.GBFYJSJ_GBFSJLX :
+                break;
+
+            // 高并发应急事件_高发事件等级 （文本）
+            case DecisionSupportConstants.GBFYJSJ_GBFSJDJ :
+                break;
+
+            default:
+                break;
+        }
+        return null;
+    }
+
+    /**
+     * 处理 综合概况 配置项
+     *
+     * @param list
+     * @param decisionWarnList
+     * @return
+     */
+    private DecisionWarnEntity dealComprehensive(List<DecisionEntity> list, ArrayList<DecisionWarnEntity> decisionWarnList) {
+
+        DecisionWarnEntity result = null;
+
+        for (DecisionEntity item : list) {
+            int id = item.getConfigId().intValue();
+            switch (id) {
+                // 综合概况_统计年月 （文本）
+                case DecisionSupportConstants.ZHGK_TJNY:
+                    result = DecisionWarnEntity.builder()
+                            .targetId(item.getTargetId())
+                            .targetName(item.getTargetName())
+                            .warnName(item.getConfigName())
+                            .warnNum(DateTimeUtil.getCurrentLastMonthStr())
+                            .build();
+                    break;
+
+                // 综合概况_平台名称 （文本）
+                case DecisionSupportConstants.ZHGK_PTMC:
+                    break;
+
+                // 综合概况_高风险项指标项 （文本）
+                case DecisionSupportConstants.ZHGK_GFXXZBX:
+                    break;
+
+                // 综合概况_中风险项指标项 （文本）
+                case DecisionSupportConstants.ZHGK_ZFXXZBX:
+                    break;
+
+                // 综合概况_低风险项指标项 （文本）
+                case DecisionSupportConstants.ZHGK_XFXXZBX:
+                    break;
+
+                // 综合概况_风险预警项数量 （数值）
+                case DecisionSupportConstants.ZHGK_FXYJXSL :
+                    break;
+
+                // 综合概况_高风险项数量 （数值）
+                case DecisionSupportConstants.ZHGK_GFXXSL :
+                    break;
+
+                // 综合概况_中风险项数量 （数值）
+                case DecisionSupportConstants.ZHGK_ZFXXSL :
+                    break;
+
+                // 综合概况_低风险项数量 （数值）
+                case DecisionSupportConstants.ZHGK_DFXXSL :
+                    break;
+
+                default:
+                    break;
+            }
         }
         return result;
     }
