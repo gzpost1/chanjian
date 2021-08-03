@@ -10,6 +10,7 @@ import com.yjtech.wisdom.tourism.dto.VisitorDto;
 import com.yjtech.wisdom.tourism.dto.YearPassengerFlowDto;
 import com.yjtech.wisdom.tourism.service.DistrictTourService;
 import com.yjtech.wisdom.tourism.vo.DataOverviewVo;
+import com.yjtech.wisdom.tourism.vo.MonthPassengerFlowVo;
 import com.yjtech.wisdom.tourism.vo.PassengerFlowVo;
 import com.yjtech.wisdom.tourism.vo.VisitorVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +54,7 @@ public class DistrictTourController {
      * @return
      */
     @PostMapping("queryPageVisitor")
-    public JsonResult<IPage<VisitorDto>> queryPageVisitor (VisitorVo vo) {
+    public JsonResult<IPage<VisitorDto>> queryPageVisitor (@RequestBody @Validated VisitorVo vo) {
         return JsonResult.success(service.queryPageVisitor(vo));
     }
 
@@ -65,16 +66,16 @@ public class DistrictTourController {
      */
     @PostMapping("queryYearPassengerFlow")
     public JsonResult<List<BaseValueVO>> queryYearPassengerFlow (@RequestBody @Validated PassengerFlowVo vo) {
-        List<YearPassengerFlowDto> yearPassengerFlowDtos = service.queryYearPassengerFlow();
+        List<MonthPassengerFlowDto> yearPassengerFlowDtos = service.queryYearPassengerFlow(vo);
         yearPassengerFlowDtos = yearPassengerFlowDtos.stream().map(v -> {
-            v.setTime(v.getCurDate());
+            v.setTime(v.getDate());
             return v;
         }).collect(Collectors.toList());
         return JsonResult.success(AnalysisUtils.MultipleBuildAnalysis(
                 vo,
                 yearPassengerFlowDtos,
                 true,
-                YearPassengerFlowDto::getCurNumber, YearPassengerFlowDto::getTbNumber, YearPassengerFlowDto::getTbScale, YearPassengerFlowDto::getHbScale));
+                MonthPassengerFlowDto::getNumber, MonthPassengerFlowDto::getTbNumber, MonthPassengerFlowDto::getHbScale, MonthPassengerFlowDto::getTbScale));
     }
 
     /**
@@ -84,8 +85,8 @@ public class DistrictTourController {
      * @return
      */
     @PostMapping("queryMonthPassengerFlow")
-    public  JsonResult<List<BaseValueVO>> queryMonthPassengerFlow (@RequestBody @Validated PassengerFlowVo vo) {
-        List<MonthPassengerFlowDto> monthPassengerFlowDtos = service.queryMonthPassengerFlow();
+    public  JsonResult<List<BaseValueVO>> queryMonthPassengerFlow (@RequestBody @Validated MonthPassengerFlowVo vo) {
+        List<MonthPassengerFlowDto> monthPassengerFlowDtos = service.queryMonthPassengerFlow(vo);
         monthPassengerFlowDtos = monthPassengerFlowDtos.stream().map(v -> {
             v.setTime(v.getDate());
             return v;

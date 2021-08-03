@@ -35,7 +35,7 @@ public class MonthPassengerFlowDto extends BaseSaleTrendVO implements Serializab
     /**
      * 同比数量
      */
-    private Integer tbNumber;
+    private int tbNumber;
 
     /**
      * 同比日期
@@ -43,12 +43,12 @@ public class MonthPassengerFlowDto extends BaseSaleTrendVO implements Serializab
     private String tbDate;
 
     /**
-     * 前一日
+     * 环比比例
      */
     private String hbScale;
 
     /**
-     * 去年今天
+     * 同比比例
      */
     private String tbScale;
 }
