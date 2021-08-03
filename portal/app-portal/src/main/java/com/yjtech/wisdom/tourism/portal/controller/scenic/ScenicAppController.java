@@ -31,6 +31,7 @@ public class ScenicAppController {
      */
     @PostMapping("/queryForPage")
     public JsonResult<IPage<ScenicEntity>> queryForPage(@RequestBody ScenicPageQuery query) {
+        query.setStatus((byte) 1);
         return JsonResult.success(scenicService.queryForPage(query));
     }
 }
