@@ -9,6 +9,8 @@ import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
+
+import com.yjtech.wisdom.tourism.resource.scenic.entity.ScenicEntity;
 import lombok.*;
 import lombok.experimental.Accessors;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -87,6 +89,12 @@ public class TbVideoEntity extends Model<TbVideoEntity> {
      * 序号
      */
     private Integer sort;
+
+    /**
+     * 景区信息
+     */
+    @TableField(exist = false)
+    private ScenicEntity scenic;
 
     /**
      * 创建时间
