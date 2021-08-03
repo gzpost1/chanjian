@@ -46,4 +46,9 @@ public class WarnConfigEntity implements Serializable {
      */
     private Integer configType;
 
+    /**
+     * 预警配置项 话术key
+     */
+    private String configKey;
+
 }
