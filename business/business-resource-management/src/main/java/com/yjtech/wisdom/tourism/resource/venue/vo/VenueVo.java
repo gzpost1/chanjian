@@ -51,13 +51,11 @@ public class VenueVo extends PageQuery implements Serializable {
     /**
      * 开放日期-开始日期
      */
-    @NotBlank
     private String openStartDate;
 
     /**
      * 开放日期-结束日期
      */
-    @NotBlank
     private String openEndDate;
 
     /**
