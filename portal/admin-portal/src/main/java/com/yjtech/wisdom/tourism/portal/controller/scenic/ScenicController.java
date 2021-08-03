@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.util.Optional;
 
+import static com.yjtech.wisdom.tourism.resource.scenic.utils.ScenicUtil.dateCompare;
+
 /**
  * 后台管理-景区管理
  * @Description
@@ -52,6 +54,8 @@ public class ScenicController {
     @PostMapping("/create")
     public JsonResult create(@RequestBody @Valid ScenicCreateDto createDto) {
         ScenicEntity entity = BeanMapper.copyBean(createDto, ScenicEntity.class);
+        //时间比较
+        dateCompare(entity);
         //默认为启用状态
         entity.setStatus((byte) 1);
         scenicService.save(entity);
@@ -66,6 +70,8 @@ public class ScenicController {
     @PostMapping("/update")
     public JsonResult update(@RequestBody @Valid ScenicUpdateDto updateDto) {
         ScenicEntity entity = BeanMapper.copyBean(updateDto, ScenicEntity.class);
+        //时间比较
+        dateCompare(entity);
         scenicService.updateById(entity);
         return JsonResult.success();
     }
