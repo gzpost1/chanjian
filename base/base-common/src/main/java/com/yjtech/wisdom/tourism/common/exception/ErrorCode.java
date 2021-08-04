@@ -59,7 +59,7 @@ public enum ErrorCode implements IExceptionType {
   USER_NOT_EXISTS("00075", "用户不存在"),
   USER_NOT_BIND_PLATFORM("00076", "当前用户还没有绑定任何平台"),
   MUST_BE_AREA_USER("00077", "必须是区县用户"),
-  WEAK_PASSWORD("00078", "密码长度须为8-30个字符，由字母、数字和特殊字符组成，至少包含大写字母、小写字母和数字，且无超过3位的连续或重复的数字、字母。"),
+  WEAK_PASSWORD("00078", "密码需在8到30位，由字母、数字和特殊字符组成，至少包含大写字母、小写字母和数字。"),
 
 
   // 角色
