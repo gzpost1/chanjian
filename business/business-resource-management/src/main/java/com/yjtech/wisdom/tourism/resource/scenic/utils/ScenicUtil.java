@@ -3,7 +3,7 @@ package com.yjtech.wisdom.tourism.resource.scenic.utils;
 import com.yjtech.wisdom.tourism.common.exception.CustomException;
 import com.yjtech.wisdom.tourism.common.utils.DateTimeUtil;
 import com.yjtech.wisdom.tourism.common.utils.StringUtils;
-import com.yjtech.wisdom.tourism.resource.scenic.dto.OpenTimeDto;
+import com.yjtech.wisdom.tourism.resource.scenic.entity.dto.OpenTimeDto;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

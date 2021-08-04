@@ -1,33 +1,18 @@
-package com.yjtech.wisdom.tourism.resource.scenic.entity;
+package com.yjtech.wisdom.tourism.resource.scenic.entity.dto;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.yjtech.wisdom.tourism.mybatis.entity.MyBaseEntity;
-import lombok.*;
+import lombok.Data;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
-/**
- * 景区
- *
- * @author zc
- * @since 2021-07-06
- */
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder(toBuilder = true)
-@TableName("tb_scenic")
-@JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class ScenicEntity extends MyBaseEntity {
-
-    /**id*/
-    @TableId(value = "id", type = IdType.ID_WORKER)
-    private Long id;
+public class ScenicCreateDto {
 
     /**景区名称*/
+    @NotBlank(message = "景区名称不能为空")
     private String name;
 
     /**景区等级*/
@@ -42,12 +27,6 @@ public class ScenicEntity extends MyBaseEntity {
     /**经度*/
     private String longitude;
 
-    /**今日入园数*/
-    private Integer enterNum;
-
-    /**地图缩放比例*/
-    private Integer mapZoomRate;
-
     /** 开放日期-开始日期*/
     private String openStartDate;
 
@@ -61,9 +40,15 @@ public class ScenicEntity extends MyBaseEntity {
     private String openEndTime;
 
     /**景区承载量*/
+    @NotNull(message = "景区承载量不能为空")
+    @Min(value = 0, message = "不能小于0")
+    @Max(value = 999999, message = "不能大于999999")
     private Integer bearCapacity;
 
     /**舒适度预警比例*/
+    @NotNull(message = "舒适度预警比例不能为空")
+    @Min(value = 0, message = "不能小于0")
+    @Max(value = 100, message = "不能大于100")
     private BigDecimal comfortWarnRate;
 
     /**联系电话*/
@@ -83,7 +68,4 @@ public class ScenicEntity extends MyBaseEntity {
 
     /**简介*/
     private String introduction;
-
-    /**启停用状态*/
-    private Byte status;
 }
