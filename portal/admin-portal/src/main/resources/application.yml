@@ -35,7 +35,6 @@ logging:
   level:
     root: info
     org.springframework: warn
-    org.springframework.data.mongodb.core.MongoTemplate: DEBUG
 
 # Spring配置
 spring:

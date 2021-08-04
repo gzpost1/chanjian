@@ -7,8 +7,9 @@ import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.common.core.domain.UpdateStatusParam;
 import com.yjtech.wisdom.tourism.common.exception.CustomException;
 import com.yjtech.wisdom.tourism.common.utils.bean.BeanMapper;
-import com.yjtech.wisdom.tourism.resource.scenic.dto.ScenicCreateDto;
-import com.yjtech.wisdom.tourism.resource.scenic.dto.ScenicUpdateDto;
+import com.yjtech.wisdom.tourism.resource.scenic.entity.dto.OpenTimeDto;
+import com.yjtech.wisdom.tourism.resource.scenic.entity.dto.ScenicCreateDto;
+import com.yjtech.wisdom.tourism.resource.scenic.entity.dto.ScenicUpdateDto;
 import com.yjtech.wisdom.tourism.resource.scenic.entity.ScenicEntity;
 import com.yjtech.wisdom.tourism.resource.scenic.query.ScenicPageQuery;
 import com.yjtech.wisdom.tourism.resource.scenic.service.ScenicService;
@@ -20,6 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.Optional;
+
+import static com.yjtech.wisdom.tourism.resource.scenic.utils.ScenicUtil.dateCompare;
 
 /**
  * 后台管理-景区管理
@@ -51,6 +54,8 @@ public class ScenicController {
      */
     @PostMapping("/create")
     public JsonResult create(@RequestBody @Valid ScenicCreateDto createDto) {
+        //时间比较
+        dateCompare(BeanMapper.copyBean(createDto, OpenTimeDto.class));
         ScenicEntity entity = BeanMapper.copyBean(createDto, ScenicEntity.class);
         //默认为启用状态
         entity.setStatus((byte) 1);
@@ -65,6 +70,8 @@ public class ScenicController {
      */
     @PostMapping("/update")
     public JsonResult update(@RequestBody @Valid ScenicUpdateDto updateDto) {
+        //时间比较
+        dateCompare(BeanMapper.copyBean(updateDto, OpenTimeDto.class));
         ScenicEntity entity = BeanMapper.copyBean(updateDto, ScenicEntity.class);
         scenicService.updateById(entity);
         return JsonResult.success();

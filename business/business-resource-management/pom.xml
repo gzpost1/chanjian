@@ -79,7 +79,7 @@
         </dependency>
         <dependency>
             <groupId>com.yjtech.wisdom.tourism</groupId>
-            <artifactId>base-mongodb</artifactId>
+            <artifactId>business-weather</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>

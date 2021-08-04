@@ -11,7 +11,6 @@ import com.yjtech.wisdom.tourism.system.domain.IconSpotEnum;
 import com.yjtech.wisdom.tourism.system.service.IconService;
 import lombok.*;
 import lombok.experimental.Accessors;
-import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotNull;
@@ -32,7 +31,6 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("tb_device_location")
-@Document("mongo_device_location")
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class TbDeviceLocationEntity extends Model<TbDeviceLocationEntity> {
 

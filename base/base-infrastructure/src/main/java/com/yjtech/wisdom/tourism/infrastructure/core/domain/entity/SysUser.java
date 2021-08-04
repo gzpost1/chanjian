@@ -81,6 +81,7 @@ public class SysUser extends BaseEntity {
   private Long[] postIds;
 
   /** 备注 */
+  @Size(max = 100, message = "备注长度不能超过100个字符")
   private String remark;
 
   /** app推送数据所需的token */

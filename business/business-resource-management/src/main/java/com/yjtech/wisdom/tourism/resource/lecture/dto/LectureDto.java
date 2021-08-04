@@ -38,6 +38,16 @@ public class LectureDto implements Serializable {
     private String lectureType;
 
     /**
+     * 场展演讲类型的值_通过字典管理配置
+     */
+    private String lectureValue;
+
+    /**
+     * 数据字典对应的值
+     */
+    private String dictName;
+
+    /**
      * 关联场馆名称
      */
     private String venueId;

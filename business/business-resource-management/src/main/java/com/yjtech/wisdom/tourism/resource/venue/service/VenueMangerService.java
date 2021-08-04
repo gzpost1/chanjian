@@ -13,6 +13,8 @@ import com.yjtech.wisdom.tourism.resource.venue.dto.VenueScaleDto;
 import com.yjtech.wisdom.tourism.resource.venue.entity.VenueEntity;
 import com.yjtech.wisdom.tourism.resource.venue.mapper.VenueMapper;
 import com.yjtech.wisdom.tourism.resource.venue.vo.VenueVo;
+import com.yjtech.wisdom.tourism.system.service.SysDictDataService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -28,6 +30,9 @@ import java.util.List;
 @Service
 public class VenueMangerService extends BaseMybatisServiceImpl<VenueMapper, VenueEntity> {
 
+    @Autowired
+    private SysDictDataService sysDictDataService;
+
     /**
      * 查询文博场馆列表_分页
      *
@@ -40,9 +45,14 @@ public class VenueMangerService extends BaseMybatisServiceImpl<VenueMapper, Venu
                 new LambdaQueryWrapper<VenueEntity>()
                     .like(!StringUtils.isEmpty(vo.getVenueName()), VenueEntity::getVenueName, vo.getVenueName())
                     .eq(VenueEntity::getStatus, 1)
-                    .orderByDesc(VenueEntity::getUpdateTime)
-                )
-                .convert(item -> JSONObject.parseObject(JSONObject.toJSONString(item), VenueDto.class));
+                    .orderByDesc(VenueEntity::getUpdateTime))
+        .convert(item -> {
+            VenueDto venueDto = JSONObject.parseObject(JSONObject.toJSONString(item), VenueDto.class);
+            // 字典获取
+            String name = sysDictDataService.selectDictLabel(item.getVenueType(), item.getVenueValue());
+            venueDto.setDictName(name);
+            return venueDto;
+        });
     }
 
     /**
@@ -52,9 +62,9 @@ public class VenueMangerService extends BaseMybatisServiceImpl<VenueMapper, Venu
      */
     public List<VenueScaleDto> queryScale() {
         QueryWrapper<VenueEntity> queryWrapper = new QueryWrapper<>();
-        queryWrapper.select("select count(id) as venueTypeNumber, venueType");
+        queryWrapper.select("count(id) as venueTypeNumber, venue_value as venueValue, venue_type as venueType");
         queryWrapper.eq("status", 1);
-        queryWrapper.groupBy("venueType");
+        queryWrapper.groupBy("venueValue");
 
         // 分组查询 各类场馆的数量
         List<VenueEntity> venueEntityList = baseMapper.selectList(queryWrapper);
@@ -65,14 +75,15 @@ public class VenueMangerService extends BaseMybatisServiceImpl<VenueMapper, Venu
 
         // 计算各类场馆比例
         venueEntityList.forEach(item -> {
-            // 场馆类型名称_由于该值是数据字典，后期可能需要单独取值进行改动
-            String venueType = item.getVenueType();
             // 对应场馆类型的数量
             Integer venueTypeNumber = item.getVenueTypeNumber();
 
+            // 字典获取
+            String name = sysDictDataService.selectDictLabel(item.getVenueType(), item.getVenueValue());
+
             //计算比例
             VenueScaleDto venueScaleDto = VenueScaleDto.builder()
-                    .name(venueType)
+                    .name(name)
                     .scale(MathUtil.calPercent(new BigDecimal(venueTypeNumber), new BigDecimal(total), 2).toString())
                     .build();
 

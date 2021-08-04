@@ -1,15 +1,20 @@
-package com.yjtech.wisdom.tourism.resource.scenic.dto;
+package com.yjtech.wisdom.tourism.resource.scenic.entity.vo;
 
+import com.yjtech.wisdom.tourism.weather.vo.WeatherInfoVO;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
 import java.math.BigDecimal;
 
+import static com.yjtech.wisdom.tourism.common.utils.StringUtils.isNull;
+
+/**大屏景区分布分页vo*/
 @Data
-public class ScenicCreateDto {
+public class ScenicScreenPageVo {
+
+    /**id*/
+    private Long id;
 
     /**景区名称*/
-    @NotBlank(message = "景区名称不能为空")
     private String name;
 
     /**景区等级*/
@@ -23,6 +28,9 @@ public class ScenicCreateDto {
 
     /**经度*/
     private String longitude;
+
+    /**今日入园数*/
+    private Integer enterNum;
 
     /**地图缩放比例*/
     private Integer mapZoomRate;
@@ -62,4 +70,17 @@ public class ScenicCreateDto {
 
     /**简介*/
     private String introduction;
+
+    /**启停用状态*/
+    private Byte status;
+
+    /**舒适类别 （舒适、拥挤）*/
+    private String comfortCategory;
+
+    /**天气*/
+    private WeatherInfoVO weatherInfoVO;
+
+    public void setEnterNum(Integer enterNum) {
+        this.enterNum = isNull(enterNum) ? 0 : enterNum;
+    }
 }

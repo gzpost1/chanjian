@@ -3,6 +3,7 @@ package com.yjtech.wisdom.tourism.resource.scenic.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.yjtech.wisdom.tourism.mybatis.entity.MyBaseEntity;
 import lombok.*;
 
@@ -19,6 +20,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @TableName("tb_scenic")
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class ScenicEntity extends MyBaseEntity {
 
     /**id*/
@@ -39,6 +41,9 @@ public class ScenicEntity extends MyBaseEntity {
 
     /**经度*/
     private String longitude;
+
+    /**今日入园数*/
+    private Integer enterNum;
 
     /**地图缩放比例*/
     private Integer mapZoomRate;
