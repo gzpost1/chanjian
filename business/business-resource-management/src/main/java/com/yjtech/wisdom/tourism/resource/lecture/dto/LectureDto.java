@@ -43,6 +43,11 @@ public class LectureDto implements Serializable {
     private String lectureValue;
 
     /**
+     * 数据字典对应的值
+     */
+    private String dictName;
+
+    /**
      * 关联场馆名称
      */
     private String venueId;

@@ -49,7 +49,13 @@ public class LectureMangerService extends BaseMybatisServiceImpl<LectureMapper, 
                     .eq(LectureEntity::getStatus, 1)
                     .like(!StringUtils.isEmpty(vo.getLectureName()), LectureEntity::getLectureName, vo.getLectureName())
                     .orderByDesc(LectureEntity::getUpdateTime))
-        .convert(item -> JSONObject.parseObject(JSONObject.toJSONString(item), LectureDto.class));
+        .convert(item -> {
+            LectureDto lectureDto = JSONObject.parseObject(JSONObject.toJSONString(item), LectureDto.class);
+            // 字典获取
+            String name = sysDictDataService.selectDictLabel(lectureDto.getLectureType(), lectureDto.getLectureValue());
+            lectureDto.setDictName(name);
+            return lectureDto;
+        });
     }
 
     /**
