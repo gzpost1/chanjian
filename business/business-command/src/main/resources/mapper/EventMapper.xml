@@ -37,10 +37,10 @@
         <result column="image_path" property="imagePath" typeHandler="com.yjtech.wisdom.tourism.mybatis.typehandler.JsonTypeHandler"/>
         <result column="event_status" property="eventStatus" />
         <result column="handle_department" property="handleDepartment" />
-        <result column="handle_personnel" property="handlePersonnel" />
         <result column="handle_date" property="handleDate" />
         <result column="handle_results" property="handleResults" />
         <result column="appoint_handle_personnel" property="appointHandlePersonnel" typeHandler="com.yjtech.wisdom.tourism.mybatis.typehandler.JsonTypeHandler"/>
+        <result column="actual_handle_personnel" property="actualHandlePersonnel" />
     </resultMap>
 
     <resultMap id="EventListVOMap" type="com.yjtech.wisdom.tourism.command.vo.event.EventListVO">
@@ -91,11 +91,11 @@
             event_status,
             plan_id,
             handle_department,
-            handle_personnel,
             handle_date,
             handle_results,
             create_user,
-             appoint_handle_personnel
+            appoint_handle_personnel,
+            actual_handle_personnel
         FROM
             `tb_event`
             <where>

@@ -230,6 +230,10 @@ public class EventService extends ServiceImpl<EventMapper, EventEntity> {
             list.stream().map(vo -> {
                 SysUser sysUser = longSysUserMap.get(vo.getCreateUser());
                 vo.setCreateUserName(Objects.isNull(sysUser) ? null : sysUser.getNickName());
+
+                SysUser actualHandlePersonnel = longSysUserMap.get(vo.getActualHandlePersonnel());
+                vo.setActualHandlePersonnelName(Objects.isNull(actualHandlePersonnel) ? null : actualHandlePersonnel.getNickName());
+
                 ArrayList<String> userName = Lists.newArrayList();
                 if(CollectionUtils.isNotEmpty(vo.getAppointHandlePersonnel())){
                     for(String userId : vo.getAppointHandlePersonnel()){

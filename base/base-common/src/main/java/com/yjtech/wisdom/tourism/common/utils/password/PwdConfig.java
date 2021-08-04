@@ -69,7 +69,7 @@ public class PwdConfig {
     /**
      * 是否检测逻辑位置连续
      */
-    public static String CHECK_LOGIC_SEQUENTIAL = "enable";
+    public static String CHECK_LOGIC_SEQUENTIAL = "disable";
     /**
      * 密码口令中字符在逻辑位置上不允许最小的连续个数
      */
@@ -78,7 +78,7 @@ public class PwdConfig {
     /**
      * 是否检测连续字符相同
      */
-    public static String CHECK_SEQUENTIAL_CHAR_SAME = "enable";
+    public static String CHECK_SEQUENTIAL_CHAR_SAME = "disable";
     /**
      * 密码口令中相同字符不允许最小的连续个数
      */

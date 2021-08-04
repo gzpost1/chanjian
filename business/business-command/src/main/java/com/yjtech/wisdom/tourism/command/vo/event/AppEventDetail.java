@@ -1,7 +1,6 @@
 package com.yjtech.wisdom.tourism.command.vo.event;
 
 import com.baomidou.mybatisplus.annotation.TableField;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -112,12 +111,6 @@ public class AppEventDetail implements Serializable {
 
 
     /**
-     * 处理人员
-     */
-    private String handlePersonnel;
-
-
-    /**
      * 处理日期
      */
     private Date handleDate;
@@ -152,4 +145,15 @@ public class AppEventDetail implements Serializable {
      * 指定处理人
      */
     private List<String> appointHandlePersonnel;
+
+    /**
+     * 实际处理人员
+     */
+    private Long actualHandlePersonnel;
+
+
+    /**
+     * 实际处理人员名称
+     */
+    private String actualHandlePersonnelName;
 }
