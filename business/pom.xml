@@ -23,6 +23,7 @@
         <module>business-country-tour</module>
         <module>business-message</module>
         <module>business-decision-support</module>
+        <module>business-position</module>
     </modules>
 
 </project>
