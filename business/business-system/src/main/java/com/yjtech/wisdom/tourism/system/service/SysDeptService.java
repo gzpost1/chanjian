@@ -151,6 +151,12 @@ public class SysDeptService {
     if (!UserConstants.DEPT_NORMAL.equals(info.getStatus())) {
       throw new CustomException("部门停用，不允许新增");
     }
+
+    // 部门层级不能超过5层
+    if (info.getAncestors().split(",").length >= 5) {
+      throw new CustomException("部门层级不能超过5层");
+    }
+
     dept.setAncestors(info.getAncestors() + "," + dept.getParentId());
     return deptMapper.insertDept(dept);
   }
