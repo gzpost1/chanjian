@@ -3,7 +3,7 @@
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yjtech.wisdom.tourism.system.mapper.SysDictDataMapper">
-	
+
 	<resultMap type="com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysDictData" id="SysDictDataResult">
 		<id     property="dictCode"   column="dict_code"   />
 		<result property="dictSort"   column="dict_sort"   />
@@ -19,9 +19,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result property="updateUser"   column="update_user"   />
 		<result property="updateTime" column="update_time" />
 	</resultMap>
-	
+
 	<sql id="selectDictDataVo">
-        select dict_code, dict_sort, dict_label, dict_value, dict_type, css_class, list_class, is_default, status, create_user, create_time, remark 
+        select dict_code, dict_sort, dict_label, dict_value, dict_type, css_class, list_class, is_default, status, create_user, create_time, remark
 		from sys_dict_data
     </sql>
 
@@ -40,41 +40,41 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		</where>
 		order by dict_sort asc
 	</select>
-	
+
 	<select id="selectDictDataByType" parameterType="com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysDictData" resultMap="SysDictDataResult">
 		<include refid="selectDictDataVo"/>
 		where status = '0' and dict_type = #{dictType} order by dict_sort asc
 	</select>
-	
+
 	<select id="selectDictLabel" resultType="java.lang.String">
 		select dict_label from sys_dict_data
 		where dict_type = #{dictType} and dict_value = #{dictValue}
 	</select>
-	
+
 	<select id="selectDictDataById" parameterType="java.lang.Long" resultMap="SysDictDataResult">
 		<include refid="selectDictDataVo"/>
 		where dict_code = #{dictCode}
 	</select>
-	
+
 	<select id="countDictDataByType" resultType="java.lang.Integer">
-	    select count(1) from sys_dict_data where dict_type=#{dictType}  
+	    select count(1) from sys_dict_data where dict_type=#{dictType}
 	</select>
 
 	<delete id="deleteDictDataByType">
 		delete from sys_dict_data where dict_type=#{dictType}
 	</delete>
-	
+
 	<delete id="deleteDictDataById" parameterType="java.lang.Long">
  		delete from sys_dict_data where dict_code = #{dictCode}
  	</delete>
- 	
+
  	<delete id="deleteDictDataByIds" parameterType="java.lang.Long">
  		delete from sys_dict_data where dict_code in
  		<foreach collection="array" item="dictCode" open="(" separator="," close=")">
  			#{dictCode}
-        </foreach> 
+        </foreach>
  	</delete>
-	
+
 	<update id="updateDictData" parameterType="com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysDictData">
  		update sys_dict_data
  		<set>
@@ -92,11 +92,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
  		</set>
  		where dict_code = #{dictCode}
 	</update>
-	
+
 	<update id="updateDictDataType" parameterType="java.lang.String">
  		update sys_dict_data set dict_type = #{newDictType} where dict_type = #{oldDictType}
 	</update>
- 	
+
  	<insert id="insertDictData" parameterType="com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysDictData">
  		insert into sys_dict_data(
  			<if test="dictSort != null">dict_sort,</if>
@@ -124,5 +124,24 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
  			sysdate()
  		)
 	</insert>
-	
-</mapper> 
+
+	<!-- 字典键及字典值映射列表 -->
+	<select id="selectDictDataListWithoutPage"
+			parameterType="com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysDictData"
+			resultMap="SysDictDataResult">
+		<include refid="selectDictDataVo"/>
+		<where>
+			<if test="args.dictType != null and args.dictType != ''">
+				AND dict_type = #{args.dictType}
+			</if>
+			<if test="args.dictLabel != null and args.dictLabel != ''">
+				AND dict_label like concat('%', #{args.dictLabel}, '%')
+			</if>
+			<if test="args.status != null and args.status != ''">
+				AND status = #{args.status}
+			</if>
+		</where>
+		order by dict_sort asc
+	</select>
+
+</mapper>
