@@ -43,6 +43,11 @@ public class LectureEntity implements Serializable {
     private String lectureType;
 
     /**
+     * 场展演讲类型_通过字典管理配置
+     */
+    private String lectureValue;
+
+    /**
      * 关联场馆
      */
     private Long venueId;

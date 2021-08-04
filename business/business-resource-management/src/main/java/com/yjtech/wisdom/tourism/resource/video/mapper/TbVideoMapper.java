@@ -1,5 +1,6 @@
 package com.yjtech.wisdom.tourism.resource.video.mapper;
 
+import com.yjtech.wisdom.tourism.resource.scenic.entity.ScenicEntity;
 import com.yjtech.wisdom.tourism.resource.video.entity.TbVideoEntity;
 import com.yjtech.wisdom.tourism.mybatis.base.BaseMybatisMapper;
 /**
@@ -12,4 +13,5 @@ import com.yjtech.wisdom.tourism.mybatis.base.BaseMybatisMapper;
  */
 public interface TbVideoMapper extends BaseMybatisMapper<TbVideoEntity> {
 
+    ScenicEntity querySecenicInfoById(String secenicId);
 }

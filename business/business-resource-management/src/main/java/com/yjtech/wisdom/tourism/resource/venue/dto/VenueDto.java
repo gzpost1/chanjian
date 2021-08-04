@@ -38,6 +38,11 @@ public class VenueDto implements Serializable {
     private String venueType;
 
     /**
+     * 场馆类型的值_通过字典管理配置
+     */
+    private String venueValue;
+
+    /**
      * 所在位置_可通过地图选点功能选择点位，记录地址及经纬度
      */
     private String position;

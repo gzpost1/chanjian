@@ -2,7 +2,10 @@ package com.yjtech.wisdom.tourism.resource.scenic.dto;
 
 import lombok.Data;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 @Data
@@ -24,9 +27,6 @@ public class ScenicCreateDto {
     /**经度*/
     private String longitude;
 
-    /**地图缩放比例*/
-    private Integer mapZoomRate;
-
     /** 开放日期-开始日期*/
     private String openStartDate;
 
@@ -40,9 +40,15 @@ public class ScenicCreateDto {
     private String openEndTime;
 
     /**景区承载量*/
+    @NotNull(message = "景区承载量不能为空")
+    @Min(value = 0, message = "不能小于0")
+    @Max(value = 999999, message = "不能大于999999")
     private Integer bearCapacity;
 
     /**舒适度预警比例*/
+    @NotNull(message = "舒适度预警比例不能为空")
+    @Min(value = 0, message = "不能小于0")
+    @Max(value = 100, message = "不能大于100")
     private BigDecimal comfortWarnRate;
 
     /**联系电话*/
