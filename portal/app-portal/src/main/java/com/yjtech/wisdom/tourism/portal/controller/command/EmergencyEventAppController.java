@@ -79,6 +79,18 @@ public class EmergencyEventAppController {
     }
 
     /**
+     * 获得事件数量
+     *
+     * @param query
+     * @return
+     */
+    @PostMapping("/queryForNumByHandler")
+    public JsonResult<Integer> queryForNumByHandler(@RequestBody EventQuery query) {
+        LambdaQueryWrapper queryWrapper = eventService.getQueryWrapperHandler(query);
+        return JsonResult.success(eventService.count(queryWrapper));
+    }
+
+    /**
      * 待处理 已处理  分页列表
      *
      * @param query
