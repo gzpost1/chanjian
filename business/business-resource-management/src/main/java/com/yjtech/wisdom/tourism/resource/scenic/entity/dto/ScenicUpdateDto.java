@@ -1,11 +1,11 @@
-package com.yjtech.wisdom.tourism.resource.scenic.dto;
+package com.yjtech.wisdom.tourism.resource.scenic.entity.dto;
 
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
 
 @Data
-public class ScenicUpdateDto extends ScenicCreateDto{
+public class ScenicUpdateDto extends ScenicCreateDto {
 
     /**景区id*/
     @NotNull(message = "景区id不能为空")

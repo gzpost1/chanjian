@@ -3,7 +3,6 @@ package com.yjtech.wisdom.tourism.portal.controller.complaint;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.yjtech.wisdom.tourism.command.dto.travelcomplaint.TravelComplaintDTO;
 import com.yjtech.wisdom.tourism.command.dto.travelcomplaint.TravelComplaintListDTO;
-import com.yjtech.wisdom.tourism.command.entity.travelcomplaint.TravelComplaintEntity;
 import com.yjtech.wisdom.tourism.command.service.travelcomplaint.TravelComplaintService;
 import com.yjtech.wisdom.tourism.command.vo.travelcomplaint.TravelComplaintCreateVO;
 import com.yjtech.wisdom.tourism.command.vo.travelcomplaint.TravelComplaintDealVO;

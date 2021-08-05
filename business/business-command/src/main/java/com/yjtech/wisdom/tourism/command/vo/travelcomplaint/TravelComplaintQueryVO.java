@@ -46,6 +46,11 @@ public class TravelComplaintQueryVO extends PageQuery {
     private Byte equipStatus;
 
     /**
+     * 处理人id
+     */
+    private Long acceptUserId;
+
+    /**
      * 开始时间
      */
     private LocalDate beginTime;

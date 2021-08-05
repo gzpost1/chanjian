@@ -1,4 +1,4 @@
-package com.yjtech.wisdom.tourism.resource.scenic.dto;
+package com.yjtech.wisdom.tourism.resource.scenic.entity.dto;
 
 import lombok.Data;
 

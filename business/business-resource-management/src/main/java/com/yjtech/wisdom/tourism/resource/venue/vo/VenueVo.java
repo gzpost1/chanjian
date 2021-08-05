@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * 场馆信息
@@ -74,9 +75,9 @@ public class VenueVo extends PageQuery implements Serializable {
     private String openEndTime;
 
     /**
-     * 联系电话，多个用“,”分割
+     * 联系电话
      */
-    private String phone;
+    private List<String> phone;
 
     /**
      * 封面图片Url
@@ -84,9 +85,9 @@ public class VenueVo extends PageQuery implements Serializable {
     private String frontPicUrl;
 
     /**
-     * 其他图片Url，多张用“,”逗号分割
+     * 其他图片Url
      */
-    private String otherPicUrl;
+    private List<String> otherPicUrl;
 
     /**
      * 简介

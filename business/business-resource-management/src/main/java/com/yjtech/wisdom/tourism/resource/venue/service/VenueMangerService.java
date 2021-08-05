@@ -45,9 +45,14 @@ public class VenueMangerService extends BaseMybatisServiceImpl<VenueMapper, Venu
                 new LambdaQueryWrapper<VenueEntity>()
                     .like(!StringUtils.isEmpty(vo.getVenueName()), VenueEntity::getVenueName, vo.getVenueName())
                     .eq(VenueEntity::getStatus, 1)
-                    .orderByDesc(VenueEntity::getUpdateTime)
-                )
-                .convert(item -> JSONObject.parseObject(JSONObject.toJSONString(item), VenueDto.class));
+                    .orderByDesc(VenueEntity::getUpdateTime))
+        .convert(item -> {
+            VenueDto venueDto = JSONObject.parseObject(JSONObject.toJSONString(item), VenueDto.class);
+            // 字典获取
+            String name = sysDictDataService.selectDictLabel(item.getVenueType(), item.getVenueValue());
+            venueDto.setDictName(name);
+            return venueDto;
+        });
     }
 
     /**
@@ -57,9 +62,9 @@ public class VenueMangerService extends BaseMybatisServiceImpl<VenueMapper, Venu
      */
     public List<VenueScaleDto> queryScale() {
         QueryWrapper<VenueEntity> queryWrapper = new QueryWrapper<>();
-        queryWrapper.select("count(id) as venueTypeNumber, venue_value as venueValue, venue_type as venueType");
+        queryWrapper.select("count(id) as venueTypeNumber, venue_value, venue_type");
         queryWrapper.eq("status", 1);
-        queryWrapper.groupBy("venueValue");
+        queryWrapper.groupBy("venue_value");
 
         // 分组查询 各类场馆的数量
         List<VenueEntity> venueEntityList = baseMapper.selectList(queryWrapper);
@@ -79,6 +84,7 @@ public class VenueMangerService extends BaseMybatisServiceImpl<VenueMapper, Venu
             //计算比例
             VenueScaleDto venueScaleDto = VenueScaleDto.builder()
                     .name(name)
+                    .value(venueTypeNumber)
                     .scale(MathUtil.calPercent(new BigDecimal(venueTypeNumber), new BigDecimal(total), 2).toString())
                     .build();
 

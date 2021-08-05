@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 展演讲座
@@ -43,6 +44,11 @@ public class LectureDto implements Serializable {
     private String lectureValue;
 
     /**
+     * 数据字典对应的值
+     */
+    private String dictName;
+
+    /**
      * 关联场馆名称
      */
     private String venueId;
@@ -58,9 +64,9 @@ public class LectureDto implements Serializable {
     private String holdEndDate;
 
     /**
-     * 联系电话，多个用“,”分割
+     * 联系电话
      */
-    private String phone;
+    private List<String> phone;
 
     /**
      * 举办地点
@@ -83,9 +89,9 @@ public class LectureDto implements Serializable {
     private String frontPicUrl;
 
     /**
-     * 其他图片Url，多张用“,”逗号分割
+     * 其他图片Url
      */
-    private String otherPicUrl;
+    private List<String> otherPicUrl;
 
     /**
      * 简介

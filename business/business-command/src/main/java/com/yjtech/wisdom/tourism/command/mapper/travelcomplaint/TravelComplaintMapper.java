@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yjtech.wisdom.tourism.command.dto.travelcomplaint.TravelComplaintListDTO;
+import com.yjtech.wisdom.tourism.command.dto.travelcomplaint.TravelComplaintStatusStatisticsDTO;
 import com.yjtech.wisdom.tourism.command.entity.travelcomplaint.TravelComplaintEntity;
 import com.yjtech.wisdom.tourism.command.vo.travelcomplaint.TravelComplaintQueryVO;
 import org.apache.ibatis.annotations.Param;
@@ -31,6 +32,13 @@ public interface TravelComplaintMapper extends BaseMapper<TravelComplaintEntity>
      * @return
      */
     IPage<TravelComplaintListDTO> queryForPage(Page page, @Param("params") TravelComplaintQueryVO params);
+
+    /**
+     * 查询状态统计
+     * @param params
+     * @return
+     */
+    TravelComplaintStatusStatisticsDTO queryStatusStatistics(@Param("params") TravelComplaintQueryVO params);
 
 
 

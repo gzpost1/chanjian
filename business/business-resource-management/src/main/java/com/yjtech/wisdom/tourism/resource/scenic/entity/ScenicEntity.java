@@ -42,6 +42,9 @@ public class ScenicEntity extends MyBaseEntity {
     /**经度*/
     private String longitude;
 
+    /**今日入园数*/
+    private Integer enterNum;
+
     /**地图缩放比例*/
     private Integer mapZoomRate;
 
