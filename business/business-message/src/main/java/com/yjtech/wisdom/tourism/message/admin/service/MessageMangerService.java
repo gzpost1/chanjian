@@ -88,7 +88,7 @@ public class MessageMangerService extends ServiceImpl<MessageMapper, MessageEnti
 
         List<MessageEntity> result = baseMapper.selectList(
                 new LambdaQueryWrapper<MessageEntity>()
-                .like(MessageEntity::getEventDealPersonId, userId));
+                .like(MessageEntity::getEventDealPersonId, "\"" + userId + "\""));
 
         List<MessageDto> messageDtoList = JSONObject.parseArray(JSONObject.toJSONString(result), MessageDto.class);
 
