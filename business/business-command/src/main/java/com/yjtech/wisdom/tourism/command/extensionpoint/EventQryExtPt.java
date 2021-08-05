@@ -18,7 +18,7 @@ public interface EventQryExtPt extends ExtensionPointI {
      * 应急事件统计
      * @return
      */
-     List<BaseVO> queryEventQuantity();
+     List<BaseVO> queryEventQuantity(EventSumaryQuery query);
 
     List<BaseValueVO> querySaleTrend(EventSumaryQuery query);
 
