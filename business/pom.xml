@@ -24,6 +24,7 @@
         <module>business-message</module>
         <module>business-decision-support</module>
         <module>business-position</module>
+        <module>business-hotel</module>
     </modules>
 
 </project>
