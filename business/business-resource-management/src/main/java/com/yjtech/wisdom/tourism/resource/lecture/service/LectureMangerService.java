@@ -82,7 +82,7 @@ public class LectureMangerService extends BaseMybatisServiceImpl<LectureMapper, 
         // 计算各类讲座比例
         lectureEntityList.forEach(item -> {
             // 对应讲座类型的数量
-            Integer venueTypeNumber = item.getLectureTypeNumber();
+            Integer lectureTypeNumber = item.getLectureTypeNumber();
 
             // 字典获取
             String name = sysDictDataService.selectDictLabel(item.getLectureType(), item.getLectureValue());
@@ -90,7 +90,8 @@ public class LectureMangerService extends BaseMybatisServiceImpl<LectureMapper, 
             //计算比例
             LectureScaleDto lectureScaleDto = LectureScaleDto.builder()
                     .name(name)
-                    .scale(MathUtil.calPercent(new BigDecimal(venueTypeNumber), new BigDecimal(total), 2).toString())
+                    .value(lectureTypeNumber)
+                    .scale(MathUtil.calPercent(new BigDecimal(lectureTypeNumber), new BigDecimal(total), 2).toString())
                     .build();
 
             scaleList.add(lectureScaleDto);

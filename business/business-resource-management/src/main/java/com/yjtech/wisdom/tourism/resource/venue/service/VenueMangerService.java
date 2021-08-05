@@ -84,6 +84,7 @@ public class VenueMangerService extends BaseMybatisServiceImpl<VenueMapper, Venu
             //计算比例
             VenueScaleDto venueScaleDto = VenueScaleDto.builder()
                     .name(name)
+                    .value(venueTypeNumber)
                     .scale(MathUtil.calPercent(new BigDecimal(venueTypeNumber), new BigDecimal(total), 2).toString())
                     .build();
 
