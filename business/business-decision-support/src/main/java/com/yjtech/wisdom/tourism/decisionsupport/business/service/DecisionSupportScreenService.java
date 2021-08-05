@@ -8,7 +8,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import com.yjtech.wisdom.tourism.common.constant.DecisionSupportConstants;
-import com.yjtech.wisdom.tourism.common.enums.DecisionSupportEnum;
+import com.yjtech.wisdom.tourism.common.constant.DecisionSupportTargetConstants;
+import com.yjtech.wisdom.tourism.common.enums.DecisionSupportConfigEnum;
 import com.yjtech.wisdom.tourism.common.utils.DateTimeUtil;
 import com.yjtech.wisdom.tourism.decisionsupport.base.service.TargetQueryService;
 import com.yjtech.wisdom.tourism.decisionsupport.business.dto.DecisionWarnItemDto;
@@ -19,6 +20,8 @@ import com.yjtech.wisdom.tourism.decisionsupport.business.mapper.DecisionMapper;
 import com.yjtech.wisdom.tourism.decisionsupport.business.mapper.DecisionWarnMapper;
 import com.yjtech.wisdom.tourism.decisionsupport.business.vo.DecisionWarnPageVo;
 import com.yjtech.wisdom.tourism.decisionsupport.business.vo.DecisionWarnVo;
+import com.yjtech.wisdom.tourism.decisionsupport.common.execute.DecisionExecute;
+import com.yjtech.wisdom.tourism.decisionsupport.common.instance.DecisionStrategyEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -28,6 +31,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+
 
 /**
  * 辅助决策-大屏
@@ -175,22 +179,80 @@ public class DecisionSupportScreenService extends ServiceImpl<DecisionWarnMapper
      * @return
      */
     private DecisionWarnEntity dealWarnConfigAndCompute(DecisionEntity entity) {
+        // 基础属性 设置
         DecisionWarnEntity result = DecisionWarnEntity.builder()
                 .targetId(entity.getTargetId())
                 .targetName(entity.getTargetName())
                 .warnName(entity.getConfigName())
-                // 话术处理
-                .conclusionText(dealConclusionText(entity.getConclusionText()))
                 .build();
 
-        // 文本类型处理
-        if (DecisionSupportConstants.DECISION_WARN_TYPE_TEXT.equals(entity.getConfigType())) {
-            result = dealText (entity, result);
+        int targetId = entity.getTargetId().intValue();
+
+        switch (targetId) {
+            // 省外游客
+            case DecisionSupportTargetConstants.SWYK :
+                break;
+
+            // 省内游客
+            case DecisionSupportTargetConstants.SNYK :
+                break;
+
+            // 整体游客
+            case DecisionSupportTargetConstants.ZTYK :
+                break;
+
+            // 整体景区客流
+            case DecisionSupportTargetConstants.ZTJQKL :
+                break;
+
+            // 景区客流排行
+            case DecisionSupportTargetConstants.JQKLPH :
+                break;
+
+            // 整体景区满意度
+            case DecisionSupportTargetConstants.ZTJQMYD :
+                break;
+
+            // 景区满意度排行
+            case DecisionSupportTargetConstants.JQMYDPH :
+                break;
+
+            // 整体酒店民宿满意度
+            case DecisionSupportTargetConstants.ZTJDMSMYD :
+                break;
+
+            // 酒店民宿满意度排行
+            case DecisionSupportTargetConstants.JDMSMYDPH :
+                break;
+
+            // 投诉量
+            case DecisionSupportTargetConstants.TSL :
+                break;
+
+            // 订单量
+            case DecisionSupportTargetConstants.DDL :
+                break;
+
+            // 交易额
+            case DecisionSupportTargetConstants.JYE :
+                break;
+
+            // 旅游投诉
+            case DecisionSupportTargetConstants.LYTS :
+                break;
+
+            // 应急事件统计
+            case DecisionSupportTargetConstants.YJSJTJ :
+                break;
+
+            // 高发应急事件
+            case DecisionSupportTargetConstants.GBFYJSJ :
+                break;
+
+            default:
+                break;
         }
-        // 数值类型处理
-        else {
-            result = dealNumber (entity, result);
-        }
+
         return result;
     }
 
@@ -204,19 +266,19 @@ public class DecisionSupportScreenService extends ServiceImpl<DecisionWarnMapper
         String result = "";
         if (!StringUtils.isEmpty(conclusionText)) {
             // 平台简称
-            result = conclusionText.replaceAll(DecisionSupportEnum.PLATFORM_SIMPLE_NAME.getKey(), targetQueryService.queryPlatformSimpleName().getSimpleName());
+            result = conclusionText.replaceAll(DecisionSupportConfigEnum.PLATFORM_SIMPLE_NAME.getKey(), targetQueryService.queryPlatformSimpleName().getSimpleName());
 
             // 统计年月
-            result = result.replaceAll(DecisionSupportEnum.YEAR_MONTH_STATISTICAL.getKey(), targetQueryService.queryLastMonth().getYearMonth());
+            result = result.replaceAll(DecisionSupportConfigEnum.YEAR_MONTH_STATISTICAL.getKey(), targetQueryService.queryLastMonth().getYearMonth());
 
             // 省外游客数量
-            result = result.replaceAll(DecisionSupportEnum.PROVINCE_OUTSIDE_TOUR_NUM.getKey(), targetQueryService.queryProvinceOutsideNumber());
+            result = result.replaceAll(DecisionSupportConfigEnum.PROVINCE_OUTSIDE_TOUR_NUM.getKey(), targetQueryService.queryProvinceOutsideNumber());
 
             // 环比（较上月）
-            result = result.replaceAll(DecisionSupportEnum.PROVINCE_OUTSIDE_TOUR_HB.getKey(), targetQueryService.queryHbProvinceOutside());
+            result = result.replaceAll(DecisionSupportConfigEnum.PROVINCE_OUTSIDE_TOUR_HB.getKey(), targetQueryService.queryHbProvinceOutside());
 
             // 同比（较去年同月）
-            result = result.replaceAll(DecisionSupportEnum.PROVINCE_OUTSIDE_TOUR_TB.getKey(), targetQueryService.queryTbProvinceOutside());
+            result = result.replaceAll(DecisionSupportConfigEnum.PROVINCE_OUTSIDE_TOUR_TB.getKey(), targetQueryService.queryTbProvinceOutside());
         }
         return result;
     }

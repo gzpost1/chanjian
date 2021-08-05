@@ -50,9 +50,14 @@ public class LectureEntity implements Serializable {
     private String lectureValue;
 
     /**
-     * 关联场馆
+     * 关联场馆ID
      */
     private Long venueId;
+
+    /**
+     * 关联场馆名称
+     */
+    private String venueName;
 
     /**
      * 开放日期-开始日期
