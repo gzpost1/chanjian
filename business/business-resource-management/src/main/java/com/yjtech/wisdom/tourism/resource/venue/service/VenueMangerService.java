@@ -62,9 +62,9 @@ public class VenueMangerService extends BaseMybatisServiceImpl<VenueMapper, Venu
      */
     public List<VenueScaleDto> queryScale() {
         QueryWrapper<VenueEntity> queryWrapper = new QueryWrapper<>();
-        queryWrapper.select("count(id) as venueTypeNumber, venue_value as venueValue, venue_type as venueType");
+        queryWrapper.select("count(id) as venueTypeNumber, venue_value, venue_type");
         queryWrapper.eq("status", 1);
-        queryWrapper.groupBy("venueValue");
+        queryWrapper.groupBy("venue_value");
 
         // 分组查询 各类场馆的数量
         List<VenueEntity> venueEntityList = baseMapper.selectList(queryWrapper);

@@ -66,10 +66,10 @@ public class LectureMangerService extends BaseMybatisServiceImpl<LectureMapper, 
      */
     public LecturePicDto queryScale(LectureScaleVo vo) {
         QueryWrapper<LectureEntity> queryWrapper = new QueryWrapper<>();
-        queryWrapper.select("count(id) as lectureTypeNumber, lecture_type as lectureType, lecture_value as lectureValue");
+        queryWrapper.select("count(id) as lectureTypeNumber, lecture_type, lecture_value");
         queryWrapper.eq("status", 1);
         queryWrapper.between("hold_start_date", vo.getBeginTime(), vo.getEndTime());
-        queryWrapper.groupBy("lectureValue");
+        queryWrapper.groupBy("lecture_value");
 
         // 符合条件的讲座类型 的数量
         List<LectureEntity> lectureEntityList = baseMapper.selectList(queryWrapper);
