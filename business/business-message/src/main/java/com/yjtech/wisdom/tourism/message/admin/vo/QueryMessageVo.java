@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**
@@ -28,7 +28,7 @@ public class QueryMessageVo extends PageQuery implements Serializable {
     /**
      * 查询类型 0：全部消息  1:待指派/待处理信息
      */
-    @NotBlank
+    @NotNull
     @Min(value = 0)
     @Max(value = 1)
     private Integer queryType;
