@@ -38,8 +38,8 @@ public class ImplEventQryExtPt implements EventQryExtPt {
 
 
     @Override
-    public List<BaseVO> queryEventQuantity() {
-        return eventService.queryEventQuantity();
+    public List<BaseVO> queryEventQuantity(EventSumaryQuery query) {
+        return eventService.queryEventQuantity(query);
     }
 
     @Override
