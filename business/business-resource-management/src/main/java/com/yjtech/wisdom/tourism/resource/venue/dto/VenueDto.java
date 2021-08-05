@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 文博场馆
@@ -41,6 +42,11 @@ public class VenueDto implements Serializable {
      * 场馆类型的值_通过字典管理配置
      */
     private String venueValue;
+
+    /**
+     * 数据字典对应的值
+     */
+    private String dictName;
 
     /**
      * 所在位置_可通过地图选点功能选择点位，记录地址及经纬度
@@ -80,7 +86,7 @@ public class VenueDto implements Serializable {
     /**
      * 联系电话
      */
-    private String phone;
+    private List<String> phone;
 
     /**
      * 封面图片Url
@@ -88,9 +94,9 @@ public class VenueDto implements Serializable {
     private String frontPicUrl;
 
     /**
-     * 其他图片Url，多张用“,”逗号分割
+     * 其他图片Url
      */
-    private String otherPicUrl;
+    private List<String> otherPicUrl;
 
     /**
      * 简介

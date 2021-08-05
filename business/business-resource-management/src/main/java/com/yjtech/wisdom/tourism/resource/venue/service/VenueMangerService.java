@@ -45,9 +45,14 @@ public class VenueMangerService extends BaseMybatisServiceImpl<VenueMapper, Venu
                 new LambdaQueryWrapper<VenueEntity>()
                     .like(!StringUtils.isEmpty(vo.getVenueName()), VenueEntity::getVenueName, vo.getVenueName())
                     .eq(VenueEntity::getStatus, 1)
-                    .orderByDesc(VenueEntity::getUpdateTime)
-                )
-                .convert(item -> JSONObject.parseObject(JSONObject.toJSONString(item), VenueDto.class));
+                    .orderByDesc(VenueEntity::getUpdateTime))
+        .convert(item -> {
+            VenueDto venueDto = JSONObject.parseObject(JSONObject.toJSONString(item), VenueDto.class);
+            // 字典获取
+            String name = sysDictDataService.selectDictLabel(item.getVenueType(), item.getVenueValue());
+            venueDto.setDictName(name);
+            return venueDto;
+        });
     }
 
     /**

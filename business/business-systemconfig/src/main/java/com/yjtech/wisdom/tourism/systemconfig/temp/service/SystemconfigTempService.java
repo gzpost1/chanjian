@@ -59,7 +59,9 @@ public class SystemconfigTempService extends ServiceImpl<SystemconfigTempMapper,
     public boolean findNameExist(String name, Long id) {
         LambdaQueryWrapper<SystemconfigTempEntity> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(SystemconfigTempEntity::getName, name);
-        queryWrapper.ne(SystemconfigTempEntity::getId,id);
+        if(Objects.nonNull(id)){
+            queryWrapper.ne(SystemconfigTempEntity::getId,id);
+        }
 
         int count = this.count(queryWrapper);
         return count > 0 ? false : true;
