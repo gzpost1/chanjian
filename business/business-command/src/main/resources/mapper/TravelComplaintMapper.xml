@@ -143,7 +143,7 @@
                 </if>
             </if>
             deleted = 0
-        </where>) as total
+        </where>) as total,
         <!-- 待处理 -->
         (select count(id) from tb_travel_complaint
         <where>
@@ -157,7 +157,7 @@
             </if>
             status = 1 and
             deleted = 0
-        </where>) as noDeal
+        </where>) as noDeal,
         <!-- 已处理 -->
         (select count(id) from tb_travel_complaint
         <where>
