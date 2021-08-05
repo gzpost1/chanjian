@@ -13,13 +13,14 @@ import com.yjtech.wisdom.tourism.command.dto.travelcomplaint.TravelComplaintStat
 import com.yjtech.wisdom.tourism.command.entity.travelcomplaint.TravelComplaintEntity;
 import com.yjtech.wisdom.tourism.command.mapper.travelcomplaint.TravelComplaintMapper;
 import com.yjtech.wisdom.tourism.command.vo.travelcomplaint.*;
-import com.yjtech.wisdom.tourism.common.bean.AssignUserInfo;
-import com.yjtech.wisdom.tourism.common.bean.DealUserInfo;
+import com.yjtech.wisdom.tourism.common.bean.*;
 import com.yjtech.wisdom.tourism.common.constant.CacheKeyContants;
 import com.yjtech.wisdom.tourism.common.constant.Constants;
 import com.yjtech.wisdom.tourism.common.core.domain.StatusParam;
 import com.yjtech.wisdom.tourism.common.enums.TravelComplaintStatusEnum;
 import com.yjtech.wisdom.tourism.common.enums.TravelComplaintTypeEnum;
+import com.yjtech.wisdom.tourism.common.utils.AnalysisUtils;
+import com.yjtech.wisdom.tourism.common.utils.DateUtils;
 import com.yjtech.wisdom.tourism.common.utils.StringUtils;
 import com.yjtech.wisdom.tourism.common.utils.bean.BeanUtils;
 import com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysUser;
@@ -239,7 +240,7 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
     /** ******************** 大屏 ******************** */
 
     /**
-     *
+     * 查询旅游投诉总量
      * @param vo
      * @return
      */
@@ -251,5 +252,51 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
 
         return baseMapper.selectCount(queryWrapper);
     }
+
+    /**
+     * 查询旅游投诉类型分布
+     * @param vo
+     * @return
+     */
+    public List<BasePercentVO> queryComplaintTypeDistribution(TravelComplaintScreenQueryVO vo){
+        return baseMapper.queryComplaintTypeDistribution(vo);
+    }
+
+    /**
+     * 查询旅游投诉状态分布
+     * @param vo
+     * @return
+     */
+    public List<BasePercentVO> queryComplaintStatusDistribution(TravelComplaintScreenQueryVO vo){
+        return baseMapper.queryComplaintStatusDistribution(vo);
+    }
+
+    /**
+     * 查询旅游投诉类型Top排行
+     * @param vo
+     * @return
+     */
+    public List<BaseVO> queryComplaintTopByType(TravelComplaintScreenQueryVO vo){
+        return baseMapper.queryComplaintTopByType(vo);
+    }
+
+    /**
+     * 查询旅游投诉趋势、同比、环比
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public List<AnalysisBaseInfo> queryComplaintAnalysis(TravelComplaintScreenQueryVO vo){
+        //初始化当年月份信息
+        List<String> monthMarkList = DateUtils.getEveryMonthOfCurrentYear();
+
+        //获取当前年度月趋势信息
+        List<AnalysisMonthChartInfo> currentAnalysisMonthInfo = this.baseMapper.queryComplaintCurrentAnalysisMonthInfo(vo);
+        //获取去年度月趋势信息
+        List<AnalysisMonthChartInfo> lastAnalysisMonthInfo = this.baseMapper.queryComplaintLastAnalysisMonthInfo(vo);
+
+        return AnalysisUtils.buildAnalysisInfo(monthMarkList, currentAnalysisMonthInfo, lastAnalysisMonthInfo);
+    }
+
+
 
 }

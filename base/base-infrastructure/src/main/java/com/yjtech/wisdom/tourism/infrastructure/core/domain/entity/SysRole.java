@@ -52,6 +52,7 @@ public class SysRole extends BaseEntity {
   private Long[] deptIds;
 
   /** 备注 */
+  @Size(max = 100, message = "备注长度不能超过100个字符")
   private String remark;
 
   /** 创建时间 */
