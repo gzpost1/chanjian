@@ -31,5 +31,10 @@ public class VenueScaleDto implements Serializable {
      */
     private String scale;
 
+    /**
+     * 场馆数量
+     */
+    private Integer value;
+
 
 }

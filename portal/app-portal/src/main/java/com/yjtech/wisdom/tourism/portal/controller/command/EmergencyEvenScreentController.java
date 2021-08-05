@@ -136,11 +136,11 @@ public class EmergencyEvenScreentController {
      * @return
      */
     @PostMapping("/queryEventQuantity")
-    public JsonResult<List<BaseVO>> queryEventQuantity(@RequestBody EventCommonQuery query){
+    public JsonResult<List<BaseVO>> queryEventQuantity(@RequestBody EventSumaryQuery query){
         return JsonResult.success(
                 extensionExecutor.execute(EventQryExtPt.class,
                         buildBizScenario(EventExtensionConstant.EVENT_QUANTITY, query.getIsSimulation()),
-                        EventQryExtPt::queryEventQuantity));
+                        extension -> extension.queryEventQuantity(query)));
     }
 
 
