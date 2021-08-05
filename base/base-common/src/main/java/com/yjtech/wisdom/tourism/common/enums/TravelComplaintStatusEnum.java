@@ -2,6 +2,9 @@ package com.yjtech.wisdom.tourism.common.enums;
 
 import lombok.Getter;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * 旅游投诉状态
  *
@@ -36,6 +39,13 @@ public enum TravelComplaintStatusEnum {
         this.value = value;
         this.describe = describe;
     }
+
+    /**
+     * 处理状态
+     */
+    public static final List<Byte> DEAL_STATUS = Arrays.asList(
+            TRAVEL_COMPLAINT_STATUS_NO_DEAL.getValue(),
+            TRAVEL_COMPLAINT_STATUS_DEAL_FINISHED.getValue());
 
     /**
      * 根据值获取枚举

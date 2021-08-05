@@ -3,6 +3,7 @@ package com.yjtech.wisdom.tourism.resource.lecture.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.yjtech.wisdom.tourism.mybatis.typehandler.JsonTypeHandler;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,6 +11,7 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 展演讲座管理
@@ -21,7 +23,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
-@TableName("tb_jz_lecture_manger")
+@TableName(value = "tb_jz_lecture_manger", autoResultMap = true)
 public class LectureEntity implements Serializable {
 
     private static final long serialVersionUID = 3847077007129548072L;
@@ -63,9 +65,10 @@ public class LectureEntity implements Serializable {
     private String holdEndDate;
 
     /**
-     * 联系电话，多个用“,”分割
+     * 联系电话
      */
-    private String phone;
+    @TableField(typeHandler = JsonTypeHandler.class)
+    private List<String> phone;
 
     /**
      * 举办地点
@@ -88,9 +91,10 @@ public class LectureEntity implements Serializable {
     private String frontPicUrl;
 
     /**
-     * 其他图片Url，多张用“,”逗号分割
+     * 其他图片Url
      */
-    private String otherPicUrl;
+    @TableField(typeHandler = JsonTypeHandler.class)
+    private List<String> otherPicUrl;
 
     /**
      * 简介

@@ -2,25 +2,17 @@ package com.yjtech.wisdom.tourism.message.admin.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import com.tencent.xinge.push.app.PushAppResponse;
-import com.yjtech.wisdom.tourism.command.entity.event.EventAppointEntity;
-import com.yjtech.wisdom.tourism.command.mapper.event.EventAppointMapper;
-import com.yjtech.wisdom.tourism.common.bean.AssignUserInfo;
-import com.yjtech.wisdom.tourism.common.constant.CacheKeyContants;
 import com.yjtech.wisdom.tourism.common.constant.MessageConstants;
-import com.yjtech.wisdom.tourism.common.enums.MessageAppointStatusEnum;
 import com.yjtech.wisdom.tourism.common.exception.CustomException;
 import com.yjtech.wisdom.tourism.common.utils.ServletUtils;
 import com.yjtech.wisdom.tourism.framework.web.service.TokenService;
-import com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysDictData;
 import com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysUser;
-import com.yjtech.wisdom.tourism.infrastructure.core.domain.model.LoginUser;
+import com.yjtech.wisdom.tourism.message.admin.dto.MessageCallDto;
 import com.yjtech.wisdom.tourism.message.admin.dto.MessageDto;
 import com.yjtech.wisdom.tourism.message.admin.dto.MessageRecordDto;
 import com.yjtech.wisdom.tourism.message.admin.entity.MessageEntity;
@@ -32,8 +24,10 @@ import com.yjtech.wisdom.tourism.message.admin.vo.QueryMessageVo;
 import com.yjtech.wisdom.tourism.message.admin.vo.SendMessageVo;
 import com.yjtech.wisdom.tourism.message.app.bo.TpnsPushBO;
 import com.yjtech.wisdom.tourism.message.app.service.TpnsPushService;
+import com.yjtech.wisdom.tourism.message.common.MessageCall;
+import com.yjtech.wisdom.tourism.message.common.PageHelpUtil;
 import com.yjtech.wisdom.tourism.message.sms.service.SmsService;
-import com.yjtech.wisdom.tourism.system.service.SysDictTypeService;
+import com.yjtech.wisdom.tourism.system.service.SysConfigService;
 import com.yjtech.wisdom.tourism.system.service.SysUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,11 +35,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 消息管理中心
@@ -61,9 +56,6 @@ public class MessageMangerService extends ServiceImpl<MessageMapper, MessageEnti
     private TokenService tokenService;
 
     @Autowired
-    private SysDictTypeService dictTypeService;
-
-    @Autowired
     private TpnsPushService tpnsPushService;
 
     @Autowired
@@ -76,10 +68,13 @@ public class MessageMangerService extends ServiceImpl<MessageMapper, MessageEnti
     private MessageRecordMapper messageRecordMapper;
 
     @Autowired
-    private EventAppointMapper eventAppointMapper;
+    private RedisTemplate redisTemplate;
 
     @Autowired
-    private RedisTemplate redisTemplate;
+    private SysConfigService sysConfigService;
+
+    @Autowired
+    private MessageCall messageCall;
 
     @Value("${message.dictType.admin}")
     private String adminDictType;
@@ -89,25 +84,96 @@ public class MessageMangerService extends ServiceImpl<MessageMapper, MessageEnti
      */
     public IPage<MessageDto> queryPageMessage (QueryMessageVo vo, boolean isRecord) {
 
-        // 获取用户信息
-        LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
-        Long userId = loginUser.getUser().getUserId();
+        Long userId = tokenService.getLoginUser(ServletUtils.getRequest()).getUser().getUserId();
 
-        //获取当前用户的处理方式状态
-        MessageAppointStatusEnum status = findDealStatus(userId);
+        List<MessageEntity> result = baseMapper.selectList(
+                new LambdaQueryWrapper<MessageEntity>()
+                .like(MessageEntity::getEventDealPersonId, "\"" + userId + "\""));
 
-        // 根据当前用户处理方式状态，封装查询条件
-        QueryWrapper<MessageEntity> queryWrapper = new QueryWrapper<>();
-        HandleEventDealStatus(vo.getQueryType(), userId, status, queryWrapper);
+        List<MessageDto> messageDtoList = JSONObject.parseArray(JSONObject.toJSONString(result), MessageDto.class);
 
-        IPage<MessageDto> result = baseMapper.selectPage(new Page<>(vo.getPageNo(), vo.getPageSize()), queryWrapper)
-                .convert(v -> JSONObject.parseObject(JSONObject.toJSONString(v), MessageDto.class));
+        List<MessageDto> record = Lists.newArrayList();
+
+        // 应急事件 id
+        List<Long> emergencyEventIdList = Lists.newArrayList();
+        // 旅游投诉 id
+        List<Long> touristComplaintsEventIdList = Lists.newArrayList();
+
+        messageDtoList.forEach(v -> {
+            // 旅游投诉
+            if (MessageConstants.EVENT_TYPE_TOUR.equals(v.getEventType())) {
+                touristComplaintsEventIdList.add(v.getEventId());
+            }
+            // 应急事件
+            else if (MessageConstants.EVENT_TYPE_EMERGENCY.equals(v.getEventType())) {
+                emergencyEventIdList.add(v.getEventId());
+            }
+        });
+
+        // 应急事件 id
+        Long[] emergencyEventIds = emergencyEventIdList.toArray(new Long[0]);
+        // 旅游投诉 id
+        Long[] touristComplaintsEventIds = touristComplaintsEventIdList.toArray(new Long[0]);
+
+        // 应急事件信息 查询
+        List<MessageCallDto> emergencyEventList = messageCall.queryEvent(emergencyEventIds);
+        // 旅游投诉信息 查询
+        List<MessageCallDto> touristComplaintsEventList = messageCall.queryEvent(touristComplaintsEventIds);
+
+        Integer queryType = vo.getQueryType();
+
+        // 组合数据  每个事件类型不同，应该使用业务模块的事件状态进行判断
+        for (MessageDto item : messageDtoList) {
+            // 应急事件 数据分类放入结果集
+            setEventInfo(record, emergencyEventList, queryType, item, MessageConstants.EVENT_STATUS_COMPLETE);
+            // 旅游投诉事件 数据分类放入结果集
+            setEventInfo(record, touristComplaintsEventList, queryType, item, MessageConstants.EVENT_STATUS_COMPLETE);
+        }
+
+        // 进行自主分页
+        IPage<MessageDto> page = PageHelpUtil.page(vo.getPageNo(), vo.getPageSize(), record);
 
         if (isRecord) {
             // 设置 本次查询的结果记录总数
-            redisTemplate.opsForValue().set(MessageConstants.MESSAGE_RECORD_NUM + userId, result.getTotal());
+            redisTemplate.opsForValue().set(MessageConstants.MESSAGE_RECORD_NUM + userId, page.getTotal());
         }
-        return result;
+        return page;
+    }
+
+    /**
+     * 设置事件属性
+     *
+     * @param record 结果集
+     * @param emergencyEventList 各业务模块通过事件id查询到的返回结果集
+     * @param queryType 查询类型
+     * @param item 数据源
+     * @param eventStatusComplete 事件完成状态
+     */
+    private void setEventInfo(List<MessageDto> record,
+                              List<MessageCallDto> emergencyEventList,
+                              Integer queryType,
+                              MessageDto item,
+                              Integer eventStatusComplete)
+    {
+        for (MessageCallDto emergencyItem : emergencyEventList) {
+            if (item.getEventId().equals(emergencyItem.getEventId())) {
+                // 构造数据
+                MessageDto messageDto = JSONObject.parseObject(JSONObject.toJSONString(emergencyItem), MessageDto.class);
+                messageDto.setId(item.getId());
+                messageDto.setEventType(item.getEventType());
+                messageDto.setEventDealPersonId(item.getEventDealPersonId());
+
+                // 查待指派、处理
+                if (MessageConstants.QUERY_DEAL.equals(queryType)
+                        // 非已处理状态相当于 待指派、处理状态
+                        && !eventStatusComplete.equals(emergencyItem.getEventStatus())) {
+                    record.add(messageDto);
+                    continue;
+                }
+                // 所有数据
+                record.add(messageDto);
+            }
+        }
     }
 
     /**
@@ -137,7 +203,7 @@ public class MessageMangerService extends ServiceImpl<MessageMapper, MessageEnti
 
 
     /**
-     * 事件完成时调用此接口 根据事件id
+     * 事件完成时调用此接口 根据事件id --- 废弃 todo
      */
     public void changeMessageStatus (Long eventId) {
         if (null == eventId) {
@@ -154,7 +220,7 @@ public class MessageMangerService extends ServiceImpl<MessageMapper, MessageEnti
         // 最新的一条
         MessageEntity entity = messageEntities.get(0);
         entity.setId(null);
-        entity.setEventStatus(MessageConstants.EVENT_STATUS_COMPLETE);
+        //entity.setEventStatus(MessageConstants.EVENT_STATUS_COMPLETE);
         baseMapper.insert(entity);
     }
 
@@ -162,31 +228,16 @@ public class MessageMangerService extends ServiceImpl<MessageMapper, MessageEnti
      * 发送通知，且调用通知方式api
      */
     public void sendMessage (SendMessageVo vo) {
-        // 根据事件id,获取初始化的消息数据
-        MessageEntity messageEntity = baseMapper.selectOne(new LambdaQueryWrapper<MessageEntity>().eq(MessageEntity::getEventId, vo.getEventId()));
-        if (ObjectUtils.isEmpty(messageEntity)) {
-            log.error("【发送通知-后台通知】事件ID：{} 不存在！请先初始化事件！", vo.getEventId());
-            throw new CustomException("事件ID不存在，请先初始化事件！");
-        }
-
-        Long[] eventDealPersonId = vo.getEventDealPersonIdArray();
-        String eventDealPersonIdStr = "";
-        for (Long dealId : eventDealPersonId) {
-            eventDealPersonIdStr += "," + dealId;
-        }
-        sendAndRecord(vo, messageEntity, eventDealPersonId, eventDealPersonIdStr);
+        sendAndRecord(vo);
     }
 
     /**
      * 发送 并 记录
      *
      * @param vo
-     * @param messageEntity
-     * @param eventDealPersonId
-     * @param eventDealPersonIdStr
      */
-    public void sendAndRecord(SendMessageVo vo, MessageEntity messageEntity, Long[] eventDealPersonId, String eventDealPersonIdStr) {
-
+    private void sendAndRecord(SendMessageVo vo) {
+        Long[] eventDealPersonIdArray = vo.getEventDealPersonIdArray();
         for (Integer sendType : vo.getSendType()) {
             // 历史记录
             MessageRecordEntity recordEntity = MessageRecordEntity.builder()
@@ -197,14 +248,18 @@ public class MessageMangerService extends ServiceImpl<MessageMapper, MessageEnti
             switch (sendType) {
                 // 后台
                 case 0:
-                    messageEntity.setEventDealPersonId(eventDealPersonIdStr);
-                    messageEntity.setEventStatus(MessageConstants.EVENT_STATUS_DEAL);
-                    messageEntity.setId(null);
+                    // 处理人id
+                    List<Long> list = Arrays.stream(eventDealPersonIdArray).collect(Collectors.toList());
+                    MessageEntity messageEntity = MessageEntity.builder()
+                            .eventDealPersonId(list)
+                            .eventId(vo.getEventId())
+                            .eventType(vo.getEventType())
+                            .build();
                     int records = baseMapper.insert(messageEntity);
 
                     // 0-后台
                     recordEntity.setSendType(0);
-                    recordEntity.setSendObject(JSONObject.toJSONString(vo.getEventDealPersonIdArray()));
+                    recordEntity.setSendObject(JSONObject.toJSONString(eventDealPersonIdArray));
                     if (records > 0) {
                         recordEntity.setSuccess((byte) 1);
                     }else {
@@ -218,7 +273,7 @@ public class MessageMangerService extends ServiceImpl<MessageMapper, MessageEnti
 
                 // app
                 case 1:
-                    for (Long dealId : eventDealPersonId) {
+                    for (Long dealId : eventDealPersonIdArray) {
                         // 查询处理人id 是否有pushToken，如果存在pushToken，则进行app消息推送
                         SysUser sysUser = sysUserService.selectUserById(dealId);
                         String pushToken = sysUser.getPushToken();
@@ -248,7 +303,7 @@ public class MessageMangerService extends ServiceImpl<MessageMapper, MessageEnti
 
                 // 短信
                 case 2:
-                    for (Long dealId : eventDealPersonId) {
+                    for (Long dealId : eventDealPersonIdArray) {
                         // 查询处理人id 是否有pushToken，如果存在pushToken，则进行app消息推送
                         SysUser sysUser = sysUserService.selectUserById(dealId);
                         String phoneNumber = sysUser.getPhonenumber();
@@ -257,7 +312,7 @@ public class MessageMangerService extends ServiceImpl<MessageMapper, MessageEnti
                         recordEntity.setSendObject(phoneNumber);
                         try {
                             if (!StringUtils.isEmpty(phoneNumber)) {
-                                smsService.smsSend(phoneNumber, messageEntity.getEventType());
+                                smsService.smsSend(phoneNumber, vo.getEventType());
                                 recordEntity.setSuccess((byte) 1);
                             }else {
                                 recordEntity.setSuccess((byte) 0);
@@ -278,7 +333,7 @@ public class MessageMangerService extends ServiceImpl<MessageMapper, MessageEnti
     }
 
     /**
-     * 初始化事件-消息通知
+     * 初始化事件-消息通知  -- 废弃 todo
      *
      * @param vo
      */
@@ -293,7 +348,7 @@ public class MessageMangerService extends ServiceImpl<MessageMapper, MessageEnti
     }
 
     /**
-     * 根据事件id 修改当前消息内容
+     * 根据事件id 修改当前消息内容 -- 废弃 todo
      *
      * @param vo
      */
@@ -303,167 +358,13 @@ public class MessageMangerService extends ServiceImpl<MessageMapper, MessageEnti
     }
 
     /**
-     * 根据事件处理状态封装查询条件
-     *
-     * @param queryType
-     * @param userId
-     * @param status
-     * @param queryWrapper
-     * @param <T>
-     */
-    private <T> void HandleEventDealStatus(Integer queryType, Long userId, MessageAppointStatusEnum status, QueryWrapper<T> queryWrapper) {
-        // 如果是 查询待指派/处理
-        if (1 == queryType) {
-            queryWrapper.eq("eventStatus", 0);
-            queryWrapper.eq("eventStatus", 1);
-        }
-
-        // 根据处理方式状态进行相应的处理
-        switch (status) {
-            // 当前用户是管理员
-            case ADMIN:
-                queryWrapper.isNull("eventHappenPersonId");
-                break;
-
-            // 指派回管理员，管理员可查询
-            case TO_ADMIN :
-                queryWrapper.isNull("eventHappenPersonId");
-                break;
-
-            // 游客投诉指派人
-            case TOURIST_COMPLAINTS_ADMIN :
-                queryWrapper.isNull("eventHappenPersonId");
-                queryWrapper.eq("eventType", 0);
-                break;
-
-            // 应急事件的指派人
-            case EMERGENCY_ADMIN :
-                queryWrapper.isNull("eventHappenPersonId");
-                queryWrapper.eq("eventType", 1);
-                break;
-
-            // 既是游客投诉指派人 又是 应急事件的指派人
-            case TOURIST_COMPLAINTS_ADMIN_AND_EMERGENCY_ADMIN :
-                queryWrapper.isNull("eventHappenPersonId");
-                break;
-
-            // 被指派处理人员
-            case EVENT_DEAL_PERSON :
-                //由于可能有多个处理人员，每个处理人员id采用逗号“,”分割，采用模糊匹配
-                queryWrapper.like(!StringUtils.isEmpty(userId), "eventDealPersonIdArray", userId);
-                break;
-
-            default:
-                break;
-        }
-    }
-
-    /**
-     * 获取处理方式状态
-     *
-     * @param userId
-     * @return
-     */
-    private MessageAppointStatusEnum findDealStatus(Long userId) {
-        // 对接游客投诉的指派人员用户id列表
-        Long[] touristComplaintsAdminList = findTouristComplaintsAdminList();
-
-        // 对接应急事件的指派人员用户id列表
-        Long[] emergencyAdminList = findEmergencyAdminList();
-
-        // 查询是否管理员
-        List<SysDictData> sysDictData = dictTypeService.selectDictDataByType(adminDictType);
-        boolean isAdmin = false;
-        for (SysDictData dictData : sysDictData) {
-            if (userId.equals(dictData.getDictValue())) {
-                isAdmin = true;
-            }
-        }
-
-        // 如果是管理员
-        if (isAdmin) {
-            return MessageAppointStatusEnum.ADMIN;
-        }
-
-        // 如果指派人员列表为空，则指给超管账号
-        if (touristComplaintsAdminList.length == 0 && emergencyAdminList.length == 0) {
-            return MessageAppointStatusEnum.TO_ADMIN;
-        }
-
-        // 是否游客投诉指派人
-        boolean isTouristComplaintsAdmin = isFindUserId(userId, touristComplaintsAdminList);
-
-        // 是否应急事件的指派人
-        boolean isEmergencyAdmin = isFindUserId(userId, emergencyAdminList);
-
-        // 如果是游客投诉指派人
-        if (isTouristComplaintsAdmin) {
-
-            // 如果 既是游客投诉指派人 又是 应急事件的指派人
-            if (isEmergencyAdmin) {
-                return MessageAppointStatusEnum.TOURIST_COMPLAINTS_ADMIN_AND_EMERGENCY_ADMIN;
-            }
-
-            return MessageAppointStatusEnum.TOURIST_COMPLAINTS_ADMIN;
-        }
-        // 如果是应急事件的指派人
-        else if (isEmergencyAdmin) {
-            return MessageAppointStatusEnum.EMERGENCY_ADMIN;
-        }
-
-        // 被指派处理人员
-        return MessageAppointStatusEnum.EVENT_DEAL_PERSON;
-    }
-
-    /**
-     * 获取应急事件的指派人员用户id列表
+     * 查询当前配置管理员id
      *
      * @return
      */
-    private Long[] findEmergencyAdminList() {
-        AssignUserInfo assignUserInfo = JSONObject.parseObject(
-                JSONObject.toJSONString(redisTemplate.opsForValue().get(CacheKeyContants.KEY_ASSIGN_TRAVEL_COMPLAINT)),
-                AssignUserInfo.class);
-        List<Long> assignUserIdList = assignUserInfo.getAssignUserIdList();
-        Long[] result = new Long[assignUserIdList.size()];
-        for (int i = 0; i < assignUserIdList.size(); i++) {
-            result[i] = assignUserIdList.get(i);
-        }
-        return result;
-    }
-
-    /**
-     * 获取游客投诉的指派人员用户id列表
-     *
-     * @return
-     */
-    private Long[] findTouristComplaintsAdminList() {
-        EventAppointEntity eventAppointEntity = eventAppointMapper.selectOne(null);
-        List<String> appointPersonnel = eventAppointEntity.getAppointPersonnel();
-        Long[] result = new Long[appointPersonnel.size()];
-        for (int i = 0; i < appointPersonnel.size(); i++) {
-            result[i] = Long.parseLong(appointPersonnel.get(i));
-        }
-        return result;
-    }
-
-    /**
-     * 查询匹配的UserId
-     *
-     * @param userId
-     * @param list
-     * @return
-     */
-    private boolean isFindUserId(Long userId, Long[] list) {
-        // 是否找到标识
-        boolean isFind = false;
-        for (Long touristComplaintsAdminId : list) {
-            if (userId.equals(touristComplaintsAdminId)) {
-                isFind = true;
-                break;
-            }
-        }
-        return isFind;
+    public Long queryAdimnId () {
+        String adminId = sysConfigService.selectConfigByKey(adminDictType);
+        return Long.parseLong(adminId);
     }
 
 }

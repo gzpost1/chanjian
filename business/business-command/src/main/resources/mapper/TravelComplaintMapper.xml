@@ -113,6 +113,9 @@
                 <if test="params.equipStatus != null">
                     equip_status = #{params.equipStatus} and
                 </if>
+                <if test="params.acceptUserId != null">
+                    accept_user_id = #{params.acceptUserId} and
+                </if>
                 <if test="params.createUser != null">
                     create_user = #{params.createUser} and
                 </if>
@@ -124,6 +127,53 @@
         </where>
         ORDER BY create_time DESC
     </select>
+
+    <select id="queryStatusStatistics" resultType="com.yjtech.wisdom.tourism.command.dto.travelcomplaint.TravelComplaintStatusStatisticsDTO"
+            parameterType="com.yjtech.wisdom.tourism.command.vo.travelcomplaint.TravelComplaintQueryVO">
+        select
+        <!-- 总计 -->
+        (select count(id) from tb_travel_complaint
+        <where>
+            <if test="params != null">
+                <if test="params.equipStatus != null">
+                    equip_status = #{params.equipStatus} and
+                </if>
+                <if test="params.createUser != null">
+                    create_user = #{params.createUser} and
+                </if>
+            </if>
+            deleted = 0
+        </where>) as total,
+        <!-- 待处理 -->
+        (select count(id) from tb_travel_complaint
+        <where>
+            <if test="params != null">
+                <if test="params.equipStatus != null">
+                    equip_status = #{params.equipStatus} and
+                </if>
+                <if test="params.acceptUserId != null">
+                    accept_user_id = #{params.acceptUserId} and
+                </if>
+            </if>
+            status = 1 and
+            deleted = 0
+        </where>) as noDeal,
+        <!-- 已处理 -->
+        (select count(id) from tb_travel_complaint
+        <where>
+            <if test="params != null">
+                <if test="params.equipStatus != null">
+                    equip_status = #{params.equipStatus} and
+                </if>
+                <if test="params.acceptUserId != null">
+                    accept_user_id = #{params.acceptUserId} and
+                </if>
+            </if>
+            status = 2 and
+            deleted = 0
+        </where>) as dealFinished
+    </select>
+
 
     <sql id="base_result">
         id,

@@ -93,7 +93,7 @@
     <select id="queryOrderStatistics" resultType="com.yjtech.wisdom.tourism.integration.pojo.bo.fxdist.FxDistOrderStatisticsBO"
             parameterType="com.yjtech.wisdom.tourism.integration.pojo.vo.FxDistQueryVO">
         select
-        COALESCE (ROUND(SUM(orderInfo.current_price)/100,2),0) as orderSum,
+        COALESCE (ROUND(SUM(orderInfo.current_price)/1000000,0),0) as orderSum,
         COUNT(orderInfo.order_id) as orderCount
         from
         tb_order orderInfo

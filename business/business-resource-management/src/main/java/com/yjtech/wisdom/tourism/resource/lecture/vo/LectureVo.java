@@ -9,7 +9,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.util.StringUtils;
 
+import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * 展演讲座信息
@@ -56,9 +58,9 @@ public class LectureVo extends PageQuery implements Serializable {
     private String holdEndDate;
 
     /**
-     * 联系电话，多个用“,”分割
+     * 联系电话
      */
-    private String phone;
+    private List<String> phone;
 
     /**
      * 举办地点
@@ -81,9 +83,10 @@ public class LectureVo extends PageQuery implements Serializable {
     private String frontPicUrl;
 
     /**
-     * 其他图片Url，多张用“,”逗号分割
+     * 其他图片Url
      */
-    private String otherPicUrl;
+    @Size(max = 9)
+    private List<String> otherPicUrl;
 
     /**
      * 简介

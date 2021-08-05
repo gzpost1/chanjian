@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yjtech.wisdom.tourism.command.dto.travelcomplaint.TravelComplaintDTO;
 import com.yjtech.wisdom.tourism.command.dto.travelcomplaint.TravelComplaintListDTO;
+import com.yjtech.wisdom.tourism.command.dto.travelcomplaint.TravelComplaintStatusStatisticsDTO;
 import com.yjtech.wisdom.tourism.command.entity.travelcomplaint.TravelComplaintEntity;
 import com.yjtech.wisdom.tourism.command.mapper.travelcomplaint.TravelComplaintMapper;
 import com.yjtech.wisdom.tourism.command.vo.travelcomplaint.*;
@@ -172,7 +173,7 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
         Assert.isTrue(complaintEntity.getAssignAcceptUserId().contains(sysUser.getUserId().toString()), "处理旅游投诉失败：当前用户无权限");
 
         LambdaUpdateWrapper<TravelComplaintEntity> updateWrapper = new UpdateWrapper<TravelComplaintEntity>().lambda()
-                .set(TravelComplaintEntity::getAcceptUserId, vo.getAcceptUserId())
+                .set(TravelComplaintEntity::getAcceptUserId, sysUser.getUserId())
                 .set(TravelComplaintEntity::getAcceptOrganization, vo.getAcceptOrganization())
                 .set(TravelComplaintEntity::getAcceptTime, vo.getAcceptTime())
                 .set(TravelComplaintEntity::getAcceptResult, vo.getAcceptResult());
@@ -184,6 +185,16 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
         }
 
         return result;
+    }
+
+    /**
+     * 查询状态统计
+     * @param vo
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public TravelComplaintStatusStatisticsDTO queryStatusStatistics(TravelComplaintQueryVO vo) {
+        return baseMapper.queryStatusStatistics(vo);
     }
 
     /**
