@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 文博场馆
@@ -85,7 +86,7 @@ public class VenueDto implements Serializable {
     /**
      * 联系电话
      */
-    private String phone;
+    private List<String> phone;
 
     /**
      * 封面图片Url
@@ -93,9 +94,9 @@ public class VenueDto implements Serializable {
     private String frontPicUrl;
 
     /**
-     * 其他图片Url，多张用“,”逗号分割
+     * 其他图片Url
      */
-    private String otherPicUrl;
+    private List<String> otherPicUrl;
 
     /**
      * 简介

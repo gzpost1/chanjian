@@ -32,6 +32,11 @@ public class SendMessageVo implements Serializable {
     private Long eventId;
 
     /**
+     * 事件类型
+     */
+    private Integer eventType;
+
+    /**
      * 标题 app通知为必填
      */
     private String title;
@@ -45,6 +50,5 @@ public class SendMessageVo implements Serializable {
      * 事件处理人Id
      */
     private Long[] eventDealPersonIdArray;
-
 
 }
