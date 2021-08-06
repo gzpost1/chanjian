@@ -156,6 +156,8 @@ public class EventService extends ServiceImpl<EventMapper, EventEntity> {
     public LambdaQueryWrapper getQueryWrapperUser() {
         LambdaQueryWrapper<EventEntity> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(EventEntity::getCreateUser, SecurityUtils.getUserId());
+        queryWrapper.eq(EventEntity::getStatus, EntityConstants.ENABLED);
+        queryWrapper.eq(EventEntity::getDeleted, EntityConstants.NOT_DELETED);
         queryWrapper.orderByDesc(EventEntity::getCreateTime);
         return queryWrapper;
     }
@@ -169,6 +171,8 @@ public class EventService extends ServiceImpl<EventMapper, EventEntity> {
         LambdaQueryWrapper<EventEntity> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(StringUtils.isNotBlank(query.getEventStatus()), EventEntity::getEventStatus, query.getEventStatus());
         queryWrapper.apply("JSON_CONTAINS(appoint_handle_personnel,JSON_ARRAY({0}))", String.valueOf(SecurityUtils.getUserId()));
+        queryWrapper.eq(EventEntity::getStatus, EntityConstants.ENABLED);
+        queryWrapper.eq(EventEntity::getDeleted, EntityConstants.NOT_DELETED);
         queryWrapper.orderByDesc(EventEntity::getCreateTime);
         return queryWrapper;
     }
