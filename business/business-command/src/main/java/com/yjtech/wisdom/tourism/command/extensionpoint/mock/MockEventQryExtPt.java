@@ -22,7 +22,7 @@ import java.util.List;
 public class MockEventQryExtPt implements EventQryExtPt {
 
     @Override
-    public List<BaseVO> queryEventQuantity() {
+    public List<BaseVO> queryEventQuantity(EventSumaryQuery query) {
         return null;
     }
 

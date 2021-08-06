@@ -30,4 +30,9 @@ public class LectureScaleDto implements Serializable {
      * 比例
      */
     private String scale;
+
+    /**
+     * 讲座数量
+     */
+    private Integer value;
 }

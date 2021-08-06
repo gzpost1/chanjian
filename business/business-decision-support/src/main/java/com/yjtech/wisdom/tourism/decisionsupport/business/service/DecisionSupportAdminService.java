@@ -30,7 +30,7 @@ public class DecisionSupportAdminService extends ServiceImpl<DecisionMapper, Dec
      * @param vo
      * @return
      */
-    public IPage<DecisionDto> queryPageDecisin (DecisionPageVo vo) {
+    public IPage<DecisionDto> queryPageDecision(DecisionPageVo vo) {
         return baseMapper.selectPage(new Page<>(vo.getPageNo(), vo.getPageSize()),
                 new LambdaQueryWrapper<DecisionEntity>()
                 .like(!StringUtils.isEmpty(vo.getTargetName()), DecisionEntity::getTargetName, vo.getTargetName())
@@ -66,7 +66,7 @@ public class DecisionSupportAdminService extends ServiceImpl<DecisionMapper, Dec
      *
      * @param vo
      */
-    public void updataDecision (DecisionVo vo) {
+    public void updateDecision (DecisionVo vo) {
         DecisionEntity decisionEntity = JSONObject.parseObject(JSONObject.toJSONString(vo), DecisionEntity.class);
         baseMapper.updateById(decisionEntity);
     }

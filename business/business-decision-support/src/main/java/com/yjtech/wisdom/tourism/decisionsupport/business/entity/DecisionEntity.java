@@ -28,7 +28,7 @@ public class DecisionEntity implements Serializable {
     /**
      * 指标id
      */
-    @TableId(value = "id")
+    @TableId(value = "target_id")
     private Long targetId;
 
     /**
@@ -79,6 +79,9 @@ public class DecisionEntity implements Serializable {
      * 风险类型 0：低风险 1：中风险 2：高风险 3：无风险
      */
     private Integer riskType;
+
+
+
 
     /**
      * 话术
