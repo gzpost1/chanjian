@@ -9,7 +9,6 @@ import com.yjtech.wisdom.tourism.mybatis.base.BaseMybatisServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
 import java.util.Arrays;
 import java.util.List;
 
@@ -24,8 +23,6 @@ import java.util.List;
 @Service
 public class TbHotelInfoService extends BaseMybatisServiceImpl<TbHotelInfoMapper, TbHotelInfoEntity> {
 
-    @Resource
-    private TbHotelInfoMapper tbHotelInfoMapper;
 
     @Transactional(readOnly = true)
     public Page<TbHotelInfoEntity> apiPage(com.yjtech.wisdom.tourism.hotel.dto.TbHotelInfoEntityParam param) {

@@ -5,10 +5,10 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yjtech.wisdom.tourism.common.bean.BaseValueVO;
-import com.yjtech.wisdom.tourism.common.core.domain.PageQuery;
 import com.yjtech.wisdom.tourism.common.core.domain.UpdateStatusParam;
 import com.yjtech.wisdom.tourism.common.utils.MathUtil;
 import com.yjtech.wisdom.tourism.common.utils.StringUtils;
+import com.yjtech.wisdom.tourism.mybatis.entity.PageQuery;
 import com.yjtech.wisdom.tourism.resource.wifi.dto.WifiPageQueryDto;
 import com.yjtech.wisdom.tourism.resource.wifi.entity.WifiEntity;
 import com.yjtech.wisdom.tourism.resource.wifi.entity.WifiTemporaryEntity;
@@ -43,12 +43,12 @@ public class WifiService extends ServiceImpl<WifiMapper, WifiEntity> {
         return baseMapper.queryForPage(new Page(query.getPageNo(), query.getPageSize()), query);
     }
 
-    /** 
+    /**
      * wifi综合统计（首页）
-     * @Param:  
+     * @Param:
      * @return:
      * @Author: zc
-     * @Date: 2021-07-15 
+     * @Date: 2021-07-15
      */
     public WifiStatisticsVo queryWifiStatistics(){
 

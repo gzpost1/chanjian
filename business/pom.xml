@@ -27,4 +27,12 @@
         <module>business-hotel</module>
     </modules>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.yjtech.wisdom.tourism</groupId>
+            <artifactId>base-mybatis</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+
 </project>
