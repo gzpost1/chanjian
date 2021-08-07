@@ -159,7 +159,10 @@ public class DecisionSupportScreenService extends ServiceImpl<DecisionWarnMapper
 
         // 决策预警数据进行处理
         for (DecisionEntity entity : list) {
-            decisionWarnList.add(dealWarnConfigAndCompute(entity));
+            DecisionWarnEntity decisionWarnEntity = dealWarnConfigAndCompute(entity);
+            if (!ObjectUtils.isEmpty(decisionWarnEntity))  {
+                decisionWarnList.add(decisionWarnEntity);
+            }
         }
 
         // 综合概况由于需要统计所有数据，单独处理
@@ -246,12 +249,13 @@ public class DecisionSupportScreenService extends ServiceImpl<DecisionWarnMapper
                 break;
 
             default:
-                result = DecisionWarnEntity.builder().build();
                 break;
         }
-
-        // 通用属性设置
-        result.setWarnName(entity.getConfigName());
+        // 避免 综合概况指标 无法进去上面条件
+        if (!ObjectUtils.isEmpty(result)) {
+            // 通用属性设置
+            result.setWarnName(entity.getConfigName());
+        }
         return result;
     }
 

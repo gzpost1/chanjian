@@ -50,7 +50,7 @@ public enum DecisionSupportConfigEnum {
     /**
      * 中风险项数量
      */
-    MIDDLE_RISK_WARNING_ITEMS_NUMBER("高风险项数量", "${MIDDLE_RISK_WARNING_ITEMS_NUMBER}"),
+    MIDDLE_RISK_WARNING_ITEMS_NUMBER("中风险项数量", "${MIDDLE_RISK_WARNING_ITEMS_NUMBER}"),
 
     /**
      * 低风险项数量

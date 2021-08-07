@@ -3,6 +3,7 @@ package com.yjtech.wisdom.tourism.decisionsupport.business.instance;
 
 import com.yjtech.wisdom.tourism.common.exception.CustomException;
 import com.yjtech.wisdom.tourism.common.utils.SpringBeanUtils;
+import com.yjtech.wisdom.tourism.decisionsupport.business.strategyimpl.ComprehensiveStrategyImpl;
 import com.yjtech.wisdom.tourism.decisionsupport.business.strategyimpl.ProvinceOutsideTourStrategyImpl;
 import lombok.extern.slf4j.Slf4j;
 
@@ -23,7 +24,7 @@ public enum DecisionStrategyEnum {
     /**
      * 综合概况
      */
-    COMPREHENSIVE(ProvinceOutsideTourStrategyImpl.class),
+    COMPREHENSIVE(ComprehensiveStrategyImpl.class),
 
     ;
 

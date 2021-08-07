@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.google.common.collect.Lists;
 import com.yjtech.wisdom.tourism.common.constant.DecisionSupportConstants;
+import com.yjtech.wisdom.tourism.common.enums.DecisionSupportConfigEnum;
 import com.yjtech.wisdom.tourism.common.utils.DateTimeUtil;
 import com.yjtech.wisdom.tourism.common.utils.MathUtil;
 import com.yjtech.wisdom.tourism.decisionsupport.base.service.TargetQueryService;
@@ -12,10 +13,12 @@ import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionEntity;
 import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionWarnEntity;
 import com.yjtech.wisdom.tourism.decisionsupport.business.mapper.DecisionWarnMapper;
 import com.yjtech.wisdom.tourism.decisionsupport.common.strategy.BaseStrategy;
+import com.yjtech.wisdom.tourism.decisionsupport.common.util.PlaceholderUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -57,15 +60,6 @@ public class ComprehensiveStrategyImpl extends BaseStrategy {
         // 平台简称
         String simpleName = targetQueryService.queryPlatformSimpleName().getSimpleName();
 
-        // 上月预警概况 总数
-        Integer lastMonthWarnTotal = 0;
-        //上月预警低风险 数量
-        Integer lastMonthWarnLow = 0;
-        //上月预警中风险 数量
-        Integer lastMonthWarnMedium = 0;
-        //上月预警高风险 数量
-        Integer lastMonthWarnHigh = 0;
-
         // 如果是数值类型 则查询上月生成的综合概况统计数据
         if (DecisionSupportConstants.DECISION_WARN_TYPE_NUMBER.equals(entity.getConfigType())) {
             List<DecisionWarnEntity> LastMonthDecisionWarnEntity = decisionWarnMapper.selectList(
@@ -79,12 +73,6 @@ public class ComprehensiveStrategyImpl extends BaseStrategy {
             if (!CollectionUtils.isEmpty(LastMonthDecisionWarnEntity)) {
                 // 计算上月统计数量
                 lastMonthAlarmData = this.computeAlarmData(LastMonthDecisionWarnEntity);
-
-                // 上月数据赋值
-                lastMonthWarnTotal = lastMonthAlarmData.getTotalRiskNumber();
-                lastMonthWarnLow = lastMonthAlarmData.getLowRiskNumber();
-                lastMonthWarnMedium = lastMonthAlarmData.getMediumRiskNumber();
-                lastMonthWarnHigh = lastMonthAlarmData.getHighRiskNumber();
             }
         }
 
@@ -126,43 +114,57 @@ public class ComprehensiveStrategyImpl extends BaseStrategy {
             // 综合概况_风险预警项总数量 （数值）
             case DecisionSupportConstants.ZHGK_FXYJXSL :
                 // 进行对象非空判断
-                if (!ObjectUtils.isEmpty(currentAlarmData)
-                    && !ObjectUtils.isEmpty(lastMonthAlarmData)){
+                if (!ObjectUtils.isEmpty(currentAlarmData)){
+                    Integer totalRiskNumber = 0;
+                    if (!ObjectUtils.isEmpty(lastMonthAlarmData)) {
+                        totalRiskNumber = lastMonthAlarmData.getTotalRiskNumber();
+
+                    }else {
+                    }
                     // 计算比例
-                    String scale = computeScale(currentAlarmData.getTotalRiskNumber(), lastMonthAlarmData.getTotalRiskNumber());
+                    String scale = computeScale(currentAlarmData.getTotalRiskNumber(), totalRiskNumber);
                     // 数值报警处理
                     numberAlarmDeal(entity, result, scale);
-                    // 设置预警值
-                    result.setWarnNum(String.valueOf(currentAlarmData.getTotalRiskNumber()));
+                    result.setMonthHbScale(scale);
                 }
+                // 设置预警值
+                result.setWarnNum(String.valueOf(currentAlarmData.getTotalRiskNumber()));
                 break;
 
             // 综合概况_高风险项数量 （数值）
             case DecisionSupportConstants.ZHGK_GFXXSL :
                 // 进行对象非空判断
-                if (!ObjectUtils.isEmpty(currentAlarmData)
-                        && !ObjectUtils.isEmpty(lastMonthAlarmData)){
+                if (!ObjectUtils.isEmpty(currentAlarmData)){
+                    Integer highRiskNumber = 0;
+                    if (!ObjectUtils.isEmpty(lastMonthAlarmData)) {
+                        highRiskNumber = lastMonthAlarmData.getHighRiskNumber();
+                    }
                     // 计算比例
-                    String scale = computeScale(currentAlarmData.getHighRiskNumber(), lastMonthAlarmData.getHighRiskNumber());
+                    String scale = computeScale(currentAlarmData.getHighRiskNumber(), highRiskNumber);
                     // 数值报警处理
                     numberAlarmDeal(entity, result, scale);
-                    // 设置预警值
-                    result.setWarnNum(String.valueOf(currentAlarmData.getHighRiskNumber()));
+                    result.setMonthHbScale(scale);
                 }
+                // 设置预警值
+                result.setWarnNum(String.valueOf(currentAlarmData.getHighRiskNumber()));
                 break;
 
             // 综合概况_中风险项数量 （数值）
             case DecisionSupportConstants.ZHGK_ZFXXSL :
                 // 进行对象非空判断
-                if (!ObjectUtils.isEmpty(currentAlarmData)
-                        && !ObjectUtils.isEmpty(lastMonthAlarmData)){
+                if (!ObjectUtils.isEmpty(currentAlarmData)){
+                    Integer mediumRiskNumber = 0;
+                    if (!ObjectUtils.isEmpty(lastMonthAlarmData)) {
+                        mediumRiskNumber = lastMonthAlarmData.getMediumRiskNumber();
+                    }
                     // 计算比例
-                    String scale = computeScale(currentAlarmData.getMediumRiskNumber(), lastMonthAlarmData.getMediumRiskNumber());
+                    String scale = computeScale(currentAlarmData.getMediumRiskNumber(), mediumRiskNumber);
                     // 数值报警处理
                     numberAlarmDeal(entity, result, scale);
-                    // 设置预警值
-                    result.setWarnNum(String.valueOf(currentAlarmData.getMediumRiskNumber()));
+                    result.setMonthHbScale(scale);
                 }
+                // 设置预警值
+                result.setWarnNum(String.valueOf(currentAlarmData.getMediumRiskNumber()));
                 break;
 
             // 综合概况_低风险项数量 （数值）
@@ -170,20 +172,58 @@ public class ComprehensiveStrategyImpl extends BaseStrategy {
                 // 进行对象非空判断
                 if (!ObjectUtils.isEmpty(currentAlarmData)
                         && !ObjectUtils.isEmpty(lastMonthAlarmData)){
+                    Integer lowRiskNumber = 0;
+                    if (!ObjectUtils.isEmpty(lastMonthAlarmData)) {
+                        lowRiskNumber = lastMonthAlarmData.getLowRiskNumber();
+                    }
                     // 计算比例
-                    String scale = computeScale(currentAlarmData.getLowRiskNumber(), lastMonthAlarmData.getLowRiskNumber());
+                    String scale = computeScale(currentAlarmData.getLowRiskNumber(), lowRiskNumber);
                     // 数值报警处理
                     numberAlarmDeal(entity, result, scale);
-                    // 设置预警值
-                    result.setWarnNum(String.valueOf(currentAlarmData.getLowRiskNumber()));
+                    result.setMonthHbScale(scale);
                 }
+                // 设置预警值
+                result.setWarnNum(String.valueOf(currentAlarmData.getLowRiskNumber()));
                 break;
 
             default:
                 break;
         }
-        return null;
 
+        // 处理话术
+        dealConclusionText(entity.getConclusionText(), result, currentAlarmData, currentLastMonthStr, simpleName);
+
+        // 设置预警名称
+        result.setWarnName(entity.getConfigName());
+
+        return result;
+    }
+
+    /**
+     * 处理话术
+     *
+     * @param conclusionText
+     * @param result
+     * @param currentAlarmData
+     * @param currentLastMonthStr
+     * @param simpleName
+     */
+    private void dealConclusionText(String conclusionText, DecisionWarnEntity result, ComprehensiveAlarmDataDto currentAlarmData, String currentLastMonthStr, String simpleName) {
+        // 处理话术
+        if (!StringUtils.isEmpty(conclusionText)) {
+            conclusionText = PlaceholderUtils.replace(conclusionText,
+                    DecisionSupportConfigEnum.RISK_WARNING_ITEMS_NUMBER.getKey(), String.valueOf(currentAlarmData.getTotalRiskNumber()),
+                    DecisionSupportConfigEnum.HIGH_RISK_WARNING_ITEMS_NUMBER.getKey(),String.valueOf(currentAlarmData.getHighRiskNumber()),
+                    DecisionSupportConfigEnum.MIDDLE_RISK_WARNING_ITEMS_NUMBER.getKey(), String.valueOf(currentAlarmData.getMediumRiskNumber()),
+                    DecisionSupportConfigEnum.LOW_RISK_WARNING_ITEMS_NUMBER.getKey(), String.valueOf(currentAlarmData.getLowRiskNumber()),
+                    DecisionSupportConfigEnum.HIGH_RISK_WARNING_ITEMS_TARGET.getKey(), currentAlarmData.getHighRiskName(),
+                    DecisionSupportConfigEnum.MIDDLE_RISK_WARNING_ITEMS_TARGET.getKey(), currentAlarmData.getMediumRiskName(),
+                    DecisionSupportConfigEnum.LOW_RISK_WARNING_ITEMS_TARGET.getKey(), currentAlarmData.getLowRiskName(),
+                    DecisionSupportConfigEnum.YEAR_MONTH_STATISTICAL.getKey(), currentLastMonthStr + "月",
+                    DecisionSupportConfigEnum.PLATFORM_SIMPLE_NAME.getKey(), simpleName
+            );
+            result.setConclusionText(conclusionText);
+        }
     }
 
     /**
@@ -193,7 +233,7 @@ public class ComprehensiveStrategyImpl extends BaseStrategy {
      * @param bcs 被除数
      */
     private String computeScale(Integer cs, Integer bcs) {
-        if (0 != cs && 0 != bcs) {
+        if (0 != cs) {
             // 比例 = （本月生成 - 上月生成 ）/ 本月生成
             return MathUtil.calPercent(new BigDecimal(cs - bcs), new BigDecimal(cs), 2).toString();
         }
@@ -246,10 +286,28 @@ public class ComprehensiveStrategyImpl extends BaseStrategy {
                 .lowRiskNumber(lowRiskNumber)
                 .mediumRiskNumber(mediumRiskNumber)
                 .highRiskNumber(highRiskNumber)
-                .lowRiskName(JSONObject.toJSONString(lowRiskName))
-                .mediumRiskName(JSONObject.toJSONString(mediumRiskName))
-                .highRiskName(JSONObject.toJSONString(highRiskName))
+                .lowRiskName(conversionListToAlarmText(lowRiskName))
+                .mediumRiskName(conversionListToAlarmText(mediumRiskName))
+                .highRiskName(conversionListToAlarmText(highRiskName))
                 .totalRiskNumber(totalRiskNumber)
                 .build();
+    }
+
+    /**
+     * list转换 String "、"分隔
+     *
+     * @param alarmTextList
+     * @return
+     */
+    private String conversionListToAlarmText (List<String> alarmTextList) {
+        String text = "";
+        for (int i = 0; i < alarmTextList.size(); i++) {
+            String sign = "、";
+            if (i == alarmTextList.size() -1) {
+                sign = "";
+            }
+            text += alarmTextList.get(i) + sign;
+        }
+        return text;
     }
 }
