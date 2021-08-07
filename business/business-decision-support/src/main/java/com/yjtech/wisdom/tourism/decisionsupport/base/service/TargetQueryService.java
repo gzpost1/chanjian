@@ -14,6 +14,7 @@ import com.yjtech.wisdom.tourism.decisionsupport.base.mapper.TargetLibraryMapper
 import com.yjtech.wisdom.tourism.decisionsupport.base.mapper.WarnConfigMapper;
 import com.yjtech.wisdom.tourism.decisionsupport.base.vo.VisitNumberVo;
 import com.yjtech.wisdom.tourism.decisionsupport.base.vo.WarnConfigVo;
+import com.yjtech.wisdom.tourism.decisionsupport.common.constant.TargetQueryConstants;
 import com.yjtech.wisdom.tourism.dto.MonthPassengerFlowDto;
 import com.yjtech.wisdom.tourism.integration.service.DistrictBigDataService;
 import com.yjtech.wisdom.tourism.service.DistrictTourService;
@@ -37,10 +38,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @Service
 public class TargetQueryService {
 
-    private static final String FIRST_STRING = "-01-01 00:00:00";
-    private static final String END_STRING = "-12-31 23:59:59";
-    private static final String PROVINCE_OUTSIDE_TYPE = "12";
-    private static final String DATA = "data";
+
 
     @Autowired
     private TargetLibraryMapper targetLibraryMapper;
@@ -128,58 +126,39 @@ public class TargetQueryService {
         String result = districtBigDataService.requestDistrict(DistrictPathEnum.VISIT_NUMBER.getPath(),
                 visitNumberVo,
                 DistrictPathEnum.VISIT_NUMBER.getDesc());
-        return String.valueOf(JsonUtils.getValueByKey(result, DATA));
+        return String.valueOf(JsonUtils.getValueByKey(result, TargetQueryConstants.DATA));
     }
 
     /**
-     * 省外客流环比数据查询
+     * 省外客流环比、同比数据查询
+     *
+     * @param sign
      */
-    public String queryHbProvinceOutside () {
+    public String queryProvinceOutsideScale(String sign) {
         PassengerFlowVo passengerFlowVo = new PassengerFlowVo();
-        passengerFlowVo.setStatisticsType(PROVINCE_OUTSIDE_TYPE);
-        passengerFlowVo.setBeginTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentYearStr() + FIRST_STRING));
-        passengerFlowVo.setEndTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentYearStr() + END_STRING));
+        passengerFlowVo.setStatisticsType(TargetQueryConstants.PROVINCE_OUTSIDE_TYPE);
+        passengerFlowVo.setBeginTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentYearStr() + TargetQueryConstants.FIRST_STRING));
+        passengerFlowVo.setEndTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentYearStr() + TargetQueryConstants.END_STRING));
         passengerFlowVo.setType((byte)2);
 
         List<MonthPassengerFlowDto> yearPassengerFlowDto = districtTourService.queryYearPassengerFlow(passengerFlowVo);
         // 上月 年月日期
         String currentLastMonthStr = DateTimeUtil.getCurrentLastMonthStr();
 
-        // 环比
-        AtomicReference<String> hbScale = new AtomicReference<>("-");
+        AtomicReference<String> scale = new AtomicReference<>(TargetQueryConstants.DEFAULT_STR);
         yearPassengerFlowDto.forEach(v -> {
             if (currentLastMonthStr.equals(v.getDate())) {
-                hbScale.set(v.getHbScale());
+                // 环比
+                if (TargetQueryConstants.PROVINCE_OUTSIDE_SCALE_HB.equals(sign)) {
+                    scale.set(v.getHbScale());
+                }
+                // 同比
+                else if (TargetQueryConstants.PROVINCE_OUTSIDE_SCALE_TB.equals(sign)) {
+                    scale.set(v.getTbScale());
+                }
             }
         });
 
-        return hbScale.get();
+        return scale.get();
     }
-
-    /**
-     * 省外客流同比数据查询
-     */
-    public String queryTbProvinceOutside () {
-
-        PassengerFlowVo passengerFlowVo = new PassengerFlowVo();
-        passengerFlowVo.setStatisticsType(PROVINCE_OUTSIDE_TYPE);
-        passengerFlowVo.setBeginTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentYearStr() + FIRST_STRING));
-        passengerFlowVo.setEndTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentYearStr() + END_STRING));
-        passengerFlowVo.setType((byte)2);
-        List<MonthPassengerFlowDto> yearPassengerFlowDto = districtTourService.queryYearPassengerFlow(passengerFlowVo);
-
-        // 上月 年月日期
-        String currentLastMonthStr = DateTimeUtil.getCurrentLastMonthStr();
-
-        // 环比
-        AtomicReference<String> tbScale = new AtomicReference<>("-");
-        yearPassengerFlowDto.forEach(v -> {
-            if (currentLastMonthStr.equals(v.getDate())) {
-                tbScale.set(v.getTbScale());
-            }
-        });
-
-        return tbScale.get();
-    }
-
 }

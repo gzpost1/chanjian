@@ -19,6 +19,7 @@ import com.yjtech.wisdom.tourism.decisionsupport.business.mapper.DecisionMapper;
 import com.yjtech.wisdom.tourism.decisionsupport.business.mapper.DecisionWarnMapper;
 import com.yjtech.wisdom.tourism.decisionsupport.business.vo.DecisionWarnPageVo;
 import com.yjtech.wisdom.tourism.decisionsupport.business.vo.DecisionWarnVo;
+import com.yjtech.wisdom.tourism.decisionsupport.common.constant.TargetQueryConstants;
 import com.yjtech.wisdom.tourism.decisionsupport.common.execute.DecisionExecute;
 import com.yjtech.wisdom.tourism.decisionsupport.business.instance.DecisionStrategyEnum;
 import lombok.extern.slf4j.Slf4j;
@@ -278,10 +279,10 @@ public class DecisionSupportScreenService extends ServiceImpl<DecisionWarnMapper
             result = result.replaceAll(DecisionSupportConfigEnum.PROVINCE_OUTSIDE_TOUR_NUM.getKey(), targetQueryService.queryProvinceOutsideNumber());
 
             // 环比（较上月）
-            result = result.replaceAll(DecisionSupportConfigEnum.PROVINCE_OUTSIDE_TOUR_HB.getKey(), targetQueryService.queryHbProvinceOutside());
+            result = result.replaceAll(DecisionSupportConfigEnum.PROVINCE_OUTSIDE_TOUR_HB.getKey(), targetQueryService.queryProvinceOutsideScale(TargetQueryConstants.PROVINCE_OUTSIDE_SCALE_HB));
 
             // 同比（较去年同月）
-            result = result.replaceAll(DecisionSupportConfigEnum.PROVINCE_OUTSIDE_TOUR_TB.getKey(), targetQueryService.queryTbProvinceOutside());
+            result = result.replaceAll(DecisionSupportConfigEnum.PROVINCE_OUTSIDE_TOUR_TB.getKey(), targetQueryService.queryProvinceOutsideScale(TargetQueryConstants.PROVINCE_OUTSIDE_SCALE_TB));
         }
         return result;
     }

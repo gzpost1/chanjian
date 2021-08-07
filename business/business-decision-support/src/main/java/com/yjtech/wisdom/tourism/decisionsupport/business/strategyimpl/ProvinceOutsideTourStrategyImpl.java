@@ -7,6 +7,7 @@ import com.yjtech.wisdom.tourism.common.utils.DateTimeUtil;
 import com.yjtech.wisdom.tourism.decisionsupport.base.service.TargetQueryService;
 import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionEntity;
 import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionWarnEntity;
+import com.yjtech.wisdom.tourism.decisionsupport.common.constant.TargetQueryConstants;
 import com.yjtech.wisdom.tourism.decisionsupport.common.strategy.BaseStrategy;
 import com.yjtech.wisdom.tourism.decisionsupport.common.util.PlaceholderUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,9 +45,9 @@ public class ProvinceOutsideTourStrategyImpl extends BaseStrategy {
         // 省外游客数量
         String provinceOutsideNumber = targetQueryService.queryProvinceOutsideNumber();
         // 环比
-        String hb = targetQueryService.queryHbProvinceOutside();
+        String hb = targetQueryService.queryProvinceOutsideScale(TargetQueryConstants.PROVINCE_OUTSIDE_SCALE_HB);
         // 同比
-        String tb = targetQueryService.queryTbProvinceOutside();
+        String tb = targetQueryService.queryProvinceOutsideScale(TargetQueryConstants.PROVINCE_OUTSIDE_SCALE_TB);
 
         // 处理指标报警
         switch (configId) {
