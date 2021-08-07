@@ -1,6 +1,6 @@
 package com.yjtech.wisdom.tourism.decisionsupport.common.factory;
 
-import com.yjtech.wisdom.tourism.decisionsupport.common.instance.DecisionStrategyEnum;
+import com.yjtech.wisdom.tourism.decisionsupport.business.instance.DecisionStrategyEnum;
 import com.yjtech.wisdom.tourism.decisionsupport.common.strategy.StrategyFactory;
 
 /**

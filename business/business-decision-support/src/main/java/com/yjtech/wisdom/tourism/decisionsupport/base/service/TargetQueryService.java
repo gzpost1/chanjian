@@ -6,7 +6,6 @@ import com.yjtech.wisdom.tourism.common.constant.DecisionSupportConstants;
 import com.yjtech.wisdom.tourism.common.path.DistrictPathEnum;
 import com.yjtech.wisdom.tourism.common.utils.DateTimeUtil;
 import com.yjtech.wisdom.tourism.common.utils.JsonUtils;
-import com.yjtech.wisdom.tourism.common.utils.MathUtil;
 import com.yjtech.wisdom.tourism.decisionsupport.base.dto.LastMonthDto;
 import com.yjtech.wisdom.tourism.decisionsupport.base.dto.TargetDto;
 import com.yjtech.wisdom.tourism.decisionsupport.base.dto.WarnConfigDto;
@@ -19,13 +18,15 @@ import com.yjtech.wisdom.tourism.dto.MonthPassengerFlowDto;
 import com.yjtech.wisdom.tourism.integration.service.DistrictBigDataService;
 import com.yjtech.wisdom.tourism.service.DistrictTourService;
 import com.yjtech.wisdom.tourism.system.service.PlatformService;
+import com.yjtech.wisdom.tourism.system.service.SysConfigService;
 import com.yjtech.wisdom.tourism.system.vo.PlatformVO;
 import com.yjtech.wisdom.tourism.vo.PassengerFlowVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * 指标库基础查询方法
@@ -35,6 +36,11 @@ import java.util.List;
  */
 @Service
 public class TargetQueryService {
+
+    private static final String FIRST_STRING = "-01-01 00:00:00";
+    private static final String END_STRING = "-12-31 23:59:59";
+    private static final String PROVINCE_OUTSIDE_TYPE = "12";
+    private static final String DATA = "data";
 
     @Autowired
     private TargetLibraryMapper targetLibraryMapper;
@@ -50,6 +56,12 @@ public class TargetQueryService {
 
     @Autowired
     private DistrictTourService districtTourService;
+
+    @Autowired
+    private SysConfigService sysConfigService;
+
+    @Value("${tourist.configAreaCodeKey}")
+    private String configAreaCodeKey;
 
     /**
      * GET 指标列表查询
@@ -103,100 +115,71 @@ public class TargetQueryService {
     public String queryProvinceOutsideNumber () {
         String beginDate = DateTimeUtil.getCurrentLastMonthFirstDayStr();
         String endTime = DateTimeUtil.getCurrentLastMonthLastDayStr();
+
+        String areaCode = sysConfigService.selectConfigByKey(configAreaCodeKey);
+
         // 请求参数构造
         VisitNumberVo visitNumberVo = VisitNumberVo.builder()
                 .statisticsType(DecisionSupportConstants.PROVINCE_OUTSIDE_TYPE)
                 .beginDate(beginDate)
                 .endDate(endTime)
+                .adcode(areaCode)
                 .build();
         String result = districtBigDataService.requestDistrict(DistrictPathEnum.VISIT_NUMBER.getPath(),
                 visitNumberVo,
                 DistrictPathEnum.VISIT_NUMBER.getDesc());
-        return String.valueOf(JsonUtils.getValueByKey(result, "data"));
+        return String.valueOf(JsonUtils.getValueByKey(result, DATA));
     }
 
     /**
      * 省外客流环比数据查询
      */
     public String queryHbProvinceOutside () {
-        List<MonthPassengerFlowDto> yearPassengerFlowDto = districtTourService.queryYearPassengerFlow(
-                PassengerFlowVo.builder()
-                        .beginDate(DateTimeUtil.getCurrentYearStr() + "-01-01 00:00:00")
-                        .endDate(DateTimeUtil.getCurrentYearStr() + "-12-31 23:59:59")
-                        .statisticsType("12")
-                        .build());
+        PassengerFlowVo passengerFlowVo = new PassengerFlowVo();
+        passengerFlowVo.setStatisticsType(PROVINCE_OUTSIDE_TYPE);
+        passengerFlowVo.setBeginTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentYearStr() + FIRST_STRING));
+        passengerFlowVo.setEndTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentYearStr() + END_STRING));
+        passengerFlowVo.setType((byte)2);
+
+        List<MonthPassengerFlowDto> yearPassengerFlowDto = districtTourService.queryYearPassengerFlow(passengerFlowVo);
         // 上月 年月日期
         String currentLastMonthStr = DateTimeUtil.getCurrentLastMonthStr();
 
         // 环比
-        String hbScale = "-";
-
-        for (int i = 0; i < yearPassengerFlowDto.size(); i++) {
-            if (i == 0) {
-                continue;
+        AtomicReference<String> hbScale = new AtomicReference<>("-");
+        yearPassengerFlowDto.forEach(v -> {
+            if (currentLastMonthStr.equals(v.getDate())) {
+                hbScale.set(v.getHbScale());
             }
-            MonthPassengerFlowDto item = yearPassengerFlowDto.get(i);
+        });
 
-            if (currentLastMonthStr.equals(item.getDate())) {
-                // 上上月人数
-                Integer beforeNumber = yearPassengerFlowDto.get(i - 1).getNumber();
-                // 上月人数
-                Integer curNumber = item.getNumber();
-
-                if (0 != curNumber) {
-                    hbScale = MathUtil.divide(new BigDecimal(curNumber - beforeNumber), new BigDecimal(curNumber), 2).toString();
-                }
-            }
-        }
-
-        return hbScale;
+        return hbScale.get();
     }
 
     /**
      * 省外客流同比数据查询
      */
     public String queryTbProvinceOutside () {
-        List<MonthPassengerFlowDto> yearPassengerFlowDto = districtTourService.queryYearPassengerFlow(
-                PassengerFlowVo.builder()
-                        .beginDate(DateTimeUtil.getCurrentYearStr() + "-01-01 00:00:00")
-                        .endDate(DateTimeUtil.getCurrentYearStr() + "-12-31 23:59:59")
-                        .statisticsType("12")
-                        .build());
+
+        PassengerFlowVo passengerFlowVo = new PassengerFlowVo();
+        passengerFlowVo.setStatisticsType(PROVINCE_OUTSIDE_TYPE);
+        passengerFlowVo.setBeginTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentYearStr() + FIRST_STRING));
+        passengerFlowVo.setEndTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentYearStr() + END_STRING));
+        passengerFlowVo.setType((byte)2);
+        List<MonthPassengerFlowDto> yearPassengerFlowDto = districtTourService.queryYearPassengerFlow(passengerFlowVo);
 
         // 上月 年月日期
         String currentLastMonthStr = DateTimeUtil.getCurrentLastMonthStr();
 
-        // 上一年 上月 年月日期
-        String lastYearLastMonthStr = DateTimeUtil.getLastYearLastMonthStr();
-
-        // 同比
-        String tbScale = "-";
-
-        // 上月人数
-        Integer lastMonthNumber = 0;
-
-        // 去年 上月人数
-        Integer lastYearLastMonthNumber = 0;
-
-        for (int i = 0; i < yearPassengerFlowDto.size(); i++) {
-            if (i == 0) {
-                continue;
+        // 环比
+        AtomicReference<String> tbScale = new AtomicReference<>("-");
+        yearPassengerFlowDto.forEach(v -> {
+            if (currentLastMonthStr.equals(v.getDate())) {
+                tbScale.set(v.getTbScale());
             }
-            MonthPassengerFlowDto item = yearPassengerFlowDto.get(i);
+        });
 
-            if (currentLastMonthStr.equals(item.getDate())) {
-                lastMonthNumber = item.getNumber();
-            }
-            else if (lastYearLastMonthStr.equals(item.getDate())) {
-                lastYearLastMonthNumber = item.getNumber();
-            }
-        }
-
-        if (0 != lastMonthNumber) {
-            tbScale = MathUtil.divide(new BigDecimal(lastMonthNumber - lastYearLastMonthNumber), new BigDecimal(lastMonthNumber), 2).toString();
-        }
-
-        return tbScale;
+        return tbScale.get();
     }
 
 }

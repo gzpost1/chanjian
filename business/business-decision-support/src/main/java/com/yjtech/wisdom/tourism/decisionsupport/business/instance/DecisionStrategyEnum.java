@@ -1,9 +1,9 @@
-package com.yjtech.wisdom.tourism.decisionsupport.common.instance;
+package com.yjtech.wisdom.tourism.decisionsupport.business.instance;
 
 
 import com.yjtech.wisdom.tourism.common.exception.CustomException;
 import com.yjtech.wisdom.tourism.common.utils.SpringBeanUtils;
-import com.yjtech.wisdom.tourism.decisionsupport.common.impl.Demo;
+import com.yjtech.wisdom.tourism.decisionsupport.business.strategyimpl.ProvinceOutsideTourStrategyImpl;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -16,9 +16,14 @@ import lombok.extern.slf4j.Slf4j;
 public enum DecisionStrategyEnum {
 
     /**
-     * 测试
+     * 省外游客
      */
-    doSome(Demo.class),
+    PROVINCE_OUTSIDE_TOUR(ProvinceOutsideTourStrategyImpl.class),
+
+    /**
+     * 综合概况
+     */
+    COMPREHENSIVE(ProvinceOutsideTourStrategyImpl.class),
 
     ;
 
