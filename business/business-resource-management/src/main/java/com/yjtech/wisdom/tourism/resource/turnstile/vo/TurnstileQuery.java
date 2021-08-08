@@ -1,6 +1,6 @@
 package com.yjtech.wisdom.tourism.resource.turnstile.vo;
 
-import com.yjtech.wisdom.tourism.common.core.domain.PageQuery;
+import com.yjtech.wisdom.tourism.mybatis.entity.PageQuery;
 import lombok.Getter;
 import lombok.Setter;
 

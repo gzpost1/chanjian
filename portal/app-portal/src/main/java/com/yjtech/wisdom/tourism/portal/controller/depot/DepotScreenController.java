@@ -5,7 +5,7 @@ import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
 import com.yjtech.wisdom.tourism.common.bean.BaseValueVO;
 import com.yjtech.wisdom.tourism.common.constant.Constants;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
-import com.yjtech.wisdom.tourism.common.utils.AnalysisUtils;
+import com.yjtech.wisdom.tourism.mybatis.utils.AnalysisUtils;
 import com.yjtech.wisdom.tourism.resource.depot.entity.vo.DepotBaseVo;
 import com.yjtech.wisdom.tourism.resource.depot.entity.vo.DepotScreenUseVo;
 import com.yjtech.wisdom.tourism.resource.depot.entity.vo.DepotTrendVo;

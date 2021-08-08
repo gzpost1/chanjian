@@ -53,6 +53,16 @@ public class DecisionWarnEntity implements Serializable {
     private String warnNum;
 
     /**
+     * 报警类型-文本
+     */
+    private String alarmTypeText;
+
+    /**
+     * 报警类型
+     */
+    private Integer alarmType;
+
+    /**
      * 月环比
      */
     private String monthHbScale;

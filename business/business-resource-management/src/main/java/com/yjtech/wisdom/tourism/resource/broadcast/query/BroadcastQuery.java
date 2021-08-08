@@ -1,6 +1,6 @@
 package com.yjtech.wisdom.tourism.resource.broadcast.query;
 
-import com.yjtech.wisdom.tourism.common.core.domain.PageQuery;
+import com.yjtech.wisdom.tourism.mybatis.entity.PageQuery;
 import lombok.Data;
 
 import java.util.List;
@@ -18,7 +18,7 @@ public class BroadcastQuery extends PageQuery {
         BroadcastQuery query = new BroadcastQuery();
         query.setPageNo(Long.valueOf(page));
         query.setPageSize(Long.valueOf(pageSize));
-        query.setOrderBy(orderBy);
+        query.setDescs(new String[]{orderBy});
         query.setBroadcastIds(broadcastIds);
         return query;
     }

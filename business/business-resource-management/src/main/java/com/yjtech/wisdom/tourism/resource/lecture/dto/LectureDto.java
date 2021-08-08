@@ -49,9 +49,14 @@ public class LectureDto implements Serializable {
     private String dictName;
 
     /**
-     * 关联场馆名称
+     * 关联场馆ID
      */
     private String venueId;
+
+    /**
+     * 关联场馆名称
+     */
+    private String venueName;
 
     /**
      * 开放日期-开始日期

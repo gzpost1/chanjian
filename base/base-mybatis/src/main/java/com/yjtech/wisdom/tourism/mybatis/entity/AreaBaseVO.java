@@ -1,6 +1,5 @@
-package com.yjtech.wisdom.tourism.common.bean;
+package com.yjtech.wisdom.tourism.mybatis.entity;
 
-import com.yjtech.wisdom.tourism.common.core.domain.PageQuery;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
