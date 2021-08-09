@@ -32,7 +32,7 @@ public class VenueVo extends PageQuery implements Serializable {
     /**
      * 场馆类型_通过字典管理配置
      */
-    private String venueType;
+    private String venueType = "venue_type";
 
     /**
      * 场馆类型的值_通过字典管理配置
@@ -93,5 +93,10 @@ public class VenueVo extends PageQuery implements Serializable {
      * 简介
      */
     private String introduction;
+
+    /**
+     * 起停用状态
+     */
+    private Byte status;
 
 }
