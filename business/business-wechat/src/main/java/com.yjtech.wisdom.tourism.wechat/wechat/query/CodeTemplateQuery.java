@@ -1,7 +1,7 @@
 package com.yjtech.wisdom.tourism.wechat.wechat.query;
 
-import com.yjtech.wisdom.tourism.common.core.domain.PageQuery;
 import com.yjtech.wisdom.tourism.common.validator.EnumValue;
+import com.yjtech.wisdom.tourism.mybatis.entity.PageQuery;
 import lombok.Data;
 
 /**

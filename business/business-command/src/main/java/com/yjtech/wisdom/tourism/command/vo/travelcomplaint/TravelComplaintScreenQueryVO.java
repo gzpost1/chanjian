@@ -1,6 +1,6 @@
 package com.yjtech.wisdom.tourism.command.vo.travelcomplaint;
 
-import com.yjtech.wisdom.tourism.common.bean.TimeBaseQuery;
+import com.yjtech.wisdom.tourism.mybatis.entity.TimeBaseQuery;
 import lombok.Data;
 import org.hibernate.validator.constraints.Range;
 

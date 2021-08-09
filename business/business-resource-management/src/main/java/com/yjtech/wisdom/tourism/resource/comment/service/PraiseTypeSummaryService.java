@@ -5,17 +5,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
-import com.yjtech.wisdom.tourism.common.core.domain.PageQuery;
 import com.yjtech.wisdom.tourism.common.utils.DateTimeUtil;
 import com.yjtech.wisdom.tourism.common.utils.MathUtil;
-import com.yjtech.wisdom.tourism.extension.Extension;
-import com.yjtech.wisdom.tourism.extension.ExtensionConstant;
+import com.yjtech.wisdom.tourism.mybatis.entity.PageQuery;
 import com.yjtech.wisdom.tourism.resource.comment.dto.screen.CommentDayForCommentDate;
 import com.yjtech.wisdom.tourism.resource.comment.dto.screen.CommentMonthForCommentDate;
 import com.yjtech.wisdom.tourism.resource.comment.dto.screen.ScreenCommentTotalDto;
 import com.yjtech.wisdom.tourism.resource.comment.entity.PraiseTypeSummaryEntity;
-import com.yjtech.wisdom.tourism.resource.comment.extensionpoint.PraiseExtensionConstant;
-import com.yjtech.wisdom.tourism.resource.comment.extensionpoint.PraiseQryExtPt;
 import com.yjtech.wisdom.tourism.resource.comment.mapper.PraiseTypeSummaryMapper;
 import org.springframework.stereotype.Service;
 

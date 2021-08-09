@@ -472,6 +472,15 @@ public class DateTimeUtil {
     return localDateTime.format(formatter);
   }
 
-
+  /**
+   * "yyyy-MM-dd HH:mm:ss" 转 LocalDateTime
+   *
+   * @return
+   */
+  public static LocalDateTime getLocalDateTime(String timeStr) {
+    DateTimeFormatter df = DateTimeFormatter.ofPattern(_default_datetime_format);
+    LocalDateTime ldt = LocalDateTime.parse(timeStr,df);
+    return ldt;
+  }
 
 }

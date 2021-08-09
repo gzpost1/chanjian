@@ -1,9 +1,7 @@
 package com.yjtech.wisdom.tourism.systemconfig.chart.dto;
 
-import com.yjtech.wisdom.tourism.common.core.domain.PageQuery;
+import com.yjtech.wisdom.tourism.mybatis.entity.PageQuery;
 import lombok.Data;
-
-import javax.validation.constraints.NotBlank;
 
 /**
  * @author 李波

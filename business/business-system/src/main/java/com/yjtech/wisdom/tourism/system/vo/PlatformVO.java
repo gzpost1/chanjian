@@ -4,6 +4,7 @@ import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 
 /**
@@ -57,11 +58,13 @@ public class PlatformVO implements Serializable {
      * 中心点经度
      */
     @NotBlank(message = "中心点经度不能为空")
+    @Pattern(regexp = "^[\\-\\+]?(0?\\d{1,2}\\.\\d{1,6}|1[0-7]?\\d\\.\\d{1,6}|180\\.0{1,6})$", message = "请输入正确的经度")
     private String longitude;
 
     /**
      * 中心点纬度
      */
     @NotBlank(message = "中心点纬度不能为空")
+    @Pattern(regexp = "^[\\-\\+]?([0-8]?\\d\\.\\d{1,6}|90\\.0{1,6})$", message = "请输入正确的纬度")
     private String latitude;
 }

@@ -8,26 +8,21 @@ import com.yjtech.wisdom.tourism.command.entity.event.EventEntity;
 import com.yjtech.wisdom.tourism.command.entity.plan.EmergencyPlanEntity;
 import com.yjtech.wisdom.tourism.command.extensionpoint.EventExtensionConstant;
 import com.yjtech.wisdom.tourism.command.extensionpoint.EventQryExtPt;
-import com.yjtech.wisdom.tourism.command.query.event.EventCommonQuery;
 import com.yjtech.wisdom.tourism.command.query.event.EventQuery;
 import com.yjtech.wisdom.tourism.command.query.event.EventSumaryQuery;
 import com.yjtech.wisdom.tourism.command.service.event.EventService;
 import com.yjtech.wisdom.tourism.command.service.plan.EmergencyPlanService;
 import com.yjtech.wisdom.tourism.command.vo.event.AppEmergencyPlanVO;
 import com.yjtech.wisdom.tourism.command.vo.event.AppEventDetail;
-import com.yjtech.wisdom.tourism.command.vo.event.EventTrendVO;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
 import com.yjtech.wisdom.tourism.common.bean.BaseValueVO;
 import com.yjtech.wisdom.tourism.common.constant.EventContants;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
-import com.yjtech.wisdom.tourism.common.exception.CustomException;
-import com.yjtech.wisdom.tourism.common.utils.AnalysisUtils;
 import com.yjtech.wisdom.tourism.common.utils.AssertUtil;
 import com.yjtech.wisdom.tourism.common.utils.IdParam;
 import com.yjtech.wisdom.tourism.extension.BizScenario;
 import com.yjtech.wisdom.tourism.extension.ExtensionConstant;
 import com.yjtech.wisdom.tourism.extension.ExtensionExecutor;
-import com.yjtech.wisdom.tourism.infrastructure.utils.SecurityUtils;
 import com.yjtech.wisdom.tourism.system.domain.IconSpotEnum;
 import com.yjtech.wisdom.tourism.system.service.IconService;
 import org.springframework.beans.BeanUtils;
@@ -41,8 +36,6 @@ import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Objects;
-
-import static com.yjtech.wisdom.tourism.common.exception.ErrorCode.EVENT_NOT_EXIST;
 
 /**
  * 应急事件  大屏

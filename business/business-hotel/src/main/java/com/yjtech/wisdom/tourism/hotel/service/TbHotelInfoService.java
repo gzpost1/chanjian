@@ -2,14 +2,15 @@ package com.yjtech.wisdom.tourism.hotel.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yjtech.wisdom.tourism.common.utils.bean.BeanMapper;
+import com.yjtech.wisdom.tourism.hotel.dto.HotelScreenDetailDTO;
 import com.yjtech.wisdom.tourism.hotel.entity.TbHotelInfoEntity;
 import com.yjtech.wisdom.tourism.hotel.mapper.TbHotelInfoMapper;
+import com.yjtech.wisdom.tourism.hotel.vo.HotelScreenQueryVO;
 import com.yjtech.wisdom.tourism.hotel.vo.StaticNumVo;
 import com.yjtech.wisdom.tourism.mybatis.base.BaseMybatisServiceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
 import java.util.Arrays;
 import java.util.List;
 
@@ -24,8 +25,6 @@ import java.util.List;
 @Service
 public class TbHotelInfoService extends BaseMybatisServiceImpl<TbHotelInfoMapper, TbHotelInfoEntity> {
 
-    @Resource
-    private TbHotelInfoMapper tbHotelInfoMapper;
 
     @Transactional(readOnly = true)
     public Page<TbHotelInfoEntity> apiPage(com.yjtech.wisdom.tourism.hotel.dto.TbHotelInfoEntityParam param) {
@@ -48,6 +47,15 @@ public class TbHotelInfoService extends BaseMybatisServiceImpl<TbHotelInfoMapper
 
     public List<StaticNumVo> staticNum(String areaCode) {
         return baseMapper.staticNum(areaCode);
+    }
+
+    /**
+     * 查询大屏分页
+     * @param params
+     * @return
+     */
+    public List<HotelScreenDetailDTO> queryScreenPage(HotelScreenQueryVO params) {
+        return baseMapper.queryScreenPage(params);
     }
 
 }
