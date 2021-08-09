@@ -1,6 +1,6 @@
 package com.yjtech.wisdom.tourism.systemconfig.temp.dto;
 
-import com.yjtech.wisdom.tourism.common.core.domain.PageQuery;
+import com.yjtech.wisdom.tourism.mybatis.entity.PageQuery;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

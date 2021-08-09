@@ -1,11 +1,12 @@
 package com.yjtech.wisdom.tourism.resource.lecture.vo;
 
-import com.yjtech.wisdom.tourism.common.core.domain.PageQuery;
+import com.yjtech.wisdom.tourism.mybatis.entity.PageQuery;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**
@@ -25,5 +26,6 @@ public class LecturePageByVenueIdVo extends PageQuery implements Serializable {
     /**
      * 场馆id
      */
+    @NotNull
     private Long venueId;
 }

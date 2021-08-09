@@ -50,20 +50,12 @@ import java.util.stream.Collectors;
 public class EventService extends ServiceImpl<EventMapper, EventEntity> {
 
 
-    public List<BaseVO> queryEventQuantity(){
+    public List<BaseVO> queryEventQuantity(EventSumaryQuery query){
         ArrayList<BaseVO> result = Lists.newArrayList();
-        LocalDate now = LocalDate.now();
-        EventSumaryQuery monthQuery = new EventSumaryQuery();
-        monthQuery.setBeginTime( LocalDateTime.of(now.with(TemporalAdjusters.firstDayOfMonth()), LocalTime.MIN));
-        monthQuery.setEndTime( LocalDateTime.of(now, LocalTime.MAX));
-        Integer month = this.getBaseMapper().queryQuantity(monthQuery);
-        result.add(BaseVO.builder().name("month").value(String.valueOf(month)).build());
 
-        EventSumaryQuery yearQuery = new EventSumaryQuery();
-        yearQuery.setBeginTime( LocalDateTime.of(now.with(TemporalAdjusters.firstDayOfYear()), LocalTime.MIN));
-        yearQuery.setEndTime( LocalDateTime.of(now, LocalTime.MAX));
-        Integer year = this.getBaseMapper().queryQuantity(yearQuery);
-        result.add(BaseVO.builder().name("year").value(String.valueOf(year)).build());
+        EventSumaryQuery totalQuery = new EventSumaryQuery();
+        Integer total = this.getBaseMapper().queryQuantity(totalQuery);
+        result.add(BaseVO.builder().name("total").value(String.valueOf(total)).build());
 
         EventSumaryQuery statusQuery = new EventSumaryQuery();
         statusQuery.setEventStatus(EventContants.UNTREATED);
@@ -71,7 +63,7 @@ public class EventService extends ServiceImpl<EventMapper, EventEntity> {
 
         statusQuery.setEventStatus(EventContants.PROCESSED);
         Integer processed = this.getBaseMapper().queryQuantityByStatus(statusQuery);
-        BigDecimal sum = new BigDecimal(String.valueOf(untreated + processed));
+        BigDecimal sum = new BigDecimal(String.valueOf(total));
 
         double untreatedRate = sum.compareTo(BigDecimal.ZERO) == 0 ? 0D : MathUtil.calPercent(new BigDecimal(String.valueOf(untreated)), sum, 3).doubleValue();
         result.add(BasePercentVO.builder().name("untreated").value(String.valueOf(untreated))
@@ -226,6 +218,10 @@ public class EventService extends ServiceImpl<EventMapper, EventEntity> {
             list.stream().map(vo -> {
                 SysUser sysUser = longSysUserMap.get(vo.getCreateUser());
                 vo.setCreateUserName(Objects.isNull(sysUser) ? null : sysUser.getNickName());
+
+                SysUser actualHandlePersonnel = longSysUserMap.get(vo.getActualHandlePersonnel());
+                vo.setActualHandlePersonnelName(Objects.isNull(actualHandlePersonnel) ? null : actualHandlePersonnel.getNickName());
+
                 ArrayList<String> userName = Lists.newArrayList();
                 if(CollectionUtils.isNotEmpty(vo.getAppointHandlePersonnel())){
                     for(String userId : vo.getAppointHandlePersonnel()){

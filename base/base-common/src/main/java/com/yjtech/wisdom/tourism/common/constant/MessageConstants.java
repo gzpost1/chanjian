@@ -9,6 +9,17 @@ package com.yjtech.wisdom.tourism.common.constant;
 public class MessageConstants {
 
     /**
+     * 查询类型_全部
+     */
+    public final static Integer QUERY_ALL = 0;
+
+    /**
+     * 查询类型_待指派、处理
+     */
+    public final static Integer QUERY_DEAL = 1;
+
+
+    /**
      * 事件类型_旅游投诉
      */
     public final static Byte EVENT_TYPE_TOUR = 0;
@@ -17,6 +28,8 @@ public class MessageConstants {
      * 事件类型_应急事件
      */
     public final static Byte EVENT_TYPE_EMERGENCY = 1;
+
+
 
     /**
      * 事件状态_待指派
@@ -44,6 +57,15 @@ public class MessageConstants {
      */
     public final static String event_content = "事件名称：%s";
 
+    /**
+     * 消息记录缓存key
+     */
+    public final static String MESSAGE_RECORD_NUM = "MESSAGE_RECORD_NUM_";
+
+     /**
+     * 消息列表查询类型_全部
+     */
+    public final static int MESSAGE_LIST_ALL = 0;
 
 
 

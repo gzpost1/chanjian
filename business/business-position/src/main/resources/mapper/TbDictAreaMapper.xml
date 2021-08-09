@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjtech.wisdom.tourism.position.mapper.TbDictAreaMapper">
+
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.yjtech.wisdom.tourism.position.entity.TbDictAreaEntity">
+        <id column="code" property="code" />
+        <result column="name" property="name" />
+        <result column="province_code" property="provinceCode" />
+        <result column="province_name" property="provinceName" />
+        <result column="city_code" property="cityCode" />
+        <result column="city_name" property="cityName" />
+        <result column="county_code" property="countyCode" />
+        <result column="county_name" property="countyName" />
+        <result column="town_code" property="townCode" />
+        <result column="town_name" property="townName" />
+        <result column="village_code" property="villageCode" />
+        <result column="village_name" property="villageName" />
+        <result column="type" property="type" />
+        <result column="parent_code" property="parentCode" />
+        <result column="level" property="level" />
+        <result column="address" property="address" />
+        <result column="address_comma" property="addressComma" />
+        <result column="longitude" property="longitude" />
+        <result column="latitude" property="latitude" />
+    </resultMap>
+
+<select id="list" resultMap="BaseResultMap" parameterType="com.yjtech.wisdom.tourism.position.entity.TbDictAreaEntity" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_dict_area
+    <where>
+      <include refid="dynamic_where" />
+  </where>
+</select>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        code, name, province_code, province_name, city_code, city_name, county_code, county_name, town_code, town_name, village_code, village_name, type, parent_code, level, address, address_comma, longitude, latitude
+    </sql>
+
+<sql id="dynamic_where">
+    <if test="params!=null">
+    <if test=" params.code != null" >
+             and name like CONCAT('%','${params.code}','%' )
+    </if>
+    <if test=" params.name != null" >
+             and name like CONCAT('%','${params.name}','%' )
+    </if>
+    <if test=" params.provinceCode != null" >
+             and name like CONCAT('%','${params.provinceCode}','%' )
+    </if>
+    <if test=" params.provinceName != null" >
+             and name like CONCAT('%','${params.provinceName}','%' )
+    </if>
+    <if test=" params.cityCode != null" >
+             and name like CONCAT('%','${params.cityCode}','%' )
+    </if>
+    <if test=" params.cityName != null" >
+             and name like CONCAT('%','${params.cityName}','%' )
+    </if>
+    <if test=" params.countyCode != null" >
+             and name like CONCAT('%','${params.countyCode}','%' )
+    </if>
+    <if test=" params.countyName != null" >
+             and name like CONCAT('%','${params.countyName}','%' )
+    </if>
+    <if test=" params.townCode != null" >
+             and name like CONCAT('%','${params.townCode}','%' )
+    </if>
+    <if test=" params.townName != null" >
+             and name like CONCAT('%','${params.townName}','%' )
+    </if>
+    <if test=" params.villageCode != null" >
+             and name like CONCAT('%','${params.villageCode}','%' )
+    </if>
+    <if test=" params.villageName != null" >
+             and name like CONCAT('%','${params.villageName}','%' )
+    </if>
+    <if test=" params.type != null" >
+             and name like CONCAT('%','${params.type}','%' )
+    </if>
+    <if test=" params.parentCode != null" >
+             and name like CONCAT('%','${params.parentCode}','%' )
+    </if>
+    <if test=" params.level != null" >
+             and  level = #{params.level}
+    </if>
+    <if test=" params.address != null" >
+             and name like CONCAT('%','${params.address}','%' )
+    </if>
+    <if test=" params.addressComma != null" >
+             and name like CONCAT('%','${params.addressComma}','%' )
+    </if>
+    <if test=" params.longitude != null" >
+             and  longitude = #{params.longitude}
+    </if>
+    <if test=" params.latitude != null" >
+             and  latitude = #{params.latitude}
+    </if>
+    </if>
+</sql>
+
+</mapper>

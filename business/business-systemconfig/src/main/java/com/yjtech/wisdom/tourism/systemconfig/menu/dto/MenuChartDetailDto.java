@@ -40,4 +40,5 @@ public class MenuChartDetailDto implements Serializable {
      */
     @NotEmpty(message = "点位坐标不能为空")
     private List<Integer> pointDatas;
+
 }

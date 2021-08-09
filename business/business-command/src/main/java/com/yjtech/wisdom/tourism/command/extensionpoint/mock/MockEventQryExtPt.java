@@ -5,6 +5,7 @@ import com.yjtech.wisdom.tourism.command.extensionpoint.EventQryExtPt;
 import com.yjtech.wisdom.tourism.command.query.event.EventSumaryQuery;
 import com.yjtech.wisdom.tourism.command.vo.event.EventTrendVO;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
+import com.yjtech.wisdom.tourism.common.bean.BaseValueVO;
 import com.yjtech.wisdom.tourism.extension.Extension;
 import com.yjtech.wisdom.tourism.extension.ExtensionConstant;
 
@@ -21,12 +22,12 @@ import java.util.List;
 public class MockEventQryExtPt implements EventQryExtPt {
 
     @Override
-    public List<BaseVO> queryEventQuantity() {
+    public List<BaseVO> queryEventQuantity(EventSumaryQuery query) {
         return null;
     }
 
     @Override
-    public List<EventTrendVO> querySaleTrend(EventSumaryQuery query) {
+    public List<BaseValueVO> querySaleTrend(EventSumaryQuery query) {
         return null;
     }
 

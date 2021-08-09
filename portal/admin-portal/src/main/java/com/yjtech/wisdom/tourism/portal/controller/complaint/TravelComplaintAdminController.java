@@ -49,6 +49,7 @@ public class TravelComplaintAdminController {
     public JsonResult create(@RequestBody @Valid TravelComplaintCreateVO vo) {
         //校验投诉类型
         travelComplaintService.checkType(vo.getComplaintType(), vo.getComplaintObject(), vo.getObjectId());
+
         return JsonResult.success(travelComplaintService.create(vo));
     }
 

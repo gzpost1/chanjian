@@ -1,9 +1,7 @@
 package com.yjtech.wisdom.tourism.systemconfig.chart.dto;
 
-import com.yjtech.wisdom.tourism.common.core.domain.PageQuery;
+import com.yjtech.wisdom.tourism.mybatis.entity.PageQuery;
 import lombok.Data;
-
-import javax.validation.constraints.NotBlank;
 
 /**
  * @author 李波
@@ -18,13 +16,12 @@ public class SystemConfigChartQueryPageDto extends PageQuery {
     private String chartName;
 
     /**
-     * 大屏菜单类型名称
+     * 页面类型名称
      */
     private String menuName;
 
     /**
-     * 大屏菜单类型
+     * 页面类型
      */
-    @NotBlank(message = "大屏菜单类型不能为空")
     private String menuType;
 }

@@ -2,8 +2,12 @@ package com.yjtech.wisdom.tourism.integration.service;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.google.common.collect.Lists;
+import com.yjtech.wisdom.tourism.common.bean.AnalysisBaseInfo;
+import com.yjtech.wisdom.tourism.common.bean.AnalysisMonthChartInfo;
 import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
 import com.yjtech.wisdom.tourism.common.constant.ProductTypeConstant;
+import com.yjtech.wisdom.tourism.mybatis.utils.AnalysisUtils;
+import com.yjtech.wisdom.tourism.common.utils.DateUtils;
 import com.yjtech.wisdom.tourism.integration.mapper.FxDistApiMapper;
 import com.yjtech.wisdom.tourism.integration.pojo.bo.fxdist.FxDistAreaSaleListBO;
 import com.yjtech.wisdom.tourism.integration.pojo.bo.fxdist.FxDistOrderStatisticsBO;
@@ -185,6 +189,40 @@ public class FxDistApiService {
         });
 
         return scenicSaleList;
+    }
+
+    /**
+     * 查询订单量趋势、同比、环比
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public List<AnalysisBaseInfo> queryOrderAnalysis(FxDistQueryVO vo){
+        //初始化当年月份信息
+        List<String> monthMarkList = DateUtils.getEveryMonthOfCurrentYear();
+
+        //获取当前年度月趋势信息
+        List<AnalysisMonthChartInfo> currentAnalysisMonthInfo = fxDistApiMapper.queryOrderCurrentAnalysisMonthInfo(vo);
+        //获取去年度月趋势信息
+        List<AnalysisMonthChartInfo> lastAnalysisMonthInfo = fxDistApiMapper.queryOrderLastAnalysisMonthInfo(vo);
+
+        return AnalysisUtils.buildAnalysisInfo(monthMarkList, currentAnalysisMonthInfo, lastAnalysisMonthInfo);
+    }
+
+    /**
+     * 查询订单总额趋势、同比、环比
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public List<AnalysisBaseInfo> queryOrderSumAnalysis(FxDistQueryVO vo){
+        //初始化当年月份信息
+        List<String> monthMarkList = DateUtils.getEveryMonthOfCurrentYear();
+
+        //获取当前年度月趋势信息
+        List<AnalysisMonthChartInfo> currentAnalysisMonthInfo = fxDistApiMapper.queryOrderSumCurrentAnalysisMonthInfo(vo);
+        //获取去年度月趋势信息
+        List<AnalysisMonthChartInfo> lastAnalysisMonthInfo = fxDistApiMapper.queryOrderSumLastAnalysisMonthInfo(vo);
+
+        return AnalysisUtils.buildAnalysisInfo(monthMarkList, currentAnalysisMonthInfo, lastAnalysisMonthInfo);
     }
 
 }

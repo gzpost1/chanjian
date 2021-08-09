@@ -8,9 +8,7 @@ import com.yjtech.wisdom.tourism.mybatis.typehandler.JsonTypeHandler;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -112,6 +110,13 @@ public class EventEntity extends BaseEntity {
      */
     private Long actualHandlePersonnel;
 
+
+    /**
+     * 实际处理人员名称
+     */
+    @TableField(exist = false)
+    private String actualHandlePersonnelName;
+
     /**
      * 预案id
      */
@@ -132,12 +137,6 @@ public class EventEntity extends BaseEntity {
      * 处理单位
      */
     private String handleDepartment;
-
-
-    /**
-     * 处理人员
-     */
-    private String handlePersonnel;
 
 
     /**

@@ -3,6 +3,7 @@ package com.yjtech.wisdom.tourism.command.extensionpoint;
 import com.yjtech.wisdom.tourism.command.query.event.EventSumaryQuery;
 import com.yjtech.wisdom.tourism.command.vo.event.EventTrendVO;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
+import com.yjtech.wisdom.tourism.common.bean.BaseValueVO;
 import com.yjtech.wisdom.tourism.extension.ExtensionPointI;
 
 import java.util.List;
@@ -17,9 +18,9 @@ public interface EventQryExtPt extends ExtensionPointI {
      * 应急事件统计
      * @return
      */
-     List<BaseVO> queryEventQuantity();
+     List<BaseVO> queryEventQuantity(EventSumaryQuery query);
 
-    List<EventTrendVO> querySaleTrend(EventSumaryQuery query);
+    List<BaseValueVO> querySaleTrend(EventSumaryQuery query);
 
     List<BaseVO> queryEventType(EventSumaryQuery query);
 

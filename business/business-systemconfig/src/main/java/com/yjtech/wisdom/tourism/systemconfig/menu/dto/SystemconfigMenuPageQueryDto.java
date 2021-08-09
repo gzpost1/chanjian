@@ -1,6 +1,6 @@
 package com.yjtech.wisdom.tourism.systemconfig.menu.dto;
 
-import com.yjtech.wisdom.tourism.common.core.domain.PageQuery;
+import com.yjtech.wisdom.tourism.mybatis.entity.PageQuery;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,22 +14,14 @@ import lombok.NoArgsConstructor;
 public class SystemconfigMenuPageQueryDto extends PageQuery {
 
     /**
-     * name 大屏显示名称
+     * name 页面名称
      */
     private String name;
 
     /**
-     * menu_type 大屏菜单类型
-     */
-    private String menuName;
-
-    /**
-     * temp_id 模板名称
+     * temp_id 图表类型
      */
     private String tempName;
 
-    /**
-     * is_show 是否展示(0:否,1:是)
-     */
-    private String isShow;
+
 }

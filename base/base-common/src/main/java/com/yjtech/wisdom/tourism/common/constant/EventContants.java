@@ -35,6 +35,11 @@ public class EventContants {
     public static  final  String EVENT_SOURCE = "event_source";
 
     /**
+     * 音频会议过期时间
+     */
+    public static  final  String AUDIO_MEETING_EXPIRE = "audio_meeting_expire";
+
+    /**
      * 未指派
      */
     public static final String UNASSIGNED = "0";
@@ -130,7 +135,6 @@ public class EventContants {
      * App上报
      */
     public static final String APP_SOURCE = "3";
-
 
 
 

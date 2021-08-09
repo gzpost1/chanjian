@@ -1,12 +1,10 @@
 package com.yjtech.wisdom.tourism.portal.controller.command;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.yjtech.wisdom.tourism.command.dto.event.EventAppointCreateDto;
 import com.yjtech.wisdom.tourism.command.dto.event.EventAppointUpdateDto;
 import com.yjtech.wisdom.tourism.command.entity.event.EventAppointEntity;
 import com.yjtech.wisdom.tourism.command.service.event.EventAppointService;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
-import com.yjtech.wisdom.tourism.common.utils.AssertUtil;
 import com.yjtech.wisdom.tourism.common.utils.bean.BeanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -54,33 +52,17 @@ public class EventAppointController {
 
 
     /**
-     * 新增
+     * 新增或更新
      *
      * @param createDto
      * @return
      */
     @PreAuthorize("@ss.hasPermi('direct:event:set')")
     @PostMapping("/create")
-    public JsonResult create(@RequestBody @Valid EventAppointCreateDto createDto) {
-        AssertUtil.isFalse(eventAppointService.count() > 0,"数据已存在");
+    public JsonResult create(@RequestBody @Valid EventAppointUpdateDto createDto) {
         EventAppointEntity entity = BeanMapper.map(createDto, EventAppointEntity.class);
-        eventAppointService.save(entity);
+        eventAppointService.saveOrUpdate(entity);
         return JsonResult.ok();
     }
-
-    /**
-     * 更新
-     *
-     * @param updateDto
-     * @return
-     */
-    @PreAuthorize("@ss.hasPermi('direct:event:set')")
-    @PostMapping("/update")
-    public JsonResult update(@RequestBody @Valid EventAppointUpdateDto updateDto) {
-        EventAppointEntity entity = BeanMapper.map(updateDto, EventAppointEntity.class);
-        eventAppointService.updateById(entity);
-        return JsonResult.ok();
-    }
-
 
 }

@@ -24,4 +24,6 @@ public interface SystemconfigChartsMapper extends BaseMapper<SystemconfigChartsE
     List<SystemconfigChartsVo> queryChartListForMenu(@Param("params") MenuChartQueryDto queryDto);
 
     Integer findChartMenusNum(Long id);
+
+    Integer findMenuIsExistChart(Long id);
 }

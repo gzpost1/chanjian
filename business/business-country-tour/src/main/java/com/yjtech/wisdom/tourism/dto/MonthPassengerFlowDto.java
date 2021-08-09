@@ -1,5 +1,6 @@
 package com.yjtech.wisdom.tourism.dto;
 
+import com.yjtech.wisdom.tourism.common.bean.BaseSaleTrendVO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,7 +18,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
-public class MonthPassengerFlowDto implements Serializable {
+public class MonthPassengerFlowDto extends BaseSaleTrendVO implements Serializable {
 
     private static final long serialVersionUID = 5819501213621321635L;
 
@@ -32,12 +33,22 @@ public class MonthPassengerFlowDto implements Serializable {
     private Integer number;
 
     /**
-     * 前一日
+     * 同比数量
+     */
+    private int tbNumber;
+
+    /**
+     * 同比日期
+     */
+    private String tbDate;
+
+    /**
+     * 环比比例
      */
     private String hbScale;
 
     /**
-     * 去年今天
+     * 同比比例
      */
     private String tbScale;
 }

@@ -1,5 +1,7 @@
 package com.yjtech.wisdom.tourism.command.service.travelcomplaint;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -7,18 +9,18 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yjtech.wisdom.tourism.command.dto.travelcomplaint.TravelComplaintDTO;
 import com.yjtech.wisdom.tourism.command.dto.travelcomplaint.TravelComplaintListDTO;
+import com.yjtech.wisdom.tourism.command.dto.travelcomplaint.TravelComplaintStatusStatisticsDTO;
 import com.yjtech.wisdom.tourism.command.entity.travelcomplaint.TravelComplaintEntity;
 import com.yjtech.wisdom.tourism.command.mapper.travelcomplaint.TravelComplaintMapper;
-import com.yjtech.wisdom.tourism.command.vo.travelcomplaint.TravelComplaintCreateVO;
-import com.yjtech.wisdom.tourism.command.vo.travelcomplaint.TravelComplaintDealVO;
-import com.yjtech.wisdom.tourism.command.vo.travelcomplaint.TravelComplaintQueryVO;
-import com.yjtech.wisdom.tourism.command.vo.travelcomplaint.TravelComplaintUpdateVO;
-import com.yjtech.wisdom.tourism.common.bean.AssignUserInfo;
-import com.yjtech.wisdom.tourism.common.bean.DealUserInfo;
+import com.yjtech.wisdom.tourism.command.vo.travelcomplaint.*;
+import com.yjtech.wisdom.tourism.common.bean.*;
 import com.yjtech.wisdom.tourism.common.constant.CacheKeyContants;
+import com.yjtech.wisdom.tourism.common.constant.Constants;
 import com.yjtech.wisdom.tourism.common.core.domain.StatusParam;
 import com.yjtech.wisdom.tourism.common.enums.TravelComplaintStatusEnum;
 import com.yjtech.wisdom.tourism.common.enums.TravelComplaintTypeEnum;
+import com.yjtech.wisdom.tourism.mybatis.utils.AnalysisUtils;
+import com.yjtech.wisdom.tourism.common.utils.DateUtils;
 import com.yjtech.wisdom.tourism.common.utils.StringUtils;
 import com.yjtech.wisdom.tourism.common.utils.bean.BeanUtils;
 import com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysUser;
@@ -44,9 +46,10 @@ import java.util.Objects;
 public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, TravelComplaintEntity> {
 
     @Autowired
-    private SysUserService sysUserService;
-    @Autowired
     private RedisCache redisCache;
+    @Autowired
+    private SysUserService sysUserService;
+
 
     /**
      * 新增
@@ -59,14 +62,7 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
         TravelComplaintEntity entity = new TravelComplaintEntity();
         entity.build(vo);
 
-        int result = baseMapper.insert(entity);
-        if(result > 0){
-            //获取指派人信息
-            AssignUserInfo assignUserInfo = redisCache.getCacheObject(CacheKeyContants.KEY_ASSIGN_TRAVEL_COMPLAINT);
-            //todo：向指派人发送消息
-        }
-
-        return result;
+        return baseMapper.insert(entity);
     }
 
     /**
@@ -178,7 +174,7 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
         Assert.isTrue(complaintEntity.getAssignAcceptUserId().contains(sysUser.getUserId().toString()), "处理旅游投诉失败：当前用户无权限");
 
         LambdaUpdateWrapper<TravelComplaintEntity> updateWrapper = new UpdateWrapper<TravelComplaintEntity>().lambda()
-                .set(TravelComplaintEntity::getAcceptUserId, vo.getAcceptUserId())
+                .set(TravelComplaintEntity::getAcceptUserId, sysUser.getUserId())
                 .set(TravelComplaintEntity::getAcceptOrganization, vo.getAcceptOrganization())
                 .set(TravelComplaintEntity::getAcceptTime, vo.getAcceptTime())
                 .set(TravelComplaintEntity::getAcceptResult, vo.getAcceptResult());
@@ -190,6 +186,16 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
         }
 
         return result;
+    }
+
+    /**
+     * 查询状态统计
+     * @param vo
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public TravelComplaintStatusStatisticsDTO queryStatusStatistics(TravelComplaintQueryVO vo) {
+        return baseMapper.queryStatusStatistics(vo);
     }
 
     /**
@@ -228,6 +234,69 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
                     "新增旅游投诉失败：投诉对象或投诉对象id不能空");
         }
     }
+
+
+
+    /** ******************** 大屏 ******************** */
+
+    /**
+     * 查询旅游投诉总量
+     * @param vo
+     * @return
+     */
+    public Integer queryTravelComplaintTotal(TravelComplaintScreenQueryVO vo){
+        LambdaQueryWrapper<TravelComplaintEntity> queryWrapper = new QueryWrapper<TravelComplaintEntity>().lambda()
+                .eq(TravelComplaintEntity::getEquipStatus, Objects.isNull(vo.getEquipStatus()) ? Constants.STATUS_NEGATIVE : vo.getEquipStatus())
+                .between(Objects.nonNull(vo.getBeginTime()) && Objects.nonNull(vo.getEndTime()), TravelComplaintEntity::getCreateTime, vo.getBeginTime(), vo.getEndTime())
+                ;
+
+        return baseMapper.selectCount(queryWrapper);
+    }
+
+    /**
+     * 查询旅游投诉类型分布
+     * @param vo
+     * @return
+     */
+    public List<BasePercentVO> queryComplaintTypeDistribution(TravelComplaintScreenQueryVO vo){
+        return baseMapper.queryComplaintTypeDistribution(vo);
+    }
+
+    /**
+     * 查询旅游投诉状态分布
+     * @param vo
+     * @return
+     */
+    public List<BasePercentVO> queryComplaintStatusDistribution(TravelComplaintScreenQueryVO vo){
+        return baseMapper.queryComplaintStatusDistribution(vo);
+    }
+
+    /**
+     * 查询旅游投诉类型Top排行
+     * @param vo
+     * @return
+     */
+    public List<BaseVO> queryComplaintTopByType(TravelComplaintScreenQueryVO vo){
+        return baseMapper.queryComplaintTopByType(vo);
+    }
+
+    /**
+     * 查询旅游投诉趋势、同比、环比
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public List<AnalysisBaseInfo> queryComplaintAnalysis(TravelComplaintScreenQueryVO vo){
+        //初始化当年月份信息
+        List<String> monthMarkList = DateUtils.getEveryMonthOfCurrentYear();
+
+        //获取当前年度月趋势信息
+        List<AnalysisMonthChartInfo> currentAnalysisMonthInfo = this.baseMapper.queryComplaintCurrentAnalysisMonthInfo(vo);
+        //获取去年度月趋势信息
+        List<AnalysisMonthChartInfo> lastAnalysisMonthInfo = this.baseMapper.queryComplaintLastAnalysisMonthInfo(vo);
+
+        return AnalysisUtils.buildAnalysisInfo(monthMarkList, currentAnalysisMonthInfo, lastAnalysisMonthInfo);
+    }
+
 
 
 }

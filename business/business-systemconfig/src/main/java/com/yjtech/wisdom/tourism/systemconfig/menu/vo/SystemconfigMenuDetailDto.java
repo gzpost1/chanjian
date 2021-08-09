@@ -65,4 +65,18 @@ public class SystemconfigMenuDetailDto {
      */
     private List<MenuChartDetailDto> chartData;
 
+    /**
+     * 地图大小 1大 2小
+     */
+    private Byte mapsizeType;
+
+    /**
+     *是否显示日期筛选 0否 1是
+     */
+    private Byte isShowdate;
+
+    /**
+     *是否显示返回按钮 0否 1是
+     */
+    private Byte isShowReturn;
 }

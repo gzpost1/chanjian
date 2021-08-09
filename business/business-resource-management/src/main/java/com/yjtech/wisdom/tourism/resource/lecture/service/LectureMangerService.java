@@ -16,6 +16,8 @@ import com.yjtech.wisdom.tourism.resource.lecture.mapper.LectureMapper;
 import com.yjtech.wisdom.tourism.resource.lecture.vo.LecturePageByVenueIdVo;
 import com.yjtech.wisdom.tourism.resource.lecture.vo.LectureScaleVo;
 import com.yjtech.wisdom.tourism.resource.lecture.vo.LectureVo;
+import com.yjtech.wisdom.tourism.system.service.SysDictDataService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -31,6 +33,9 @@ import java.util.List;
 @Service
 public class LectureMangerService extends BaseMybatisServiceImpl<LectureMapper, LectureEntity> {
 
+    @Autowired
+    private SysDictDataService sysDictDataService;
+
     /**
      * 查询展演讲座列表_分页
      *
@@ -44,7 +49,13 @@ public class LectureMangerService extends BaseMybatisServiceImpl<LectureMapper, 
                     .eq(LectureEntity::getStatus, 1)
                     .like(!StringUtils.isEmpty(vo.getLectureName()), LectureEntity::getLectureName, vo.getLectureName())
                     .orderByDesc(LectureEntity::getUpdateTime))
-        .convert(item -> JSONObject.parseObject(JSONObject.toJSONString(item), LectureDto.class));
+        .convert(item -> {
+            LectureDto lectureDto = JSONObject.parseObject(JSONObject.toJSONString(item), LectureDto.class);
+            // 字典获取
+            String name = sysDictDataService.selectDictLabel(lectureDto.getLectureType(), lectureDto.getLectureValue());
+            lectureDto.setDictName(name);
+            return lectureDto;
+        });
     }
 
     /**
@@ -55,10 +66,10 @@ public class LectureMangerService extends BaseMybatisServiceImpl<LectureMapper, 
      */
     public LecturePicDto queryScale(LectureScaleVo vo) {
         QueryWrapper<LectureEntity> queryWrapper = new QueryWrapper<>();
-        queryWrapper.select("select count(id) as lectureTypeNumber, lectureType");
+        queryWrapper.select("count(id) as lectureTypeNumber, lecture_type, lecture_value");
         queryWrapper.eq("status", 1);
-        queryWrapper.between("holdStartDate", vo.getBeginTime(), vo.getEndTime());
-        queryWrapper.groupBy("venueType");
+        queryWrapper.between("hold_start_date", vo.getBeginTime(), vo.getEndTime());
+        queryWrapper.groupBy("lecture_value");
 
         // 符合条件的讲座类型 的数量
         List<LectureEntity> lectureEntityList = baseMapper.selectList(queryWrapper);
@@ -70,15 +81,17 @@ public class LectureMangerService extends BaseMybatisServiceImpl<LectureMapper, 
 
         // 计算各类讲座比例
         lectureEntityList.forEach(item -> {
-            // 讲座类型名称_由于该值是数据字典，后期可能需要单独取值进行改动
-            String venueType = item.getLectureType();
             // 对应讲座类型的数量
-            Integer venueTypeNumber = item.getLectureTypeNumber();
+            Integer lectureTypeNumber = item.getLectureTypeNumber();
+
+            // 字典获取
+            String name = sysDictDataService.selectDictLabel(item.getLectureType(), item.getLectureValue());
 
             //计算比例
             LectureScaleDto lectureScaleDto = LectureScaleDto.builder()
-                    .name(venueType)
-                    .scale(MathUtil.calPercent(new BigDecimal(venueTypeNumber), new BigDecimal(total), 2).toString())
+                    .name(name)
+                    .value(lectureTypeNumber)
+                    .scale(MathUtil.calPercent(new BigDecimal(lectureTypeNumber), new BigDecimal(total), 2).toString())
                     .build();
 
             scaleList.add(lectureScaleDto);

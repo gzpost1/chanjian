@@ -1,5 +1,6 @@
 package com.yjtech.wisdom.tourism.command.vo.travelcomplaint;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.yjtech.wisdom.tourism.mybatis.entity.BaseEntity;
 import lombok.Data;
 
@@ -27,7 +28,7 @@ public class TravelComplaintDealVO extends BaseEntity {
     /**
      * 处理人id
      */
-    @NotNull(message = "处理人id不能为空")
+    @JsonIgnore
     private Long acceptUserId;
 
     /**

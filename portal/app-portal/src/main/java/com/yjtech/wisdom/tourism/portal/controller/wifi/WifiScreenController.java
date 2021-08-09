@@ -5,17 +5,16 @@ import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
 import com.yjtech.wisdom.tourism.common.bean.BaseValueVO;
-import com.yjtech.wisdom.tourism.common.bean.TimeBaseQuery;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
-import com.yjtech.wisdom.tourism.common.core.domain.PageQuery;
-import com.yjtech.wisdom.tourism.common.utils.AnalysisUtils;
+import com.yjtech.wisdom.tourism.mybatis.entity.PageQuery;
+import com.yjtech.wisdom.tourism.mybatis.entity.TimeBaseQuery;
+import com.yjtech.wisdom.tourism.mybatis.utils.AnalysisUtils;
 import com.yjtech.wisdom.tourism.resource.wifi.dto.WifiBaseDto;
 import com.yjtech.wisdom.tourism.resource.wifi.entity.WifiEntity;
 import com.yjtech.wisdom.tourism.resource.wifi.query.WifiSummaryQuery;
 import com.yjtech.wisdom.tourism.resource.wifi.service.*;
 import com.yjtech.wisdom.tourism.resource.wifi.vo.WifiHotVo;
 import com.yjtech.wisdom.tourism.resource.wifi.vo.WifiStatisticsVo;
-import com.yjtech.wisdom.tourism.system.domain.IconSpotEnum;
 import com.yjtech.wisdom.tourism.system.service.IconService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -45,13 +44,13 @@ public class WifiScreenController {
     private WifiService wifiService;
     @Autowired
     private WifiSummaryService summaryService;
-    
-    /** 
+
+    /**
      * wifi综合统计（首页）
-     * @Param:  
-     * @return:  
+     * @Param:
+     * @return:
      * @Author: zc
-     * @Date: 2021-07-15 
+     * @Date: 2021-07-15
      */
     @GetMapping("wifiStatistics")
     public JsonResult<WifiStatisticsVo> queryWifiStatistics(){

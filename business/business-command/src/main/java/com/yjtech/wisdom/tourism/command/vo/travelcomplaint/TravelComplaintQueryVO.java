@@ -1,6 +1,6 @@
 package com.yjtech.wisdom.tourism.command.vo.travelcomplaint;
 
-import com.yjtech.wisdom.tourism.common.core.domain.PageQuery;
+import com.yjtech.wisdom.tourism.mybatis.entity.PageQuery;
 import lombok.Data;
 import org.hibernate.validator.constraints.Range;
 
@@ -44,6 +44,11 @@ public class TravelComplaintQueryVO extends PageQuery {
      */
     @Range(min = 0, max = 1, message = "配备状态不合法")
     private Byte equipStatus;
+
+    /**
+     * 处理人id
+     */
+    private Long acceptUserId;
 
     /**
      * 开始时间

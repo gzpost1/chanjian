@@ -1,14 +1,19 @@
 package com.yjtech.wisdom.tourism.message.admin.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JacksonInject;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.yjtech.wisdom.tourism.mybatis.typehandler.JsonTypeHandler;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.servlet.annotation.HandlesTypes;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 消息中心
@@ -37,77 +42,44 @@ public class MessageEntity implements Serializable {
     private Long eventId;
 
     /**
-     * 事件名称
-     */
-    private String eventName;
-
-    /**
      * 事件类型 0:旅游投诉 1:应急事件
      */
     private Integer eventType;
 
     /**
-     * 事件状态 0:待指派 1:待处理 2:已处理
-     */
-    private Integer eventStatus;
-
-    /**
-     * 事件发生日期/投诉时间
-     */
-    private String eventHappenDate;
-
-    /**
-     * 事件发生地址
-     */
-    private String eventHappenAddress;
-
-    /**
-     * 上报人/投诉人姓名
-     */
-    private String eventHappenPerson;
-
-    /**
-     * 上报人/投诉人 用户id
-     */
-    private Long eventHappenPersonId;
-
-    /**
-     * 上报人/投诉人 联系电话
-     */
-    private String eventHappenPersonPhone;
-
-    /**
      * 事件/投诉 处理人Id
      */
-    private Long eventDealPersonId;
-
-    /**
-     * 事件处理跳转的 URL
-     */
-    private String eventDealUrl;
+    @TableField(typeHandler = JsonTypeHandler.class)
+    private List<Long> eventDealPersonId;
 
     /**
      * 创建时间
      */
     @TableField(fill = FieldFill.INSERT)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonIgnore
     private Date createTime;
 
     /**
-     * 更新时间
+     * 修改时间
      */
-    @TableField(fill = FieldFill.INSERT_UPDATE)
+    @TableField(fill = FieldFill.UPDATE)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonIgnore
     private Date updateTime;
 
     /**
      * 创建人ID
      */
+    @JsonIgnore
     @TableField(fill = FieldFill.INSERT)
     private Long createUser;
 
     /**
      * 修改人ID
      */
-    @TableField(fill = FieldFill.INSERT_UPDATE)
+    @JsonIgnore
+    @TableField(fill = FieldFill.UPDATE)
     private Long updateUser;
 
     /**
@@ -117,6 +89,5 @@ public class MessageEntity implements Serializable {
     @TableLogic
     @JsonIgnore
     private Byte deleted;
-
 
 }

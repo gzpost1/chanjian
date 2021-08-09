@@ -90,4 +90,22 @@ public class SystemconfigMenuEntity extends BaseEntity {
     @TableField(value = "chart_data", typeHandler = ListObjectJsonTypeHandler.class, updateStrategy = FieldStrategy.IGNORED)
     private List<MenuChartDetailDto> chartData;
 
+    /**
+     * 地图大小 1大 2小
+     */
+    @TableField(value = "mapsize_type")
+    private Byte mapsizeType;
+
+    /**
+     *是否显示日期筛选 0否 1是
+     */
+    @TableField(value = "is_showdate")
+    private Byte isShowdate;
+
+    /**
+     *是否显示返回按钮 0否 1是
+     */
+    @TableField(value = "iS_showreturn")
+    private Byte isShowReturn;
+
 }

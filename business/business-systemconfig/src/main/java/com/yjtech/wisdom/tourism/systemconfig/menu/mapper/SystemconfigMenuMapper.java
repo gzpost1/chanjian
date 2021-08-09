@@ -3,8 +3,10 @@ package com.yjtech.wisdom.tourism.systemconfig.menu.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.yjtech.wisdom.tourism.common.bean.BaseVO;
 import com.yjtech.wisdom.tourism.systemconfig.menu.dto.*;
 import com.yjtech.wisdom.tourism.systemconfig.menu.entity.SystemconfigMenuEntity;
+import com.yjtech.wisdom.tourism.systemconfig.menu.vo.SystemconfigMenuDatavlDto;
 import com.yjtech.wisdom.tourism.systemconfig.menu.vo.SystemconfigMenuPageVo;
 import org.apache.ibatis.annotations.Param;
 
@@ -28,4 +30,9 @@ public interface SystemconfigMenuMapper extends BaseMapper<SystemconfigMenuEntit
 
     List<SystemconfigMenuEntity> queryForAppList();
 
+    List<BaseVO> queryPageList();
+
+    Integer findMenuIsExistJiagou(Long id);
+
+    List<SystemconfigMenuEntity> queryMenusByIds(@Param("ids") List<Long> pageIds);
 }

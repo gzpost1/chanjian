@@ -41,12 +41,6 @@ public class EventUpdateDto implements Serializable {
     @Length(max = 30,message = "处理单位长度必须小于30位")
     private String handleDepartment;
 
-    /**
-    * 处理人员
-    */
-    @NotBlank(message = "处理人员不能为空")
-    @Length(max = 30,message = "处理人员长度必须小于30位")
-    private String handlePersonnel;
 
     /**
     * 处理日期

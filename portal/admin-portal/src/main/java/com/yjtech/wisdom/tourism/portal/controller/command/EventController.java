@@ -147,7 +147,7 @@ public class EventController {
                                     .eventId(eventEntity.getId())
                                     .eventStatus(MessageConstants.EVENT_STATUS_DEAL)
                                     .build();
-                            messageMangerService.changeMessageStatus(vo);
+                            messageMangerService.changeMessageStatus(vo.getEventId());
                             List<EventAppointEntity> list = eventAppointService.list();
 
                             //如没有指定指派人员 默认给超级管理员发信息

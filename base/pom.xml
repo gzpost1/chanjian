@@ -16,7 +16,6 @@
         <module>base-mybatis</module>
         <module>base-infrastructure</module>
         <module>base-extension</module>
-        <module>base-mongodb</module>
         <module>base-common</module>
         <module>base-dto</module>
         <module>base-feign</module>

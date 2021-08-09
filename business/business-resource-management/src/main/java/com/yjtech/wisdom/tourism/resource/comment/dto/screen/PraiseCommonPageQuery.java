@@ -1,7 +1,7 @@
 package com.yjtech.wisdom.tourism.resource.comment.dto.screen;
 
-import com.yjtech.wisdom.tourism.common.core.domain.PageQuery;
 import com.yjtech.wisdom.tourism.extension.BizScenario;
+import com.yjtech.wisdom.tourism.mybatis.entity.PageQuery;
 import lombok.Data;
 
 /**
