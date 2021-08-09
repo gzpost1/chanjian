@@ -119,3 +119,9 @@ message:
   dictType:
     # 超级管理员数据字典类型
     admin: super_admin_user_id
+
+
+# 辅助决策
+decision:
+  dictType:
+    missConclusionTextKey: miss_conclusion_text
