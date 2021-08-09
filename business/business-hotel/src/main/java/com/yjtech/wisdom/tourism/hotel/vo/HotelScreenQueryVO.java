@@ -19,4 +19,9 @@ public class HotelScreenQueryVO extends TimeBaseQuery {
      */
     private String name;
 
+    /**
+     * 酒店状态（0-停用 1-正常）
+     */
+    private Byte status;
+
 }
