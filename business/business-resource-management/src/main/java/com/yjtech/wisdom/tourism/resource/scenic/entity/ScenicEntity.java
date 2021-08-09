@@ -4,11 +4,9 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.yjtech.wisdom.tourism.mybatis.entity.BaseEntity;
 import com.yjtech.wisdom.tourism.mybatis.typehandler.JsonTypeHandler;
 import lombok.*;
-import org.apache.ibatis.type.ArrayTypeHandler;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -24,7 +22,6 @@ import java.util.List;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @TableName(value = "tb_scenic", autoResultMap = true)
-@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class ScenicEntity extends BaseEntity {
 
     /**id*/
