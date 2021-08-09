@@ -46,7 +46,7 @@ public class TbCountryTour implements Serializable {
      * 类型
      */
     @NotNull(message = "类型不能为空")
-    private Byte type;
+    private String type;
 
     /**
      * 所在位置
