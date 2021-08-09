@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * 乡村游
+ * 管理后台-乡村游
  *
  * @author songjun
  * @since 2021/7/19 14:40
