@@ -1,6 +1,8 @@
 package com.yjtech.wisdom.tourism.hotel.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
 import com.yjtech.wisdom.tourism.common.utils.bean.BeanMapper;
 import com.yjtech.wisdom.tourism.hotel.dto.HotelScreenDetailDTO;
 import com.yjtech.wisdom.tourism.hotel.entity.TbHotelInfoEntity;
@@ -54,8 +56,30 @@ public class TbHotelInfoService extends BaseMybatisServiceImpl<TbHotelInfoMapper
      * @param params
      * @return
      */
-    public List<HotelScreenDetailDTO> queryScreenPage(HotelScreenQueryVO params) {
-        return baseMapper.queryScreenPage(params);
+    @Transactional(readOnly = true)
+    public IPage<HotelScreenDetailDTO> queryScreenPage(HotelScreenQueryVO params) {
+        Page<HotelScreenDetailDTO> page = new Page<>(params.getPageNo(), params.getPageSize());
+        return baseMapper.queryScreenPage(page, params);
+    }
+
+    /**
+     * 查询酒店类型分布
+     * @param params
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public List<BasePercentVO> queryHotelTypeDistribution(HotelScreenQueryVO params) {
+        return baseMapper.queryHotelTypeDistribution(params);
+    }
+
+    /**
+     * 查询酒店星级分布
+     * @param params
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public List<BasePercentVO> queryHotelStarDistribution(HotelScreenQueryVO params) {
+        return baseMapper.queryHotelStarDistribution(params);
     }
 
 }

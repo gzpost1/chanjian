@@ -1,6 +1,6 @@
 package com.yjtech.wisdom.tourism.hotel.vo;
 
-import com.yjtech.wisdom.tourism.mybatis.entity.TimeBaseQuery;
+import com.yjtech.wisdom.tourism.mybatis.entity.AreaBaseVO;
 import lombok.Data;
 
 /**
@@ -10,7 +10,7 @@ import lombok.Data;
  * @Date 2021/8/6 15:17
  */
 @Data
-public class HotelScreenQueryVO extends TimeBaseQuery {
+public class HotelScreenQueryVO extends AreaBaseVO {
 
     private static final long serialVersionUID = 6693325384661177491L;
 
@@ -21,6 +21,7 @@ public class HotelScreenQueryVO extends TimeBaseQuery {
 
     /**
      * 酒店状态（0-停用 1-正常）
+     * 默认 正常
      */
     private Byte status;
 
