@@ -1,13 +1,16 @@
 package com.yjtech.wisdom.tourism.resource.scenic.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.yjtech.wisdom.tourism.mybatis.entity.BaseEntity;
+import com.yjtech.wisdom.tourism.mybatis.typehandler.JsonTypeHandler;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * 景区
@@ -78,8 +81,11 @@ public class ScenicEntity extends BaseEntity {
     /**封面图片Url*/
     private String frontPicUrl;
 
-    /**其他图片Url，多张用“,”逗号分割*/
-    private String otherPicUrl;
+    /**
+     * 其他图片Url
+     */
+    @TableField(typeHandler = JsonTypeHandler.class)
+    private List<String> otherPicUrl;
 
     /**简介*/
     private String introduction;

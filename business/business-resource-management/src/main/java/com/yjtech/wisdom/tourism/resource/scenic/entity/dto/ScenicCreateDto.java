@@ -7,6 +7,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 public class ScenicCreateDto {
@@ -27,6 +28,9 @@ public class ScenicCreateDto {
     /**经度*/
     private String longitude;
 
+    /**地图缩放比例*/
+    private Integer mapZoomRate;
+
     /** 开放日期-开始日期*/
     private String openStartDate;
 
@@ -46,7 +50,6 @@ public class ScenicCreateDto {
     private Integer bearCapacity;
 
     /**舒适度预警比例*/
-    @NotNull(message = "舒适度预警比例不能为空")
     @Min(value = 0, message = "不能小于0")
     @Max(value = 100, message = "不能大于100")
     private BigDecimal comfortWarnRate;
@@ -64,7 +67,7 @@ public class ScenicCreateDto {
     private String frontPicUrl;
 
     /**其他图片Url，多张用“,”逗号分割*/
-    private String otherPicUrl;
+    private List<String> otherPicUrl;
 
     /**简介*/
     private String introduction;
