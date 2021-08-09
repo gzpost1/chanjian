@@ -110,7 +110,7 @@ public class TargetQueryService {
     /**
      * 省外客流数据查询
      */
-    public String queryProvinceOutsideNumber () {
+    public String queryProvinceOutsideNumber (String statisticsType) {
         String beginDate = DateTimeUtil.getCurrentLastMonthFirstDayStr();
         String endTime = DateTimeUtil.getCurrentLastMonthLastDayStr();
 
@@ -118,7 +118,7 @@ public class TargetQueryService {
 
         // 请求参数构造
         VisitNumberVo visitNumberVo = VisitNumberVo.builder()
-                .statisticsType(DecisionSupportConstants.PROVINCE_OUTSIDE_TYPE)
+                .statisticsType(statisticsType)
                 .beginDate(beginDate)
                 .endDate(endTime)
                 .adcode(areaCode)

@@ -43,7 +43,7 @@ public class ProvinceOutsideTourStrategyImpl extends BaseStrategy {
         // 平台简称
         String simpleName = targetQueryService.queryPlatformSimpleName().getSimpleName();
         // 省外游客数量
-        String provinceOutsideNumber = targetQueryService.queryProvinceOutsideNumber();
+        String provinceOutsideNumber = targetQueryService.queryProvinceOutsideNumber(DecisionSupportConstants.PROVINCE_OUTSIDE_TYPE);
         // 环比
         String hb = targetQueryService.queryProvinceOutsideScale(TargetQueryConstants.PROVINCE_OUTSIDE_SCALE_HB);
         // 同比
