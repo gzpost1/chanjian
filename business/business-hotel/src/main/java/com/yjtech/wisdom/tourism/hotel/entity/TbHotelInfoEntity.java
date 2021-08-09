@@ -21,7 +21,7 @@ import java.util.List;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author MJ~
@@ -74,13 +74,13 @@ public class TbHotelInfoEntity extends Model<TbHotelInfoEntity> {
     /**
      * 应急联系人
      */
-    @NotNull(message = "应急联系人不能为空")
+//    @NotNull(message = "应急联系人不能为空")
     private String contact;
 
     /**
      * 应急联系人电话
      */
-    @NotNull(message = "应急联系人电话不能为空")
+//    @NotNull(message = "应急联系人电话不能为空")
     private String mobile;
 
     /**
@@ -124,12 +124,12 @@ public class TbHotelInfoEntity extends Model<TbHotelInfoEntity> {
     /**
      * 房间数量
      */
-    @NotNull(message = "客房数不能为空")
+//    @NotNull(message = "客房数不能为空")
     private Integer roomNum;
     /**
      * 床位数量
      */
-    @NotNull(message = "床位数不能为空")
+//    @NotNull(message = "床位数不能为空")
     private Integer bedNum;
 
     @TableField(exist = false)
