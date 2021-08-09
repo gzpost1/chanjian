@@ -78,6 +78,12 @@ public class DecisionWarnEntity implements Serializable {
     private String conclusionText;
 
     /**
+     * 是否使用缺失话术 0：不使用 1：使用
+     */
+    @TableField(fill = FieldFill.INSERT)
+    private Byte isUseMissConclusionText;
+
+    /**
      * 创建时间
      */
     @TableField(fill = FieldFill.INSERT)

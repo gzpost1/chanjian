@@ -260,32 +260,6 @@ public class DecisionSupportScreenService extends ServiceImpl<DecisionWarnMapper
         return result;
     }
 
-    /**
-     * 话术统一处理
-     *
-     * @param conclusionText
-     * @return
-     */
-    private String dealConclusionText(String conclusionText) {
-        String result = "";
-        if (!StringUtils.isEmpty(conclusionText)) {
-            // 平台简称
-            result = conclusionText.replaceAll(DecisionSupportConfigEnum.PLATFORM_SIMPLE_NAME.getKey(), targetQueryService.queryPlatformSimpleName().getSimpleName());
-
-            // 统计年月
-            result = result.replaceAll(DecisionSupportConfigEnum.YEAR_MONTH_STATISTICAL.getKey(), targetQueryService.queryLastMonth().getYearMonth());
-
-            // 省外游客数量
-            result = result.replaceAll(DecisionSupportConfigEnum.PROVINCE_OUTSIDE_TOUR_NUM.getKey(), targetQueryService.queryProvinceOutsideNumber());
-
-            // 环比（较上月）
-            result = result.replaceAll(DecisionSupportConfigEnum.PROVINCE_OUTSIDE_TOUR_HB.getKey(), targetQueryService.queryProvinceOutsideScale(TargetQueryConstants.PROVINCE_OUTSIDE_SCALE_HB));
-
-            // 同比（较去年同月）
-            result = result.replaceAll(DecisionSupportConfigEnum.PROVINCE_OUTSIDE_TOUR_TB.getKey(), targetQueryService.queryProvinceOutsideScale(TargetQueryConstants.PROVINCE_OUTSIDE_SCALE_TB));
-        }
-        return result;
-    }
 
     /**
      * 数值类型 配置项处理

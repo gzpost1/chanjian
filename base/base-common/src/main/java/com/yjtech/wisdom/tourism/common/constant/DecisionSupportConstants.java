@@ -9,9 +9,16 @@ package com.yjtech.wisdom.tourism.common.constant;
 public class DecisionSupportConstants {
 
     /**
-     * 省外访客类型
+     * 省外访客类型 10.到访全部游客(默认),11.到访省内游客 12.到访省外游客 20.出访全部游客 21.出访省内游客 22.出访省外游客
      */
     public final static String PROVINCE_OUTSIDE_TYPE = "12";
+
+    /**
+     * 省内访客类型 10.到访全部游客(默认),11.到访省内游客 12.到访省外游客 20.出访全部游客 21.出访省内游客 22.出访省外游客
+     */
+    public final static String PROVINCE_INSIDE_TYPE = "11";
+
+
 
     /**
      * 大屏_决策预警_上次分析时间的redis 的 Key
