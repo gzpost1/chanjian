@@ -16,16 +16,22 @@ import javax.validation.Valid;
 import java.util.Objects;
 
 /**
- * 酒店信息
+ * 管理后台 酒店民宿
  *
- * @author Mujun
- * @since 2020-08-05
+ * @Author horadirm
+ * @Date 2021/8/6 14:02
  */
 @Slf4j
 @RestController
 @RequestMapping("/hotel")
-public class HotelInfoController
+public class HotelAdminController
         extends BaseCurdController<TbHotelInfoService, TbHotelInfoEntity, TbHotelInfoEntityParam> {
+
+    /**
+     * 更新
+     * @param params
+     * @return
+     */
     @Override
     public JsonResult update(@RequestBody TbHotelInfoEntity params) {
         String type = params.getType();
@@ -38,6 +44,11 @@ public class HotelInfoController
         return super.update(params);
     }
 
+    /**
+     * 新增
+     * @param params
+     * @return
+     */
     @Override
     public JsonResult create(@RequestBody @Valid TbHotelInfoEntity params) {
         String type = params.getType();

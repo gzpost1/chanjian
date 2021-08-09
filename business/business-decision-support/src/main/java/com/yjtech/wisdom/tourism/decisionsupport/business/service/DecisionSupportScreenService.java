@@ -2,7 +2,6 @@ package com.yjtech.wisdom.tourism.decisionsupport.business.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -20,8 +19,9 @@ import com.yjtech.wisdom.tourism.decisionsupport.business.mapper.DecisionMapper;
 import com.yjtech.wisdom.tourism.decisionsupport.business.mapper.DecisionWarnMapper;
 import com.yjtech.wisdom.tourism.decisionsupport.business.vo.DecisionWarnPageVo;
 import com.yjtech.wisdom.tourism.decisionsupport.business.vo.DecisionWarnVo;
+import com.yjtech.wisdom.tourism.decisionsupport.common.constant.TargetQueryConstants;
 import com.yjtech.wisdom.tourism.decisionsupport.common.execute.DecisionExecute;
-import com.yjtech.wisdom.tourism.decisionsupport.common.instance.DecisionStrategyEnum;
+import com.yjtech.wisdom.tourism.decisionsupport.business.instance.DecisionStrategyEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -160,7 +160,10 @@ public class DecisionSupportScreenService extends ServiceImpl<DecisionWarnMapper
 
         // 决策预警数据进行处理
         for (DecisionEntity entity : list) {
-            decisionWarnList.add(dealWarnConfigAndCompute(entity));
+            DecisionWarnEntity decisionWarnEntity = dealWarnConfigAndCompute(entity);
+            if (!ObjectUtils.isEmpty(decisionWarnEntity))  {
+                decisionWarnList.add(decisionWarnEntity);
+            }
         }
 
         // 综合概况由于需要统计所有数据，单独处理
@@ -180,17 +183,14 @@ public class DecisionSupportScreenService extends ServiceImpl<DecisionWarnMapper
      */
     private DecisionWarnEntity dealWarnConfigAndCompute(DecisionEntity entity) {
         // 基础属性 设置
-        DecisionWarnEntity result = DecisionWarnEntity.builder()
-                .targetId(entity.getTargetId())
-                .targetName(entity.getTargetName())
-                .warnName(entity.getConfigName())
-                .build();
+        DecisionWarnEntity result = null;
 
         int targetId = entity.getTargetId().intValue();
 
         switch (targetId) {
             // 省外游客
             case DecisionSupportTargetConstants.SWYK :
+                result = DecisionExecute.get(DecisionStrategyEnum.PROVINCE_OUTSIDE_TOUR, entity);
                 break;
 
             // 省内游客
@@ -252,36 +252,14 @@ public class DecisionSupportScreenService extends ServiceImpl<DecisionWarnMapper
             default:
                 break;
         }
-
-        return result;
-    }
-
-    /**
-     * 话术统一处理
-     *
-     * @param conclusionText
-     * @return
-     */
-    private String dealConclusionText(String conclusionText) {
-        String result = "";
-        if (!StringUtils.isEmpty(conclusionText)) {
-            // 平台简称
-            result = conclusionText.replaceAll(DecisionSupportConfigEnum.PLATFORM_SIMPLE_NAME.getKey(), targetQueryService.queryPlatformSimpleName().getSimpleName());
-
-            // 统计年月
-            result = result.replaceAll(DecisionSupportConfigEnum.YEAR_MONTH_STATISTICAL.getKey(), targetQueryService.queryLastMonth().getYearMonth());
-
-            // 省外游客数量
-            result = result.replaceAll(DecisionSupportConfigEnum.PROVINCE_OUTSIDE_TOUR_NUM.getKey(), targetQueryService.queryProvinceOutsideNumber());
-
-            // 环比（较上月）
-            result = result.replaceAll(DecisionSupportConfigEnum.PROVINCE_OUTSIDE_TOUR_HB.getKey(), targetQueryService.queryHbProvinceOutside());
-
-            // 同比（较去年同月）
-            result = result.replaceAll(DecisionSupportConfigEnum.PROVINCE_OUTSIDE_TOUR_TB.getKey(), targetQueryService.queryTbProvinceOutside());
+        // 避免 综合概况指标 无法进去上面条件
+        if (!ObjectUtils.isEmpty(result)) {
+            // 通用属性设置
+            result.setWarnName(entity.getConfigName());
         }
         return result;
     }
+
 
     /**
      * 数值类型 配置项处理
@@ -295,17 +273,6 @@ public class DecisionSupportScreenService extends ServiceImpl<DecisionWarnMapper
 
         switch (id) {
 
-            // 省外游客_省外游客数量 （数值）
-            case DecisionSupportConstants.SWYK_SWYKSL :
-                break;
-
-            // 省外游客_环比变化（较上月） （数值）
-            case DecisionSupportConstants.SWYK_HBBH :
-                break;
-
-            // 省外游客_同比变化（较去年同月） （数值）
-            case DecisionSupportConstants.SWYK_TBBH :
-                break;
 
             // 省内游客 _省内游客数量 （数值）
             case DecisionSupportConstants.SNYK_SNYKSL :
@@ -537,13 +504,7 @@ public class DecisionSupportScreenService extends ServiceImpl<DecisionWarnMapper
         result.setWarnName(entity.getConfigName());
         switch (id) {
 
-            // 省外游客_统计年月 （文本）
-            case DecisionSupportConstants.SWYK_TJNY :
-                break;
 
-            // 省外游客_平台简称 （文本）
-            case DecisionSupportConstants.SWYK_PTJC :
-                break;
             // 省内游客 _统计年月 （文本）
             case DecisionSupportConstants.SNYK_TJNY :
                 break;
@@ -652,60 +613,14 @@ public class DecisionSupportScreenService extends ServiceImpl<DecisionWarnMapper
      * @param decisionWarnList
      * @return
      */
-    private DecisionWarnEntity dealComprehensive(List<DecisionEntity> list, ArrayList<DecisionWarnEntity> decisionWarnList) {
-
-        DecisionWarnEntity result = null;
-
-        for (DecisionEntity item : list) {
-            int id = item.getConfigId().intValue();
-            switch (id) {
-                // 综合概况_统计年月 （文本）
-                case DecisionSupportConstants.ZHGK_TJNY:
-                    result = DecisionWarnEntity.builder()
-                            .targetId(item.getTargetId())
-                            .targetName(item.getTargetName())
-                            .warnName(item.getConfigName())
-                            .warnNum(DateTimeUtil.getCurrentLastMonthStr())
-                            .build();
-                    break;
-
-                // 综合概况_平台名称 （文本）
-                case DecisionSupportConstants.ZHGK_PTMC:
-                    break;
-
-                // 综合概况_高风险项指标项 （文本）
-                case DecisionSupportConstants.ZHGK_GFXXZBX:
-                    break;
-
-                // 综合概况_中风险项指标项 （文本）
-                case DecisionSupportConstants.ZHGK_ZFXXZBX:
-                    break;
-
-                // 综合概况_低风险项指标项 （文本）
-                case DecisionSupportConstants.ZHGK_XFXXZBX:
-                    break;
-
-                // 综合概况_风险预警项数量 （数值）
-                case DecisionSupportConstants.ZHGK_FXYJXSL :
-                    break;
-
-                // 综合概况_高风险项数量 （数值）
-                case DecisionSupportConstants.ZHGK_GFXXSL :
-                    break;
-
-                // 综合概况_中风险项数量 （数值）
-                case DecisionSupportConstants.ZHGK_ZFXXSL :
-                    break;
-
-                // 综合概况_低风险项数量 （数值）
-                case DecisionSupportConstants.ZHGK_DFXXSL :
-                    break;
-
-                default:
-                    break;
+    private DecisionWarnEntity dealComprehensive(List<DecisionEntity> list, List<DecisionWarnEntity> decisionWarnList) {
+        DecisionWarnEntity decisionWarnEntity = null;
+        for (DecisionEntity v : list) {
+            if (DecisionSupportTargetConstants.ZHGK == v.getTargetId().intValue()) {
+                decisionWarnEntity = DecisionExecute.get(DecisionStrategyEnum.COMPREHENSIVE, decisionWarnList, v);
             }
         }
-        return result;
+        return decisionWarnEntity;
     }
 
     /**
@@ -715,11 +630,11 @@ public class DecisionSupportScreenService extends ServiceImpl<DecisionWarnMapper
      * @return
      */
     private Integer findRiskNumber (Integer type, String beginTime, String endTime) {
-        QueryWrapper<DecisionWarnEntity> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("riskType", type);
-        queryWrapper.between("createTime", beginTime, endTime);
-
-        return baseMapper.selectCount(queryWrapper);
+        return baseMapper.selectCount(
+                new LambdaQueryWrapper<DecisionWarnEntity>()
+                .eq(DecisionWarnEntity::getAlarmType, type)
+                .between(DecisionWarnEntity::getCreateTime, beginTime, endTime)
+        );
     }
 
     /**

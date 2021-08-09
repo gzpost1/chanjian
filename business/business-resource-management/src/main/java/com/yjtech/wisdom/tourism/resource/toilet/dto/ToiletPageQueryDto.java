@@ -1,6 +1,6 @@
 package com.yjtech.wisdom.tourism.resource.toilet.dto;
 
-import com.yjtech.wisdom.tourism.common.core.domain.PageQuery;
+import com.yjtech.wisdom.tourism.mybatis.entity.PageQuery;
 import lombok.Data;
 
 /**

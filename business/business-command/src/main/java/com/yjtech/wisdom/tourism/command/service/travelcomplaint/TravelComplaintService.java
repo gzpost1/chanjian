@@ -19,7 +19,7 @@ import com.yjtech.wisdom.tourism.common.constant.Constants;
 import com.yjtech.wisdom.tourism.common.core.domain.StatusParam;
 import com.yjtech.wisdom.tourism.common.enums.TravelComplaintStatusEnum;
 import com.yjtech.wisdom.tourism.common.enums.TravelComplaintTypeEnum;
-import com.yjtech.wisdom.tourism.common.utils.AnalysisUtils;
+import com.yjtech.wisdom.tourism.mybatis.utils.AnalysisUtils;
 import com.yjtech.wisdom.tourism.common.utils.DateUtils;
 import com.yjtech.wisdom.tourism.common.utils.StringUtils;
 import com.yjtech.wisdom.tourism.common.utils.bean.BeanUtils;

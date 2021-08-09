@@ -114,8 +114,8 @@ public class DistrictBigDataService {
             log.info("【区县大数据】-返回结果：{}", result);
             String authorization = "" + JsonUtils.getValueByKey(result, "authorization");
             log.info("【区县大数据】-Authorization：{}", authorization);
-            // 8小时过期
-            redisTemplate.opsForValue().set(tokenKey, authorization, 7, TimeUnit.HOURS);
+            // 15分钟过期
+            redisTemplate.opsForValue().set(tokenKey, authorization, 15, TimeUnit.MINUTES);
         }
         log.info("【区县大数据】token：{}", token);
         return token;

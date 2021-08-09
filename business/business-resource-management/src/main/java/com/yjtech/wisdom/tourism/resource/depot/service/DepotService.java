@@ -2,7 +2,7 @@ package com.yjtech.wisdom.tourism.resource.depot.service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yjtech.wisdom.tourism.common.bean.BaseValueVO;
-import com.yjtech.wisdom.tourism.common.utils.AnalysisUtils;
+import com.yjtech.wisdom.tourism.mybatis.utils.AnalysisUtils;
 import com.yjtech.wisdom.tourism.common.utils.MathUtil;
 import com.yjtech.wisdom.tourism.resource.depot.entity.DepotEntity;
 import com.yjtech.wisdom.tourism.resource.depot.entity.dto.SingleDepotUseDto;

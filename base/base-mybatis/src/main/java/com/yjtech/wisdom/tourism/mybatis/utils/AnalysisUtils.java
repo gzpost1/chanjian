@@ -1,10 +1,12 @@
-package com.yjtech.wisdom.tourism.common.utils;
+package com.yjtech.wisdom.tourism.mybatis.utils;
 
 import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateUtil;
 import com.google.common.collect.Lists;
 import com.yjtech.wisdom.tourism.common.bean.*;
 import com.yjtech.wisdom.tourism.common.enums.AnalysisDateTypeEnum;
+import com.yjtech.wisdom.tourism.common.utils.*;
+import com.yjtech.wisdom.tourism.mybatis.entity.TimeBaseQuery;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;

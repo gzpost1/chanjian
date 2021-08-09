@@ -1,6 +1,6 @@
 package com.yjtech.wisdom.tourism.decisionsupport.business.vo;
 
-import com.yjtech.wisdom.tourism.common.core.domain.PageQuery;
+import com.yjtech.wisdom.tourism.mybatis.entity.PageQuery;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
