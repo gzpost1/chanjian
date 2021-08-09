@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.yjtech.wisdom.tourism.mybatis.entity.BaseEntity;
 import com.yjtech.wisdom.tourism.mybatis.typehandler.JsonTypeHandler;
 import lombok.*;
+import org.apache.ibatis.type.ArrayTypeHandler;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -22,7 +23,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
-@TableName("tb_scenic")
+@TableName(value = "tb_scenic", autoResultMap = true)
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class ScenicEntity extends BaseEntity {
 
