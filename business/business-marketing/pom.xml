@@ -17,11 +17,5 @@
             <artifactId>base-infrastructure</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
-
-        <dependency>
-            <groupId>com.yjtech.wisdom.tourism</groupId>
-            <artifactId>business-base</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
     </dependencies>
 </project>
