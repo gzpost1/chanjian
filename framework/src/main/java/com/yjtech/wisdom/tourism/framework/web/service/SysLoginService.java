@@ -53,25 +53,25 @@ public class SysLoginService {
      */
     public String login(String username, String password, String code, String uuid,Boolean appUser, String pushToken) throws Exception {
         //App用户不用验证码登录
-//        if (Objects.isNull(appUser) || !appUser) {
-//            String verifyKey = Constants.CAPTCHA_CODE_KEY + uuid;
-//            String captcha = redisCache.getCacheObject(verifyKey);
-//            redisCache.deleteObject(verifyKey);
-//            if (captcha == null) {
-//                AsyncManager.me()
-//                        .execute(
-//                                AsyncFactory.recordLogininfor(
-//                                        username, Constants.LOGIN_FAIL, MessageUtils.message("user.jcaptcha.expire")));
-//                throw new CaptchaExpireException();
-//            }
-//            if (!code.equalsIgnoreCase(captcha)) {
-//                AsyncManager.me()
-//                        .execute(
-//                                AsyncFactory.recordLogininfor(
-//                                        username, Constants.LOGIN_FAIL, MessageUtils.message("user.jcaptcha.error")));
-//                throw new CaptchaException();
-//            }
-//        }
+        if (Objects.isNull(appUser) || !appUser) {
+            String verifyKey = Constants.CAPTCHA_CODE_KEY + uuid;
+            String captcha = redisCache.getCacheObject(verifyKey);
+            redisCache.deleteObject(verifyKey);
+            if (captcha == null) {
+                AsyncManager.me()
+                        .execute(
+                                AsyncFactory.recordLogininfor(
+                                        username, Constants.LOGIN_FAIL, MessageUtils.message("user.jcaptcha.expire")));
+                throw new CaptchaExpireException();
+            }
+            if (!code.equalsIgnoreCase(captcha)) {
+                AsyncManager.me()
+                        .execute(
+                                AsyncFactory.recordLogininfor(
+                                        username, Constants.LOGIN_FAIL, MessageUtils.message("user.jcaptcha.error")));
+                throw new CaptchaException();
+            }
+        }
         // 用户验证
         Authentication authentication = null;
         try {
