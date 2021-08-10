@@ -10,6 +10,7 @@ import com.yjtech.wisdom.tourism.hotel.mapper.TbHotelInfoMapper;
 import com.yjtech.wisdom.tourism.hotel.vo.HotelScreenQueryVO;
 import com.yjtech.wisdom.tourism.hotel.vo.StaticNumVo;
 import com.yjtech.wisdom.tourism.mybatis.base.BaseMybatisServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +27,9 @@ import java.util.List;
  */
 @Service
 public class TbHotelInfoService extends BaseMybatisServiceImpl<TbHotelInfoMapper, TbHotelInfoEntity> {
+
+    @Autowired
+    private TbHotelHouseTypeService tbHotelHouseTypeService;
 
 
     @Transactional(readOnly = true)

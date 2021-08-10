@@ -20,6 +20,12 @@ public class CacheKeyContants {
      */
     public static final String KEY_DEAL_TRAVEL_COMPLAINT = "deal:travelComplaint:";
 
+    /** ********** 中测 第三方信息缓存 key ********** */
+    /**
+     * 中测 token
+     */
+    public static final String ZC_TOKEN_KEY = "zc:token:";
+
 
 }
 

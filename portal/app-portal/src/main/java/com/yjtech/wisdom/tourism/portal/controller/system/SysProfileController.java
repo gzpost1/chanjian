@@ -15,10 +15,12 @@ import com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysUser;
 import com.yjtech.wisdom.tourism.infrastructure.core.domain.model.LoginUser;
 import com.yjtech.wisdom.tourism.infrastructure.utils.SecurityUtils;
 import com.yjtech.wisdom.tourism.system.service.SysUserService;
+import com.yjtech.wisdom.tourism.system.vo.UpdatePasswordVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -74,24 +76,24 @@ public class SysProfileController extends BaseController {
      * 修改密码
      */
     @Log(title = "个人信息", businessType = BusinessType.UPDATE)
-    @PutMapping("/updatePwd")
-    public JsonResult updatePwd(String oldPassword, String newPassword) {
+    @PostMapping("/updatePwd")
+    public JsonResult updatePwd(@RequestBody @Valid UpdatePasswordVO vo) {
         LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
         String userName = loginUser.getUsername();
         String password = loginUser.getPassword();
-        if (!SecurityUtils.matchesPassword(oldPassword, password)) {
+        if (!SecurityUtils.matchesPassword(vo.getOldPassword(), password)) {
             return JsonResult.error("修改密码失败，旧密码错误");
         }
-        if (SecurityUtils.matchesPassword(newPassword, password)) {
+        if (SecurityUtils.matchesPassword(vo.getNewPassword(), password)) {
             return JsonResult.error("新密码不能与旧密码相同");
         }
-        boolean isWeakPassword = !CheckPwd.evalPWD(newPassword);
+        boolean isWeakPassword = !CheckPwd.evalPWD(vo.getNewPassword());
         if (isWeakPassword) {
             throw new CustomException(ErrorCode.WEAK_PASSWORD);
         }
-        if (userService.resetUserPwd(userName, SecurityUtils.encryptPassword(newPassword)) > 0) {
+        if (userService.resetUserPwd(userName, SecurityUtils.encryptPassword(vo.getNewPassword())) > 0) {
             // 更新缓存用户密码
-            loginUser.getUser().setPassword(SecurityUtils.encryptPassword(newPassword));
+            loginUser.getUser().setPassword(SecurityUtils.encryptPassword(vo.getNewPassword()));
             tokenService.setLoginUser(loginUser);
             return JsonResult.success();
         }
