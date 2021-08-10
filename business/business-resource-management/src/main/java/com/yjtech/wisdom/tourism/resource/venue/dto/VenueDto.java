@@ -86,7 +86,7 @@ public class VenueDto implements Serializable {
     /**
      * 联系电话
      */
-    private List<String> phone;
+    private String phone;
 
     /**
      * 封面图片Url

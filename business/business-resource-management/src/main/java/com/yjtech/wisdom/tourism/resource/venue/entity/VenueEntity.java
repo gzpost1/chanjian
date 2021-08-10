@@ -88,8 +88,7 @@ public class VenueEntity implements Serializable {
     /**
      * 联系电话
      */
-    @TableField(typeHandler = JsonTypeHandler.class)
-    private List<String> phone;
+    private String phone;
 
     /**
      * 封面图片Url

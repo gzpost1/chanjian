@@ -65,7 +65,7 @@ public class LectureVo extends PageQuery implements Serializable {
     /**
      * 联系电话
      */
-    private List<String> phone;
+    private String phone;
 
     /**
      * 举办地点
