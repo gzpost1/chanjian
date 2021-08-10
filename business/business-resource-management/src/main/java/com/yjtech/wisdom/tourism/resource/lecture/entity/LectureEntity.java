@@ -2,6 +2,7 @@ package com.yjtech.wisdom.tourism.resource.lecture.entity;
 
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.yjtech.wisdom.tourism.mybatis.typehandler.JsonTypeHandler;
 import lombok.AllArgsConstructor;
@@ -42,7 +43,7 @@ public class LectureEntity implements Serializable {
     /**
      * 场展演讲类型_通过字典管理配置
      */
-    private String lectureType;
+    private String lectureType = "lecture_type";
 
     /**
      * 场展演讲类型_通过字典管理配置
