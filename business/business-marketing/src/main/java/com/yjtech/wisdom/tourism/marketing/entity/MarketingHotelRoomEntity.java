@@ -26,7 +26,7 @@ import java.util.Date;
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class TbMarketingHotelRoomEntity extends BaseEntity {
+public class MarketingHotelRoomEntity extends BaseEntity {
 
     private static final long serialVersionUID = -8037208439585138556L;
 

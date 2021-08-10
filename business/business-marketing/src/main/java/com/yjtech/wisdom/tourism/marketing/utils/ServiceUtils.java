@@ -4,7 +4,6 @@ import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateUtil;
 import com.yjtech.wisdom.tourism.common.utils.DateUtils;
 import com.yjtech.wisdom.tourism.common.utils.StringUtils;
-import com.yjtech.wisdom.tourism.marketing.pojo.dto.AnalysisMonthChartInfo;
 
 import java.util.List;
 

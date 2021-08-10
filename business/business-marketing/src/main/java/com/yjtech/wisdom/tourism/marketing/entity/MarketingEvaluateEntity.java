@@ -30,7 +30,7 @@ import java.util.Objects;
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class TbMarketingEvaluateEntity extends AreaBaseEntity {
+public class MarketingEvaluateEntity extends AreaBaseEntity {
 
     private static final long serialVersionUID = 8654360657351375426L;
 

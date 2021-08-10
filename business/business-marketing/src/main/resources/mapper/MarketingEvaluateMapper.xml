@@ -28,274 +28,17 @@
     </insert>
 
 
-    <select id="getRankingInfo" parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateRankingVO"
-            resultType="com.yjtech.wisdom.tourism.marketing.pojo.dto.evaluate.EvaluateRankingInfo">
+    <select id="queryEvaluateStatistics" resultType="com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateStatisticsDTO"
+            parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateScreenQueryVO">
         select
-        place_name as placeName,
-        (select count(id)
-        from tb_marketing_evaluate e
-        <where>
-            e.place_id = p.tp_id
-            <if test="params!=null">
-                <if test=" params.beginTime != null and params.beginTime != '' ">
-                    and <![CDATA[ e.evaluate_time >= #{params.beginTime} ]]>
-                </if>
-                <if test=" params.endTime != null and params.endTime != '' ">
-                    and <![CDATA[ e.evaluate_time <= #{params.endTime} ]]>
-                </if>
-            </if>
-        </where>
-        ) as count
-        from
-        tb_marketing_place p
-        <where>
-            <if test="params != null">
-                <if test=" params.areaCode != null and params.areaCode != '' ">
-                    p.area_code like CONCAT('${params.areaCode}','%' ) and
-                </if>
-                <if test=" params.dataTypeList != null ">
-                    p.place_type in
-                    <foreach collection="params.dataTypeList" item="item" index="index" open="(" separator=","
-                             close=")">
-                        #{item}
-                    </foreach>
-                </if>
-            </if>
-        </where>
-        ORDER BY count DESC
-        limit 10
-    </select>
-
-    <select id="getSourcesInfo" parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.ScreenAnalysisQueryVO"
-            resultType="com.yjtech.wisdom.tourism.marketing.pojo.dto.evaluate.EvaluateDistributionInfo">
-        select
-        source_platform as distributionName,
-        COALESCE (count(1),0) as distributionCount,
-        COALESCE (ROUND((count(1)/(
-        select count(id) from tb_marketing_evaluate
-        <where>
-            <include refid="query_screen_where"/>
-        </where>
-        )),3),0) as proportion
+        COUNT(id) as evaluateTotal,
+        ROUND(SUM(CASE WHEN evaluate_type = 2 THEN 1 ELSE 0 END)/COUNT(id),3)*100 as satisfaction,
+        ROUND(SUM(rate)/COUNT(id),1) as rate
         from
         tb_marketing_evaluate
         <where>
-            <include refid="query_screen_where"/>
+            <include refid="base_screen_query_condition"/>
         </where>
-        GROUP BY source_platform
-    </select>
-
-    <select id="getBusinessInfo" parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.ScreenAnalysisQueryVO"
-            resultType="com.yjtech.wisdom.tourism.marketing.pojo.dto.evaluate.EvaluateDistributionInfo">
-        select
-        case
-        when data_type = 0 then '酒店'
-        when data_type = 1 then '民宿'
-        when data_type = 2 then '景点'
-        when data_type = 3 then '门票'
-        when data_type = 4 then '美食'
-        when data_type = 5 then '购物'
-        when data_type = 6 then '休闲娱乐'
-        else '其他' end as distributionName,
-        COALESCE (count(1),0) as distributionCount,
-        COALESCE (ROUND(COALESCE (count(1),0) / (
-        select count(id) from tb_marketing_evaluate
-        <where>
-            <include refid="query_screen_where"/>
-        </where>
-        ),3),0) as proportion
-        from
-        tb_marketing_evaluate
-        <where>
-            <include refid="query_screen_where"/>
-        </where>
-        GROUP BY data_type
-    </select>
-
-    <select id="getChartByProvince" parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.ScreenAnalysisQueryVO"
-            resultType="com.yjtech.wisdom.tourism.marketing.pojo.dto.evaluate.EvaluateChartInfo">
-        select
-        a.city_abbreviate_name as areaName,
-        COALESCE (e.evaluateCount,0) as evaluateCount
-        from tb_sys_area a
-        LEFT JOIN
-        (select
-        area_code,
-        count(id) as evaluateCount
-        from
-        tb_marketing_evaluate
-        <where>
-            <include refid="query_screen_where"/>
-        </where>
-        GROUP BY LEFT(area_code,4)) e
-        ON LEFT(a.code,4) = LEFT(e.area_code,4)
-        <where>
-            <if test="params!=null">
-                <if test=" params.areaCode != null and params.areaCode != '' ">
-                    a.province_code like CONCAT('${params.areaCode}','%' ) and
-                </if>
-            </if>
-            a.county_code is null
-        </where>
-    </select>
-
-    <select id="getChartByCity" parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.ScreenAnalysisQueryVO"
-            resultType="com.yjtech.wisdom.tourism.marketing.pojo.dto.evaluate.EvaluateChartInfo">
-        select
-        a.county_abbreviate_name as areaName,
-        COALESCE (e.evaluateCount,0) as evaluateCount
-        from tb_sys_area a
-        LEFT JOIN
-        (select
-        area_code,
-        count(id) as evaluateCount
-        from
-        tb_marketing_evaluate
-        <where>
-            <include refid="query_screen_where"/>
-        </where>
-        GROUP BY LEFT(area_code,6)) e
-        ON a.code = e.area_code
-        <where>
-            <if test="params!=null">
-                <if test=" params.areaCode != null and params.areaCode != '' ">
-                    a.city_code like CONCAT('${params.areaCode}','%' ) and
-                </if>
-            </if>
-            a.county_abbreviate_name is not null
-        </where>
-    </select>
-
-    <select id="getAnalysisDayInfo" parameterType="string"
-            resultType="com.yjtech.wisdom.tourism.marketing.pojo.dto.evaluate.EvaluateAnalysisDayChartInfo">
-        SELECT
-        DATE_FORMAT(evaluate_time,'%Y-%m-%d') as evaluateTime,
-        COALESCE (sum(case when data_type = 0 or data_type = 1 then 1 else 0 end),0) as restCount,
-        COALESCE (sum(case when data_type = 2 then 1 else 0 end),0) as scenicAreaCount,
-        COALESCE (sum(case when data_type = 4 then 1 else 0 end),0) as delicacyCount
-        from tb_marketing_evaluate
-        <where>
-            <if test=" areaCode != null and areaCode != '' ">
-                area_code like CONCAT('${areaCode}','%' ) and
-            </if>
-            <![CDATA[ evaluate_time >= DATE_FORMAT((SELECT DATE_SUB(CURDATE(),INTERVAL dayofyear(now())-1 DAY)),'%Y-%m-%d') and ]]>
-            <![CDATA[ evaluate_time <= DATE_FORMAT(now(),'%Y-%m-%d') ]]>
-        </where>
-        GROUP BY DATE_FORMAT(evaluate_time,'%Y-%m-%d')
-    </select>
-
-    <select id="getAnalysisDayStatistics" parameterType="string"
-            resultType="com.yjtech.wisdom.tourism.marketing.pojo.dto.evaluate.EvaluateAnalysisDayDTO">
-        SELECT
-        COALESCE (sum(case when data_type = 0 or data_type = 1 then 1 else 0 end),0) as restEvaluate,
-        COALESCE (sum(case when data_type = 2 then 1 else 0 end),0) as scenicAreaEvaluate,
-        COALESCE (sum(case when data_type = 4 then 1 else 0 end),0) as delicacyEvaluate
-        from tb_marketing_evaluate
-        <where>
-            <if test=" areaCode != null and areaCode != '' ">
-                area_code like CONCAT('${areaCode}','%' ) and
-            </if>
-            <![CDATA[ evaluate_time >= DATE_FORMAT((SELECT DATE_SUB(CURDATE(),INTERVAL dayofyear(now())-1 DAY)),'%Y-%m-%d') and ]]>
-            <![CDATA[ evaluate_time <= DATE_FORMAT(now(),'%Y-%m-%d') ]]>
-        </where>
-    </select>
-
-    <select id="getCurrentAnalysisMonthInfo" parameterType="string"
-            resultType="com.yjtech.wisdom.tourism.marketing.pojo.dto.AnalysisMonthChartInfo">
-        SELECT
-        DATE_FORMAT(e.evaluate_time,'%Y-%m') as xTime,
-        COALESCE (count(e.id),0) as yCount,
-        ROUND(((count(e.id) -
-        (select
-        count(id)
-        from
-        tb_marketing_evaluate
-        <where>
-            <if test=" areaCode != null and areaCode != '' ">
-                area_code like CONCAT('${areaCode}','%' ) and
-            </if>
-            evaluate_time like concat(left((SELECT DATE_SUB(e.evaluate_time,INTERVAL 1 YEAR)),7),'%')
-        </where>
-        ))/(select count(id)
-        from
-        tb_marketing_evaluate
-        <where>
-            <if test=" areaCode != null and areaCode != '' ">
-                area_code like CONCAT('${areaCode}','%' ) and
-            </if>
-            evaluate_time like concat(left((SELECT DATE_SUB(e.evaluate_time,INTERVAL 1 YEAR)),7),'%')
-        </where>
-
-        )),3) as same,
-        ROUND(((count(e.id) -
-        (select count(id)
-        from
-        tb_marketing_evaluate
-        <where>
-            <if test=" areaCode != null and areaCode != '' ">
-                area_code like CONCAT('${areaCode}','%' ) and
-            </if>
-            evaluate_time like concat(left((SELECT DATE_SUB(e.evaluate_time,INTERVAL 1 MONTH)),7),'%')
-        </where>
-        ))/(select count(id)
-        from
-        tb_marketing_evaluate
-        <where>
-            <if test=" areaCode != null and areaCode != '' ">
-                area_code like CONCAT('${areaCode}','%' ) and
-            </if>
-            evaluate_time like concat(left((SELECT DATE_SUB(e.evaluate_time,INTERVAL 1 MONTH)),7),'%')
-        </where>
-        )),3) as sequential
-        from tb_marketing_evaluate e
-        <where>
-            <if test=" areaCode != null and areaCode != '' ">
-                area_code like CONCAT('${areaCode}','%' ) and
-            </if>
-            <![CDATA[ e.evaluate_time >= DATE_FORMAT((SELECT DATE_SUB(CURDATE(),INTERVAL dayofyear(now())-1 DAY)),'%Y-%m-%d') and ]]>
-            <![CDATA[ e.evaluate_time <= DATE_FORMAT(now(),'%Y-%m-%d') ]]>
-        </where>
-        GROUP BY DATE_FORMAT(e.evaluate_time,'%Y-%m')
-    </select>
-
-    <select id="getLastAnalysisMonthInfo" parameterType="string"
-            resultType="com.yjtech.wisdom.tourism.marketing.pojo.dto.AnalysisMonthChartInfo">
-        SELECT
-        DATE_FORMAT(evaluate_time,'%Y-%m') as xTime,
-        COALESCE (count(id),0) as yCount
-        from tb_marketing_evaluate
-        <where>
-            <if test=" areaCode != null and areaCode != '' ">
-                area_code like CONCAT('${areaCode}','%' ) and
-            </if>
-            evaluate_time like concat(left((SELECT DATE_SUB(now(),INTERVAL 1 YEAR)),4),'%')
-        </where>
-        GROUP BY DATE_FORMAT(evaluate_time,'%Y-%m')
-    </select>
-
-    <select id="getAnalysisMonthStatistics" parameterType="string"
-            resultType="com.yjtech.wisdom.tourism.marketing.pojo.dto.evaluate.EvaluateAnalysisMonthDTO">
-        select
-        (SELECT
-        COALESCE (count(id),0) as yCount
-        from tb_marketing_evaluate
-        <where>
-            <if test=" areaCode != null and areaCode != '' ">
-                area_code like CONCAT('${areaCode}','%' ) and
-            </if>
-            evaluate_time like concat(left((SELECT DATE_SUB(NOW(),INTERVAL 1 YEAR)),4),'%')
-        </where>
-        ) as last,
-        (SELECT
-        COALESCE (count(id),0) as yCount
-        from tb_marketing_evaluate
-        <where>
-            <if test=" areaCode != null and areaCode != '' ">
-                area_code like CONCAT('${areaCode}','%' ) and
-            </if>
-            evaluate_time like concat(left(NOW(),4),'%')
-        </where>
-        ) as current
     </select>
 
     <select id="queryEvaluateTypeDistribution" resultType="com.yjtech.wisdom.tourism.common.bean.BasePercentVO"
@@ -325,8 +68,75 @@
         GROUP BY status
     </select>
 
+    <select id="queryEvaluateHotRank" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO"
+            parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateScreenQueryVO">
+        select
+        keywords as name,
+        COUNT(id) as value
+        from
+        tb_marketing_evaluate
+        <where>
+            <include refid="base_screen_query_condition"/>
+        </where>
+        GROUP BY keywords
+    </select>
+
+    <select id="queryForPage" resultType="com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateListDTO"
+            parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateScreenQueryVO">
+        select
+        id as id,
+        place_id as placeId,
+        place_name as placeName,
+        evaluate_content as evaluateContent,
+        evaluate_time as evaluateTime,
+        evaluate_type as evaluateType,
+        CASE
+        WHEN evaluate_type = 0 THEN '差评'
+        WHEN evaluate_type = 1 THEN '中评'
+        WHEN evaluate_type = 2 THEN '好评'
+        ELSE '其他' END as evaluateTypeDesc,
+        rate as rate,
+        source_platform as sourcePlatform,
+        source_platform_id as sourcePlatformId
+        from
+        tb_marketing_evaluate
+        <where>
+            <if test="params != null">
+                <if test="params.placeId != null and params.placeId != ''">
+                    place_id = #{params.placeId} and
+                </if>
+                <if test="params.evaluateType != null">
+                    evaluate_type = #{params.evaluateType} and
+                </if>
+                <if test="params.equipStatus != null">
+                    equip_status = #{params.equipStatus} and
+                </if>
+                <if test="params.areaCode != null and params.areaCode != ''">
+                    area_code LIKE CONCAT('${params.areaCode}','%') and
+                </if>
+                <if test="params.beginTime != null">
+                    <![CDATA[ evaluate_time >= #{params.beginTime} ]]> and
+                </if>
+                <if test="params.endTime != null">
+                    <![CDATA[ evaluate_time <= #{params.endTime} ]]> and
+                </if>
+            </if>
+            deleted = 0
+        </where>
+        ORDER BY evaluate_time DESC
+    </select>
+
     <sql id="base_screen_query_condition">
         <if test="params != null">
+            <if test="params.placeId != null and params.placeId != ''">
+                place_id = #{params.placeId} and
+            </if>
+            <if test="params.equipStatus != null">
+                equip_status = #{params.equipStatus} and
+            </if>
+            <if test="params.areaCode != null and params.areaCode != ''">
+                area_code LIKE CONCAT('${params.areaCode}','%') and
+            </if>
             <if test="params.beginTime != null">
                 <![CDATA[ evaluate_time >= #{params.beginTime} ]]> and
             </if>

@@ -6,10 +6,8 @@ import com.yjtech.wisdom.tourism.common.bean.zc.po.ZcOtaHotelPO;
 import com.yjtech.wisdom.tourism.common.bean.zc.po.ZcOtaScenicAreaPO;
 import com.yjtech.wisdom.tourism.common.enums.DataSourceTypeEnum;
 import com.yjtech.wisdom.tourism.common.service.ZcInfoSyncService;
-import com.yjtech.wisdom.tourism.marketing.entity.TbMarketingPlaceEntity;
+import com.yjtech.wisdom.tourism.marketing.entity.MarketingPlaceEntity;
 import com.yjtech.wisdom.tourism.marketing.mapper.MarketingPlaceMapper;
-import com.yjtech.wisdom.tourism.marketing.pojo.dto.PlaceInfoDTO;
-import com.yjtech.wisdom.tourism.marketing.pojo.vo.PlaceQueryVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +23,7 @@ import java.util.List;
  * @Date 2020/11/20 16:11
  */
 @Service
-public class MarketingPlaceService extends ServiceImpl<MarketingPlaceMapper, TbMarketingPlaceEntity> {
+public class MarketingPlaceService extends ServiceImpl<MarketingPlaceMapper, MarketingPlaceEntity> {
 
     @Autowired
     private ZcInfoSyncService zcInfoSyncService;
@@ -37,7 +35,7 @@ public class MarketingPlaceService extends ServiceImpl<MarketingPlaceMapper, TbM
      */
     @Transactional(rollbackFor = Exception.class)
     public void syncCreate(ZcOtaPlaceParam params){
-        List<TbMarketingPlaceEntity> saveList = new ArrayList<>();
+        List<MarketingPlaceEntity> saveList = new ArrayList<>();
 
         //构建页码
         long hotelPageNum = 1L;
@@ -47,7 +45,7 @@ public class MarketingPlaceService extends ServiceImpl<MarketingPlaceMapper, TbM
         //分页获取
         while (!hotelList.isEmpty()) {
             for(ZcOtaHotelPO zcOtaHotelPO : hotelList){
-                TbMarketingPlaceEntity entity = new TbMarketingPlaceEntity();
+                MarketingPlaceEntity entity = new MarketingPlaceEntity();
                 entity.build(zcOtaHotelPO, null, DataSourceTypeEnum.DATA_SOURCE_TYPE_HOTEL);
 
                 saveList.add(entity);
@@ -65,7 +63,7 @@ public class MarketingPlaceService extends ServiceImpl<MarketingPlaceMapper, TbM
         //分页获取
         while (!scenicAreaList.isEmpty()) {
             for(ZcOtaScenicAreaPO zcOtaScenicAreaPO : scenicAreaList){
-                TbMarketingPlaceEntity entity = new TbMarketingPlaceEntity();
+                MarketingPlaceEntity entity = new MarketingPlaceEntity();
                 entity.build(zcOtaScenicAreaPO, null, DataSourceTypeEnum.DATA_SOURCE_TYPE_SCENIC_SPOT);
 
                 saveList.add(entity);
