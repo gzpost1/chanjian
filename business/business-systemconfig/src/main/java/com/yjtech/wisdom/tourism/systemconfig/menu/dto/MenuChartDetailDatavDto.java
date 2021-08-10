@@ -27,6 +27,11 @@ public class MenuChartDetailDatavDto {
     private String chartType;
 
     /**
+     * 图表名称
+     */
+    private String name;
+
+    /**
      * service_url 后端服务url
      */
     private String serviceUrl;
