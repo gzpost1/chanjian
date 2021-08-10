@@ -44,7 +44,7 @@ public class AudioMeetingController {
      * @return
      */
     @PostMapping("/login")
-    public JsonResult login(@RequestBody @Valid AudioMeetingDto createDto) {
+    public JsonResult<String> login(@RequestBody @Valid AudioMeetingDto createDto) {
 
         /**
          *  1加入会议时判断当前平台已经有该会议编号的会议正在举行，若无，则创建并加入该会议
@@ -65,7 +65,13 @@ public class AudioMeetingController {
             AssertUtil.isFalse(!Objects.equals(list.get(0).getPassword(), createDto.getPassword()), "会议密码错误");
             audioMeetingService.getBaseMapper().minusInventory(list.get(0).getId(), 1);
         }
-        return JsonResult.ok();
+        String token = audioMeetingService.getToken(configService.selectConfigByKey(EventContants.AGORA_APPID),
+                configService.selectConfigByKey(EventContants.agora_appcertificate),
+                createDto.getCode(),
+                Integer.valueOf(configService.selectConfigByKey(EventContants.AGORA_UID)),
+                Integer.valueOf(configService.selectConfigByKey(EventContants.AUDIO_MEETING_EXPIRE))
+        );
+        return JsonResult.success(token);
     }
 
 
