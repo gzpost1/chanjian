@@ -7,7 +7,7 @@
     <resultMap id="BaseResultMap" type="com.yjtech.wisdom.tourism.entity.TbCountryTour">
         <result property="id" column="id" jdbcType="BIGINT"/>
         <result property="name" column="name" jdbcType="VARCHAR"/>
-        <result property="type" column="type" jdbcType="TINYINT"/>
+        <result property="type" column="type" jdbcType="VARCHAR"/>
         <result property="address" column="address" jdbcType="VARCHAR"/>
         <result property="longitude" column="longitude" jdbcType="DECIMAL"/>
         <result property="latitude" column="latitude" jdbcType="DECIMAL"/>

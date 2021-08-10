@@ -43,7 +43,7 @@ public enum DecisionStrategyEnum {
     OVERALL_SCENIC_SPOTS_TOURIST_FLOW_RANKING(OverallScenicSpotsTouristFlowRankingStrategyImpl.class),
 
     /**
-     * 景区客流派排行
+     * 景区客流满意度
      */
     OVERALL_SCENIC_SPOTS_SATISFACTION(OverallScenicSpotsSatisfactionStrategyImpl.class),
 
@@ -80,6 +80,9 @@ public enum DecisionStrategyEnum {
      * 一码游交易额
      */
     ONE_TRAVEL_TRANSACTIONS_NUMBER(OneTravelTransactionsNumberStrategyImpl.class),
+
+
+
 
     /**
      * 旅游投诉

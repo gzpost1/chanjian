@@ -53,6 +53,11 @@ public class DecisionWarnWrapperDto implements Serializable {
     private String lastAnalyzeDate;
 
     /**
+     * 话术
+     */
+    private String conclusionText;
+
+    /**
      * 具体预警列表
      */
     private List<DecisionWarnItemDto> list;

@@ -35,7 +35,7 @@ public class DecisionSupportMangerController {
     }
 
     /**
-     * 查询决策预警_分页
+     * 查询决策预警_列表
      *
      * @param vo
      * @return

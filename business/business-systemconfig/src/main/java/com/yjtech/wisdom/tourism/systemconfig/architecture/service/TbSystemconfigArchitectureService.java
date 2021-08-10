@@ -200,6 +200,7 @@ public class TbSystemconfigArchitectureService extends ServiceImpl<TbSystemconfi
                                 for (MenuChartDetailDto chartDatum : nowPage.getChartData()) {
                                     if(chart.getId().equals(chartDatum.getChartId())){
                                         chart.setPointDatas(chartDatum.getPointDatas());
+                                        chart.setName(chartDatum.getName());
                                     }
                                 }
                                 //设置列表

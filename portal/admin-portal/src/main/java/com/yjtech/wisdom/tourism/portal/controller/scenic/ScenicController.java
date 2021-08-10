@@ -20,8 +20,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Optional;
 
+import static com.yjtech.wisdom.tourism.common.utils.StringUtils.isNull;
 import static com.yjtech.wisdom.tourism.resource.scenic.utils.ScenicUtil.dateCompare;
 
 /**
@@ -48,6 +50,16 @@ public class ScenicController {
     }
 
     /**
+     * 全部查询
+     * @Param:  query
+     * @return:
+     */
+    @PostMapping("/queryForList")
+    public JsonResult<List<ScenicEntity>> queryForPage() {
+        return JsonResult.success(scenicService.list());
+    }
+
+    /**
      * 增加
      * @Param:  createDto
      * @return:
@@ -56,6 +68,11 @@ public class ScenicController {
     public JsonResult create(@RequestBody @Valid ScenicCreateDto createDto) {
         //时间比较
         dateCompare(BeanMapper.copyBean(createDto, OpenTimeDto.class));
+        ScenicEntity one = scenicService.getOne(
+                new LambdaQueryWrapper<ScenicEntity>().eq(ScenicEntity::getName, createDto.getName()));
+        if(!isNull(one)){
+            throw new CustomException("景区名称已存在");
+        }
         ScenicEntity entity = BeanMapper.copyBean(createDto, ScenicEntity.class);
         //默认为启用状态
         entity.setStatus((byte) 1);

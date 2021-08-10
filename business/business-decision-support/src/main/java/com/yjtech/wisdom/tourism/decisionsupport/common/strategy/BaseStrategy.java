@@ -2,10 +2,16 @@ package com.yjtech.wisdom.tourism.decisionsupport.common.strategy;
 
 
 import com.yjtech.wisdom.tourism.common.constant.DecisionSupportConstants;
+import com.yjtech.wisdom.tourism.common.utils.DateTimeUtil;
+import com.yjtech.wisdom.tourism.common.utils.MathUtil;
+import com.yjtech.wisdom.tourism.decisionsupport.base.service.TargetQueryService;
 import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionEntity;
 import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionWarnEntity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -14,10 +20,15 @@ import java.util.List;
  * @author renguangqian
  * @date 2021/8/5 10:46
  */
+@Component
 public abstract class BaseStrategy {
 
     private static final int HUNDRED = 100;
-    public static final String DEFAULT_STR = "-";
+
+    private static final String DEFAULT_STR = "-";
+
+    @Autowired
+    private TargetQueryService targetQueryService;
 
     /**
      * 初始化方法
@@ -40,6 +51,24 @@ public abstract class BaseStrategy {
      */
     public Object init(List<DecisionWarnEntity> list, DecisionEntity entity){return null;}
 
+
+    /**
+     * 获取统计年月
+     *
+     * @return
+     */
+    protected String getCurrentLastMonthStr() {
+        return DateTimeUtil.getCurrentLastMonthStr();
+    }
+
+    /**
+     * 获取平台简称
+     *
+     * @return
+     */
+    protected String getPlatformSimpleName() {
+        return targetQueryService.queryPlatformSimpleName().getSimpleName();
+    }
 
     /**
      * 文本报警处理
@@ -143,5 +172,19 @@ public abstract class BaseStrategy {
         else {
             // not do someThing
         }
+    }
+
+    /**
+     * 计算比例
+     *
+     * @param cs 除数
+     * @param bcs 被除数
+     */
+    protected String computeScale(Integer cs, Integer bcs) {
+        if (0 != cs) {
+            // 比例 = （本月生成 - 上月生成 ）/ 本月生成
+            return MathUtil.calPercent(new BigDecimal(cs - bcs), new BigDecimal(cs), 2).toString();
+        }
+        return "-";
     }
 }

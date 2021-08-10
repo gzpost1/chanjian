@@ -449,6 +449,18 @@ public class DateTimeUtil {
   }
 
   /**
+   * 获取当前时间
+   *
+   * @return
+   */
+  public static String getCurrentTime() {
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTime(new Date());
+    SimpleDateFormat sdf = new SimpleDateFormat(_default_datetime_format);
+    return sdf.format(calendar.getTime());
+  }
+
+  /**
    * 获取当 年月
    *
    * @return

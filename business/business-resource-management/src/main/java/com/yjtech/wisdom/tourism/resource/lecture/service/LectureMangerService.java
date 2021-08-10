@@ -19,6 +19,7 @@ import com.yjtech.wisdom.tourism.resource.lecture.vo.LectureVo;
 import com.yjtech.wisdom.tourism.system.service.SysDictDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
@@ -46,8 +47,12 @@ public class LectureMangerService extends BaseMybatisServiceImpl<LectureMapper, 
         return baseMapper.selectPage(
                 new Page<>(vo.getPageNo(), vo.getPageSize()),
                 new LambdaQueryWrapper<LectureEntity>()
-                    .eq(LectureEntity::getStatus, 1)
+                    .eq(!ObjectUtils.isEmpty(vo.getStatus()), LectureEntity::getStatus, vo.getStatus())
+                    .eq(!ObjectUtils.isEmpty(vo.getLectureValue()), LectureEntity::getLectureValue, vo.getLectureValue())
+                    .ge(!StringUtils.isEmpty(vo.getHoldStartDate()), LectureEntity::getHoldStartDate, vo.getHoldStartDate())
+                    .le(!StringUtils.isEmpty(vo.getHoldEndDate()), LectureEntity::getHoldEndDate, vo.getHoldEndDate())
                     .like(!StringUtils.isEmpty(vo.getLectureName()), LectureEntity::getLectureName, vo.getLectureName())
+                    .like(!StringUtils.isEmpty(vo.getVenueName()), LectureEntity::getVenueName, vo.getVenueName())
                     .orderByDesc(LectureEntity::getUpdateTime))
         .convert(item -> {
             LectureDto lectureDto = JSONObject.parseObject(JSONObject.toJSONString(item), LectureDto.class);

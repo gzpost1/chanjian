@@ -1,6 +1,8 @@
 package com.yjtech.wisdom.tourism.hotel.mapper;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
 import com.yjtech.wisdom.tourism.hotel.dto.HotelScreenDetailDTO;
 import com.yjtech.wisdom.tourism.hotel.entity.TbHotelInfoEntity;
 import com.yjtech.wisdom.tourism.hotel.vo.HotelScreenQueryVO;
@@ -24,9 +26,24 @@ public interface TbHotelInfoMapper extends BaseMybatisMapper<TbHotelInfoEntity> 
 
     /**
      * 查询大屏分页
+     * @param page
      * @param params
      * @return
      */
-    List<HotelScreenDetailDTO> queryScreenPage(@Param("params") HotelScreenQueryVO params);
+    IPage<HotelScreenDetailDTO> queryScreenPage(Page page, @Param("params") HotelScreenQueryVO params);
+
+    /**
+     * 查询酒店类型分布
+     * @param params
+     * @return
+     */
+    List<BasePercentVO> queryHotelTypeDistribution(@Param("params") HotelScreenQueryVO params);
+
+    /**
+     * 查询酒店星级分布
+     * @param params
+     * @return
+     */
+    List<BasePercentVO> queryHotelStarDistribution(@Param("params") HotelScreenQueryVO params);
 
 }

@@ -246,7 +246,7 @@
             <include refid="base_screen_query"/>
         </where>
         <choose>
-            <when test="params.status = 1 or params.status = 2">
+            <when test="params.status == 1 or params.status == 2">
                 GROUP BY object_id
             </when>
             <otherwise>
