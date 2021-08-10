@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjtech.wisdom.tourism.marketing.mapper.MarketingHotelRoomMapper">
+
+    <insert id="insertBatch" parameterType="list">
+        insert into tb_marketing_hotel_room
+        (id,create_time,update_time,create_user,update_user,deleted,tp_id,hotel_id,home_type,bed_type,area,data_create_time,data_update_time)
+        values
+        <foreach collection="params" item="item" index="index" separator="," >
+            (#{item.id},#{item.createTime},#{item.updateTime},#{item.createUser},#{item.updateUser},#{item.deleted},#{item.tpId},#{item.hotelId},#{item.homeType},#{item.bedType},#{item.area},#{item.dataCreateTime},#{item.dataUpdateTime})
+        </foreach>
+        ON DUPLICATE KEY UPDATE tp_id = values(tp_id),hotel_id = values(hotel_id),home_type = values(home_type),bed_type = values(bed_type),area = values(area),data_create_time = values(data_create_time),data_update_time = values(data_update_time)
+    </insert>
+
+
+    <sql id="query_where">
+        <if test="params!=null">
+            <if test=" params.objectName != null">
+                object_name like CONCAT('%','${params.objectName}','%' ) and
+            </if>
+            <if test=" params.issueType != null">
+                issue_type = #{params.issueType} and
+            </if>
+            <if test=" params.objectType != null">
+                object_type = #{params.objectType} and
+            </if>
+            <if test=" params.areaCode != null">
+                area_code like CONCAT('${params.areaCode}','%' ) and
+            </if>
+            deleted = 0
+        </if>
+    </sql>
+</mapper>
