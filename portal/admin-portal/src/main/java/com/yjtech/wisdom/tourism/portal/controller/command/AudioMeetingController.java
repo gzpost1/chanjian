@@ -54,7 +54,7 @@ public class AudioMeetingController {
         queryWrapper.eq(AudioMeetingEntity::getCode, createDto.getCode());
         queryWrapper.and(p -> p.ge(AudioMeetingEntity::getNumber, 1)
                 .or()
-                .gt(AudioMeetingEntity::getCreateTime, LocalDateTime.now().plusHours(0 - Integer.valueOf(configService.selectConfigByKey(EventContants.AUDIO_MEETING_EXPIRE)))));
+                .gt(AudioMeetingEntity::getCreateTime, LocalDateTime.now().plusSeconds(0 - Integer.valueOf(configService.selectConfigByKey(EventContants.AUDIO_MEETING_EXPIRE)))));
         List<AudioMeetingEntity> list = audioMeetingService.list(queryWrapper);
         AssertUtil.isFalse(list.size() > 1, "存在多个进行中会议，请联系管理员");
         if (list.size() < 1) {
