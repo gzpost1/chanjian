@@ -8,26 +8,25 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import com.yjtech.wisdom.tourism.common.constant.DecisionSupportConstants;
 import com.yjtech.wisdom.tourism.common.constant.DecisionSupportTargetConstants;
-import com.yjtech.wisdom.tourism.common.enums.DecisionSupportConfigEnum;
 import com.yjtech.wisdom.tourism.common.utils.DateTimeUtil;
 import com.yjtech.wisdom.tourism.decisionsupport.base.service.TargetQueryService;
 import com.yjtech.wisdom.tourism.decisionsupport.business.dto.DecisionWarnItemDto;
 import com.yjtech.wisdom.tourism.decisionsupport.business.dto.DecisionWarnWrapperDto;
 import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionEntity;
 import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionWarnEntity;
+import com.yjtech.wisdom.tourism.decisionsupport.business.instance.DecisionStrategyEnum;
 import com.yjtech.wisdom.tourism.decisionsupport.business.mapper.DecisionMapper;
 import com.yjtech.wisdom.tourism.decisionsupport.business.mapper.DecisionWarnMapper;
 import com.yjtech.wisdom.tourism.decisionsupport.business.vo.DecisionWarnPageVo;
 import com.yjtech.wisdom.tourism.decisionsupport.business.vo.DecisionWarnVo;
-import com.yjtech.wisdom.tourism.decisionsupport.common.constant.TargetQueryConstants;
 import com.yjtech.wisdom.tourism.decisionsupport.common.execute.DecisionExecute;
-import com.yjtech.wisdom.tourism.decisionsupport.business.instance.DecisionStrategyEnum;
+import com.yjtech.wisdom.tourism.system.service.SysConfigService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,6 +51,12 @@ public class DecisionSupportScreenService extends ServiceImpl<DecisionWarnMapper
     @Autowired
     private TargetQueryService targetQueryService;
 
+    @Autowired
+    private SysConfigService sysConfigService;
+
+    @Value("${decision.dictType.missConclusionTextKey}")
+    private String missConclusionTextKey;
+
     /**
      * 查询决策预警_分页
      *
@@ -60,17 +65,27 @@ public class DecisionSupportScreenService extends ServiceImpl<DecisionWarnMapper
      */
     public IPage<DecisionWarnWrapperDto> queryPageDecisionWarn (DecisionWarnPageVo vo) {
         // 上月第一天日期
-        String currentLastMonthFirstDayStr = DateTimeUtil.getCurrentLastMonthFirstDayStr() + " 00:00:00";
+        String currentLastMonthFirstDayStr = DateTimeUtil.getCurrentMonthFirstDayStr() + DecisionSupportConstants.START_TIME_STR;
         // 上月最后一天日期
-        String currentLastMonthLastDayStr = DateTimeUtil.getCurrentLastMonthLastDayStr() + " 23:59:59";
+        String currentLastMonthLastDayStr = DateTimeUtil.getCurrentMonthLastDayStr() + DecisionSupportConstants.END_TIME_STR;
 
-        DecisionWarnWrapperDto decisionWarnWrapperDto = initDecisionWarnWrapper(currentLastMonthFirstDayStr, currentLastMonthLastDayStr);
+        // 查询缺失话术
+        String missConclusionText = sysConfigService.selectConfigByKey(missConclusionTextKey);
+
+        DecisionWarnWrapperDto decisionWarnWrapperDto = initDecisionWarnWrapper(currentLastMonthFirstDayStr, currentLastMonthLastDayStr, missConclusionText);
 
         // 去数据库 查询符合条件的数据
         IPage<DecisionWarnItemDto> result = baseMapper.selectPage(new Page<>(vo.getPageNo(), vo.getPageSize()),
                 new LambdaQueryWrapper<DecisionWarnEntity>()
                         .between(DecisionWarnEntity::getCreateTime, currentLastMonthFirstDayStr, currentLastMonthLastDayStr)
-        ).convert(v -> JSONObject.parseObject(JSONObject.toJSONString(v), DecisionWarnItemDto.class));
+                        .ne(DecisionWarnEntity::getTargetId, DecisionSupportTargetConstants.ZHGK)
+        ).convert(v -> {
+            // 设置缺失话术
+            if (DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT.equals(v.getIsUseMissConclusionText())) {
+                v.setConclusionText(missConclusionText);
+            }
+            return JSONObject.parseObject(JSONObject.toJSONString(v), DecisionWarnItemDto.class);
+        });
 
         // 构造数据
         decisionWarnWrapperDto.setList(result.getRecords());
@@ -98,11 +113,14 @@ public class DecisionSupportScreenService extends ServiceImpl<DecisionWarnMapper
     public DecisionWarnWrapperDto queryDecisionWarnList (DecisionWarnVo vo) {
 
         // 上月第一天日期
-        String currentLastMonthFirstDayStr = DateTimeUtil.getCurrentLastMonthFirstDayStr() + " 00:00:00";
+        String currentLastMonthFirstDayStr = DateTimeUtil.getCurrentLastMonthFirstDayStr() + DecisionSupportConstants.START_TIME_STR;
         // 上月最后一天日期
-        String currentLastMonthLastDayStr = DateTimeUtil.getCurrentLastMonthLastDayStr() + " 23:59:59";
+        String currentLastMonthLastDayStr = DateTimeUtil.getCurrentLastMonthLastDayStr() + DecisionSupportConstants.END_TIME_STR;
 
-        DecisionWarnWrapperDto decisionWarnWrapperDto = initDecisionWarnWrapper(currentLastMonthFirstDayStr, currentLastMonthLastDayStr);
+        // 查询缺失话术
+        String missConclusionText = sysConfigService.selectConfigByKey(missConclusionTextKey);
+
+        DecisionWarnWrapperDto decisionWarnWrapperDto = initDecisionWarnWrapper(currentLastMonthFirstDayStr, currentLastMonthLastDayStr, missConclusionText);
 
         List<DecisionWarnEntity> result = baseMapper.selectList(new LambdaQueryWrapper<DecisionWarnEntity>()
                 .between(DecisionWarnEntity::getCreateTime, currentLastMonthFirstDayStr, currentLastMonthLastDayStr)
@@ -126,9 +144,9 @@ public class DecisionSupportScreenService extends ServiceImpl<DecisionWarnMapper
         List<DecisionWarnEntity> list = warnHandle(decisionList);
 
         // 上月第一天日期
-        String currentMonthFirstDayStr = DateTimeUtil.getCurrentMonthFirstDayStr() + " 00:00:00";
+        String currentMonthFirstDayStr = DateTimeUtil.getCurrentMonthFirstDayStr() + DecisionSupportConstants.START_TIME_STR;
         // 上月最后一天日期
-        String currentMonthLastDayStr = DateTimeUtil.getCurrentMonthLastDayStr() + " 23:59:59";
+        String currentMonthLastDayStr = DateTimeUtil.getCurrentMonthLastDayStr() + DecisionSupportConstants.END_TIME_STR;
 
         // 先查询本月是否已经存在生成分析的数据，如果存在 则先删除本月数据
         LambdaQueryWrapper<DecisionWarnEntity> queryWrapper = new LambdaQueryWrapper<DecisionWarnEntity>()
@@ -195,58 +213,72 @@ public class DecisionSupportScreenService extends ServiceImpl<DecisionWarnMapper
 
             // 省内游客
             case DecisionSupportTargetConstants.SNYK :
+                result = DecisionExecute.get(DecisionStrategyEnum.PROVINCE_INSIDE_TOUR, entity);
                 break;
 
             // 整体游客
             case DecisionSupportTargetConstants.ZTYK :
+                result = DecisionExecute.get(DecisionStrategyEnum.PROVINCE_ALL_TOUR, entity);
                 break;
 
             // 整体景区客流
             case DecisionSupportTargetConstants.ZTJQKL :
+                result = DecisionExecute.get(DecisionStrategyEnum.OVERALL_SCENIC_SPOTS_TOURIST_FLOW, entity);
                 break;
 
             // 景区客流排行
             case DecisionSupportTargetConstants.JQKLPH :
+                result = DecisionExecute.get(DecisionStrategyEnum.OVERALL_SCENIC_SPOTS_TOURIST_FLOW_RANKING, entity);
                 break;
 
             // 整体景区满意度
             case DecisionSupportTargetConstants.ZTJQMYD :
+                result = DecisionExecute.get(DecisionStrategyEnum.OVERALL_SCENIC_SPOTS_SATISFACTION, entity);
                 break;
 
             // 景区满意度排行
             case DecisionSupportTargetConstants.JQMYDPH :
+                result = DecisionExecute.get(DecisionStrategyEnum.OVERALL_SCENIC_SPOTS_SATISFACTION_RANKING, entity);
                 break;
 
             // 整体酒店民宿满意度
             case DecisionSupportTargetConstants.ZTJDMSMYD :
+                result = DecisionExecute.get(DecisionStrategyEnum.OVERALL_HOTEL_HOMESTAY_SATISFACTION, entity);
                 break;
 
             // 酒店民宿满意度排行
             case DecisionSupportTargetConstants.JDMSMYDPH :
+                result = DecisionExecute.get(DecisionStrategyEnum.OVERALL_HOTEL_HOMESTAY_SATISFACTION_RANKING, entity);
                 break;
 
             // 投诉量
             case DecisionSupportTargetConstants.TSL :
+                result = DecisionExecute.get(DecisionStrategyEnum.ONE_TRAVEL_COMPLAINTS_NUMBER, entity);
                 break;
 
             // 订单量
             case DecisionSupportTargetConstants.DDL :
+                result = DecisionExecute.get(DecisionStrategyEnum.ONE_TRAVEL_ORDER_NUMBER, entity);
                 break;
 
             // 交易额
             case DecisionSupportTargetConstants.JYE :
+                result = DecisionExecute.get(DecisionStrategyEnum.ONE_TRAVEL_TRANSACTIONS_NUMBER, entity);
                 break;
 
             // 旅游投诉
             case DecisionSupportTargetConstants.LYTS :
+                result = DecisionExecute.get(DecisionStrategyEnum.TOURIST_COMPLAINTS, entity);
                 break;
 
             // 应急事件统计
             case DecisionSupportTargetConstants.YJSJTJ :
+                result = DecisionExecute.get(DecisionStrategyEnum.EMERGENCY_EVENT, entity);
                 break;
 
             // 高发应急事件
             case DecisionSupportTargetConstants.GBFYJSJ :
+                result = DecisionExecute.get(DecisionStrategyEnum.HIGH_INCIDENCE_EMERGENCY_EVENT, entity);
                 break;
 
             default:
@@ -272,31 +304,6 @@ public class DecisionSupportScreenService extends ServiceImpl<DecisionWarnMapper
         int id = entity.getConfigId().intValue();
 
         switch (id) {
-
-
-            // 省内游客 _省内游客数量 （数值）
-            case DecisionSupportConstants.SNYK_SNYKSL :
-                break;
-
-            // 省内游客 _环比变化（较上月） （数值）
-            case DecisionSupportConstants.SNYK_HBBH :
-                break;
-
-            // 省内游客 _同比变化（较去年同月） （数值）
-            case DecisionSupportConstants.SNYK_TBBH :
-                break;
-
-            // 整体游客 _整体游客数量 （数值）
-            case DecisionSupportConstants.ZTYK_ZTYKSL :
-                break;
-
-            // 整体游客 _环比变化（较上月） （数值）
-            case DecisionSupportConstants.ZTYK_HBBH :
-                break;
-
-            // 整体游客 _同比变化（较去年同月） （数值）
-            case DecisionSupportConstants.ZTYK_TBBH :
-                break;
 
             // 整体景区客流 _全部景区接待数量 （数值）
             case DecisionSupportConstants.ZTJQKL_QBJQJDSL :
@@ -405,18 +412,6 @@ public class DecisionSupportScreenService extends ServiceImpl<DecisionWarnMapper
             case DecisionSupportConstants.JDMSMYDPH_TBBH :
                 break;
 
-            // 投诉量_一码游投诉数量 （数值）
-            case DecisionSupportConstants.TSL_YMYTSL :
-                break;
-
-            // 投诉量_环比变化（较上月） （数值）
-            case DecisionSupportConstants.TSL_HBBH :
-                break;
-
-            // 投诉量_同比变化（较去年同月） （数值）
-            case DecisionSupportConstants.TSL_TBBH :
-                break;
-
             // 订单量_一码游订单数量 （数值）
             case DecisionSupportConstants.DDL_YMLDDSL :
                 break;
@@ -504,23 +499,6 @@ public class DecisionSupportScreenService extends ServiceImpl<DecisionWarnMapper
         result.setWarnName(entity.getConfigName());
         switch (id) {
 
-
-            // 省内游客 _统计年月 （文本）
-            case DecisionSupportConstants.SNYK_TJNY :
-                break;
-
-            // 省内游客 _平台简称 （文本）
-            case DecisionSupportConstants.SNYK_PTJC :
-                break;
-
-            // 整体游客 _统计年月 （文本）
-            case DecisionSupportConstants.ZTYK_TJNY :
-                break;
-
-            // 整体游客 _平台简称 （文本）
-            case DecisionSupportConstants.ZTYK_PTJC :
-                break;
-
             // 整体景区客流 _统计年月 （文本）
             case DecisionSupportConstants.ZTJQKL_TJNY :
                 break;
@@ -567,10 +545,6 @@ public class DecisionSupportScreenService extends ServiceImpl<DecisionWarnMapper
 
             // 酒店民宿满意度排行 _其他满意度下降酒店民宿名称 （文本）
             case DecisionSupportConstants.JDMSMYDPH_QTMYDXJJDMSMC :
-                break;
-
-            // 投诉量_统计年月 （文本）
-            case DecisionSupportConstants.TSL_TJNY :
                 break;
 
             // 订单量_统计年月 （文本）
@@ -634,15 +608,19 @@ public class DecisionSupportScreenService extends ServiceImpl<DecisionWarnMapper
                 new LambdaQueryWrapper<DecisionWarnEntity>()
                 .eq(DecisionWarnEntity::getAlarmType, type)
                 .between(DecisionWarnEntity::getCreateTime, beginTime, endTime)
+                .ne(DecisionWarnEntity::getTargetId, DecisionSupportTargetConstants.ZHGK)
         );
     }
 
     /**
      * 初始化DecisionWarnWrapperDto，默认赋值
      *
+     * @param beginTime
+     * @param endTime
+     * @param missConclusionText 缺失话术
      * @return
      */
-    private DecisionWarnWrapperDto initDecisionWarnWrapper (String beginTime, String endTime) {
+    private DecisionWarnWrapperDto initDecisionWarnWrapper (String beginTime, String endTime, String missConclusionText) {
         // 低风险项数目
         Integer lowRiskNum = findRiskNumber(DecisionSupportConstants.LOW_RISK_TYPE, beginTime, endTime);
         // 中风险项数目
@@ -651,9 +629,29 @@ public class DecisionSupportScreenService extends ServiceImpl<DecisionWarnMapper
         Integer  highRiskNum =findRiskNumber(DecisionSupportConstants.HIGH_RISK_TYPE, beginTime, endTime);
 
         // 获取上次分析时间
-        String lastAnalyzeDate = String.valueOf(redisTemplate.opsForValue().get(DecisionSupportConstants.LAST_ANALYZE_DATE_KEY));
+        Object lastTime = redisTemplate.opsForValue().get(DecisionSupportConstants.LAST_ANALYZE_DATE_KEY);
+
+        // 设置本次分析时间
+        redisTemplate.opsForValue().set(DecisionSupportConstants.LAST_ANALYZE_DATE_KEY, DateTimeUtil.getCurrentTime());
+
+        String lastAnalyzeDate = "";
+        if (!ObjectUtils.isEmpty(lastTime)) {
+            lastAnalyzeDate = String.valueOf(lastTime);
+        }
+
+        String conclusionText = missConclusionText;
+
+        // 查询概况设置的话术
+        DecisionWarnEntity comprehensive = baseMapper.selectOne(new LambdaQueryWrapper<DecisionWarnEntity>()
+                .eq(DecisionWarnEntity::getTargetId, DecisionSupportTargetConstants.ZHGK)
+                .between(DecisionWarnEntity::getCreateTime, beginTime, endTime));
+        // 概况是否使用缺失话术
+        if (!DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT.equals(comprehensive.getIsUseMissConclusionText())) {
+            conclusionText = comprehensive.getConclusionText();
+        }
 
         return  DecisionWarnWrapperDto.builder()
+                .conclusionText(conclusionText)
                 .warnTotal(lowRiskNum + mediumRiskNum + highRiskNum)
                 .lowRiskNum(lowRiskNum)
                 .mediumRiskNum(mediumRiskNum)

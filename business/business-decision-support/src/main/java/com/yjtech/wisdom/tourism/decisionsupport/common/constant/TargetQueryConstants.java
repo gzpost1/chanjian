@@ -21,10 +21,10 @@ public class TargetQueryConstants {
     /**
      * 省外客流 环比
      */
-    public static final String PROVINCE_OUTSIDE_SCALE_HB = "0";
+    public static final String PROVINCE_SCALE_HB = "0";
 
     /**
      * 省外客流 同比
      */
-    public static final String PROVINCE_OUTSIDE_SCALE_TB = "1";
+    public static final String PROVINCE_SCALE_TB = "1";
 }

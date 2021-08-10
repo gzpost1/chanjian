@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Optional;
 
 import static com.yjtech.wisdom.tourism.common.utils.StringUtils.isNull;
@@ -46,6 +47,16 @@ public class ScenicController {
     @PostMapping("/queryForPage")
     public JsonResult<IPage<ScenicEntity>> queryForPage(@RequestBody ScenicPageQuery query) {
         return JsonResult.success(scenicService.queryForPage(query));
+    }
+
+    /**
+     * 全部查询
+     * @Param:  query
+     * @return:
+     */
+    @PostMapping("/queryForList")
+    public JsonResult<List<ScenicEntity>> queryForPage() {
+        return JsonResult.success(scenicService.list());
     }
 
     /**

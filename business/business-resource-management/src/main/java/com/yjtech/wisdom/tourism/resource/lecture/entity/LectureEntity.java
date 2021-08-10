@@ -72,8 +72,7 @@ public class LectureEntity implements Serializable {
     /**
      * 联系电话
      */
-    @TableField(typeHandler = JsonTypeHandler.class)
-    private List<String> phone;
+    private String phone;
 
     /**
      * 举办地点

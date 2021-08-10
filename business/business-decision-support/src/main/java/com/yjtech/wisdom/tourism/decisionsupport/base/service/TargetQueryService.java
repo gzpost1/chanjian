@@ -2,7 +2,6 @@ package com.yjtech.wisdom.tourism.decisionsupport.base.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.yjtech.wisdom.tourism.common.constant.DecisionSupportConstants;
 import com.yjtech.wisdom.tourism.common.path.DistrictPathEnum;
 import com.yjtech.wisdom.tourism.common.utils.DateTimeUtil;
 import com.yjtech.wisdom.tourism.common.utils.JsonUtils;
@@ -37,8 +36,6 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @Service
 public class TargetQueryService {
-
-
 
     @Autowired
     private TargetLibraryMapper targetLibraryMapper;
@@ -130,13 +127,13 @@ public class TargetQueryService {
     }
 
     /**
-     * 省外客流环比、同比数据查询
+     * 省 客流环比、同比数据查询
      *
      * @param sign
      */
-    public String queryProvinceOutsideScale(String sign) {
+    public String queryProvinceInsideScale(String sign, String statisticsType) {
         PassengerFlowVo passengerFlowVo = new PassengerFlowVo();
-        passengerFlowVo.setStatisticsType(TargetQueryConstants.PROVINCE_OUTSIDE_TYPE);
+        passengerFlowVo.setStatisticsType(statisticsType);
         passengerFlowVo.setBeginTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentYearStr() + TargetQueryConstants.FIRST_STRING));
         passengerFlowVo.setEndTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentYearStr() + TargetQueryConstants.END_STRING));
         passengerFlowVo.setType((byte)2);
@@ -149,11 +146,11 @@ public class TargetQueryService {
         yearPassengerFlowDto.forEach(v -> {
             if (currentLastMonthStr.equals(v.getDate())) {
                 // 环比
-                if (TargetQueryConstants.PROVINCE_OUTSIDE_SCALE_HB.equals(sign)) {
+                if (TargetQueryConstants.PROVINCE_SCALE_HB.equals(sign)) {
                     scale.set(v.getHbScale());
                 }
                 // 同比
-                else if (TargetQueryConstants.PROVINCE_OUTSIDE_SCALE_TB.equals(sign)) {
+                else if (TargetQueryConstants.PROVINCE_SCALE_TB.equals(sign)) {
                     scale.set(v.getTbScale());
                 }
             }

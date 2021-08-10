@@ -33,6 +33,7 @@ public class VenueMangerController {
      */
     @PostMapping("/queryPage")
     private JsonResult<IPage<VenueDto>> queryPage (@RequestBody @Validated VenueVo vo) {
+        vo.setStatus((byte)1);
         return JsonResult.success(venueMangerService.queryPage(vo));
     }
 

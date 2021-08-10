@@ -6,7 +6,6 @@ import com.google.common.collect.Lists;
 import com.yjtech.wisdom.tourism.common.constant.DecisionSupportConstants;
 import com.yjtech.wisdom.tourism.common.enums.DecisionSupportConfigEnum;
 import com.yjtech.wisdom.tourism.common.utils.DateTimeUtil;
-import com.yjtech.wisdom.tourism.common.utils.MathUtil;
 import com.yjtech.wisdom.tourism.decisionsupport.base.service.TargetQueryService;
 import com.yjtech.wisdom.tourism.decisionsupport.business.dto.ComprehensiveAlarmDataDto;
 import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionEntity;
@@ -20,7 +19,6 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -118,9 +116,8 @@ public class ComprehensiveStrategyImpl extends BaseStrategy {
                     Integer totalRiskNumber = 0;
                     if (!ObjectUtils.isEmpty(lastMonthAlarmData)) {
                         totalRiskNumber = lastMonthAlarmData.getTotalRiskNumber();
-
-                    }else {
                     }
+
                     // 计算比例
                     String scale = computeScale(currentAlarmData.getTotalRiskNumber(), totalRiskNumber);
                     // 数值报警处理
@@ -139,6 +136,7 @@ public class ComprehensiveStrategyImpl extends BaseStrategy {
                     if (!ObjectUtils.isEmpty(lastMonthAlarmData)) {
                         highRiskNumber = lastMonthAlarmData.getHighRiskNumber();
                     }
+
                     // 计算比例
                     String scale = computeScale(currentAlarmData.getHighRiskNumber(), highRiskNumber);
                     // 数值报警处理
@@ -157,6 +155,7 @@ public class ComprehensiveStrategyImpl extends BaseStrategy {
                     if (!ObjectUtils.isEmpty(lastMonthAlarmData)) {
                         mediumRiskNumber = lastMonthAlarmData.getMediumRiskNumber();
                     }
+
                     // 计算比例
                     String scale = computeScale(currentAlarmData.getMediumRiskNumber(), mediumRiskNumber);
                     // 数值报警处理
@@ -176,6 +175,7 @@ public class ComprehensiveStrategyImpl extends BaseStrategy {
                     if (!ObjectUtils.isEmpty(lastMonthAlarmData)) {
                         lowRiskNumber = lastMonthAlarmData.getLowRiskNumber();
                     }
+
                     // 计算比例
                     String scale = computeScale(currentAlarmData.getLowRiskNumber(), lowRiskNumber);
                     // 数值报警处理
@@ -224,20 +224,6 @@ public class ComprehensiveStrategyImpl extends BaseStrategy {
             );
             result.setConclusionText(conclusionText);
         }
-    }
-
-    /**
-     * 计算比例
-     *
-     * @param cs 除数
-     * @param bcs 被除数
-     */
-    private String computeScale(Integer cs, Integer bcs) {
-        if (0 != cs) {
-            // 比例 = （本月生成 - 上月生成 ）/ 本月生成
-            return MathUtil.calPercent(new BigDecimal(cs - bcs), new BigDecimal(cs), 2).toString();
-        }
-        return "-";
     }
 
     /**

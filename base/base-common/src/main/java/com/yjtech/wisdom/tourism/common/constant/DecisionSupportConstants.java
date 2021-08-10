@@ -9,6 +9,35 @@ package com.yjtech.wisdom.tourism.common.constant;
 public class DecisionSupportConstants {
 
     /**
+     * 开始日期拼接字符串
+     */
+    public static final String START_TIME_STR = " 00:00:00";
+
+    /**
+     * 结束日期拼接字符串
+     */
+    public static final String END_TIME_STR = " 23:59:59";
+
+
+
+    /**
+     * 缺失话术类型-使用
+     */
+    public final static Byte USE_MISS_CONCLUSION_TEXT = 1;
+
+
+    /**
+     * 缺失话术数值类型 默认值
+     */
+    public final static Integer MISS_CONCLUSION_TEXT_NUMBER_VALUE = 0;
+    /**
+     * 缺失话术数值比例类型 默认值
+     */
+    public final static String MISS_CONCLUSION_TEXT_SCALE_VALUE = "-";
+
+
+
+    /**
      * 省外访客类型 10.到访全部游客(默认),11.到访省内游客 12.到访省外游客 20.出访全部游客 21.出访省内游客 22.出访省外游客
      */
     public final static String PROVINCE_OUTSIDE_TYPE = "12";
@@ -17,6 +46,11 @@ public class DecisionSupportConstants {
      * 省内访客类型 10.到访全部游客(默认),11.到访省内游客 12.到访省外游客 20.出访全部游客 21.出访省内游客 22.出访省外游客
      */
     public final static String PROVINCE_INSIDE_TYPE = "11";
+
+    /**
+     * 省内访客类型 10.到访全部游客(默认),11.到访省内游客 12.到访省外游客 20.出访全部游客 21.出访省内游客 22.出访省外游客
+     */
+    public final static String PROVINCE_ALL_TYPE = "10";
 
 
 

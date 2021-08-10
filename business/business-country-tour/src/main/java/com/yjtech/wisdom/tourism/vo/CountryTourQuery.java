@@ -16,7 +16,7 @@ public class CountryTourQuery extends PageQuery {
     /**
      * 类型 包括：乡村田园、森林休闲、草原休闲、渔猎渔家。可通过字段管理配置。
      */
-    private Integer type;
+    private String type;
     /**
      * 启停用状态
      */
