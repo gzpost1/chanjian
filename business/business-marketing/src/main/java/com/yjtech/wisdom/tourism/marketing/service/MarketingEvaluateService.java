@@ -1,6 +1,7 @@
 package com.yjtech.wisdom.tourism.marketing.service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
 import com.yjtech.wisdom.tourism.common.bean.zc.params.ZcOtaEvaluateParam;
 import com.yjtech.wisdom.tourism.common.bean.zc.po.ZcOtaEvaluatePO;
 import com.yjtech.wisdom.tourism.common.enums.DataSourceTypeEnum;
@@ -13,6 +14,7 @@ import com.yjtech.wisdom.tourism.marketing.pojo.dto.AnalysisMonthChartInfo;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.TouristAttentionScreenDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.evaluate.*;
 import com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateRankingVO;
+import com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateScreenQueryVO;
 import com.yjtech.wisdom.tourism.marketing.pojo.vo.ScreenAnalysisQueryVO;
 import com.yjtech.wisdom.tourism.marketing.utils.ServiceUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -145,5 +147,13 @@ public class MarketingEvaluateService extends ServiceImpl<MarketingEvaluateMappe
         return new TouristAttentionScreenDTO(rankingInfo, impression, businessInfo, sourcesInfo, month, day);
     }
 
+    /**
+     * 查询评价类型分布
+     * @param vo
+     * @return
+     */
+    public List<BasePercentVO> queryEvaluateTypeDistribution(EvaluateScreenQueryVO vo){
+        return baseMapper.queryEvaluateTypeDistribution(vo);
+    }
 
 }

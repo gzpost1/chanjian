@@ -8,28 +8,28 @@
         insert into tb_marketing_evaluate
         (id,create_time,update_time,create_user,update_user,deleted,area_code,tp_id,place_id,place_name,evaluate_content,evaluate_time,evaluate_type,data_type,keywords,rate,resource_info,data_create_time,data_update_time,source_platform,source_platform_id)
         values
-        <foreach collection="params" item="item" index="index" separator="," >
-        (#{item.id},#{item.createTime},#{item.updateTime},#{item.createUser},#{item.updateUser},#{item.deleted},#{item.areaCode},#{item.tpId},#{item.placeId},#{item.placeName},#{item.evaluateContent},#{item.evaluateTime},#{item.evaluateType},#{item.dataType},#{item.keywords},#{item.rate},#{item.resourceInfo},#{item.dataCreateTime},#{item.dataUpdateTime},#{item.sourcePlatform},#{item.sourcePlatformId})
-    </foreach>
-    ON DUPLICATE KEY UPDATE tp_id = values(tp_id),
-    place_id = values(place_id),
-    place_name = values(place_name),
-    evaluate_content = values(evaluate_content),
-    evaluate_time = values(evaluate_time),
-    evaluate_type = values(evaluate_type),
-    data_type = values(data_type),
-    keywords = values(keywords),
-    rate = values(rate),
-    resource_info = values(resource_info),
-    data_create_time = values(data_create_time),
-    data_update_time = values(data_update_time),
-    source_platform = values(source_platform),
-    source_platform_id = values(source_platform_id)
+        <foreach collection="params" item="item" index="index" separator=",">
+            (#{item.id},#{item.createTime},#{item.updateTime},#{item.createUser},#{item.updateUser},#{item.deleted},#{item.areaCode},#{item.tpId},#{item.placeId},#{item.placeName},#{item.evaluateContent},#{item.evaluateTime},#{item.evaluateType},#{item.dataType},#{item.keywords},#{item.rate},#{item.resourceInfo},#{item.dataCreateTime},#{item.dataUpdateTime},#{item.sourcePlatform},#{item.sourcePlatformId})
+        </foreach>
+        ON DUPLICATE KEY UPDATE tp_id = values(tp_id),
+        place_id = values(place_id),
+        place_name = values(place_name),
+        evaluate_content = values(evaluate_content),
+        evaluate_time = values(evaluate_time),
+        evaluate_type = values(evaluate_type),
+        data_type = values(data_type),
+        keywords = values(keywords),
+        rate = values(rate),
+        resource_info = values(resource_info),
+        data_create_time = values(data_create_time),
+        data_update_time = values(data_update_time),
+        source_platform = values(source_platform),
+        source_platform_id = values(source_platform_id)
     </insert>
 
 
     <select id="getRankingInfo" parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateRankingVO"
-        resultType="com.yjtech.wisdom.tourism.marketing.pojo.dto.evaluate.EvaluateRankingInfo">
+            resultType="com.yjtech.wisdom.tourism.marketing.pojo.dto.evaluate.EvaluateRankingInfo">
         select
         place_name as placeName,
         (select count(id)
@@ -55,7 +55,8 @@
                 </if>
                 <if test=" params.dataTypeList != null ">
                     p.place_type in
-                    <foreach collection="params.dataTypeList" item="item" index="index" open="(" separator="," close=")">
+                    <foreach collection="params.dataTypeList" item="item" index="index" open="(" separator=","
+                             close=")">
                         #{item}
                     </foreach>
                 </if>
@@ -296,6 +297,45 @@
         </where>
         ) as current
     </select>
+
+    <select id="queryEvaluateTypeDistribution" resultType="com.yjtech.wisdom.tourism.common.bean.BasePercentVO"
+            parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateScreenQueryVO">
+        select
+        CASE
+        WHEN evaluate_type = 0 THEN '差评'
+        WHEN evaluate_type = 1 THEN '中评'
+        WHEN evaluate_type = 2 THEN '好评'
+        ELSE '其他' END as name,
+        COUNT(id) as value,
+        COALESCE (ROUND(COUNT(id)/total.totalNum, 3)*100,0) as rate
+        from
+        tb_marketing_evaluate as evaluate
+        INNER JOIN
+        (select
+        count(id) as totalNum
+        from
+        tb_marketing_evaluate
+        <where>
+            <include refid="base_screen_query_condition"/>
+        </where>
+        ) as total ON 1 = 1
+        <where>
+            <include refid="base_screen_query_condition"/>
+        </where>
+        GROUP BY status
+    </select>
+
+    <sql id="base_screen_query_condition">
+        <if test="params != null">
+            <if test="params.beginTime != null">
+                <![CDATA[ evaluate_time >= #{params.beginTime} ]]> and
+            </if>
+            <if test="params.endTime != null">
+                <![CDATA[ evaluate_time <= #{params.endTime} ]]> and
+            </if>
+        </if>
+        deleted = 0
+    </sql>
 
     <sql id="query_screen_where">
         <if test="params!=null">

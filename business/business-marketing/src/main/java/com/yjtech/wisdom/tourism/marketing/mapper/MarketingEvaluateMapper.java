@@ -1,10 +1,12 @@
 package com.yjtech.wisdom.tourism.marketing.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
 import com.yjtech.wisdom.tourism.marketing.entity.TbMarketingEvaluateEntity;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.AnalysisMonthChartInfo;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.evaluate.*;
 import com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateRankingVO;
+import com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateScreenQueryVO;
 import com.yjtech.wisdom.tourism.marketing.pojo.vo.ScreenAnalysisQueryVO;
 import org.apache.ibatis.annotations.Param;
 
@@ -93,5 +95,12 @@ public interface MarketingEvaluateMapper extends BaseMapper<TbMarketingEvaluateE
      * @return
      */
     List<AnalysisMonthChartInfo> getLastAnalysisMonthInfo(@Param("areaCode") String areaCode);
+
+    /**
+     * 查询评价类型分布
+     * @param params
+     * @return
+     */
+    List<BasePercentVO> queryEvaluateTypeDistribution(@Param("params") EvaluateScreenQueryVO params);
 
 }

@@ -1,10 +1,11 @@
 package com.yjtech.wisdom.tourism.command.vo.travelcomplaint;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.yjtech.wisdom.tourism.mybatis.entity.PageQuery;
 import lombok.Data;
 import org.hibernate.validator.constraints.Range;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * 旅游投诉 查询VO
@@ -53,12 +54,14 @@ public class TravelComplaintQueryVO extends PageQuery {
     /**
      * 开始时间
      */
-    private LocalDate beginTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    private LocalDateTime beginTime;
 
     /**
      * 结束时间
      */
-    private LocalDate endTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    private LocalDateTime endTime;
 
     /**
      * 创建人id
