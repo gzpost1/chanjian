@@ -3,17 +3,17 @@ package com.yjtech.wisdom.tourism.hotel.entity;
 import com.baomidou.mybatisplus.annotation.*;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.yjtech.wisdom.tourism.infrastructure.constant.EntityConstants;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 /**
  * <p>
-    * 
+    *
     * </p>
  *
  * @author MJ~
@@ -45,6 +45,18 @@ public class TbHotelHouseTypeEntity extends Model<TbHotelHouseTypeEntity> {
      * 房型数量
      */
     private Integer num;
+
+    /**
+     * 房型价格
+     */
+    private BigDecimal price;
+
+    /**
+     * 价格时间
+     */
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime priceTime;
 
     /**
      * 创建时间
