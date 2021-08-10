@@ -2,6 +2,7 @@ package com.yjtech.wisdom.tourism.command.service.meeting;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.common.collect.Maps;
 import com.yjtech.wisdom.tourism.command.dto.meeting.AudioMeetingDto;
 import com.yjtech.wisdom.tourism.command.entity.meeting.AudioMeetingEntity;
 import com.yjtech.wisdom.tourism.command.mapper.meeting.AudioMeetingMapper;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -36,7 +38,7 @@ public class AudioMeetingService extends ServiceImpl<AudioMeetingMapper, AudioMe
      * @param createDto
      * @return
      */
-    public String login( AudioMeetingDto createDto) {
+    public HashMap<String, Object> login( AudioMeetingDto createDto) {
 
         /**
          *  1加入会议时判断当前平台已经有该会议编号的会议正在举行，若无，则创建并加入该会议
@@ -63,13 +65,17 @@ public class AudioMeetingService extends ServiceImpl<AudioMeetingMapper, AudioMe
             }
             this.getBaseMapper().minusInventory(audioMeetingEntity.getId(), 1);
         }
+        Integer uid = Integer.valueOf(configService.selectConfigByKey(EventContants.AGORA_UID));
         String token = this.getToken(configService.selectConfigByKey(EventContants.AGORA_APPID),
                 configService.selectConfigByKey(EventContants.agora_appcertificate),
                 createDto.getCode(),
-                Integer.valueOf(configService.selectConfigByKey(EventContants.AGORA_UID)),
+                uid,
                 Integer.valueOf(configService.selectConfigByKey(EventContants.AUDIO_MEETING_EXPIRE))
         );
-        return token;
+        HashMap<String, Object> result = Maps.newHashMap();
+        result.put("uid",uid);
+        result.put("token",token);
+        return result;
     }
 
 
