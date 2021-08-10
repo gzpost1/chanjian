@@ -25,7 +25,7 @@
         <module>business-decision-support</module>
         <module>business-position</module>
         <module>business-hotel</module>
-        <!--<module>business-marketing</module>-->
+        <module>business-marketing</module>
     </modules>
 
     <dependencies>

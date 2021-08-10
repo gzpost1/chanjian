@@ -4,12 +4,10 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yjtech.wisdom.tourism.resource.depot.entity.DepotSourceSummaryEntity;
-import com.yjtech.wisdom.tourism.resource.depot.entity.dto.DepotSourceBaseDto;
 import com.yjtech.wisdom.tourism.resource.depot.entity.vo.DepotBaseVo;
 import com.yjtech.wisdom.tourism.resource.depot.mapper.DepotSourceSummaryMapper;
 import com.yjtech.wisdom.tourism.resource.depot.query.DepotPageSummaryQuery;
 import com.yjtech.wisdom.tourism.resource.depot.query.DepotSummaryQuery;
-import com.yjtech.wisdom.tourism.resource.depot.query.DepotTimeTypeAndPageQuery;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,12 +31,12 @@ public class DepotSourceSummaryService extends ServiceImpl<DepotSourceSummaryMap
         return baseMapper.queryDistributionMaps(query);
     }
 
-    /** 
+    /**
      * @Description: 车辆来源省份
      * @Param:  timeType 1-年 2-月 3-周  4-日
      * @return:  List
      * @Author: zc
-     * @Date: 2021-07-05 
+     * @Date: 2021-07-05
      */
     public IPage<DepotBaseVo> querySourceOfProvince(DepotPageSummaryQuery query){
         return baseMapper.querySourceOfProvince(new Page<>(query.getPageNo(), query.getPageSize()), query);
