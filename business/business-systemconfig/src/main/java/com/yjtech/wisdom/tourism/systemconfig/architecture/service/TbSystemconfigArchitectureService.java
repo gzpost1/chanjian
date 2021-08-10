@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
 import com.yjtech.wisdom.tourism.common.core.domain.UpdateStatusParam;
 import com.yjtech.wisdom.tourism.common.utils.IdWorker;
-import com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysDictData;
 import com.yjtech.wisdom.tourism.infrastructure.utils.TreeUtil;
 import com.yjtech.wisdom.tourism.system.domain.Icon;
 import com.yjtech.wisdom.tourism.system.service.IconService;
@@ -43,7 +42,7 @@ public class TbSystemconfigArchitectureService extends ServiceImpl<TbSystemconfi
     private SystemconfigMenuService systemconfigMenuService;
 
     public IPage<SystemconfigArchitectureDto> queryForPage(SystemconfigArchitecturePageQuery query) {
-        if(Objects.isNull(query.getMenuId())){
+        if (Objects.isNull(query.getMenuId())) {
             query.setMenuId(0L);
         }
 //        //查询自己现在是第几级
@@ -148,6 +147,12 @@ public class TbSystemconfigArchitectureService extends ServiceImpl<TbSystemconfi
         this.baseMapper.updateSortNum(updateStatusParam);
     }
 
+    /**
+     * 	        第二级（有子节点，子节点有展示）	第二级（有子节点，子节点无展示）	第二级（无节点）	最后一级
+     * 展示	       展示	                            展示	                  展示	          展示
+     * 不展示	   展示	                            展示	                  不展示	          不展示
+     * @return
+     */
     public List<MenuTreeNode> getDatavMenu() {
         //查找所有菜单
 
@@ -160,86 +165,162 @@ public class TbSystemconfigArchitectureService extends ServiceImpl<TbSystemconfi
         List<Icon> icons = iconService.querMenuIconList();
 
         List<SystemconfigMenuEntity> pages = systemconfigMenuService.queryMenusByIds(null);
+        Map<Long, List<SystemconfigMenuDatavlDto>> allMenuPage = null;
+
+        if (CollectionUtils.isNotEmpty(pages)) {
+            allMenuPage = pages.stream()
+                    .map(e -> processMenuData(icons, pages, e))
+                    .collect(Collectors.groupingBy(SystemconfigMenuDatavlDto::getId));
+        }
+
+        Map<Long, List<SystemconfigMenuDatavlDto>> finalAllMenuPage = allMenuPage;
+        //已经存在的跳转url，用于跳出循坏依赖
+        List<String> constantRedirectUrl = new ArrayList<>();
 
         treeNodeList = treeNodeList.stream()
-                .filter(e -> {
-                    boolean flag = StringUtils.equals("1", e.getIsShow() + "") && !StringUtils.equals(e.getParentId(),"0");
-                    return flag;
-                })
                 .map(e -> {
-                    SystemconfigMenuDatavlDto dto = new SystemconfigMenuDatavlDto();
-                    SystemconfigMenuEntity nowPage = null;
+
+                    if (finalAllMenuPage != null && finalAllMenuPage.containsKey(e.getPageId())) {
+                        SystemconfigMenuDatavlDto dto = finalAllMenuPage.get(e.getPageId()).get(0);
+                        //processRedirectMenu(constantRedirectUrl, dto, finalAllMenuPage);
+                        e.setPageData(dto);
+                    }
+
+                    return e;
+                }).collect(Collectors.toList());
+        List<MenuTreeNode> menuTreeNodes = TreeUtil.makeTree(treeNodeList);
+        processMenuIsShow(menuTreeNodes);
+        return menuTreeNodes;
+    }
+    public SystemconfigMenuDatavlDto getRedirectPageData(Long id) {
+        //查找所有点位图标
+        List<Icon> icons = iconService.querMenuIconList();
+
+        List<SystemconfigMenuEntity> pages = systemconfigMenuService.queryMenusByIds(null);
+        Map<Long, List<SystemconfigMenuDatavlDto>> allMenuPage = null;
+
+        if (CollectionUtils.isNotEmpty(pages)) {
+            allMenuPage = pages.stream()
+                    .map(e -> processMenuData(icons, pages, e))
+                    .collect(Collectors.groupingBy(SystemconfigMenuDatavlDto::getId));
+        }else {
+            return null;
+        }
+        return allMenuPage.get(id).get(0);
+    }
+
+    /**
+     * 处理节点是否显示
+     * @param makeTree
+     */
+    private void processMenuIsShow(List<MenuTreeNode> makeTree) {
+        if(CollectionUtils.isNotEmpty(makeTree)){
+            Iterator<MenuTreeNode> iterator = makeTree.iterator();
+            while (iterator.hasNext()) {
+                MenuTreeNode next = iterator.next();
+
+                if(Objects.isNull(next.getPageId()) && StringUtils.equals("0",next.getIsShow()+"")){
+                    iterator.remove();
+                }
+                if(CollectionUtils.isEmpty(next.getChildren()) && Objects.isNull(next.getPageId())){
+                    iterator.remove();
+                }
+            }
+        }
+    }
+
+    /**
+     * 跳转添加页面
+     * @param constantRedirectUrl
+     * @param dto
+     * @param allMenuPage
+     */
+    private void processRedirectMenu(List<String> constantRedirectUrl, SystemconfigMenuDatavlDto dto, Map<Long, List<SystemconfigMenuDatavlDto>> allMenuPage) {
+        if (CollectionUtils.isNotEmpty(dto.getChartData())) {
+            for (MenuChartDetailDatavDto chartDatum : dto.getChartData()) {
+                if (Objects.nonNull(chartDatum.getRedirectId()) &&
+                        !constantRedirectUrl.contains(StringUtils.join(chartDatum.getId(), "&", chartDatum.getRedirectId())) &&
+                        allMenuPage.containsKey(Long.valueOf(chartDatum.getRedirectId()))
+                ) {
+                    //跳转的菜单
+                    SystemconfigMenuDatavlDto redirectMenu = allMenuPage.get(Long.valueOf(chartDatum.getRedirectId())).get(0);
+                    chartDatum.setRedirectMenuData(redirectMenu);
+                    constantRedirectUrl.add(StringUtils.join(chartDatum.getId(), "&", chartDatum.getRedirectId()));
+                    processRedirectMenu(constantRedirectUrl, redirectMenu, allMenuPage);
+                }
+            }
+        }
+    }
+
+    /**
+     * 处理页面数据
+     *
+     * @param icons 图标
+     * @param pages 所有页面
+     */
+    private SystemconfigMenuDatavlDto processMenuData(List<Icon> icons, List<SystemconfigMenuEntity> pages, SystemconfigMenuEntity nowPage) {
+        SystemconfigMenuDatavlDto dto = new SystemconfigMenuDatavlDto();
+        BeanUtils.copyProperties(nowPage, dto);
+
+        //查找地图标的相关信息
+        if (Objects.nonNull(nowPage) && CollectionUtils.isNotEmpty(nowPage.getChartData())) {
+
+            List<Long> chartId = nowPage.getChartData().stream().filter(chart -> Objects.nonNull(chart.getChartId())).map(chart -> chart.getChartId()).collect(Collectors.toList());
+            if (CollectionUtils.isNotEmpty(chartId)) {
+                //查找所有图表
+                List<MenuChartDetailDatavDto> charts = this.systemconfigMenuService.getMenuChartByIds(chartId);
+                dto.setChartData(charts);
+                //图表的列表
+                List<SystemconfigChartsListDatavDto> chartLists = this.systemconfigMenuService.getMenuChartListByIds(chartId);
+                Map<Long, List<SystemconfigChartsListDatavDto>> cahrtListMaps = new LinkedHashMap<>();
+                if (CollectionUtils.isNotEmpty(chartLists)) {
+                    cahrtListMaps = chartLists.stream().collect(Collectors.groupingBy(SystemconfigChartsListDatavDto::getChartId));
+
+                }
+
+                //更新为大屏的名称和坐标
+                for (MenuChartDetailDatavDto chart : charts) {
+                    for (MenuChartDetailDto chartDatum : nowPage.getChartData()) {
+                        if (chart.getId().equals(chartDatum.getChartId())) {
+                            chart.setPointDatas(chartDatum.getPointDatas());
+                            chart.setName(chartDatum.getName());
+                        }
+                    }
+                    //设置列表
+                    List<SystemconfigChartsListDatavDto> systemconfigChartsListDatavDtos = cahrtListMaps.get(chart.getId());
+                    List<SystemconfigChartsListDatavDto> chartList = new ArrayList<>();
+                    if (CollectionUtils.isNotEmpty(systemconfigChartsListDatavDtos)) {
+                        chartList = systemconfigChartsListDatavDtos.stream().sorted(Comparator.comparing(SystemconfigChartsListDatavDto::getSortNum)).collect(Collectors.toList());
+                    }
+                    chart.setListDatas(chartList);
+
+                    //设置点位图表
+                    if (StringUtils.isNotBlank(chart.getPointType()) && CollectionUtils.isNotEmpty(icons)) {
+                        for (Icon icon : icons) {
+                            if (StringUtils.equals(icon.getType(), chart.getPointType())) {
+                                chart.setPointImgUrl(icon.getUrl());
+                            }
+                        }
+                    }
+
+                    //设置图表跳转路径
                     if (CollectionUtils.isNotEmpty(pages)) {
                         for (SystemconfigMenuEntity page : pages) {
-                            if (page.getId().equals(e.getPageId())) {
-                                BeanUtils.copyProperties(page, dto);
-                                nowPage = page;
+                            if (StringUtils.equals("1", chart.getIsRedirect() + "") && StringUtils.equals(chart.getRedirectId(), page.getId() + "")) {
+                                chart.setRedirectPath(page.getRoutePath());
                                 break;
                             }
                         }
                     }
-
-                    //查找地图标的相关信息
-                    if (Objects.nonNull(nowPage) && CollectionUtils.isNotEmpty(nowPage.getChartData())) {
-
-                        List<Long> chartId = nowPage.getChartData().stream().filter(chart -> Objects.nonNull(chart.getChartId())).map(chart -> chart.getChartId()).collect(Collectors.toList());
-                        if (CollectionUtils.isNotEmpty(chartId)) {
-                            //查找所有图表
-                            List<MenuChartDetailDatavDto> charts = this.systemconfigMenuService.getMenuChartByIds(chartId);
-                            dto.setChartData(charts);
-                            //图表的列表
-                            List<SystemconfigChartsListDatavDto> chartLists = this.systemconfigMenuService.getMenuChartListByIds(chartId);
-                            Map<Long, List<SystemconfigChartsListDatavDto>> cahrtListMaps = new LinkedHashMap<>();
-                            if (CollectionUtils.isNotEmpty(chartLists)) {
-                                cahrtListMaps = chartLists.stream().collect(Collectors.groupingBy(SystemconfigChartsListDatavDto::getChartId));
-
-                            }
-
-                            //更新为大屏的名称和坐标
-                            for (MenuChartDetailDatavDto chart : charts) {
-                                for (MenuChartDetailDto chartDatum : nowPage.getChartData()) {
-                                    if(chart.getId().equals(chartDatum.getChartId())){
-                                        chart.setPointDatas(chartDatum.getPointDatas());
-                                        chart.setName(chartDatum.getName());
-                                    }
-                                }
-                                //设置列表
-                                List<SystemconfigChartsListDatavDto> systemconfigChartsListDatavDtos = cahrtListMaps.get(chart.getId());
-                                List<SystemconfigChartsListDatavDto> chartList = new ArrayList<>();
-                                if (CollectionUtils.isNotEmpty(systemconfigChartsListDatavDtos)) {
-                                    chartList = systemconfigChartsListDatavDtos.stream().sorted(Comparator.comparing(SystemconfigChartsListDatavDto::getSortNum)).collect(Collectors.toList());
-                                }
-                                chart.setListDatas(chartList);
-
-                                //设置图表跳转路径
-                                if (CollectionUtils.isNotEmpty(pages)) {
-                                    for (SystemconfigMenuEntity page : pages) {
-                                        if (StringUtils.equals("1", chart.getIsRedirect() + "") && StringUtils.equals(chart.getRedirectId(), page.getId() + "")) {
-                                            chart.setRedirectPath(page.getRoutePath());
-                                            break;
-                                        }
-                                    }
-                                }
-
-                                if(StringUtils.isNotBlank(chart.getPointType()) && CollectionUtils.isNotEmpty(icons)){
-                                    for (Icon icon : icons) {
-                                        if(StringUtils.equals(icon.getType(),chart.getPointType())){
-                                            chart.setPointImgUrl(icon.getUrl());
-                                        }
-                                    }
-                                }
-                            }
-                        } else {
-                            dto.setChartData(new ArrayList<>());
-                        }
-                    }
-
-                    e.setPageData(dto);
-                    return e;
-                }).collect(Collectors.toList());
-
-        return TreeUtil.makeTree(treeNodeList);
+                }
+            } else {
+                dto.setChartData(new ArrayList<>());
+            }
+        }
+        return dto;
     }
+
+
 }
 
 
