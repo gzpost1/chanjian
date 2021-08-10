@@ -2,6 +2,8 @@ package com.yjtech.wisdom.tourism.marketing.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.yjtech.wisdom.tourism.marketing.entity.MarketingPlaceEntity;
+import com.yjtech.wisdom.tourism.marketing.pojo.dto.PlaceInfoDTO;
+import com.yjtech.wisdom.tourism.marketing.pojo.vo.PlaceQueryVO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
