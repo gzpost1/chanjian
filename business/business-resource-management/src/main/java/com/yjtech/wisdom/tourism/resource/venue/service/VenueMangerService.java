@@ -95,5 +95,13 @@ public class VenueMangerService extends BaseMybatisServiceImpl<VenueMapper, Venu
         return result;
     }
 
-
+    /**
+     * 列表查询
+     *
+     * @param params
+     * @return
+     */
+    public List<VenueDto> queryList(VenueVo params) {
+        return JSONObject.parseArray(JSONObject.toJSONString(baseMapper.selectList(null)), VenueDto.class);
+    }
 }
