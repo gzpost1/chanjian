@@ -33,16 +33,16 @@
         where hotel_id=#{id} and deleted=0
     </select>
 
-    <select id="queryForPage" resultType=""
-            parameterType="">
-        select
-        *
-        from
-        tb_hotel_house_type
-        <where>
+    <!--<select id="queryForPage" resultType=""-->
+            <!--parameterType="">-->
+        <!--select-->
+        <!--*-->
+        <!--from-->
+        <!--tb_hotel_house_type-->
+        <!--<where>-->
 
-        </where>
-    </select>
+        <!--</where>-->
+    <!--</select>-->
 
     <sql id="base_screen_query_condition">
         <if test="params != null">

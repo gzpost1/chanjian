@@ -8,6 +8,8 @@ import com.yjtech.wisdom.tourism.common.enums.DataSourceTypeEnum;
 import com.yjtech.wisdom.tourism.common.service.ZcInfoSyncService;
 import com.yjtech.wisdom.tourism.marketing.entity.MarketingPlaceEntity;
 import com.yjtech.wisdom.tourism.marketing.mapper.MarketingPlaceMapper;
+import com.yjtech.wisdom.tourism.marketing.pojo.dto.PlaceInfoDTO;
+import com.yjtech.wisdom.tourism.marketing.pojo.vo.PlaceQueryVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
