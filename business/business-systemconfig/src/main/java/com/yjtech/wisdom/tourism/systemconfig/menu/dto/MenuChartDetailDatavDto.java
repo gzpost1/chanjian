@@ -1,5 +1,6 @@
 package com.yjtech.wisdom.tourism.systemconfig.menu.dto;
 
+import com.yjtech.wisdom.tourism.systemconfig.menu.vo.SystemconfigMenuDatavlDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -62,6 +63,11 @@ public class MenuChartDetailDatavDto {
     private String redirectPath;
 
     /**
+     *  跳转页面数据
+     */
+    private SystemconfigMenuDatavlDto redirectMenuData;
+
+    /**
      * 指标项
      */
     private String indexItem;
@@ -80,5 +86,4 @@ public class MenuChartDetailDatavDto {
      * 表格类型，展示那些字段
      */
     private List<SystemconfigChartsListDatavDto> listDatas = new ArrayList<>();
-
 }

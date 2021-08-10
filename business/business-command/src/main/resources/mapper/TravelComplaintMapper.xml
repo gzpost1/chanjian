@@ -236,17 +236,17 @@
             parameterType="com.yjtech.wisdom.tourism.command.vo.travelcomplaint.TravelComplaintScreenQueryVO">
         select
         CASE
-        WHEN status = 1 THEN (select name from tb_scenic <where> deleted = 0 and status = 1</where>)
-        WHEN status = 2 THEN '酒店'
+        WHEN complaint_type = 1 THEN COALESCE ((select name from tb_scenic <where> deleted = 0 and status = 1 and id = complaint.object_id</where>),'景区')
+        WHEN complaint_type = 2 THEN COALESCE ((select name from tb_hotel_info <where> deleted = 0 and status = 1 and id = complaint.object_id</where>),'酒店')
         ELSE complaint_object END as name,
-        COUNT(id) as value,
+        COUNT(id) as value
         from
-        tb_travel_complaint
+        tb_travel_complaint complaint
         <where>
             <include refid="base_screen_query"/>
         </where>
         <choose>
-            <when test="params.status == 1 or params.status == 2">
+            <when test="params.complaintType == 1 or params.complaintType == 2">
                 GROUP BY object_id
             </when>
             <otherwise>

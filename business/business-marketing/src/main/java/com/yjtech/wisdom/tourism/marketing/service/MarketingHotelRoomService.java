@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yjtech.wisdom.tourism.common.bean.zc.params.ZcHotelRoomParam;
 import com.yjtech.wisdom.tourism.common.bean.zc.po.ZcOtaHotelRoomPO;
 import com.yjtech.wisdom.tourism.common.service.ZcInfoSyncService;
-import com.yjtech.wisdom.tourism.marketing.entity.TbMarketingHotelRoomEntity;
+import com.yjtech.wisdom.tourism.marketing.entity.MarketingHotelRoomEntity;
 import com.yjtech.wisdom.tourism.marketing.mapper.MarketingHotelRoomMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,7 +21,7 @@ import java.util.List;
  * @Date 2020/11/26 9:29
  */
 @Service
-public class MarketingHotelRoomService extends ServiceImpl<MarketingHotelRoomMapper, TbMarketingHotelRoomEntity> {
+public class MarketingHotelRoomService extends ServiceImpl<MarketingHotelRoomMapper, MarketingHotelRoomEntity> {
 
     @Autowired
     private ZcInfoSyncService zcInfoSyncService;
@@ -33,7 +33,7 @@ public class MarketingHotelRoomService extends ServiceImpl<MarketingHotelRoomMap
      */
     @Transactional(rollbackFor = Exception.class)
     public void syncCreate(ZcHotelRoomParam params){
-        List<TbMarketingHotelRoomEntity> saveList = new ArrayList<>();
+        List<MarketingHotelRoomEntity> saveList = new ArrayList<>();
 
         //构建页码
         long pageNum = 1L;
@@ -42,7 +42,7 @@ public class MarketingHotelRoomService extends ServiceImpl<MarketingHotelRoomMap
         //分页获取
         while (!hotelRoomList.isEmpty()) {
             for(ZcOtaHotelRoomPO zcOtaHotelRoomPO : hotelRoomList){
-                TbMarketingHotelRoomEntity entity = new TbMarketingHotelRoomEntity();
+                MarketingHotelRoomEntity entity = new MarketingHotelRoomEntity();
                 entity.build(zcOtaHotelRoomPO);
                 saveList.add(entity);
             }

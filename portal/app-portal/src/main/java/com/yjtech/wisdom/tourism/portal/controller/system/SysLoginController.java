@@ -1,5 +1,6 @@
 package com.yjtech.wisdom.tourism.portal.controller.system;
 
+import com.yjtech.wisdom.tourism.common.core.domain.IdParam;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.common.exception.ErrorCode;
 import com.yjtech.wisdom.tourism.common.utils.ServletUtils;
@@ -13,6 +14,7 @@ import com.yjtech.wisdom.tourism.system.dto.SysUserAllInfoDTO;
 import com.yjtech.wisdom.tourism.system.service.SysMenuService;
 import com.yjtech.wisdom.tourism.systemconfig.architecture.dto.MenuTreeNode;
 import com.yjtech.wisdom.tourism.systemconfig.architecture.service.TbSystemconfigArchitectureService;
+import com.yjtech.wisdom.tourism.systemconfig.menu.vo.SystemconfigMenuDatavlDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.Set;
 import java.util.List;
 
@@ -90,6 +93,16 @@ public class SysLoginController {
     @GetMapping("getRouters")
     public JsonResult<List<MenuTreeNode>> getRouters() {
         return JsonResult.success(service.getDatavMenu());
+    }
+
+    /**
+     * 获取跳转的页面信息
+     * @todo
+     * @return 路由信息
+     */
+    @PostMapping("getRedirectPageData")
+    public JsonResult<SystemconfigMenuDatavlDto> getRedirectPageData(@RequestBody @Valid IdParam idParam) {
+        return JsonResult.success(service.getRedirectPageData(idParam.getId()));
     }
 
 
