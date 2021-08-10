@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 /**
  * 后台管理_文博场馆管理
  *
@@ -37,5 +39,16 @@ public class VenueMangerController extends BaseCurdController<VenueMangerService
    @PostMapping("queryPage")
     public JsonResult<IPage<VenueDto>> queryPage(@RequestBody @Validated VenueVo params) {
         return JsonResult.success(venueMangerService.queryPage(params));
+    }
+
+    /**
+     * 列表查询-最新
+     *
+     * @param params
+     * @return
+     */
+   @PostMapping("queryList")
+    public JsonResult<List<VenueDto>> queryList(@RequestBody VenueVo params) {
+        return JsonResult.success(venueMangerService.queryList(params));
     }
 }

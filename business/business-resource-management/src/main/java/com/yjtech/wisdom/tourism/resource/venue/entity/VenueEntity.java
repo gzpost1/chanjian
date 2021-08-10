@@ -2,6 +2,7 @@ package com.yjtech.wisdom.tourism.resource.venue.entity;
 
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.yjtech.wisdom.tourism.mybatis.typehandler.JsonTypeHandler;
 import lombok.AllArgsConstructor;
@@ -43,7 +44,7 @@ public class VenueEntity implements Serializable {
     /**
      * 场馆类型_通过字典管理配置
      */
-    private String venueType;
+    private String venueType = "venue_type";
 
     /**
      * 场馆类型对应值_通过字典管理配置

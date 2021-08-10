@@ -35,7 +35,7 @@ public class LectureVo extends PageQuery implements Serializable {
     /**
      * 场展演讲类型_通过字典管理配置
      */
-    private String lectureType = "lecture_type";
+    private String lectureType;
 
     /**
      * 场展演讲类型的值_通过字典管理配置

@@ -12,6 +12,7 @@ import com.yjtech.wisdom.tourism.command.query.event.EventQuery;
 import com.yjtech.wisdom.tourism.command.query.event.EventSumaryQuery;
 import com.yjtech.wisdom.tourism.command.service.event.EventService;
 import com.yjtech.wisdom.tourism.command.service.plan.EmergencyPlanService;
+import com.yjtech.wisdom.tourism.command.service.screen.EmergencyEvenScreenService;
 import com.yjtech.wisdom.tourism.command.vo.event.AppEmergencyPlanVO;
 import com.yjtech.wisdom.tourism.command.vo.event.AppEventDetail;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
@@ -45,7 +46,10 @@ import java.util.Objects;
  */
 @RestController
 @RequestMapping("/emergency/event/screen")
-public class EmergencyEvenScreentController {
+public class EmergencyEvenScreenController {
+
+    @Autowired
+    private EmergencyEvenScreenService emergencyEvenScreenService;
 
     @Autowired
     private EmergencyPlanService emergencyPlanService;
@@ -57,8 +61,7 @@ public class EmergencyEvenScreentController {
     @Autowired
     private IconService iconService;
 
-    @Resource
-    private ExtensionExecutor extensionExecutor;
+
 
 
     /**
@@ -130,10 +133,7 @@ public class EmergencyEvenScreentController {
      */
     @PostMapping("/queryEventQuantity")
     public JsonResult<List<BaseVO>> queryEventQuantity(@RequestBody EventSumaryQuery query){
-        return JsonResult.success(
-                extensionExecutor.execute(EventQryExtPt.class,
-                        buildBizScenario(EventExtensionConstant.EVENT_QUANTITY, query.getIsSimulation()),
-                        extension -> extension.queryEventQuantity(query)));
+        return JsonResult.success(emergencyEvenScreenService.queryEventQuantity(query) );
     }
 
 
@@ -145,10 +145,7 @@ public class EmergencyEvenScreentController {
      */
     @PostMapping("/queryTrend")
     public JsonResult<List<BaseValueVO>> querySaleTrend(@RequestBody @Valid EventSumaryQuery query){
-        List<BaseValueVO> trendVOS = extensionExecutor.execute(EventQryExtPt.class,
-                buildBizScenario(EventExtensionConstant.EVENT_QUANTITY, query.getIsSimulation()),
-                extension -> extension.querySaleTrend(query));
-        return JsonResult.success(trendVOS);
+        return JsonResult.success(emergencyEvenScreenService.querySaleTrend(query));
     }
 
     /**
@@ -158,10 +155,7 @@ public class EmergencyEvenScreentController {
      */
     @PostMapping("/queryEventType")
     public JsonResult<List<BaseVO>> queryEventType(@RequestBody @Valid EventSumaryQuery query){
-        List<BaseVO> percentVOS = extensionExecutor.execute(EventQryExtPt.class,
-                buildBizScenario(EventExtensionConstant.EVENT_QUANTITY, query.getIsSimulation()),
-                extension -> extension.queryEventType(query));
-        return JsonResult.success(percentVOS);
+        return JsonResult.success(emergencyEvenScreenService.queryEventType(query));
     }
 
     /**
@@ -171,14 +165,7 @@ public class EmergencyEvenScreentController {
      */
     @PostMapping("/queryLevelType")
     public JsonResult<List<BaseVO>> queryEventLevel(@RequestBody @Valid EventSumaryQuery query){
-        List<BaseVO> baseVOS = extensionExecutor.execute(EventQryExtPt.class,
-                buildBizScenario(EventExtensionConstant.EVENT_QUANTITY, query.getIsSimulation()),
-                extension -> extension.queryEventLevel(query));
-        return JsonResult.success(baseVOS);
+        return JsonResult.success(emergencyEvenScreenService.queryEventLevel(query));
     }
 
-    private BizScenario buildBizScenario(String useCasePraiseType, Integer isSimulation) {
-        return BizScenario.valueOf(ExtensionConstant.BIZ_EVENT, useCasePraiseType
-                , isSimulation == 0 ? ExtensionConstant.SCENARIO_IMPL : ExtensionConstant.SCENARIO_MOCK);
-    }
 }
