@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.HashMap;
 
 /**
  * 音频会议
@@ -32,7 +33,7 @@ public class AudioMeetingController {
      * @return
      */
     @PostMapping("/login")
-    public JsonResult<String> login(@RequestBody @Valid AudioMeetingDto createDto) {
+    public JsonResult<HashMap<String, Object>> login(@RequestBody @Valid AudioMeetingDto createDto) {
         return JsonResult.success(audioMeetingService.login(createDto));
     }
 
