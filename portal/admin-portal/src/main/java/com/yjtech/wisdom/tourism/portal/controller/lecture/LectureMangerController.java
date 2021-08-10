@@ -35,7 +35,6 @@ public class LectureMangerController extends BaseCurdController<LectureMangerSer
      */
     @PostMapping("/queryPage")
     private JsonResult<IPage<LectureDto>> queryPage (@RequestBody @Validated LectureVo vo) {
-        vo.setStatus((byte)1);
         return JsonResult.success(lectureMangerService.queryPage(vo));
     }
 }
