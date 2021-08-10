@@ -16,6 +16,7 @@ import com.yjtech.wisdom.tourism.resource.venue.vo.VenueVo;
 import com.yjtech.wisdom.tourism.system.service.SysDictDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
@@ -44,7 +45,8 @@ public class VenueMangerService extends BaseMybatisServiceImpl<VenueMapper, Venu
                 new Page<>(vo.getPageNo(), vo.getPageSize()),
                 new LambdaQueryWrapper<VenueEntity>()
                     .like(!StringUtils.isEmpty(vo.getVenueName()), VenueEntity::getVenueName, vo.getVenueName())
-                    .eq(VenueEntity::getStatus, 1)
+                    .eq(!ObjectUtils.isEmpty(vo.getStatus()), VenueEntity::getStatus, vo.getStatus())
+                    .eq(!ObjectUtils.isEmpty(vo.getVenueValue()), VenueEntity::getVenueValue, vo.getVenueValue())
                     .orderByDesc(VenueEntity::getUpdateTime))
         .convert(item -> {
             VenueDto venueDto = JSONObject.parseObject(JSONObject.toJSONString(item), VenueDto.class);
@@ -93,5 +95,13 @@ public class VenueMangerService extends BaseMybatisServiceImpl<VenueMapper, Venu
         return result;
     }
 
-
+    /**
+     * 列表查询
+     *
+     * @param params
+     * @return
+     */
+    public List<VenueDto> queryList(VenueVo params) {
+        return JSONObject.parseArray(JSONObject.toJSONString(baseMapper.selectList(null)), VenueDto.class);
+    }
 }

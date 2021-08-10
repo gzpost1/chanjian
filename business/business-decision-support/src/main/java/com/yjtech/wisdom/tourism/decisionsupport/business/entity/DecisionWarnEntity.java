@@ -53,6 +53,16 @@ public class DecisionWarnEntity implements Serializable {
     private String warnNum;
 
     /**
+     * 报警类型-文本
+     */
+    private String alarmTypeText;
+
+    /**
+     * 报警类型
+     */
+    private Integer alarmType;
+
+    /**
      * 月环比
      */
     private String monthHbScale;
@@ -66,6 +76,12 @@ public class DecisionWarnEntity implements Serializable {
      * 话术
      */
     private String conclusionText;
+
+    /**
+     * 是否使用缺失话术 0：不使用 1：使用
+     */
+    @TableField(fill = FieldFill.INSERT)
+    private Byte isUseMissConclusionText;
 
     /**
      * 创建时间

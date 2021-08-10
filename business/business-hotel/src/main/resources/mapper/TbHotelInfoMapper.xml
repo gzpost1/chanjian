@@ -33,6 +33,23 @@
         </collection >-->
     </resultMap>
 
+    <!-- 大屏查询详情信息 -->
+    <resultMap id="ScreenDetailResult" type="com.yjtech.wisdom.tourism.hotel.dto.HotelScreenDetailDTO">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="lev" property="lev"/>
+        <result column="type" property="type"/>
+        <result column="address" property="address"/>
+        <result column="phone" property="phone"/>
+        <result column="img" property="img"
+                typeHandler="com.yjtech.wisdom.tourism.mybatis.typehandler.StringArrayTypeHandler"/>
+        <result column="cover_img" property="coverImg"/>
+        <result column="description" property="description"/>
+        <result column="longitude" property="longitude"/>
+        <result column="latitude" property="latitude"/>
+        <result property="areaCode" column="area_code"/>
+    </resultMap>
+
     <select id="list" resultMap="BaseResultMap"
             parameterType="com.yjtech.wisdom.tourism.hotel.entity.TbHotelInfoEntity">
         select
@@ -78,6 +95,109 @@
             and area_code like CONCAT('${areaCode}', '%')
         </if>
         GROUP by `type`
+    </select>
+
+    <select id="queryScreenPage" resultMap="ScreenDetailResult"
+            parameterType="com.yjtech.wisdom.tourism.hotel.vo.HotelScreenQueryVO">
+        select
+        id as id,
+        name as name,
+        lev as lev,
+        CASE
+        WHEN lev = 0 THEN '三星以下'
+        WHEN lev = 1 THEN '三星'
+        WHEN lev = 2 THEN '四星'
+        WHEN lev = 3 THEN '五星'
+        ELSE '其他' END as levDesc,
+        type as type,
+        CASE
+        WHEN type = 1 THEN '星级酒店'
+        WHEN type = 4 THEN '民宿'
+        ELSE '其他' END as typeDesc,
+        address as address,
+        phone as phone,
+        img as img,
+        cover_img as coverImg,
+        description as description,
+        longitude as longitude,
+        latitude as latitude,
+        area_code as areaCode,
+        (120) as price
+        from
+        tb_hotel_info
+        <where>
+            <if test="params != null">
+                <if test="params.areaCode != null and params.areaCode != ''">
+                    area_code LIKE CONCAT('${params.areaCode}', '%') and
+                </if>
+                <if test="params.name != null and params.name != ''">
+                    name LIKE CONCAT('%', '${params.name}', '%') and
+                </if>
+                <if test="params.status != null">
+                    status = #{params.status} and
+                </if>
+            </if>
+            deleted = 0
+        </where>
+        ORDER BY lev DESC
+    </select>
+
+    <!-- 查询酒店类型分布 -->
+    <select id="queryHotelTypeDistribution" resultType="com.yjtech.wisdom.tourism.common.bean.BasePercentVO"
+            parameterType="com.yjtech.wisdom.tourism.hotel.vo.HotelScreenQueryVO">
+        select
+        CASE
+        WHEN type = 1 THEN '酒店'
+        WHEN type = 4 THEN '民宿'
+        ELSE '其他' END as name,
+        COUNT(id) as value,
+        COALESCE (ROUND(COUNT(id)/total.totalNum, 3)*100,0) as rate
+        from
+        tb_hotel_info
+        INNER JOIN
+        (select
+        COUNT(id) as totalNum
+        from
+        tb_hotel_info
+        <where>
+            <include refid="distribution_where"/>
+        </where>
+        ) as total ON 1 = 1
+        <where>
+            <include refid="distribution_where"/>
+        </where>
+        GROUP BY type
+    </select>
+
+    <!-- 酒店星级分布 -->
+    <select id="queryHotelStarDistribution" resultType="com.yjtech.wisdom.tourism.common.bean.BasePercentVO"
+            parameterType="com.yjtech.wisdom.tourism.hotel.vo.HotelScreenQueryVO">
+        select
+        CASE
+        WHEN lev = 0 THEN '三星以下'
+        WHEN lev = 1 THEN '三星'
+        WHEN lev = 2 THEN '四星'
+        WHEN lev = 3 THEN '五星'
+        ELSE '其他' END as name,
+        COUNT(id) as value,
+        COALESCE (ROUND(COUNT(id)/total.totalNum, 3)*100,0) as rate
+        from
+        tb_hotel_info
+        INNER JOIN
+        (select
+        COUNT(id) as totalNum
+        from
+        tb_hotel_info
+        <where>
+            <include refid="distribution_where"/>
+            and lev in (0,1,2,3)
+        </where>
+        ) as total ON 1 = 1
+        <where>
+            <include refid="distribution_where"/>
+            and lev in (0,1,2,3)
+        </where>
+        GROUP BY lev
     </select>
 
     <!-- 通用查询结果列 -->
@@ -209,4 +329,23 @@
             </if>
         </if>
     </sql>
+
+    <sql id="distribution_where">
+        <if test="params != null">
+            <if test="params.areaCode != null and params.areaCode != ''">
+                area_code LIKE CONCAT('${params.areaCode}', '%') and
+            </if>
+            <choose>
+                <when test="params.status == null">
+                    status = 1 and
+                </when>
+                <otherwise>
+                    status = #{params.status} and
+                </otherwise>
+            </choose>
+        </if>
+        deleted = 0
+    </sql>
+
+
 </mapper>

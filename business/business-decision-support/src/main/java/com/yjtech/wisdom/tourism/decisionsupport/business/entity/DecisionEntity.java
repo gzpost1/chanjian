@@ -1,5 +1,6 @@
 package com.yjtech.wisdom.tourism.decisionsupport.business.entity;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
@@ -92,24 +93,28 @@ public class DecisionEntity implements Serializable {
      * 创建时间
      */
     @TableField(fill = FieldFill.INSERT)
+    @JSONField(serialize = false)
     private Date createTime;
 
     /**
      * 更新时间
      */
     @TableField(fill = FieldFill.INSERT_UPDATE)
+    @JSONField(serialize = false)
     private Date updateTime;
 
     /**
      * 创建人ID
      */
     @TableField(fill = FieldFill.INSERT)
+    @JSONField(serialize = false)
     private Long createUser;
 
     /**
      * 修改人ID
      */
     @TableField(fill = FieldFill.INSERT_UPDATE)
+    @JSONField(serialize = false)
     private Long updateUser;
 
     /**
@@ -118,6 +123,7 @@ public class DecisionEntity implements Serializable {
     @TableField(fill = FieldFill.INSERT)
     @TableLogic
     @JsonIgnore
+    @JSONField(serialize = false)
     private Byte deleted;
 
 }

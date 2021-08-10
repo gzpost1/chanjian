@@ -220,4 +220,16 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
                 Calendar.MONTH);
     }
 
+    /**
+     * 获取当前年每日列表
+     * @return
+     */
+    public static List<String> getEveryDayOfCurrentYear(){
+        return DateUtils.getRangeToList(
+                DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD, DateUtil.beginOfYear(new Date())),
+                DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD, DateUtil.offsetDay(new Date(), -1)),
+                DateUtils.YYYY_MM_DD,
+                Calendar.DAY_OF_YEAR);
+    }
+
 }

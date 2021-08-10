@@ -1,6 +1,6 @@
 package com.yjtech.wisdom.tourism.resource.scenic.query;
 
-import com.yjtech.wisdom.tourism.common.core.domain.PageQuery;
+import com.yjtech.wisdom.tourism.mybatis.entity.PageQuery;
 import lombok.Data;
 
 @Data

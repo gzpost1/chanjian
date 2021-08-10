@@ -3,13 +3,13 @@ package com.yjtech.wisdom.tourism.integration.mapper;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.yjtech.wisdom.tourism.common.bean.AnalysisMonthChartInfo;
-import com.yjtech.wisdom.tourism.common.bean.AreaBaseVO;
 import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
 import com.yjtech.wisdom.tourism.integration.pojo.bo.onetravel.OneTravelAreaVisitStatisticsBO;
 import com.yjtech.wisdom.tourism.integration.pojo.bo.onetravel.OneTravelComplaintListBO;
 import com.yjtech.wisdom.tourism.integration.pojo.bo.onetravel.OneTravelMagicVisitPvBO;
 import com.yjtech.wisdom.tourism.integration.pojo.bo.onetravel.OneTravelVisitStatisticsBO;
 import com.yjtech.wisdom.tourism.integration.pojo.vo.OneTravelQueryVO;
+import com.yjtech.wisdom.tourism.mybatis.entity.AreaBaseVO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;

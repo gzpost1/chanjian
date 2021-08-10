@@ -43,9 +43,14 @@ public class LectureVo extends PageQuery implements Serializable {
     private String lectureValue;
 
     /**
-     * 关联场馆名称
+     * 关联场馆id
      */
     private String venueId;
+
+    /**
+     * 关联场馆名称
+     */
+    private String venueName;
 
     /**
      * 开放日期-开始日期
@@ -60,7 +65,7 @@ public class LectureVo extends PageQuery implements Serializable {
     /**
      * 联系电话
      */
-    private List<String> phone;
+    private String phone;
 
     /**
      * 举办地点
@@ -87,6 +92,11 @@ public class LectureVo extends PageQuery implements Serializable {
      */
     @Size(max = 9)
     private List<String> otherPicUrl;
+
+    /**
+     * 起停用状态
+     */
+    private Byte status;
 
     /**
      * 简介

@@ -449,6 +449,18 @@ public class DateTimeUtil {
   }
 
   /**
+   * 获取当前时间
+   *
+   * @return
+   */
+  public static String getCurrentTime() {
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTime(new Date());
+    SimpleDateFormat sdf = new SimpleDateFormat(_default_datetime_format);
+    return sdf.format(calendar.getTime());
+  }
+
+  /**
    * 获取当 年月
    *
    * @return
@@ -472,6 +484,15 @@ public class DateTimeUtil {
     return localDateTime.format(formatter);
   }
 
-
+  /**
+   * "yyyy-MM-dd HH:mm:ss" 转 LocalDateTime
+   *
+   * @return
+   */
+  public static LocalDateTime getLocalDateTime(String timeStr) {
+    DateTimeFormatter df = DateTimeFormatter.ofPattern(_default_datetime_format);
+    LocalDateTime ldt = LocalDateTime.parse(timeStr,df);
+    return ldt;
+  }
 
 }

@@ -1,6 +1,6 @@
 package com.yjtech.wisdom.tourism.resource.comment.dto;
 
-import com.yjtech.wisdom.tourism.common.bean.TimeBaseQuery;
+import com.yjtech.wisdom.tourism.mybatis.entity.TimeBaseQuery;
 import lombok.Data;
 
 /**

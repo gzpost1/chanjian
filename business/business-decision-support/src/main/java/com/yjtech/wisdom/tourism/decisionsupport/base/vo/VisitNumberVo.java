@@ -36,4 +36,9 @@ public class VisitNumberVo implements Serializable {
      */
     private String endDate ;
 
+    /**
+     * 区域编号
+     */
+    private String adcode;
+
 }

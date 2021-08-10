@@ -25,12 +25,12 @@ public enum DecisionSupportConfigEnum {
     /**
      * 环比变化（较上月）
      */
-    PROVINCE_OUTSIDE_TOUR_HB("环比变化（较上月）", "${PROVINCE_OUTSIDE_TOUR_HB}"),
+    HB("环比变化（较上月）", "${HB}"),
 
     /**
      * 同比（较去年同月）
      */
-    PROVINCE_OUTSIDE_TOUR_TB("同比（较去年同月）", "${PROVINCE_OUTSIDE_TOUR_TB}"),
+    TB("同比（较去年同月）", "${TB}"),
 
     /**
      * 平台名称
@@ -50,7 +50,7 @@ public enum DecisionSupportConfigEnum {
     /**
      * 中风险项数量
      */
-    MIDDLE_RISK_WARNING_ITEMS_NUMBER("高风险项数量", "${MIDDLE_RISK_WARNING_ITEMS_NUMBER}"),
+    MIDDLE_RISK_WARNING_ITEMS_NUMBER("中风险项数量", "${MIDDLE_RISK_WARNING_ITEMS_NUMBER}"),
 
     /**
      * 低风险项数量
@@ -173,9 +173,9 @@ public enum DecisionSupportConfigEnum {
     ONE_TRAVEL_COMPLAINTS_NUMBER("一码游投诉数量", "${ONE_TRAVEL_COMPLAINTS_NUMBER}"),
 
     /**
-     * 一码游投诉数量
+     * 一码游订单数量
      */
-    ONE_TRAVEL_ORDER_NUMBER("一码游投诉数量", "${ONE_TRAVEL_ORDER_NUMBER}"),
+    ONE_TRAVEL_ORDER_NUMBER("一码游订单数量", "${ONE_TRAVEL_ORDER_NUMBER}"),
 
     /**
      * 一码游交易额

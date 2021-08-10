@@ -2,7 +2,7 @@ package com.yjtech.wisdom.tourism.resource.wifi.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
-import com.yjtech.wisdom.tourism.common.bean.TimeBaseQuery;
+import com.yjtech.wisdom.tourism.mybatis.entity.TimeBaseQuery;
 import com.yjtech.wisdom.tourism.resource.wifi.entity.WifiVisitorEntity;
 import org.apache.ibatis.annotations.Param;
 

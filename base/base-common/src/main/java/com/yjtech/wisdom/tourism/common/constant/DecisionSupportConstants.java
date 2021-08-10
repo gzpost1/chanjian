@@ -9,9 +9,50 @@ package com.yjtech.wisdom.tourism.common.constant;
 public class DecisionSupportConstants {
 
     /**
-     * 省外访客类型
+     * 开始日期拼接字符串
+     */
+    public static final String START_TIME_STR = " 00:00:00";
+
+    /**
+     * 结束日期拼接字符串
+     */
+    public static final String END_TIME_STR = " 23:59:59";
+
+
+
+    /**
+     * 缺失话术类型-使用
+     */
+    public final static Byte USE_MISS_CONCLUSION_TEXT = 1;
+
+
+    /**
+     * 缺失话术数值类型 默认值
+     */
+    public final static Integer MISS_CONCLUSION_TEXT_NUMBER_VALUE = 0;
+    /**
+     * 缺失话术数值比例类型 默认值
+     */
+    public final static String MISS_CONCLUSION_TEXT_SCALE_VALUE = "-";
+
+
+
+    /**
+     * 省外访客类型 10.到访全部游客(默认),11.到访省内游客 12.到访省外游客 20.出访全部游客 21.出访省内游客 22.出访省外游客
      */
     public final static String PROVINCE_OUTSIDE_TYPE = "12";
+
+    /**
+     * 省内访客类型 10.到访全部游客(默认),11.到访省内游客 12.到访省外游客 20.出访全部游客 21.出访省内游客 22.出访省外游客
+     */
+    public final static String PROVINCE_INSIDE_TYPE = "11";
+
+    /**
+     * 省内访客类型 10.到访全部游客(默认),11.到访省内游客 12.到访省外游客 20.出访全部游客 21.出访省内游客 22.出访省外游客
+     */
+    public final static String PROVINCE_ALL_TYPE = "10";
+
+
 
     /**
      * 大屏_决策预警_上次分析时间的redis 的 Key
@@ -21,17 +62,53 @@ public class DecisionSupportConstants {
     /**
      * 低风险类型
      */
-    public final static Integer LOW_RISK_TYPE = 0;
+    public final static int LOW_RISK_TYPE = 0;
 
     /**
      * 中风险类型
      */
-    public final static Integer MEDIUM_RISK_TYPE = 1;
+    public final static int MEDIUM_RISK_TYPE = 1;
 
     /**
      * 高风险类型
      */
-    public final static Integer HIGH_RISK_TYPE = 2;
+    public final static int HIGH_RISK_TYPE = 2;
+
+    /**
+     * 无风险类型
+     */
+    public final static int IGNORE_RISK_TYPE = 3;
+
+    /**
+     * 低风险类型文本
+     */
+    public final static String LOW_RISK_TYPE_TEXT = "低风险";
+
+    /**
+     * 中风险类型文本
+     */
+    public final static String MEDIUM_RISK_TYPE_TEXT = "中风险";
+
+    /**
+     * 高风险类型文本
+     */
+    public final static String HIGH_RISK_TYPE_TEXT = "高风险";
+
+
+
+    /**
+     * 数值 预警配置项 上升类型
+     */
+    public final static int NUMBER_TYPE_UP = 0;
+    /**
+     * 数值 预警配置项 下降类型
+     */
+    public final static int NUMBER_TYPE_DOWN = 1;
+    /**
+     * 数值 预警配置项 忽略变化
+     */
+    public final static int NUMBER_TYPE_IGNORE = 2;
+
 
     /**
      * 数值 预警配置项
@@ -42,6 +119,21 @@ public class DecisionSupportConstants {
      * 文本 预警配置项
      */
     public final static Integer DECISION_WARN_TYPE_TEXT = 0;
+
+
+
+    /**
+     * 数值类型 上升 标识
+     */
+    public final static Integer NUMBER_TYPE_UP_SIGN = 1;
+
+    /**
+     * 数值类型 下降 标识
+     */
+    public final static Integer NUMBER_TYPE_DOWN_SIGN = -1;
+
+
+
 
     /**
      * 综合概况_统计年月
