@@ -44,11 +44,11 @@
         <!--</where>-->
     <!--</select>-->
 
-    <sql id="base_screen_query_condition">
-        <if test="params != null">
-            <if test="params."
-        </if>
-    </sql>
+    <!--<sql id="base_screen_query_condition">-->
+        <!--<if test="params != null">-->
+            <!--<if test="params."-->
+        <!--</if>-->
+    <!--</sql>-->
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
