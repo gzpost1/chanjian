@@ -178,6 +178,7 @@ public class TbSystemconfigArchitectureService extends ServiceImpl<TbSystemconfi
         List<String> constantRedirectUrl = new ArrayList<>();
 
         treeNodeList = treeNodeList.stream()
+                .filter(e -> !StringUtils.equals(e.getParentId(),"0"))
                 .map(e -> {
 
                     if (finalAllMenuPage != null && finalAllMenuPage.containsKey(e.getPageId())) {
