@@ -146,11 +146,16 @@ public class EventContants {
     /**
      * 声网App证书
      */
-    public static final String agora_appcertificate = "agora.appCertificate";
+    public static final String AGORA_APPCERTIFICATE = "agora.appCertificate";
 
     /**
      * 声网appid
      */
     public static final String AGORA_APPID = "agora.appid";
+
+    /**
+     * 声网账号
+     */
+    public static final String AGORA_USERACCOUNT = "agora.userAccount";
 
 }
