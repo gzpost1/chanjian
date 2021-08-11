@@ -5,6 +5,8 @@ import com.yjtech.wisdom.tourism.common.bean.zc.params.ZcHotelRoomParam;
 import com.yjtech.wisdom.tourism.common.bean.zc.params.ZcOtaEvaluateParam;
 import com.yjtech.wisdom.tourism.common.bean.zc.params.ZcOtaPlaceParam;
 import com.yjtech.wisdom.tourism.common.enums.DataSourceTypeEnum;
+import com.yjtech.wisdom.tourism.marketing.pojo.dto.PlaceInfoDTO;
+import com.yjtech.wisdom.tourism.marketing.pojo.vo.PlaceQueryVO;
 import com.yjtech.wisdom.tourism.marketing.service.MarketingEvaluateService;
 import com.yjtech.wisdom.tourism.marketing.service.MarketingHotelRoomService;
 import com.yjtech.wisdom.tourism.marketing.service.MarketingPlaceService;

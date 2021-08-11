@@ -76,6 +76,7 @@
         WHEN complaint_type = 2 THEN '酒店名称'
         ELSE '其他' END as complaintObject,
         object_id as objectId,
+        location as location,
         complaint_type as complaintType,
         CASE
         WHEN complaint_type = 0 THEN '其他'

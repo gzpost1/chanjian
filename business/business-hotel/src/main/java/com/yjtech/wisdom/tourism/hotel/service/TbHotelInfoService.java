@@ -28,9 +28,6 @@ import java.util.List;
 @Service
 public class TbHotelInfoService extends BaseMybatisServiceImpl<TbHotelInfoMapper, TbHotelInfoEntity> {
 
-    @Autowired
-    private TbHotelHouseTypeService tbHotelHouseTypeService;
-
 
     @Transactional(readOnly = true)
     public Page<TbHotelInfoEntity> apiPage(com.yjtech.wisdom.tourism.hotel.dto.TbHotelInfoEntityParam param) {

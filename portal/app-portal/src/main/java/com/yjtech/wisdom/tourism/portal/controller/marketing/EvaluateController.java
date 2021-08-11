@@ -72,7 +72,7 @@ public class EvaluateController {
      * @param vo
      * @return
      */
-    @PostMapping("queryEvaluateHotRank")
+    @PostMapping("queryForPage")
     public JsonResult<IPage<MarketingEvaluateListDTO>> queryForPage(@RequestBody @Valid EvaluateScreenQueryVO vo) {
         return JsonResult.success(marketingEvaluateService.queryForPage(vo));
     }
