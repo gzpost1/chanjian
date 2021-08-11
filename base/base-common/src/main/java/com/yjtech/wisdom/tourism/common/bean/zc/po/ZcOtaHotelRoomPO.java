@@ -39,7 +39,7 @@ public class ZcOtaHotelRoomPO implements Serializable {
     /**
      * 房型
      */
-    private String roomType;
+    private Byte roomType;
 
     /**
      * 价格

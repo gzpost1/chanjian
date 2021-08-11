@@ -21,15 +21,82 @@
         area = values(area)
     </insert>
 
+    <!-- 查询房型价格统计 -->
     <select id="queryRoomPriceStatistics" resultType="com.yjtech.wisdom.tourism.marketing.pojo.dto.RoomTypePriceScreenDTO"
             parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.RoomScreenQueryVO">
         select
-        *
+        MAX(price) as highestPrice,
+        MIN(price) as lowestPrice,
+        ROUND(SUM(price)/COUNT(id),1)as averagePrice
         from
         tb_marketing_hotel_room
         <where>
             <include refid="base_screen_query_condition"/>
         </where>
+    </select>
+
+    <!-- 查询最新房型列表 -->
+    <select id="queryNewestRoomInfo" resultType="com.yjtech.wisdom.tourism.marketing.pojo.dto.NewestRoomScreenDTO"
+            parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.RoomScreenQueryVO">
+        select
+        room_name as roomName,
+        price as roomPrice,
+        room_img as roomImg
+        from
+        tb_marketing_hotel_room
+        <where>
+            <if test="params!=null">
+                <if test=" params.hotelId != null and params.hotelId != ''">
+                    hotel_id = #{params.hotelId} and
+                </if>
+            </if>
+            price_time = (select MAX(price_time) from tb_marketing_hotel_room <where> deleted = 0 </where>) and
+            deleted = 0
+        </where>
+        ORDER BY roomPrice
+    </select>
+
+    <!-- 查询房型价格趋势 -->
+    <select id="queryRoomPriceAnalysis" resultType="com.yjtech.wisdom.tourism.marketing.pojo.dto.RoomPriceAnalysisDTO"
+            parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.RoomScreenQueryVO">
+        select
+        dateInfo.day as time,
+        room.entiretyPrice as entiretyPrice,
+        room.bigBedPrice as bigBedPrice,
+        room.doubleBedPrice as doubleBedPrice,
+        room.familyRoomPrice as familyRoomPrice,
+        room.suiteRoomPrice as suiteRoomPrice
+        from
+        (select
+        DATE_ADD(CURDATE(),INTERVAL (CAST(help_topic_id as signed) - 89) day) as day
+        from
+        mysql.help_topic
+        <where>
+            help_topic_id <![CDATA[ <= ]]> 89
+        </where>
+        ORDER BY help_topic_id) dateInfo
+        LEFT JOIN
+        (select
+        price_time,
+        ROUND(SUM(price)/COUNT(id),1) as entiretyPrice,
+        ROUND(SUM(CASE WHEN room_type = 1 THEN price ELSE 0 END)/SUM(CASE WHEN room_type = 1 THEN 1 ELSE 0 END), 1) as bigBedPrice,
+        ROUND(SUM(CASE WHEN room_type = 2 THEN price ELSE 0 END)/SUM(CASE WHEN room_type = 2 THEN 1 ELSE 0 END), 1) as doubleBedPrice,
+        ROUND(SUM(CASE WHEN room_type = 3 THEN price ELSE 0 END)/SUM(CASE WHEN room_type = 3 THEN 1 ELSE 0 END), 1) as familyRoomPrice,
+        ROUND(SUM(CASE WHEN room_type = 4 THEN price ELSE 0 END)/SUM(CASE WHEN room_type = 4 THEN 1 ELSE 0 END), 1) as suiteRoomPrice
+        from
+        tb_marketing_hotel_room
+        <where>
+            <if test="params!=null">
+                <if test=" params.hotelId != null and params.hotelId != ''">
+                    hotel_id = #{params.hotelId} and
+                </if>
+            </if>
+            <![CDATA[ price_time >= DATE_ADD(CURDATE(),INTERVAL -89 DAY) ]]> and
+            <![CDATA[ price_time <= CURDATE() ]]> and
+            deleted = 0
+        </where>
+        GROUP BY price_time) room
+        ON dateInfo.day = room.price_time
     </select>
 
 

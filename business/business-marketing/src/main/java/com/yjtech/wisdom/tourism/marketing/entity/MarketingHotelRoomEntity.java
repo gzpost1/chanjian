@@ -59,7 +59,7 @@ public class MarketingHotelRoomEntity extends BaseEntity {
      * 房型
      */
     @TableField(value = "room_type")
-    private String roomType;
+    private Byte roomType;
 
     /**
      * 价格
