@@ -67,9 +67,9 @@ public class AudioMeetingService extends ServiceImpl<AudioMeetingMapper, AudioMe
         }
         Integer uid = Integer.valueOf(configService.selectConfigByKey(EventContants.AGORA_UID));
         String token = this.getToken(configService.selectConfigByKey(EventContants.AGORA_APPID),
-                configService.selectConfigByKey(EventContants.agora_appcertificate),
+                configService.selectConfigByKey(EventContants.AGORA_APPCERTIFICATE),
                 createDto.getCode(),
-                uid,
+                configService.selectConfigByKey(EventContants.AGORA_USERACCOUNT),
                 Integer.valueOf(configService.selectConfigByKey(EventContants.AUDIO_MEETING_EXPIRE))
         );
         HashMap<String, Object> result = Maps.newHashMap();
@@ -98,12 +98,12 @@ public class AudioMeetingService extends ServiceImpl<AudioMeetingMapper, AudioMe
         this.getBaseMapper().incrementInventory(list.get(0).getId(), 1);
     }
 
-    private String getToken(String appId,String appCertificate,String channelName,int uid,int expirationTimeInSeconds) {
+    private String getToken(String appId,String appCertificate,String channelName,String userAccount,int expirationTimeInSeconds) {
         RtcTokenBuilder token = new RtcTokenBuilder();
         int timestamp = (int) (System.currentTimeMillis() / 1000 + expirationTimeInSeconds);
 
-        String result = token.buildTokenWithUid(appId, appCertificate,
-                channelName, uid, RtcTokenBuilder.Role.Role_Publisher, timestamp);
+        String result = token.buildTokenWithUserAccount(appId, appCertificate,
+                channelName, userAccount, RtcTokenBuilder.Role.Role_Publisher, timestamp);
        return result;
     }
 }
