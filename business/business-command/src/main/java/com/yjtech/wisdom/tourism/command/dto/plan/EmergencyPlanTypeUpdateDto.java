@@ -3,6 +3,7 @@ package com.yjtech.wisdom.tourism.command.dto.plan;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 /**
 *
@@ -12,10 +13,10 @@ import javax.validation.constraints.NotNull;
 @Getter
 @Setter
 public class EmergencyPlanTypeUpdateDto extends EmergencyPlanTypeCreateDto {
+
     /**
     * id
     */
-    @NotNull(message = "id不能为空")
     private Long id;
 
 
