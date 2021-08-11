@@ -131,9 +131,6 @@ public class TbHotelInfoEntity extends Model<TbHotelInfoEntity> {
 //    @NotNull(message = "床位数不能为空")
     private Integer bedNum;
 
-    @TableField(exist = false)
-    private  List<TbHotelHouseTypeEntity> houseTypeList;
-
     /**
      * 创建时间
      */

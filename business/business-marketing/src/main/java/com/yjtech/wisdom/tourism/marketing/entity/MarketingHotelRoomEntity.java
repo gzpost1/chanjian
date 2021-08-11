@@ -6,13 +6,14 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.yjtech.wisdom.tourism.common.bean.zc.po.ZcOtaHotelRoomPO;
-import com.yjtech.wisdom.tourism.common.utils.DateUtils;
 import com.yjtech.wisdom.tourism.mybatis.entity.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Date;
 
 /**
@@ -49,10 +50,28 @@ public class MarketingHotelRoomEntity extends BaseEntity {
     private String hotelId;
 
     /**
+     * 房型名称
+     */
+    @TableField(value = "room_name")
+    private String roomName;
+
+    /**
      * 房型
      */
-    @TableField(value = "home_type")
-    private String homeType;
+    @TableField(value = "room_type")
+    private String roomType;
+
+    /**
+     * 价格
+     */
+    @TableField(value = "price")
+    private BigDecimal price;
+
+    /**
+     * 价格日期
+     */
+    @TableField(value = "price_time")
+    private LocalDate priceTime;
 
     /**
      * 床型
@@ -67,18 +86,6 @@ public class MarketingHotelRoomEntity extends BaseEntity {
     private String area;
 
     /**
-     * 数据创建时间
-     */
-    @TableField(value = "data_create_time")
-    private Date dataCreateTime;
-
-    /**
-     * 数据更新时间
-     */
-    @TableField(value = "data_update_time")
-    private Date dataUpdateTime;
-
-    /**
      * 构建
      * @param po
      */
@@ -89,11 +96,12 @@ public class MarketingHotelRoomEntity extends BaseEntity {
 
         setTpId(po.getId());
         setHotelId(po.getHotelId());
-        setHomeType(po.getHomeType());
+        setRoomName(po.getRoomName());
+        setRoomType(po.getRoomType());
+        setPrice(po.getPrice());
+        setPriceTime(po.getPriceTime());
         setBedType(po.getBedType());
         setArea(po.getArea());
-        setDataCreateTime(DateUtils.dateTime(DateUtils.YYYY_MM_DD_HH_MM_SS, po.getCreateAt()));
-        setDataUpdateTime(DateUtils.dateTime(DateUtils.YYYY_MM_DD_HH_MM_SS, po.getUpdateAt()));
     }
 
 

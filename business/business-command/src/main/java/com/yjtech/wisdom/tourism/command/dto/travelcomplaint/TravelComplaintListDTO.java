@@ -43,6 +43,11 @@ public class TravelComplaintListDTO implements Serializable {
     private Long objectId;
 
     /**
+     * 事发地点
+     */
+    private String location;
+
+    /**
      * 状态（0-待指派 1-待处理 2-已处理）
      */
     private Byte status;
