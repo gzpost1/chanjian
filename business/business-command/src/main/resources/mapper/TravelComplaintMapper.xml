@@ -93,8 +93,8 @@
         ELSE '-' END as statusDesc,
         equip_status as equipStatus,
         CASE
-        WHEN equip_status = 0 THEN '启用'
-        WHEN equip_status = 1 THEN '禁用'
+        WHEN equip_status = 0 THEN '禁用'
+        WHEN equip_status = 1 THEN '启用'
         ELSE '-' END as equipStatusDesc,
         complaint_time as complaintTime
         from
