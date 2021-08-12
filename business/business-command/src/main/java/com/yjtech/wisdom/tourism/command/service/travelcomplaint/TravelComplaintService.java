@@ -106,6 +106,17 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
     }
 
     /**
+     * 根据id删除
+     *
+     * @param id
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public int deleteById(Long id) {
+        return baseMapper.deleteById(id);
+    }
+
+    /**
      * 根据id查询信息
      *
      * @param id

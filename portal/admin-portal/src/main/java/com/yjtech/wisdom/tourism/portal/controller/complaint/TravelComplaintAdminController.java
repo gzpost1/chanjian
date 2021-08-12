@@ -12,6 +12,7 @@ import com.yjtech.wisdom.tourism.common.bean.AssignUserInfo;
 import com.yjtech.wisdom.tourism.common.bean.DealUserInfo;
 import com.yjtech.wisdom.tourism.common.core.domain.IdParam;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
+import com.yjtech.wisdom.tourism.common.core.domain.StatusParam;
 import com.yjtech.wisdom.tourism.common.utils.ServletUtils;
 import com.yjtech.wisdom.tourism.framework.web.service.TokenService;
 import com.yjtech.wisdom.tourism.infrastructure.core.domain.model.LoginUser;
@@ -79,6 +80,17 @@ public class TravelComplaintAdminController {
     }
 
     /**
+     * 根据id删除
+     *
+     * @param idParam
+     * @return
+     */
+    @PostMapping("deleteById")
+    public JsonResult deleteById(@RequestBody @Valid IdParam idParam) {
+        return JsonResult.success(travelComplaintService.deleteById(idParam.getId()));
+    }
+
+    /**
      * 处理旅游投诉
      *
      * @param vo
@@ -88,6 +100,17 @@ public class TravelComplaintAdminController {
     public JsonResult dealTravelComplaint(@RequestBody @Valid TravelComplaintDealVO vo) {
         LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
         return JsonResult.success(travelComplaintService.dealTravelComplaint(vo, loginUser.getUser()));
+    }
+
+    /**
+     * 状态更新
+     *
+     * @param vo
+     * @return
+     */
+    @PostMapping("updateStatus")
+    public JsonResult updateStatus(@RequestBody @Valid StatusParam vo) {
+        return JsonResult.success(travelComplaintService.updateStatus(vo));
     }
 
     /**
