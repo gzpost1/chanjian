@@ -143,15 +143,16 @@ public class Constants {
 
     /**
      * 状态
-     * 0-启用
+     * 1-启用
      */
-    public static final Integer STATUS_NEGATIVE = 0;
+    public static final Integer STATUS_NEGATIVE = 1;
 
     /**
      * 状态
-     * 1-禁用
+     * 0-禁用
      */
-    public static final Integer STATUS_POSITIVE = 1;
+    public static final Integer STATUS_POSITIVE = 0;
+
 
     /**
      * 数字常量

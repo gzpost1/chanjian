@@ -7,6 +7,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -19,6 +20,12 @@ import java.util.List;
 public class TravelComplaintCreateVO implements Serializable {
 
     private static final long serialVersionUID = 5766579553051762821L;
+
+    /**
+     * 投诉时间
+     */
+    @NotNull(message = "投诉时间不能为空")
+    private LocalDate complaintTime;
 
     /**
      * 投诉类型（0-其他 1-景区 2-酒店）

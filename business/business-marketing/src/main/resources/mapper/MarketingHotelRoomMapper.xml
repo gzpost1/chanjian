@@ -25,11 +25,17 @@
     <select id="queryRoomPriceStatistics" resultType="com.yjtech.wisdom.tourism.marketing.pojo.dto.RoomTypePriceScreenDTO"
             parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.RoomScreenQueryVO">
         select
-        MAX(price) as highestPrice,
-        MIN(price) as lowestPrice,
-        ROUND(SUM(price)/COUNT(id),1)as averagePrice
+        MAX(hotelRoom.price) as highestPrice,
+        MIN(hotelRoom.price) as lowestPrice,
+        ROUND(SUM(hotelRoom.price)/COUNT(hotelRoom.id),1)as averagePrice
         from
-        tb_marketing_hotel_room
+        tb_marketing_hotel_room hotelRoom
+        <choose>
+            <when test="params.status == 1">
+                INNER JOIN tb_hotel_info hotel ON hotel.id = hotelRoom.hotel_id and hotel.status = #{params.status}
+            </when>
+            <otherwise></otherwise>
+        </choose>
         <where>
             <include refid="base_screen_query_condition"/>
         </where>
@@ -77,41 +83,72 @@
         ORDER BY help_topic_id) dateInfo
         LEFT JOIN
         (select
-        price_time,
-        ROUND(SUM(price)/COUNT(id),1) as entiretyPrice,
-        ROUND(SUM(CASE WHEN room_type = 1 THEN price ELSE 0 END)/SUM(CASE WHEN room_type = 1 THEN 1 ELSE 0 END), 1) as bigBedPrice,
-        ROUND(SUM(CASE WHEN room_type = 2 THEN price ELSE 0 END)/SUM(CASE WHEN room_type = 2 THEN 1 ELSE 0 END), 1) as doubleBedPrice,
-        ROUND(SUM(CASE WHEN room_type = 3 THEN price ELSE 0 END)/SUM(CASE WHEN room_type = 3 THEN 1 ELSE 0 END), 1) as familyRoomPrice,
-        ROUND(SUM(CASE WHEN room_type = 4 THEN price ELSE 0 END)/SUM(CASE WHEN room_type = 4 THEN 1 ELSE 0 END), 1) as suiteRoomPrice
+        hotelRoom.price_time,
+        ROUND(SUM(hotelRoom.price)/COUNT(hotelRoom.id),1) as entiretyPrice,
+        ROUND(SUM(CASE WHEN hotelRoom.room_type = 1 THEN hotelRoom.price ELSE 0 END)/SUM(CASE WHEN hotelRoom.room_type = 1 THEN 1 ELSE 0 END), 1) as bigBedPrice,
+        ROUND(SUM(CASE WHEN hotelRoom.room_type = 2 THEN hotelRoom.price ELSE 0 END)/SUM(CASE WHEN hotelRoom.room_type = 2 THEN 1 ELSE 0 END), 1) as doubleBedPrice,
+        ROUND(SUM(CASE WHEN hotelRoom.room_type = 3 THEN hotelRoom.price ELSE 0 END)/SUM(CASE WHEN hotelRoom.room_type = 3 THEN 1 ELSE 0 END), 1) as familyRoomPrice,
+        ROUND(SUM(CASE WHEN hotelRoom.room_type = 4 THEN hotelRoom.price ELSE 0 END)/SUM(CASE WHEN hotelRoom.room_type = 4 THEN 1 ELSE 0 END), 1) as suiteRoomPrice
         from
-        tb_marketing_hotel_room
+        tb_marketing_hotel_room hotelRoom
+        <choose>
+            <when test="params.status == 1">
+                INNER JOIN tb_hotel_info hotel ON hotel.id = hotelRoom.hotel_id and hotel.status = #{params.status}
+            </when>
+            <otherwise></otherwise>
+        </choose>
         <where>
             <if test="params!=null">
                 <if test=" params.hotelId != null and params.hotelId != ''">
-                    hotel_id = #{params.hotelId} and
+                    hotelRoom.hotel_id = #{params.hotelId} and
                 </if>
             </if>
-            <![CDATA[ price_time >= DATE_ADD(CURDATE(),INTERVAL -89 DAY) ]]> and
-            <![CDATA[ price_time <= CURDATE() ]]> and
-            deleted = 0
+            <![CDATA[ hotelRoom.price_time >= DATE_ADD(CURDATE(),INTERVAL -89 DAY) ]]> and
+            <![CDATA[ hotelRoom.price_time <= CURDATE() ]]> and
+            hotelRoom.deleted = 0
         </where>
-        GROUP BY price_time) room
+        GROUP BY hotelRoom.price_time) room
         ON dateInfo.day = room.price_time
+    </select>
+
+    <!-- 查询房型价格分布 -->
+    <select id="queryRoomTypePriceDistribution" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO"
+            parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.RoomScreenQueryVO">
+        select
+        CASE
+        WHEN hotelRoom.room_type = 1 THEN '大床房'
+        WHEN hotelRoom.room_type = 2 THEN '双床房'
+        WHEN hotelRoom.room_type = 3 THEN '亲子/家庭房'
+        WHEN hotelRoom.room_type = 4 THEN '套房'
+        ELSE '其他' END as name,
+        ROUND(SUM(hotelRoom.price)/COUNT(hotelRoom.id),1)as value
+        from
+        tb_marketing_hotel_room hotelRoom
+        <choose>
+            <when test="params.status == 1">
+                INNER JOIN tb_hotel_info hotel ON hotel.id = hotelRoom.hotel_id and hotel.status = #{params.status}
+            </when>
+            <otherwise></otherwise>
+        </choose>
+        <where>
+            <include refid="base_screen_query_condition"/>
+        </where>
+        GROUP BY hotelRoom.room_type
     </select>
 
 
     <sql id="base_screen_query_condition">
         <if test="params!=null">
             <if test=" params.hotelId != null and params.hotelId != ''">
-                hotel_id = #{params.hotelId} and
+                hotelRoom.hotel_id = #{params.hotelId} and
             </if>
             <if test="params.beginTime != null">
-                <![CDATA[ price_time >= #{params.beginTime} ]]> and
+                <![CDATA[ hotelRoom.price_time >= #{params.beginTime} ]]> and
             </if>
             <if test="params.endTime != null">
-                <![CDATA[ price_time <= #{params.endTime} ]]> and
+                <![CDATA[ hotelRoom.price_time <= #{params.endTime} ]]> and
             </if>
-            deleted = 0
+            hotelRoom.deleted = 0
         </if>
     </sql>
 </mapper>

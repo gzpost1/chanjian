@@ -19,11 +19,11 @@ import com.yjtech.wisdom.tourism.common.constant.Constants;
 import com.yjtech.wisdom.tourism.common.core.domain.StatusParam;
 import com.yjtech.wisdom.tourism.common.enums.TravelComplaintStatusEnum;
 import com.yjtech.wisdom.tourism.common.enums.TravelComplaintTypeEnum;
-import com.yjtech.wisdom.tourism.mybatis.utils.AnalysisUtils;
 import com.yjtech.wisdom.tourism.common.utils.DateUtils;
 import com.yjtech.wisdom.tourism.common.utils.StringUtils;
 import com.yjtech.wisdom.tourism.common.utils.bean.BeanUtils;
 import com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysUser;
+import com.yjtech.wisdom.tourism.mybatis.utils.AnalysisUtils;
 import com.yjtech.wisdom.tourism.redis.RedisCache;
 import com.yjtech.wisdom.tourism.system.service.SysUserService;
 import lombok.extern.slf4j.Slf4j;
@@ -88,7 +88,8 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
                 .set(StringUtils.isNotBlank(vo.getContactUser()), TravelComplaintEntity::getContactUser, vo.getContactUser())
                 .set(Objects.nonNull(vo.getContactMobile()) && !vo.getContactMobile().isEmpty(), TravelComplaintEntity::getContactMobile, vo.getContactMobile())
                 .set(StringUtils.isNotBlank(vo.getComplaintReason()), TravelComplaintEntity::getComplaintReason, vo.getComplaintReason())
-                .set(Objects.nonNull(vo.getImage()) && !vo.getImage().isEmpty(), TravelComplaintEntity::getImage, vo.getImage());
+                .set(Objects.nonNull(vo.getImage()) && !vo.getImage().isEmpty(), TravelComplaintEntity::getImage, vo.getImage())
+                .set(Objects.nonNull(vo.getComplaintTime()), TravelComplaintEntity::getComplaintTime, vo.getComplaintTime());
 
         return baseMapper.update(complaintEntity, updateWrapper);
     }
@@ -102,6 +103,17 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
     @Transactional(readOnly = true)
     public TravelComplaintEntity queryEntityById(Long id) {
         return baseMapper.queryEntityById(id);
+    }
+
+    /**
+     * 根据id删除
+     *
+     * @param id
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public int deleteById(Long id) {
+        return baseMapper.deleteById(id);
     }
 
     /**
@@ -150,11 +162,9 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
         TravelComplaintEntity complaintEntity = baseMapper.selectById(statusParam.getId());
         Assert.notNull(complaintEntity, "更新状态失败：旅游投诉信息不存在");
 
-        LambdaUpdateWrapper<TravelComplaintEntity> updateWrapper = new UpdateWrapper<TravelComplaintEntity>().lambda()
-                .set(Objects.nonNull(statusParam.getStatus()), TravelComplaintEntity::getStatus, statusParam.getStatus())
-                .set(Objects.nonNull(statusParam.getEquipStatus()), TravelComplaintEntity::getEquipStatus, statusParam.getEquipStatus());
+        complaintEntity.build(statusParam);
 
-        return baseMapper.update(complaintEntity, updateWrapper);
+        return baseMapper.updateById(complaintEntity);
     }
 
     /**
@@ -166,7 +176,7 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
     @Transactional(rollbackFor = Exception.class)
     public int dealTravelComplaint(TravelComplaintDealVO vo, SysUser sysUser) {
         //获取旅游投诉信息
-        TravelComplaintEntity complaintEntity = baseMapper.selectById(vo.getId());
+        TravelComplaintEntity complaintEntity = baseMapper.queryEntityById(vo.getId());
         Assert.notNull(complaintEntity, "处理投诉失败：旅游投诉信息不存在");
 
         //校验当前用户是否为指定处理人
@@ -177,7 +187,10 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
                 .set(TravelComplaintEntity::getAcceptUserId, sysUser.getUserId())
                 .set(TravelComplaintEntity::getAcceptOrganization, vo.getAcceptOrganization())
                 .set(TravelComplaintEntity::getAcceptTime, vo.getAcceptTime())
-                .set(TravelComplaintEntity::getAcceptResult, vo.getAcceptResult());
+                .set(TravelComplaintEntity::getAcceptResult, vo.getAcceptResult())
+                //默认已处理
+                .set(TravelComplaintEntity::getStatus, TravelComplaintStatusEnum.TRAVEL_COMPLAINT_STATUS_DEAL_FINISHED.getValue())
+                ;
 
         int result = baseMapper.update(complaintEntity, updateWrapper);
 
@@ -218,6 +231,13 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
         redisCache.deleteObject(CacheKeyContants.KEY_DEAL_TRAVEL_COMPLAINT);
 
         redisCache.setCacheObject(CacheKeyContants.KEY_DEAL_TRAVEL_COMPLAINT, dealUserInfo);
+
+        //更新数据状态为待处理，并且更新该条投诉的指定处理人
+        updateStatus(new StatusParam().toBuilder()
+                .id(dealUserInfo.getDataId())
+                .status(TravelComplaintStatusEnum.TRAVEL_COMPLAINT_STATUS_NO_DEAL.getValue())
+                .assignAcceptUserId(dealUserInfo.getAssignUserIdList())
+                .build());
     }
 
     /**
@@ -247,7 +267,7 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
     public Integer queryTravelComplaintTotal(TravelComplaintScreenQueryVO vo){
         LambdaQueryWrapper<TravelComplaintEntity> queryWrapper = new QueryWrapper<TravelComplaintEntity>().lambda()
                 .eq(TravelComplaintEntity::getEquipStatus, Objects.isNull(vo.getEquipStatus()) ? Constants.STATUS_NEGATIVE : vo.getEquipStatus())
-                .between(Objects.nonNull(vo.getBeginTime()) && Objects.nonNull(vo.getEndTime()), TravelComplaintEntity::getCreateTime, vo.getBeginTime(), vo.getEndTime())
+                .between(Objects.nonNull(vo.getBeginTime()) && Objects.nonNull(vo.getEndTime()), TravelComplaintEntity::getComplaintTime, vo.getBeginTime(), vo.getEndTime())
                 ;
 
         return baseMapper.selectCount(queryWrapper);

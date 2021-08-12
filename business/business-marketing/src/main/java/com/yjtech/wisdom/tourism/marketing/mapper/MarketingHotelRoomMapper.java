@@ -1,6 +1,7 @@
 package com.yjtech.wisdom.tourism.marketing.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.yjtech.wisdom.tourism.common.bean.BaseVO;
 import com.yjtech.wisdom.tourism.marketing.entity.MarketingHotelRoomEntity;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.NewestRoomScreenDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.RoomPriceAnalysisDTO;
@@ -44,5 +45,12 @@ public interface MarketingHotelRoomMapper extends BaseMapper<MarketingHotelRoomE
      * @return
      */
     List<RoomPriceAnalysisDTO> queryRoomPriceAnalysis(@Param("params") RoomScreenQueryVO params);
+
+    /**
+     * 查询房型价格分布
+     * @param params
+     * @return
+     */
+    List<BaseVO> queryRoomTypePriceDistribution(@Param("params") RoomScreenQueryVO params);
 
 }

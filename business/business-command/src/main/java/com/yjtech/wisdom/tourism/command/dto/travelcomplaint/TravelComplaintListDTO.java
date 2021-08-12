@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 /**
  * 旅游投诉 列表DTO
@@ -71,6 +71,6 @@ public class TravelComplaintListDTO implements Serializable {
      * 投诉时间
      */
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDateTime createTime;
+    private LocalDate complaintTime;
 
 }

@@ -30,6 +30,7 @@
         <result property="acceptResult" column="accept_result" jdbcType="VARCHAR"/>
         <result property="assignAcceptUserId" column="assign_accept_user_id" jdbcType="VARCHAR"
                 typeHandler="com.yjtech.wisdom.tourism.mybatis.typehandler.JsonTypeHandler"/>
+        <result property="complaintTime" column="complaint_time" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <select id="queryEntityById" resultMap="BaseResultMap" parameterType="long">
@@ -57,7 +58,8 @@
         accept_organization,
         accept_time,
         accept_result,
-        assign_accept_user_id
+        assign_accept_user_id,
+        complaint_time
         from
         tb_travel_complaint complaint
         <where>
@@ -91,10 +93,10 @@
         ELSE '-' END as statusDesc,
         equip_status as equipStatus,
         CASE
-        WHEN equip_status = 0 THEN '启用'
-        WHEN equip_status = 1 THEN '禁用'
+        WHEN equip_status = 0 THEN '禁用'
+        WHEN equip_status = 1 THEN '启用'
         ELSE '-' END as equipStatusDesc,
-        create_time as createTime
+        complaint_time as complaintTime
         from
         tb_travel_complaint
         <where>
@@ -121,12 +123,12 @@
                     create_user = #{params.createUser} and
                 </if>
                 <if test="params.beginTime != null and params.endTime != null">
-                    create_time >= #{params.beginTime} and create_time <![CDATA[<=]]> #{params.endTime} and
+                    complaint_time >= #{params.beginTime} and complaint_time <![CDATA[<=]]> #{params.endTime} and
                 </if>
             </if>
             deleted = 0
         </where>
-        ORDER BY create_time DESC
+        ORDER BY status, complaint_time DESC
     </select>
 
     <select id="queryStatusStatistics"
@@ -261,7 +263,7 @@
     <select id="queryComplaintCurrentAnalysisMonthInfo" resultType="com.yjtech.wisdom.tourism.common.bean.AnalysisMonthChartInfo"
             parameterType="com.yjtech.wisdom.tourism.command.vo.travelcomplaint.TravelComplaintScreenQueryVO">
         SELECT
-        DATE_FORMAT(a.create_time,#{params.sqlDateFormat}) as time,
+        DATE_FORMAT(a.complaint_time,#{params.sqlDateFormat}) as time,
         COUNT(a.id) as count,
         ROUND(((COUNT(a.id) -
         (select
@@ -269,7 +271,7 @@
         from
         tb_travel_complaint
         <where>
-            create_time like concat(left((SELECT DATE_SUB(a.create_time,INTERVAL 1 YEAR)),7),'%') and
+            complaint_time like concat(left((SELECT DATE_SUB(a.complaint_time,INTERVAL 1 YEAR)),7),'%') and
             equip_status = 0 and
             deleted = 0
         </where>
@@ -277,7 +279,7 @@
         from
         tb_travel_complaint
         <where>
-            create_time like concat(left((SELECT DATE_SUB(a.create_time,INTERVAL 1 YEAR)),7),'%') and
+            complaint_time like concat(left((SELECT DATE_SUB(a.complaint_time,INTERVAL 1 YEAR)),7),'%') and
             equip_status = 0 and
             deleted = 0
         </where>
@@ -287,7 +289,7 @@
         from
         tb_travel_complaint
         <where>
-            create_time like concat(left((SELECT DATE_SUB(a.create_time,INTERVAL 1 MONTH)),7),'%') and
+            complaint_time like concat(left((SELECT DATE_SUB(a.complaint_time,INTERVAL 1 MONTH)),7),'%') and
             equip_status = 0 and
             deleted = 0
         </where>
@@ -295,26 +297,26 @@
         from
         tb_travel_complaint
         <where>
-            create_time like concat(left((SELECT DATE_SUB(a.create_time,INTERVAL 1 MONTH)),7),'%') and
+            complaint_time like concat(left((SELECT DATE_SUB(a.complaint_time,INTERVAL 1 MONTH)),7),'%') and
             equip_status = 0 and
             deleted = 0
         </where>
         )),3)*100 as sequential
         from tb_travel_complaint a
         <where>
-            <![CDATA[ a.create_time >= CONCAT(YEAR(now()),'-01-01 00:00:00') and ]]>
-            <![CDATA[ a.create_time <= CONCAT(YEAR(now()),'-12-31 23:59:59') and ]]>
+            <![CDATA[ a.complaint_time >= CONCAT(YEAR(now()),'-01-01 00:00:00') and ]]>
+            <![CDATA[ a.complaint_time <= CONCAT(YEAR(now()),'-12-31 23:59:59') and ]]>
             equip_status = 0 and
             deleted = 0
         </where>
-        GROUP BY DATE_FORMAT(a.create_time,#{params.sqlDateFormat})
+        GROUP BY DATE_FORMAT(a.complaint_time,#{params.sqlDateFormat})
     </select>
 
     <!-- 查询旅游投诉去年搜索月趋势 -->
     <select id="queryComplaintLastAnalysisMonthInfo" resultType="com.yjtech.wisdom.tourism.common.bean.AnalysisMonthChartInfo"
             parameterType="com.yjtech.wisdom.tourism.command.vo.travelcomplaint.TravelComplaintScreenQueryVO">
         SELECT
-        DATE_FORMAT(create_time,#{params.sqlDateFormat}) as time,
+        DATE_FORMAT(complaint_time,#{params.sqlDateFormat}) as time,
         COUNT(id) as count
         from tb_travel_complaint
         <where>
@@ -322,7 +324,7 @@
             equip_status = 0 and
             deleted = 0
         </where>
-        GROUP BY DATE_FORMAT(create_time,#{params.sqlDateFormat})
+        GROUP BY DATE_FORMAT(complaint_time,#{params.sqlDateFormat})
     </select>
 
     <sql id="base_screen_query">
@@ -337,10 +339,10 @@
                 equip_status = #{params.equipStatus} and
             </if>
             <if test="params.beginTime != null">
-                <![CDATA[ create_time >= #{params.beginTime} ]]> and
+                <![CDATA[ complaint_time >= #{params.beginTime} ]]> and
             </if>
             <if test="params.endTime != null">
-                <![CDATA[ create_time <= #{params.endTime} ]]> and
+                <![CDATA[ complaint_time <= #{params.endTime} ]]> and
             </if>
         </if>
         deleted = 0
@@ -369,7 +371,8 @@
         accept_organization,
         accept_time,
         accept_result,
-        assign_accept_user_id
+        assign_accept_user_id,
+        complaint_time
     </sql>
 
 </mapper>

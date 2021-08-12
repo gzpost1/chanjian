@@ -6,6 +6,7 @@ import org.hibernate.validator.constraints.Range;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -24,6 +25,11 @@ public class TravelComplaintUpdateVO implements Serializable {
      */
     @NotNull(message = "id不能为空")
     private Long id;
+
+    /**
+     * 投诉时间
+     */
+    private LocalDate complaintTime;
 
     /**
      * 投诉类型（0-其他 1-景区 2-酒店）
