@@ -25,6 +25,12 @@ public class DealUserInfo implements Serializable {
     private List<Long> assignUserIdList;
 
     /**
+     * 数据id
+     */
+    @NotNull(message = "数据id不能为空")
+    private Long dataId;
+
+    /**
      * 是否平台通知
      */
     @NotNull(message = "平台通知标识不能为空")

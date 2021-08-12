@@ -230,6 +230,9 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
         redisCache.deleteObject(CacheKeyContants.KEY_DEAL_TRAVEL_COMPLAINT);
 
         redisCache.setCacheObject(CacheKeyContants.KEY_DEAL_TRAVEL_COMPLAINT, dealUserInfo);
+
+        //更新数据状态为：待处理
+        updateStatus(new StatusParam().toBuilder().id(dealUserInfo.getDataId()).status(TravelComplaintStatusEnum.TRAVEL_COMPLAINT_STATUS_NO_DEAL.getValue()).build());
     }
 
     /**

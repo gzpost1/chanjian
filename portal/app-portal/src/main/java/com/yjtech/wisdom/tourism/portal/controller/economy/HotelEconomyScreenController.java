@@ -1,7 +1,11 @@
-package com.yjtech.wisdom.tourism.portal.controller.marketing;
+package com.yjtech.wisdom.tourism.portal.controller.economy;
 
+import com.yjtech.wisdom.tourism.common.constant.Constants;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
-import com.yjtech.wisdom.tourism.marketing.pojo.dto.NewestRoomScreenDTO;
+import com.yjtech.wisdom.tourism.hotel.dto.TbHotelInfoEntityParam;
+import com.yjtech.wisdom.tourism.hotel.entity.TbHotelInfoEntity;
+import com.yjtech.wisdom.tourism.hotel.service.TbHotelInfoService;
+import com.yjtech.wisdom.tourism.infrastructure.core.controller.BaseCurdController;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.RoomPriceAnalysisDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.RoomTypePriceScreenDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.vo.RoomScreenQueryVO;
@@ -17,15 +21,17 @@ import javax.validation.Valid;
 import java.util.List;
 
 /**
- * 大屏_酒店房型
+ * 大屏_经济效益 酒店民宿
  *
  * @Author horadirm
- * @Date 2021/8/11 15:56
+ * @Date 2021/8/6 14:02
  */
 @Slf4j
 @RestController
-@RequestMapping("/hotelRoom/data/")
-public class HotelRoomController {
+@RequestMapping("/hotelEconomy/screen/")
+public class HotelEconomyScreenController
+        extends BaseCurdController<TbHotelInfoService, TbHotelInfoEntity, TbHotelInfoEntityParam> {
+
 
     @Autowired
     private MarketingHotelRoomService marketingHotelRoomService;
@@ -39,18 +45,9 @@ public class HotelRoomController {
      */
     @PostMapping("queryRoomPriceStatistics")
     public JsonResult<RoomTypePriceScreenDTO> queryRoomPriceStatistics(@RequestBody @Valid RoomScreenQueryVO vo) {
+        //默认状态为启用
+        vo.setStatus(Constants.STATUS_NEGATIVE.byteValue());
         return JsonResult.success(marketingHotelRoomService.queryRoomPriceStatistics(vo));
-    }
-
-    /**
-     * 查询最新房型列表
-     *
-     * @param vo
-     * @return
-     */
-    @PostMapping("queryNewestRoomInfo")
-    public JsonResult<List<NewestRoomScreenDTO>> queryNewestRoomInfo(@RequestBody @Valid RoomScreenQueryVO vo) {
-        return JsonResult.success(marketingHotelRoomService.queryNewestRoomInfo(vo));
     }
 
     /**
@@ -61,7 +58,10 @@ public class HotelRoomController {
      */
     @PostMapping("queryRoomPriceAnalysis")
     public JsonResult<List<RoomPriceAnalysisDTO>> queryRoomPriceAnalysis(@RequestBody @Valid RoomScreenQueryVO vo) {
+        //默认状态为启用
+        vo.setStatus(Constants.STATUS_NEGATIVE.byteValue());
         return JsonResult.success(marketingHotelRoomService.queryRoomPriceAnalysis(vo));
     }
+
 
 }

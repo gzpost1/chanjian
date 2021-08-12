@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 营销推广 酒店房型
+ * 酒店房型
  *
  * @Author horadirm
  * @Date 2020/11/26 9:29

@@ -3,8 +3,6 @@ package com.yjtech.wisdom.tourism.marketing.pojo.vo;
 import com.yjtech.wisdom.tourism.mybatis.entity.TimeBaseQuery;
 import lombok.Data;
 
-import javax.validation.constraints.NotNull;
-
 /**
  * 酒店房型 大屏查询VO
  *
@@ -19,7 +17,12 @@ public class RoomScreenQueryVO extends TimeBaseQuery {
     /**
      * 酒店id
      */
-    @NotNull(message = "酒店id不能为空")
     private String hotelId;
+
+    /**
+     * 配备状态（0-禁用 1-启用）
+     */
+    private Byte status;
+
 
 }

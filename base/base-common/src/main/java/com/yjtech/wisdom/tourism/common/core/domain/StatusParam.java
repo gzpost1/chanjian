@@ -1,6 +1,9 @@
 package com.yjtech.wisdom.tourism.common.core.domain;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Range;
 
 import javax.validation.constraints.NotNull;
@@ -13,6 +16,9 @@ import java.io.Serializable;
  * @Date 2021/7/21 17:00
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder(toBuilder = true)
 public class StatusParam implements Serializable {
 
     private static final long serialVersionUID = -6424799807860104369L;

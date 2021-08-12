@@ -128,7 +128,7 @@
             </if>
             deleted = 0
         </where>
-        ORDER BY complaint_time DESC
+        ORDER BY status, complaint_time DESC
     </select>
 
     <select id="queryStatusStatistics"

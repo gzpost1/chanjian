@@ -108,6 +108,7 @@ public class TravelComplaintEntity extends MyBaseEntity {
      * 处理人
      */
     @JsonIgnore
+    @TableField(exist = false)
     private String acceptUser;
 
     /**
