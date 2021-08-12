@@ -1,6 +1,5 @@
 package com.yjtech.wisdom.tourism.hotel.dto;
 
-import com.yjtech.wisdom.tourism.hotel.entity.TbHotelHouseTypeEntity;
 import com.yjtech.wisdom.tourism.infrastructure.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.mybatis.entity.PageQuery;
 import lombok.*;
@@ -106,9 +105,6 @@ public class TbHotelInfoEntityParam extends PageQuery implements Serializable {
      * 创建人
      */
     private Long createUser;
-
-
-    private List<TbHotelHouseTypeEntity> houseTypeList;
 
     /**
      * 酒店Ids

@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
 /**
  * 中测酒店房型 PO
@@ -30,9 +32,24 @@ public class ZcOtaHotelRoomPO implements Serializable {
     private String hotelId;
 
     /**
+     * 房型名称
+     */
+    private String roomName;
+
+    /**
      * 房型
      */
-    private String homeType;
+    private Byte roomType;
+
+    /**
+     * 价格
+     */
+    private BigDecimal price;
+
+    /**
+     * 价格日期
+     */
+    private LocalDate priceTime;
 
     /**
      * 床型
@@ -43,15 +60,5 @@ public class ZcOtaHotelRoomPO implements Serializable {
      * 面积
      */
     private String area;
-
-    /**
-     * 创建时间(时间格式为：yyyy-MM-dd HH:mm:ss)
-     */
-    private String createAt;
-
-    /**
-     * 更新时间(时间格式为：yyyy-MM-dd HH:mm:ss)
-     */
-    private String updateAt;
 
 }

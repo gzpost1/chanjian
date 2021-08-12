@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.yjtech.wisdom.tourism.infrastructure.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.mybatis.typehandler.JsonTypeHandler;
-import com.yjtech.wisdom.tourism.mybatis.typehandler.ListObjectJsonTypeHandler;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,7 +22,7 @@ import java.util.List;
  *
  * @TableName tb_country_tour
  */
-@TableName(value = "tb_country_tour")
+@TableName(value = "tb_country_tour", autoResultMap = true)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -39,7 +38,7 @@ public class TbCountryTour implements Serializable {
      * 名称
      */
     @NotNull(message = "名称不能为空")
-    @TableField(condition = SqlCondition.LIKE)
+    @TableField(condition = SqlCondition.LIKE, whereStrategy = FieldStrategy.NOT_EMPTY)
     private String name;
 
     /**

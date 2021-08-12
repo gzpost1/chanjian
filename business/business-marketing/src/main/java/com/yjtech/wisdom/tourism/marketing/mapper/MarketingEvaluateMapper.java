@@ -1,11 +1,14 @@
 package com.yjtech.wisdom.tourism.marketing.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.yjtech.wisdom.tourism.marketing.entity.TbMarketingEvaluateEntity;
-import com.yjtech.wisdom.tourism.marketing.pojo.dto.AnalysisMonthChartInfo;
-import com.yjtech.wisdom.tourism.marketing.pojo.dto.evaluate.*;
-import com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateRankingVO;
-import com.yjtech.wisdom.tourism.marketing.pojo.vo.ScreenAnalysisQueryVO;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
+import com.yjtech.wisdom.tourism.common.bean.BaseVO;
+import com.yjtech.wisdom.tourism.marketing.entity.MarketingEvaluateEntity;
+import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateListDTO;
+import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateStatisticsDTO;
+import com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateScreenQueryVO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -16,82 +19,40 @@ import java.util.List;
  * @Author horadirm
  * @Date 2020/11/20 16:10
  */
-public interface MarketingEvaluateMapper extends BaseMapper<TbMarketingEvaluateEntity> {
+public interface MarketingEvaluateMapper extends BaseMapper<MarketingEvaluateEntity> {
 
     /**
      * 批量新增
      * @param params
      */
-    void insertBatch(@Param("params") List<TbMarketingEvaluateEntity> params);
+    void insertBatch(@Param("params") List<MarketingEvaluateEntity> params);
 
     /**
-     * 获取评论排名信息
+     * 查询评价统计
      * @param params
      * @return
      */
-    List<EvaluateRankingInfo> getRankingInfo(@Param("params") EvaluateRankingVO params);
+    MarketingEvaluateStatisticsDTO queryEvaluateStatistics(@Param("params") EvaluateScreenQueryVO params);
 
     /**
-     * 获取市/区县级图表
+     * 查询评价类型分布
      * @param params
      * @return
      */
-    List<EvaluateChartInfo> getChartByCity(@Param("params") ScreenAnalysisQueryVO params);
+    List<BasePercentVO> queryEvaluateTypeDistribution(@Param("params") EvaluateScreenQueryVO params);
 
     /**
-     * 获取省级图表
+     * 查询评价热词排行
      * @param params
      * @return
      */
-    List<EvaluateChartInfo> getChartByProvince(@Param("params") ScreenAnalysisQueryVO params);
+    List<BaseVO> queryEvaluateHotRank(@Param("params") EvaluateScreenQueryVO params);
 
     /**
-     * 获取行业分布
+     * 查询评价分页列表
      * @param params
      * @return
      */
-    List<EvaluateDistributionInfo> getBusinessInfo(@Param("params") ScreenAnalysisQueryVO params);
-
-    /**
-     * 获取来源分布
-     * @param params
-     * @return
-     */
-    List<EvaluateDistributionInfo> getSourcesInfo(@Param("params") ScreenAnalysisQueryVO params);
-
-    /**
-     * 获取评论日趋势统计
-     * @param areaCode
-     * @return
-     */
-    EvaluateAnalysisDayDTO getAnalysisDayStatistics(@Param("areaCode") String areaCode);
-
-    /**
-     * 获取评论日趋势信息
-     * @param areaCode
-     * @return
-     */
-    List<EvaluateAnalysisDayChartInfo> getAnalysisDayInfo(@Param("areaCode") String areaCode);
-
-    /**
-     * 获取评论月趋势统计
-     * @param areaCode
-     * @return
-     */
-    EvaluateAnalysisMonthDTO getAnalysisMonthStatistics(@Param("areaCode") String areaCode);
-
-    /**
-     * 获取今年评论月趋势信息
-     * @param areaCode
-     * @return
-     */
-    List<AnalysisMonthChartInfo> getCurrentAnalysisMonthInfo(@Param("areaCode") String areaCode);
-
-    /**
-     * 获取去年评论月趋势信息
-     * @param areaCode
-     * @return
-     */
-    List<AnalysisMonthChartInfo> getLastAnalysisMonthInfo(@Param("areaCode") String areaCode);
+    IPage<MarketingEvaluateListDTO> queryForPage(Page page, @Param("params") EvaluateScreenQueryVO params);
 
 }

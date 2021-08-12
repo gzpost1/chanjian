@@ -28,7 +28,6 @@ public class AudioMeetingDto implements Serializable {
     /**
     * 密码
     */
-    @NotBlank(message = "密码不能为空")
     @Length(max = 30,message = "密码长度必须小于30位")
     private String password;
 
