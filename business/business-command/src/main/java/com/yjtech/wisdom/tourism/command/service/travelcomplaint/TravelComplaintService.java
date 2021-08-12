@@ -162,11 +162,9 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
         TravelComplaintEntity complaintEntity = baseMapper.selectById(statusParam.getId());
         Assert.notNull(complaintEntity, "更新状态失败：旅游投诉信息不存在");
 
-        LambdaUpdateWrapper<TravelComplaintEntity> updateWrapper = new UpdateWrapper<TravelComplaintEntity>().lambda()
-                .set(Objects.nonNull(statusParam.getStatus()), TravelComplaintEntity::getStatus, statusParam.getStatus())
-                .set(Objects.nonNull(statusParam.getEquipStatus()), TravelComplaintEntity::getEquipStatus, statusParam.getEquipStatus());
+        complaintEntity.build(statusParam);
 
-        return baseMapper.update(complaintEntity, updateWrapper);
+        return baseMapper.updateById(complaintEntity);
     }
 
     /**
@@ -178,7 +176,7 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
     @Transactional(rollbackFor = Exception.class)
     public int dealTravelComplaint(TravelComplaintDealVO vo, SysUser sysUser) {
         //获取旅游投诉信息
-        TravelComplaintEntity complaintEntity = baseMapper.selectById(vo.getId());
+        TravelComplaintEntity complaintEntity = baseMapper.queryEntityById(vo.getId());
         Assert.notNull(complaintEntity, "处理投诉失败：旅游投诉信息不存在");
 
         //校验当前用户是否为指定处理人
@@ -189,7 +187,10 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
                 .set(TravelComplaintEntity::getAcceptUserId, sysUser.getUserId())
                 .set(TravelComplaintEntity::getAcceptOrganization, vo.getAcceptOrganization())
                 .set(TravelComplaintEntity::getAcceptTime, vo.getAcceptTime())
-                .set(TravelComplaintEntity::getAcceptResult, vo.getAcceptResult());
+                .set(TravelComplaintEntity::getAcceptResult, vo.getAcceptResult())
+                //默认已处理
+                .set(TravelComplaintEntity::getStatus, TravelComplaintStatusEnum.TRAVEL_COMPLAINT_STATUS_DEAL_FINISHED.getValue())
+                ;
 
         int result = baseMapper.update(complaintEntity, updateWrapper);
 
@@ -231,8 +232,12 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
 
         redisCache.setCacheObject(CacheKeyContants.KEY_DEAL_TRAVEL_COMPLAINT, dealUserInfo);
 
-        //更新数据状态为：待处理
-        updateStatus(new StatusParam().toBuilder().id(dealUserInfo.getDataId()).status(TravelComplaintStatusEnum.TRAVEL_COMPLAINT_STATUS_NO_DEAL.getValue()).build());
+        //更新数据状态为待处理，并且更新该条投诉的指定处理人
+        updateStatus(new StatusParam().toBuilder()
+                .id(dealUserInfo.getDataId())
+                .status(TravelComplaintStatusEnum.TRAVEL_COMPLAINT_STATUS_NO_DEAL.getValue())
+                .assignAcceptUserId(dealUserInfo.getAssignUserIdList())
+                .build());
     }
 
     /**

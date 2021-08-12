@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.yjtech.wisdom.tourism.command.vo.travelcomplaint.TravelComplaintCreateVO;
 import com.yjtech.wisdom.tourism.common.constant.Constants;
+import com.yjtech.wisdom.tourism.common.core.domain.StatusParam;
 import com.yjtech.wisdom.tourism.common.enums.TravelComplaintStatusEnum;
 import com.yjtech.wisdom.tourism.common.utils.IdWorker;
 import com.yjtech.wisdom.tourism.mybatis.entity.MyBaseEntity;
@@ -15,8 +16,8 @@ import lombok.EqualsAndHashCode;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 旅游投诉(TbTravelComplaint)实体类
@@ -161,11 +162,29 @@ public class TravelComplaintEntity extends MyBaseEntity {
         //默认待指派
         setStatus(TravelComplaintStatusEnum.TRAVEL_COMPLAINT_STATUS_NO_ASSIGN.getValue());
 
-        setAssignAcceptUserId(Arrays.asList("1","2","3"));
-
         //投诉时间
         setComplaintTime(vo.getComplaintTime());
-
     }
+
+    /**
+     * 构建新增
+     * @param vo
+     */
+    public void build(StatusParam vo){
+        //更新状态
+        if(null != vo.getStatus()){
+            setStatus(vo.getStatus());
+        }
+        //更新配备状态
+        if(null != vo.getEquipStatus()){
+            setEquipStatus(vo.getEquipStatus());
+        }
+        //更新指定处理人id列表
+        if(null != vo.getAssignAcceptUserId() && !vo.getAssignAcceptUserId().isEmpty()){
+            setAssignAcceptUserId(vo.getAssignAcceptUserId().stream().map(String::valueOf).collect(Collectors.toList()));
+        }
+    }
+
+
 
 }

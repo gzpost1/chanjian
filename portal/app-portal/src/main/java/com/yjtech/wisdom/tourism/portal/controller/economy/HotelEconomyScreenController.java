@@ -1,5 +1,6 @@
 package com.yjtech.wisdom.tourism.portal.controller.economy;
 
+import com.yjtech.wisdom.tourism.common.bean.BaseVO;
 import com.yjtech.wisdom.tourism.common.constant.Constants;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.hotel.dto.TbHotelInfoEntityParam;
@@ -61,6 +62,19 @@ public class HotelEconomyScreenController
         //默认状态为启用
         vo.setStatus(Constants.STATUS_NEGATIVE.byteValue());
         return JsonResult.success(marketingHotelRoomService.queryRoomPriceAnalysis(vo));
+    }
+
+    /**
+     * 查询房型价格分布
+     *
+     * @param vo
+     * @return
+     */
+    @PostMapping("queryRoomTypePriceDistribution")
+    public JsonResult<List<BaseVO>> queryRoomTypePriceDistribution(@RequestBody @Valid RoomScreenQueryVO vo) {
+        //默认状态为启用
+        vo.setStatus(Constants.STATUS_NEGATIVE.byteValue());
+        return JsonResult.success(marketingHotelRoomService.queryRoomTypePriceDistribution(vo));
     }
 
 

@@ -1,5 +1,6 @@
 package com.yjtech.wisdom.tourism.common.core.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -8,6 +9,7 @@ import org.hibernate.validator.constraints.Range;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * 状态参数
@@ -40,5 +42,11 @@ public class StatusParam implements Serializable {
      */
     @Range(min = 0, max = 1, message = "配备状态不合法")
     private Byte equipStatus;
+
+    /**
+     * 指定处理人id列表
+     */
+    @JsonIgnore
+    private List<Long> assignAcceptUserId;
 
 }

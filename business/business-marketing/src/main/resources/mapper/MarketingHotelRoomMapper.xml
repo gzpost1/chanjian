@@ -111,6 +111,31 @@
         ON dateInfo.day = room.price_time
     </select>
 
+    <!-- 查询房型价格分布 -->
+    <select id="queryRoomTypePriceDistribution" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO"
+            parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.RoomScreenQueryVO">
+        select
+        CASE
+        WHEN hotelRoom.room_type = 1 THEN '大床房'
+        WHEN hotelRoom.room_type = 2 THEN '双床房'
+        WHEN hotelRoom.room_type = 3 THEN '亲子/家庭房'
+        WHEN hotelRoom.room_type = 4 THEN '套房'
+        ELSE '其他' END as name,
+        ROUND(SUM(hotelRoom.price)/COUNT(hotelRoom.id),1)as value
+        from
+        tb_marketing_hotel_room hotelRoom
+        <choose>
+            <when test="params.status == 1">
+                INNER JOIN tb_hotel_info hotel ON hotel.id = hotelRoom.hotel_id and hotel.status = #{params.status}
+            </when>
+            <otherwise></otherwise>
+        </choose>
+        <where>
+            <include refid="base_screen_query_condition"/>
+        </where>
+        GROUP BY hotelRoom.room_type
+    </select>
+
 
     <sql id="base_screen_query_condition">
         <if test="params!=null">

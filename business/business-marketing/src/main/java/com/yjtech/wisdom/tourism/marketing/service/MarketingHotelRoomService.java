@@ -1,6 +1,7 @@
 package com.yjtech.wisdom.tourism.marketing.service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.yjtech.wisdom.tourism.common.bean.BaseVO;
 import com.yjtech.wisdom.tourism.common.bean.zc.params.ZcHotelRoomParam;
 import com.yjtech.wisdom.tourism.common.bean.zc.po.ZcOtaHotelRoomPO;
 import com.yjtech.wisdom.tourism.common.service.ZcInfoSyncService;
@@ -85,6 +86,15 @@ public class MarketingHotelRoomService extends ServiceImpl<MarketingHotelRoomMap
      */
     public List<RoomPriceAnalysisDTO> queryRoomPriceAnalysis(RoomScreenQueryVO vo){
         return baseMapper.queryRoomPriceAnalysis(vo);
+    }
+
+    /**
+     * 查询房型价格分布
+     * @param vo
+     * @return
+     */
+    public List<BaseVO> queryRoomTypePriceDistribution(RoomScreenQueryVO vo){
+        return baseMapper.queryRoomTypePriceDistribution(vo);
     }
 
 
