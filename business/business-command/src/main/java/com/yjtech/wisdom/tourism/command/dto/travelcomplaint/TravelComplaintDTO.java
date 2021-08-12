@@ -9,7 +9,6 @@ import lombok.Data;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -143,7 +142,7 @@ public class TravelComplaintDTO implements Serializable {
      * 创建时间
      */
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDateTime createTime;
+    private LocalDate complaintTime;
 
 
     /**

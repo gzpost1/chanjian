@@ -121,6 +121,11 @@ public class TravelComplaintEntity extends MyBaseEntity {
     private LocalDate acceptTime;
 
     /**
+     * 投诉时间
+     */
+    private LocalDate complaintTime;
+
+    /**
      * 处理结果
      */
     private String acceptResult;
@@ -130,6 +135,7 @@ public class TravelComplaintEntity extends MyBaseEntity {
      */
     @TableField(value = "assign_accept_user_id", typeHandler = JsonTypeHandler.class)
     private List<String> assignAcceptUserId;
+
 
     /**
      * 构建新增
@@ -155,6 +161,10 @@ public class TravelComplaintEntity extends MyBaseEntity {
         setStatus(TravelComplaintStatusEnum.TRAVEL_COMPLAINT_STATUS_NO_ASSIGN.getValue());
 
         setAssignAcceptUserId(Arrays.asList("1","2","3"));
+
+        //投诉时间
+        setComplaintTime(vo.getComplaintTime());
+
     }
 
 }

@@ -19,11 +19,11 @@ import com.yjtech.wisdom.tourism.common.constant.Constants;
 import com.yjtech.wisdom.tourism.common.core.domain.StatusParam;
 import com.yjtech.wisdom.tourism.common.enums.TravelComplaintStatusEnum;
 import com.yjtech.wisdom.tourism.common.enums.TravelComplaintTypeEnum;
-import com.yjtech.wisdom.tourism.mybatis.utils.AnalysisUtils;
 import com.yjtech.wisdom.tourism.common.utils.DateUtils;
 import com.yjtech.wisdom.tourism.common.utils.StringUtils;
 import com.yjtech.wisdom.tourism.common.utils.bean.BeanUtils;
 import com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysUser;
+import com.yjtech.wisdom.tourism.mybatis.utils.AnalysisUtils;
 import com.yjtech.wisdom.tourism.redis.RedisCache;
 import com.yjtech.wisdom.tourism.system.service.SysUserService;
 import lombok.extern.slf4j.Slf4j;
@@ -88,7 +88,8 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
                 .set(StringUtils.isNotBlank(vo.getContactUser()), TravelComplaintEntity::getContactUser, vo.getContactUser())
                 .set(Objects.nonNull(vo.getContactMobile()) && !vo.getContactMobile().isEmpty(), TravelComplaintEntity::getContactMobile, vo.getContactMobile())
                 .set(StringUtils.isNotBlank(vo.getComplaintReason()), TravelComplaintEntity::getComplaintReason, vo.getComplaintReason())
-                .set(Objects.nonNull(vo.getImage()) && !vo.getImage().isEmpty(), TravelComplaintEntity::getImage, vo.getImage());
+                .set(Objects.nonNull(vo.getImage()) && !vo.getImage().isEmpty(), TravelComplaintEntity::getImage, vo.getImage())
+                .set(Objects.nonNull(vo.getComplaintTime()), TravelComplaintEntity::getComplaintTime, vo.getComplaintTime());
 
         return baseMapper.update(complaintEntity, updateWrapper);
     }
@@ -247,7 +248,7 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
     public Integer queryTravelComplaintTotal(TravelComplaintScreenQueryVO vo){
         LambdaQueryWrapper<TravelComplaintEntity> queryWrapper = new QueryWrapper<TravelComplaintEntity>().lambda()
                 .eq(TravelComplaintEntity::getEquipStatus, Objects.isNull(vo.getEquipStatus()) ? Constants.STATUS_NEGATIVE : vo.getEquipStatus())
-                .between(Objects.nonNull(vo.getBeginTime()) && Objects.nonNull(vo.getEndTime()), TravelComplaintEntity::getCreateTime, vo.getBeginTime(), vo.getEndTime())
+                .between(Objects.nonNull(vo.getBeginTime()) && Objects.nonNull(vo.getEndTime()), TravelComplaintEntity::getComplaintTime, vo.getBeginTime(), vo.getEndTime())
                 ;
 
         return baseMapper.selectCount(queryWrapper);
