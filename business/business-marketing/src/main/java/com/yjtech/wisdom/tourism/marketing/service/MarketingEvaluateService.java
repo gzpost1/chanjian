@@ -3,16 +3,20 @@ package com.yjtech.wisdom.tourism.marketing.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.yjtech.wisdom.tourism.common.bean.AnalysisBaseInfo;
+import com.yjtech.wisdom.tourism.common.bean.AnalysisMonthChartInfo;
 import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
 import com.yjtech.wisdom.tourism.common.bean.zc.params.ZcOtaEvaluateParam;
 import com.yjtech.wisdom.tourism.common.bean.zc.po.ZcOtaEvaluatePO;
 import com.yjtech.wisdom.tourism.common.service.ZcInfoSyncService;
+import com.yjtech.wisdom.tourism.common.utils.DateUtils;
 import com.yjtech.wisdom.tourism.marketing.entity.MarketingEvaluateEntity;
 import com.yjtech.wisdom.tourism.marketing.mapper.MarketingEvaluateMapper;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateListDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateStatisticsDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateScreenQueryVO;
+import com.yjtech.wisdom.tourism.mybatis.utils.AnalysisUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -92,6 +96,24 @@ public class MarketingEvaluateService extends ServiceImpl<MarketingEvaluateMappe
     }
 
     /**
+     * 查询评价排行
+     * @param vo
+     * @return
+     */
+    public List<BaseVO> queryEvaluateRank(EvaluateScreenQueryVO vo){
+        return baseMapper.queryEvaluateRank(vo);
+    }
+
+    /**
+     * 查询满意度排行
+     * @param vo
+     * @return
+     */
+    public List<BaseVO> queryEvaluateSatisfactionRank(EvaluateScreenQueryVO vo){
+        return baseMapper.queryEvaluateSatisfactionRank(vo);
+    }
+
+    /**
      * 查询评价分页列表
      * @param vo
      * @return
@@ -99,5 +121,44 @@ public class MarketingEvaluateService extends ServiceImpl<MarketingEvaluateMappe
     public IPage<MarketingEvaluateListDTO> queryForPage(EvaluateScreenQueryVO vo){
         return baseMapper.queryForPage(new Page(vo.getPageNo(), vo.getPageSize()), vo);
     }
+
+    /**
+     * 查询评价量趋势、同比、环比
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public List<AnalysisBaseInfo> queryEvaluateAnalysis(EvaluateScreenQueryVO vo){
+        //初始化当年月份信息
+        List<String> monthMarkList = DateUtils.getEveryMonthOfCurrentYear();
+
+        //获取当前年度月趋势信息
+        List<AnalysisMonthChartInfo> currentAnalysisMonthInfo = this.baseMapper.queryEvaluateCurrentAnalysis(vo);
+        //获取去年度月趋势信息
+        List<AnalysisMonthChartInfo> lastAnalysisMonthInfo = this.baseMapper.queryEvaluateLastAnalysis(vo);
+
+        return AnalysisUtils.buildAnalysisInfo(monthMarkList, currentAnalysisMonthInfo, lastAnalysisMonthInfo);
+    }
+
+    /**
+     * 查询评价满意度趋势、同比、环比
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public List<AnalysisBaseInfo> queryEvaluateSatisfactionAnalysis(EvaluateScreenQueryVO vo){
+        //初始化当年月份信息
+        List<String> monthMarkList = DateUtils.getEveryMonthOfCurrentYear();
+
+        //获取当前年度月趋势信息
+        List<AnalysisMonthChartInfo> currentAnalysisMonthInfo = this.baseMapper.queryEvaluateSatisfactionCurrentAnalysis(vo);
+        //获取去年度月趋势信息
+        List<AnalysisMonthChartInfo> lastAnalysisMonthInfo = this.baseMapper.queryEvaluateSatisfactionLastAnalysis(vo);
+
+        return AnalysisUtils.buildAnalysisInfo(monthMarkList, currentAnalysisMonthInfo, lastAnalysisMonthInfo);
+    }
+
+
+
+
+
 
 }

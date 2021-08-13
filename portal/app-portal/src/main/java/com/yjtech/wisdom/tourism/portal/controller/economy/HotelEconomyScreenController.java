@@ -30,8 +30,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/hotelEconomy/screen/")
-public class HotelEconomyScreenController
-        extends BaseCurdController<TbHotelInfoService, TbHotelInfoEntity, TbHotelInfoEntityParam> {
+public class HotelEconomyScreenController {
 
 
     @Autowired

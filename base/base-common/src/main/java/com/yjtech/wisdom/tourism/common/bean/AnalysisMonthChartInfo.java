@@ -28,7 +28,7 @@ public class AnalysisMonthChartInfo implements Serializable {
     /**
      * 数据量
      */
-    private Integer count;
+    private BigDecimal count;
 
     /**
      * 同比
@@ -43,6 +43,6 @@ public class AnalysisMonthChartInfo implements Serializable {
 
     public AnalysisMonthChartInfo(String time) {
         this.time = time;
-        this.count = 0;
+        this.count = BigDecimal.ZERO;
     }
 }

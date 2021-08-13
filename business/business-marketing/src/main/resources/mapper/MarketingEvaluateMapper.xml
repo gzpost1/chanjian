@@ -69,9 +69,10 @@
         <where>
             <include refid="base_screen_query_condition"/>
         </where>
-        GROUP BY evaluate.status
+        GROUP BY evaluate.evaluate_type
     </select>
 
+    <!-- 查询评论热词排行 -->
     <select id="queryEvaluateHotRank" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO"
             parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateScreenQueryVO">
         select
@@ -79,10 +80,43 @@
         COUNT(evaluate.id) as value
         from
         tb_marketing_evaluate evaluate
+        <include refid="table_join"/>
         <where>
             <include refid="base_screen_query_condition"/>
         </where>
         GROUP BY evaluate.keywords
+    </select>
+
+    <!-- 查询评价排行 -->
+    <select id="queryEvaluateRank" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO"
+            parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateScreenQueryVO">
+        select
+        hotel.name as name,
+        COUNT(evaluate.id) as value
+        from
+        tb_marketing_evaluate evaluate
+        <include refid="table_join"/>
+        <where>
+            <include refid="base_screen_query_condition"/>
+        </where>
+        GROUP BY evaluate.place_id
+        ORDER BY value DESC
+    </select>
+
+    <!-- 查询满意度排行 -->
+    <select id="queryEvaluateSatisfactionRank" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO"
+            parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateScreenQueryVO">
+        select
+        hotel.name as name,
+        ROUND(SUM(CASE WHEN evaluate.evaluate_type = 2 THEN 1 ELSE 0 END)/COUNT(evaluate.id),3)*100 as value
+        from
+        tb_marketing_evaluate evaluate
+        <include refid="table_join"/>
+        <where>
+            <include refid="base_screen_query_condition"/>
+        </where>
+        GROUP BY evaluate.place_id
+        ORDER BY value DESC
     </select>
 
     <select id="queryForPage" resultType="com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateListDTO"
@@ -130,6 +164,149 @@
         </where>
         ORDER BY evaluate_time DESC
     </select>
+
+    <!-- 查询评价量今年搜索月趋势 -->
+    <select id="queryEvaluateCurrentAnalysis" resultType="com.yjtech.wisdom.tourism.common.bean.AnalysisMonthChartInfo"
+            parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateScreenQueryVO">
+        SELECT
+        DATE_FORMAT(evaluate.evaluate_time,#{params.sqlDateFormat}) as time,
+        COUNT(evaluate.id) as count,
+        ROUND(((COUNT(evaluate.id) -
+        (select
+        COUNT(evaluateOne.id)
+        from
+        tb_marketing_evaluate evaluateOne
+        INNER JOIN tb_hotel_info hotel ON hotel.id = evaluateOne.place_id and hotel.status = 1
+        <where>
+            evaluateOne.evaluate_time like concat(left((SELECT DATE_SUB(evaluate.evaluate_time,INTERVAL 1 YEAR)),7),'%') and
+            evaluateOne.equip_status = 1 and
+            evaluateOne.deleted = 0
+        </where>
+        ))/(select COUNT(evaluateTwo.id)
+        from
+        tb_marketing_evaluate evaluateTwo
+        <where>
+            evaluateTwo.evaluate_time like concat(left((SELECT DATE_SUB(evaluate.evaluate_time,INTERVAL 1 YEAR)),7),'%') and
+            evaluateTwo.equip_status = 1 and
+            evaluateTwo.deleted = 0
+        </where>
+        )),3)*100 as same,
+        ROUND(((COUNT(evaluate.id) -
+        (select COUNT(evaluateThree.id)
+        from
+        tb_marketing_evaluate evaluateThree
+        <where>
+            evaluateThree.evaluate_time like concat(left((SELECT DATE_SUB(evaluate.evaluate_time,INTERVAL 1 MONTH)),7),'%') and
+            evaluateThree.equip_status = 1 and
+            evaluateThree.deleted = 0
+        </where>
+        ))/(select COUNT(evaluateFour.id)
+        from
+        tb_marketing_evaluate evaluateFour
+        <where>
+            evaluateFour.evaluate_time like concat(left((SELECT DATE_SUB(evaluate.evaluate_time,INTERVAL 1 MONTH)),7),'%') and
+            evaluateFour.equip_status = 1 and
+            evaluateFour.deleted = 0
+        </where>
+        )),3)*100 as sequential
+        from tb_marketing_evaluate evaluate
+        INNER JOIN tb_hotel_info hotel ON hotel.id = evaluate.place_id and hotel.status = 1
+        <where>
+            <![CDATA[ evaluate.evaluate_time >= CONCAT(YEAR(now()),'-01-01 00:00:00') and ]]>
+            <![CDATA[ evaluate.evaluate_time <= CONCAT(YEAR(now()),'-12-31 23:59:59') and ]]>
+            evaluate.equip_status = 1 and
+            evaluate.deleted = 0
+        </where>
+        GROUP BY DATE_FORMAT(evaluate.evaluate_time,#{params.sqlDateFormat})
+    </select>
+
+    <!-- 查询评价量去年搜索月趋势 -->
+    <select id="queryEvaluateLastAnalysis" resultType="com.yjtech.wisdom.tourism.common.bean.AnalysisMonthChartInfo"
+            parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateScreenQueryVO">
+        SELECT
+        DATE_FORMAT(evaluate.evaluate_time,#{params.sqlDateFormat}) as time,
+        COUNT(evaluate.id) as count
+        from tb_marketing_evaluate evaluate
+        INNER JOIN tb_hotel_info hotel ON hotel.id = evaluate.place_id and hotel.status = 1
+        <where>
+            evaluate.evaluate_time like concat(YEAR(now())-1,'%') and
+            evaluate.equip_status = 1 and
+            evaluate.deleted = 0
+        </where>
+        GROUP BY DATE_FORMAT(evaluate.evaluate_time,#{params.sqlDateFormat})
+    </select>
+
+    <!-- 查询评价满意度今年搜索月趋势 -->
+    <select id="queryEvaluateSatisfactionCurrentAnalysis" resultType="com.yjtech.wisdom.tourism.common.bean.AnalysisMonthChartInfo"
+            parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateScreenQueryVO">
+        SELECT
+        DATE_FORMAT(evaluate.evaluate_time,#{params.sqlDateFormat}) as time,
+        ROUND(SUM(CASE WHEN evaluate.evaluate_type = 2 THEN 1 ELSE 0 END)/COUNT(evaluate.id),3)*100 as count,
+        ROUND((((ROUND(SUM(CASE WHEN evaluate.evaluate_type = 2 THEN 1 ELSE 0 END)/COUNT(evaluate.id),3)*100) -
+        (select
+        ROUND(SUM(CASE WHEN evaluateOne.evaluate_type = 2 THEN 1 ELSE 0 END)/COUNT(evaluateOne.id),3)*100
+        from
+        tb_marketing_evaluate evaluateOne
+        INNER JOIN tb_hotel_info hotel ON hotel.id = evaluateOne.place_id and hotel.status = 1
+        <where>
+            evaluateOne.evaluate_time like concat(left((SELECT DATE_SUB(evaluate.evaluate_time,INTERVAL 1 YEAR)),7),'%') and
+            evaluateOne.equip_status = 1 and
+            evaluateOne.deleted = 0
+        </where>
+        ))/(select ROUND(SUM(CASE WHEN evaluateTwo.evaluate_type = 2 THEN 1 ELSE 0 END)/COUNT(evaluateTwo.id),3)*100
+        from
+        tb_marketing_evaluate evaluateTwo
+        <where>
+            evaluateTwo.evaluate_time like concat(left((SELECT DATE_SUB(evaluate.evaluate_time,INTERVAL 1 YEAR)),7),'%') and
+            evaluateTwo.equip_status = 1 and
+            evaluateTwo.deleted = 0
+        </where>
+        )),3)*100 as same,
+        ROUND((((ROUND(SUM(CASE WHEN evaluate.evaluate_type = 2 THEN 1 ELSE 0 END)/COUNT(evaluate.id),3)*100) -
+        (select ROUND(SUM(CASE WHEN evaluateThree.evaluate_type = 2 THEN 1 ELSE 0 END)/COUNT(evaluateThree.id),3)*100
+        from
+        tb_marketing_evaluate evaluateThree
+        <where>
+            evaluateThree.evaluate_time like concat(left((SELECT DATE_SUB(evaluate.evaluate_time,INTERVAL 1 MONTH)),7),'%') and
+            evaluateThree.equip_status = 1 and
+            evaluateThree.deleted = 0
+        </where>
+        ))/(select ROUND(SUM(CASE WHEN evaluateFour.evaluate_type = 2 THEN 1 ELSE 0 END)/COUNT(evaluateFour.id),3)*100
+        from
+        tb_marketing_evaluate evaluateFour
+        <where>
+            evaluateFour.evaluate_time like concat(left((SELECT DATE_SUB(evaluate.evaluate_time,INTERVAL 1 MONTH)),7),'%') and
+            evaluateFour.equip_status = 1 and
+            evaluateFour.deleted = 0
+        </where>
+        )),3)*100 as sequential
+        from tb_marketing_evaluate evaluate
+        INNER JOIN tb_hotel_info hotel ON hotel.id = evaluate.place_id and hotel.status = 1
+        <where>
+            <![CDATA[ evaluate.evaluate_time >= CONCAT(YEAR(now()),'-01-01 00:00:00') and ]]>
+            <![CDATA[ evaluate.evaluate_time <= CONCAT(YEAR(now()),'-12-31 23:59:59') and ]]>
+            evaluate.equip_status = 1 and
+            evaluate.deleted = 0
+        </where>
+        GROUP BY DATE_FORMAT(evaluate.evaluate_time,#{params.sqlDateFormat})
+    </select>
+
+    <!-- 查询评价满意度去年搜索月趋势 -->
+    <select id="queryEvaluateSatisfactionLastAnalysis" resultType="com.yjtech.wisdom.tourism.common.bean.AnalysisMonthChartInfo"
+            parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateScreenQueryVO">
+        SELECT
+        DATE_FORMAT(evaluate.evaluate_time,#{params.sqlDateFormat}) as time,
+        ROUND(SUM(CASE WHEN evaluate.evaluate_type = 2 THEN 1 ELSE 0 END)/COUNT(evaluate.id),3)*100 as count
+        from tb_marketing_evaluate evaluate
+        INNER JOIN tb_hotel_info hotel ON hotel.id = evaluate.place_id and hotel.status = 1
+        <where>
+            evaluate.evaluate_time like concat(YEAR(now())-1,'%') and
+            evaluate.equip_status = 1 and
+            evaluate.deleted = 0
+        </where>
+        GROUP BY DATE_FORMAT(evaluate.evaluate_time,#{params.sqlDateFormat})
+    </select>
+
 
     <sql id="table_join">
         <choose>
