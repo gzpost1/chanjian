@@ -73,5 +73,10 @@ public class MarketingEvaluateListDTO implements Serializable {
      */
     private Integer sourcePlatformId;
 
+    /**
+     * 评论用户
+     */
+    private String evaluateUser;
+
 
 }

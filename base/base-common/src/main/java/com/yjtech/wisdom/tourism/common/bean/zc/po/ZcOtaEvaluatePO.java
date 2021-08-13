@@ -92,6 +92,11 @@ public class ZcOtaEvaluatePO implements Serializable {
     private Integer sourcePlatformId;
 
     /**
+     * 评论用户
+     */
+    private String evaluateUser;
+
+    /**
      * 点评图集视频信息
      */
     @Data

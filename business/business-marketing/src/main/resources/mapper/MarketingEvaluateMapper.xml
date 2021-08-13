@@ -6,10 +6,10 @@
 
     <insert id="insertBatch" parameterType="list">
         insert into tb_marketing_evaluate
-        (id,create_time,update_time,create_user,update_user,deleted,area_code,tp_id,place_id,place_name,evaluate_content,evaluate_time,evaluate_type,data_type,keywords,rate,resource_info,data_create_time,data_update_time,source_platform,source_platform_id)
+        (id,create_time,update_time,create_user,update_user,deleted,area_code,tp_id,place_id,place_name,evaluate_content,evaluate_time,evaluate_type,data_type,keywords,rate,resource_info,data_create_time,data_update_time,source_platform,source_platform_id,evaluate_user)
         values
         <foreach collection="params" item="item" index="index" separator=",">
-            (#{item.id},#{item.createTime},#{item.updateTime},#{item.createUser},#{item.updateUser},#{item.deleted},#{item.areaCode},#{item.tpId},#{item.placeId},#{item.placeName},#{item.evaluateContent},#{item.evaluateTime},#{item.evaluateType},#{item.dataType},#{item.keywords},#{item.rate},#{item.resourceInfo},#{item.dataCreateTime},#{item.dataUpdateTime},#{item.sourcePlatform},#{item.sourcePlatformId})
+            (#{item.id},#{item.createTime},#{item.updateTime},#{item.createUser},#{item.updateUser},#{item.deleted},#{item.areaCode},#{item.tpId},#{item.placeId},#{item.placeName},#{item.evaluateContent},#{item.evaluateTime},#{item.evaluateType},#{item.dataType},#{item.keywords},#{item.rate},#{item.resourceInfo},#{item.dataCreateTime},#{item.dataUpdateTime},#{item.sourcePlatform},#{item.sourcePlatformId},#{item.evaluateUser})
         </foreach>
         ON DUPLICATE KEY UPDATE tp_id = values(tp_id),
         place_id = values(place_id),
@@ -24,7 +24,8 @@
         data_create_time = values(data_create_time),
         data_update_time = values(data_update_time),
         source_platform = values(source_platform),
-        source_platform_id = values(source_platform_id)
+        source_platform_id = values(source_platform_id),
+        evaluate_user = values(evaluateUser)
     </insert>
 
 
@@ -97,7 +98,8 @@
         ELSE '其他' END as evaluateTypeDesc,
         rate as rate,
         source_platform as sourcePlatform,
-        source_platform_id as sourcePlatformId
+        source_platform_id as sourcePlatformId,
+        evaluate_user as evaluateUser
         from
         tb_marketing_evaluate
         <where>
