@@ -53,4 +53,11 @@ public interface MarketingHotelRoomMapper extends BaseMapper<MarketingHotelRoomE
      */
     List<BaseVO> queryRoomTypePriceDistribution(@Param("params") RoomScreenQueryVO params);
 
+    /**
+     * 查询酒店房型价格排行
+     * @param params
+     * @return
+     */
+    List<BaseVO> queryRoomPriceRank(@Param("params") RoomScreenQueryVO params);
+
 }
