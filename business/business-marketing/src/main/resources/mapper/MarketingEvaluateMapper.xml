@@ -32,11 +32,12 @@
     <select id="queryEvaluateStatistics" resultType="com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateStatisticsDTO"
             parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateScreenQueryVO">
         select
-        COUNT(id) as evaluateTotal,
-        ROUND(SUM(CASE WHEN evaluate_type = 2 THEN 1 ELSE 0 END)/COUNT(id),3)*100 as satisfaction,
-        ROUND(SUM(rate)/COUNT(id),1) as rate
+        COUNT(evaluate.id) as evaluateTotal,
+        ROUND(SUM(CASE WHEN evaluate.evaluate_type = 2 THEN 1 ELSE 0 END)/COUNT(evaluate.id),3)*100 as satisfaction,
+        ROUND(SUM(evaluate.rate)/COUNT(evaluate.id),1) as rate
         from
-        tb_marketing_evaluate
+        tb_marketing_evaluate evaluate
+        <include refid="table_join"/>
         <where>
             <include refid="base_screen_query_condition"/>
         </where>
@@ -46,19 +47,21 @@
             parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateScreenQueryVO">
         select
         CASE
-        WHEN evaluate_type = 0 THEN '差评'
-        WHEN evaluate_type = 1 THEN '中评'
-        WHEN evaluate_type = 2 THEN '好评'
+        WHEN evaluate.evaluate_type = 0 THEN '好评'
+        WHEN evaluate.evaluate_type = 1 THEN '中评'
+        WHEN evaluate.evaluate_type = 2 THEN '差评'
         ELSE '其他' END as name,
-        COUNT(id) as value,
-        COALESCE (ROUND(COUNT(id)/total.totalNum, 3)*100,0) as rate
+        COUNT(evaluate.id) as value,
+        COALESCE (ROUND(COUNT(evaluate.id)/total.totalNum, 3)*100,0) as rate
         from
         tb_marketing_evaluate as evaluate
+        <include refid="table_join"/>
         INNER JOIN
         (select
-        count(id) as totalNum
+        count(evaluate.id) as totalNum
         from
-        tb_marketing_evaluate
+        tb_marketing_evaluate evaluate
+        <include refid="table_join"/>
         <where>
             <include refid="base_screen_query_condition"/>
         </where>
@@ -66,20 +69,20 @@
         <where>
             <include refid="base_screen_query_condition"/>
         </where>
-        GROUP BY status
+        GROUP BY evaluate.status
     </select>
 
     <select id="queryEvaluateHotRank" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO"
             parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateScreenQueryVO">
         select
-        keywords as name,
-        COUNT(id) as value
+        evaluate.keywords as name,
+        COUNT(evaluate.id) as value
         from
-        tb_marketing_evaluate
+        tb_marketing_evaluate evaluate
         <where>
             <include refid="base_screen_query_condition"/>
         </where>
-        GROUP BY keywords
+        GROUP BY evaluate.keywords
     </select>
 
     <select id="queryForPage" resultType="com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateListDTO"
@@ -92,9 +95,9 @@
         evaluate_time as evaluateTime,
         evaluate_type as evaluateType,
         CASE
-        WHEN evaluate_type = 0 THEN '差评'
+        WHEN evaluate_type = 0 THEN '好评'
         WHEN evaluate_type = 1 THEN '中评'
-        WHEN evaluate_type = 2 THEN '好评'
+        WHEN evaluate_type = 2 THEN '差评'
         ELSE '其他' END as evaluateTypeDesc,
         rate as rate,
         source_platform as sourcePlatform,
@@ -128,25 +131,34 @@
         ORDER BY evaluate_time DESC
     </select>
 
+    <sql id="table_join">
+        <choose>
+            <when test="params.status != null">
+                INNER JOIN tb_hotel_info hotel ON hotel.id = evaluate.place_id and hotel.status = #{params.status}
+            </when>
+            <otherwise></otherwise>
+        </choose>
+    </sql>
+
     <sql id="base_screen_query_condition">
         <if test="params != null">
             <if test="params.placeId != null and params.placeId != ''">
-                place_id = #{params.placeId} and
+                evaluate.place_id = #{params.placeId} and
             </if>
             <if test="params.equipStatus != null">
-                equip_status = #{params.equipStatus} and
+                evaluate.equip_status = #{params.equipStatus} and
             </if>
             <if test="params.areaCode != null and params.areaCode != ''">
-                area_code LIKE CONCAT('${params.areaCode}','%') and
+                evaluate.area_code LIKE CONCAT('${params.areaCode}','%') and
             </if>
             <if test="params.beginTime != null">
-                <![CDATA[ evaluate_time >= #{params.beginTime} ]]> and
+                <![CDATA[ evaluate.evaluate_time >= #{params.beginTime} ]]> and
             </if>
             <if test="params.endTime != null">
-                <![CDATA[ evaluate_time <= #{params.endTime} ]]> and
+                <![CDATA[ evaluate.evaluate_time <= #{params.endTime} ]]> and
             </if>
         </if>
-        deleted = 0
+        evaluate.deleted = 0
     </sql>
 
     <sql id="query_screen_where">
