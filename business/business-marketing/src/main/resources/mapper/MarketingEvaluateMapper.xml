@@ -104,9 +104,10 @@
     </select>
 
     <!-- 查询满意度排行 -->
-    <select id="queryEvaluateSatisfactionRank" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO"
+    <select id="queryEvaluateSatisfactionRank" resultType="com.yjtech.wisdom.tourism.marketing.pojo.dto.HotelEvaluateSatisfactionRankDTO"
             parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateScreenQueryVO">
         select
+        hotel.id as id,
         hotel.name as name,
         ROUND(SUM(CASE WHEN evaluate.evaluate_type = 2 THEN 1 ELSE 0 END)/COUNT(evaluate.id),3)*100 as value
         from

@@ -7,6 +7,7 @@ import com.yjtech.wisdom.tourism.common.bean.AnalysisMonthChartInfo;
 import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
 import com.yjtech.wisdom.tourism.marketing.entity.MarketingEvaluateEntity;
+import com.yjtech.wisdom.tourism.marketing.pojo.dto.HotelEvaluateSatisfactionRankDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateListDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateStatisticsDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateScreenQueryVO;
@@ -61,7 +62,7 @@ public interface MarketingEvaluateMapper extends BaseMapper<MarketingEvaluateEnt
      * @param params
      * @return
      */
-    List<BaseVO> queryEvaluateSatisfactionRank(@Param("params") EvaluateScreenQueryVO params);
+    List<HotelEvaluateSatisfactionRankDTO> queryEvaluateSatisfactionRank(@Param("params") EvaluateScreenQueryVO params);
 
     /**
      * 查询评价分页列表

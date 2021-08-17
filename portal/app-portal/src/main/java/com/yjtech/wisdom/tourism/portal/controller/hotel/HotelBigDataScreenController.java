@@ -5,10 +5,7 @@ import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
 import com.yjtech.wisdom.tourism.common.constant.Constants;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
-import com.yjtech.wisdom.tourism.hotel.dto.TbHotelInfoEntityParam;
-import com.yjtech.wisdom.tourism.hotel.entity.TbHotelInfoEntity;
-import com.yjtech.wisdom.tourism.hotel.service.TbHotelInfoService;
-import com.yjtech.wisdom.tourism.infrastructure.core.controller.BaseCurdController;
+import com.yjtech.wisdom.tourism.marketing.pojo.dto.HotelEvaluateSatisfactionRankDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateStatisticsDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.RoomPriceAnalysisDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateScreenQueryVO;
@@ -35,8 +32,7 @@ import java.util.Objects;
 @Slf4j
 @RestController
 @RequestMapping("/hotel/bigData/screen/")
-public class HotelBigDataScreenController
-        extends BaseCurdController<TbHotelInfoService, TbHotelInfoEntity, TbHotelInfoEntityParam> {
+public class HotelBigDataScreenController {
 
     @Autowired
     private MarketingEvaluateService marketingEvaluateService;
@@ -115,7 +111,7 @@ public class HotelBigDataScreenController
      * @return
      */
     @PostMapping("queryEvaluateSatisfactionRank")
-    public JsonResult<List<BaseVO>> queryEvaluateSatisfactionRank(@RequestBody @Valid EvaluateScreenQueryVO vo) {
+    public JsonResult<List<HotelEvaluateSatisfactionRankDTO>> queryEvaluateSatisfactionRank(@RequestBody @Valid EvaluateScreenQueryVO vo) {
         //设置默认酒店状态-启用
         vo.setStatus(Constants.STATUS_NEGATIVE.byteValue());
         //设置默认评论状态-启用

@@ -13,6 +13,7 @@ import com.yjtech.wisdom.tourism.common.service.ZcInfoSyncService;
 import com.yjtech.wisdom.tourism.common.utils.DateUtils;
 import com.yjtech.wisdom.tourism.marketing.entity.MarketingEvaluateEntity;
 import com.yjtech.wisdom.tourism.marketing.mapper.MarketingEvaluateMapper;
+import com.yjtech.wisdom.tourism.marketing.pojo.dto.HotelEvaluateSatisfactionRankDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateListDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateStatisticsDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateScreenQueryVO;
@@ -109,7 +110,7 @@ public class MarketingEvaluateService extends ServiceImpl<MarketingEvaluateMappe
      * @param vo
      * @return
      */
-    public List<BaseVO> queryEvaluateSatisfactionRank(EvaluateScreenQueryVO vo){
+    public List<HotelEvaluateSatisfactionRankDTO> queryEvaluateSatisfactionRank(EvaluateScreenQueryVO vo){
         return baseMapper.queryEvaluateSatisfactionRank(vo);
     }
 
