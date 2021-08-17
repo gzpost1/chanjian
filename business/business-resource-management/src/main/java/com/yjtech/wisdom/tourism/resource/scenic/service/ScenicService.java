@@ -149,6 +149,9 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
     public List<MonthPassengerFlowDto> queryPassengerFlowTrend(ScenicScreenQuery query) {
         // 结果数据
         List<MonthPassengerFlowDto> resultList = Lists.newArrayList();
+        if (query.getType() == 1 || query.getType() == 4) {
+            return resultList;
+        }
         //当前时间
         LocalDateTime curBeginDate = null;
         LocalDateTime curEndDate = null;
@@ -160,7 +163,7 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
         LocalDateTime hbEndDate = null;
         //横坐标长度(截至当前时刻的时间)
         List<String> abscissa = Lists.newArrayList();
-        if (query.getType().intValue() == 1) {
+        if (query.getType().intValue() == 2) {
             curBeginDate = LocalDateTime.of(LocalDate.now(), LocalTime.MIN).with(TemporalAdjusters.firstDayOfYear());
             curEndDate = LocalDateTime.of(LocalDate.now(), LocalTime.MAX).with(TemporalAdjusters.lastDayOfYear());
             tbBeginDate = LocalDateTime.of(LocalDate.now(), LocalTime.MIN).with(TemporalAdjusters.firstDayOfYear()).minusYears(1);
@@ -173,7 +176,7 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
                 abscissa.add(LocalDate.now().getYear() + monthAndDay);
             }
 
-        } else if (query.getType().intValue() == 2) {
+        } else if (query.getType().intValue() == 3) {
             curBeginDate = LocalDateTime.of(LocalDate.now(), LocalTime.MIN).with(TemporalAdjusters.firstDayOfMonth());
             curEndDate = LocalDateTime.of(LocalDate.now(), LocalTime.MAX).with(TemporalAdjusters.lastDayOfMonth());
             tbBeginDate = LocalDateTime.of(LocalDate.now(), LocalTime.MIN).with(TemporalAdjusters.firstDayOfMonth()).minusMonths(1);
@@ -181,33 +184,35 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
             hbBeginDate = LocalDateTime.of(LocalDate.now(), LocalTime.MIN).with(TemporalAdjusters.firstDayOfMonth()).minusDays(1);
             hbEndDate = LocalDateTime.of(LocalDate.now(), LocalTime.MAX).with(TemporalAdjusters.lastDayOfMonth()).minusDays(1);
             int timeNum = LocalDate.now().getDayOfMonth();
+            int monthValue = LocalDate.now().getMonthValue();
             for (int i = 1; i <= timeNum; i++) {
-                String month = (LocalDate.now().getMonthValue() < 10 ? "-0" : "-") + i;
+                String month = (monthValue < 10 ? "-0" : "-") + monthValue;
                 String day = (i < 10 ? "-0" : "-") + i;
                 abscissa.add(LocalDate.now().getYear() + month + day);
             }
         }
+        ScenicScreenQuery copyQuery = BeanMapper.copyBean(query, ScenicScreenQuery.class);
         //查询当前时间检票数据.
-        query.setBeginTime(curBeginDate);
-        query.setEndTime(curEndDate);
-        List<SaleTrendVO> curSaleTrendVOS = ticketCheckService.queryCheckTrendByTime(query);
+        copyQuery.setBeginTime(curBeginDate);
+        copyQuery.setEndTime(curEndDate);
+        List<SaleTrendVO> curSaleTrendVOS = ticketCheckService.queryCheckTrendByTime(copyQuery);
         Map<String, Integer> curMap = curSaleTrendVOS.stream().collect(Collectors.toMap(SaleTrendVO::getTime, SaleTrendVO::getVisitQuantity));
         //查询同比时间检票数据.
-        query.setBeginTime(tbBeginDate);
-        query.setEndTime(tbEndDate);
-        List<SaleTrendVO> tbSaleTrendVOS = ticketCheckService.queryCheckTrendByTime(query);
+        copyQuery.setBeginTime(tbBeginDate);
+        copyQuery.setEndTime(tbEndDate);
+        List<SaleTrendVO> tbSaleTrendVOS = ticketCheckService.queryCheckTrendByTime(copyQuery);
         Map<String, Integer> tbMap = tbSaleTrendVOS.stream().collect(Collectors.toMap(SaleTrendVO::getTime, SaleTrendVO::getVisitQuantity));
         //查询同比时间检票数据.
-        query.setBeginTime(hbBeginDate);
-        query.setEndTime(hbEndDate);
-        List<SaleTrendVO> hbSaleTrendVOS = ticketCheckService.queryCheckTrendByTime(query);
+        copyQuery.setBeginTime(hbBeginDate);
+        copyQuery.setEndTime(hbEndDate);
+        List<SaleTrendVO> hbSaleTrendVOS = ticketCheckService.queryCheckTrendByTime(copyQuery);
         Map<String, Integer> hbMap = hbSaleTrendVOS.stream().collect(Collectors.toMap(SaleTrendVO::getTime, SaleTrendVO::getVisitQuantity));
         int curNum, tbNum, hbNum = 0;
         for (String date : abscissa) {
-            if (query.getType().intValue() == 1) {
+            if (query.getType().intValue() == 2) {
                 String hbDate = DateTimeUtil.localDateToString(DateTimeUtil.stringToLocalDate(date).minusMonths(1), "yyyy-MM-dd");
                 hbNum = !isNull(hbMap.get(hbDate)) ? hbMap.get(hbDate) : 0;
-            } else if (query.getType().intValue() == 2) {
+            } else if (query.getType().intValue() == 3) {
                 String hbDate = DateTimeUtil.localDateToString(DateTimeUtil.stringToLocalDate(date).minusDays(1), "yyyy-MM-dd");
                 hbNum = !isNull(hbMap.get(hbDate)) ? hbMap.get(hbDate) : 0;
             }

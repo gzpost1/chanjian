@@ -113,9 +113,6 @@ public class ScenicScreenController {
      */
     @PostMapping("/queryPassengerFlowTrend")
     public JsonResult<List<BaseValueVO>> queryPassengerFlow(@RequestBody @Valid ScenicScreenQuery query) {
-        if (query.getType() == 3 || query.getType() == 4) {
-            throw new CustomException("时间类型只能传1或者2");
-        }
         return JsonResult.success(AnalysisUtils.MultipleBuildAnalysis(
                 query,
                 scenicService.queryPassengerFlowTrend(query),
@@ -130,8 +127,11 @@ public class ScenicScreenController {
      * @return:
      */
     @PostMapping("/queryEvaluateTypeDistribution")
-    public JsonResult<List<BasePercentVO>> queryEvaluateTypeDistribution(@RequestBody @Valid ScenicScreenQuery vo) {
-        return JsonResult.success(scenicService.queryEvaluateTypeDistribution(vo));
+    public JsonResult<List<BasePercentVO>> queryEvaluateTypeDistribution(@RequestBody @Valid ScenicScreenQuery query) {
+        if (isNull(query.getBeginTime()) || isNull(query.getEndTime())) {
+            throw new CustomException("统计时间不能为空");
+        }
+        return JsonResult.success(scenicService.queryEvaluateTypeDistribution(query));
     }
 
     /**
@@ -141,8 +141,11 @@ public class ScenicScreenController {
      * @return:
      */
     @PostMapping("/queryScenicEvaluateStatistics")
-    public JsonResult<MarketingEvaluateStatisticsDTO> queryScenicEvaluateStatistics(@RequestBody @Valid ScenicScreenQuery vo) {
-        return JsonResult.success(scenicService.queryScenicEvaluateStatistics(vo));
+    public JsonResult<MarketingEvaluateStatisticsDTO> queryScenicEvaluateStatistics(@RequestBody @Valid ScenicScreenQuery query) {
+        if (isNull(query.getBeginTime()) || isNull(query.getEndTime())) {
+            throw new CustomException("统计时间不能为空");
+        }
+        return JsonResult.success(scenicService.queryScenicEvaluateStatistics(query));
     }
 
     /**
@@ -185,8 +188,12 @@ public class ScenicScreenController {
      * @return:
      */
     @PostMapping("/queryHeatTrend")
-    public JsonResult<List<MonthPassengerFlowDto>> queryHeatTrend(@RequestBody @Valid ScenicScreenQuery query) {
-        return JsonResult.success(scenicService.queryHeatTrend(query));
+    public JsonResult<List<BaseValueVO>> queryHeatTrend(@RequestBody @Valid ScenicScreenQuery query) {
+        return JsonResult.success(AnalysisUtils.MultipleBuildAnalysis(
+                query,
+                scenicService.queryHeatTrend(query),
+                true,
+                MonthPassengerFlowDto::getNumber, MonthPassengerFlowDto::getTbNumber, MonthPassengerFlowDto::getHbScale, MonthPassengerFlowDto::getTbScale));
     }
 
     /**
@@ -196,7 +203,11 @@ public class ScenicScreenController {
      * @return:
      */
     @PostMapping("/querySatisfactionTrend")
-    public JsonResult<List<MonthPassengerFlowDto>> querySatisfactionTrend(@RequestBody @Valid ScenicScreenQuery query) {
-        return JsonResult.success(scenicService.querySatisfactionTrend(query));
+    public JsonResult<List<BaseValueVO>> querySatisfactionTrend(@RequestBody @Valid ScenicScreenQuery query) {
+        return JsonResult.success(AnalysisUtils.MultipleBuildAnalysis(
+                query,
+                scenicService.querySatisfactionTrend(query),
+                true,
+                MonthPassengerFlowDto::getNumber, MonthPassengerFlowDto::getTbNumber, MonthPassengerFlowDto::getHbScale, MonthPassengerFlowDto::getTbScale));
     }
 }
