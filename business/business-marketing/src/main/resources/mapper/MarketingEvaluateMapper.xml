@@ -30,7 +30,7 @@
 
 
     <select id="queryEvaluateStatistics" resultType="com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateStatisticsDTO"
-            parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateScreenQueryVO">
+            parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateQueryVO">
         select
         COUNT(evaluate.id) as evaluateTotal,
         ROUND(SUM(CASE WHEN evaluate.evaluate_type = 2 THEN 1 ELSE 0 END)/COUNT(evaluate.id),3)*100 as satisfaction,
@@ -44,7 +44,7 @@
     </select>
 
     <select id="queryEvaluateTypeDistribution" resultType="com.yjtech.wisdom.tourism.common.bean.BasePercentVO"
-            parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateScreenQueryVO">
+            parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateQueryVO">
         select
         CASE
         WHEN evaluate.evaluate_type = 0 THEN '好评'
@@ -74,7 +74,7 @@
 
     <!-- 查询评论热词排行 -->
     <select id="queryEvaluateHotRank" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO"
-            parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateScreenQueryVO">
+            parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateQueryVO">
         select
         evaluate.keywords as name,
         COUNT(evaluate.id) as value
@@ -89,7 +89,7 @@
 
     <!-- 查询评价排行 -->
     <select id="queryEvaluateRank" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO"
-            parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateScreenQueryVO">
+            parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateQueryVO">
         select
         hotel.name as name,
         COUNT(evaluate.id) as value
@@ -105,7 +105,7 @@
 
     <!-- 查询满意度排行 -->
     <select id="queryEvaluateSatisfactionRank" resultType="com.yjtech.wisdom.tourism.marketing.pojo.dto.HotelEvaluateSatisfactionRankDTO"
-            parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateScreenQueryVO">
+            parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateQueryVO">
         select
         hotel.id as id,
         hotel.name as name,
@@ -121,11 +121,16 @@
     </select>
 
     <select id="queryForPage" resultType="com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateListDTO"
-            parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateScreenQueryVO">
+            parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateQueryVO">
         select
         id as id,
         place_id as placeId,
         place_name as placeName,
+        data_type as dataType,
+        CASE
+        WHEN data_type = 1 THEN '景区'
+        WHEN data_type = 2 THEN '酒店'
+        ELSE '其他' END as dataTypeDesc,
         evaluate_content as evaluateContent,
         evaluate_time as evaluateTime,
         evaluate_type as evaluateType,
@@ -137,16 +142,23 @@
         rate as rate,
         source_platform as sourcePlatform,
         source_platform_id as sourcePlatformId,
-        evaluate_user as evaluateUser
+        evaluate_user as evaluateUser,
+        create_time as createTime
         from
         tb_marketing_evaluate
         <where>
             <if test="params != null">
+                <if test="params.placeName != null and params.placeName != ''">
+                    place_ame LIKE CONCAT('%', #{params.placeName}, '%') and
+                </if>
                 <if test="params.placeId != null and params.placeId != ''">
                     place_id = #{params.placeId} and
                 </if>
                 <if test="params.evaluateType != null">
                     evaluate_type = #{params.evaluateType} and
+                </if>
+                <if test="params.dataType != null">
+                    data_type = #{params.dataType} and
                 </if>
                 <if test="params.equipStatus != null">
                     equip_status = #{params.equipStatus} and
@@ -168,7 +180,7 @@
 
     <!-- 查询评价量今年搜索月趋势 -->
     <select id="queryEvaluateCurrentAnalysis" resultType="com.yjtech.wisdom.tourism.common.bean.AnalysisMonthChartInfo"
-            parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateScreenQueryVO">
+            parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateQueryVO">
         SELECT
         DATE_FORMAT(evaluate.evaluate_time,#{params.sqlDateFormat}) as time,
         COUNT(evaluate.id) as count,
@@ -223,7 +235,7 @@
 
     <!-- 查询评价量去年搜索月趋势 -->
     <select id="queryEvaluateLastAnalysis" resultType="com.yjtech.wisdom.tourism.common.bean.AnalysisMonthChartInfo"
-            parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateScreenQueryVO">
+            parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateQueryVO">
         SELECT
         DATE_FORMAT(evaluate.evaluate_time,#{params.sqlDateFormat}) as time,
         COUNT(evaluate.id) as count
@@ -239,7 +251,7 @@
 
     <!-- 查询评价满意度今年搜索月趋势 -->
     <select id="queryEvaluateSatisfactionCurrentAnalysis" resultType="com.yjtech.wisdom.tourism.common.bean.AnalysisMonthChartInfo"
-            parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateScreenQueryVO">
+            parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateQueryVO">
         SELECT
         DATE_FORMAT(evaluate.evaluate_time,#{params.sqlDateFormat}) as time,
         ROUND(SUM(CASE WHEN evaluate.evaluate_type = 2 THEN 1 ELSE 0 END)/COUNT(evaluate.id),3)*100 as count,
@@ -294,7 +306,7 @@
 
     <!-- 查询评价满意度去年搜索月趋势 -->
     <select id="queryEvaluateSatisfactionLastAnalysis" resultType="com.yjtech.wisdom.tourism.common.bean.AnalysisMonthChartInfo"
-            parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateScreenQueryVO">
+            parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateQueryVO">
         SELECT
         DATE_FORMAT(evaluate.evaluate_time,#{params.sqlDateFormat}) as time,
         ROUND(SUM(CASE WHEN evaluate.evaluate_type = 2 THEN 1 ELSE 0 END)/COUNT(evaluate.id),3)*100 as count

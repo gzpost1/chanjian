@@ -16,7 +16,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import javax.validation.constraints.NotNull;
 
-import com.yjtech.wisdom.tourism.infrastructure.constant.EntityConstants;
+import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.common.validator.BeanValidationGroup;
 /**
  * 酒店信息

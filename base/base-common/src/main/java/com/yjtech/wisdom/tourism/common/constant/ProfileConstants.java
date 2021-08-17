@@ -1,4 +1,4 @@
-package com.yjtech.wisdom.tourism.infrastructure.constant;
+package com.yjtech.wisdom.tourism.common.constant;
 
 /** 环境常量 Created by yingcan on 2019/11/22. */
 public class ProfileConstants {

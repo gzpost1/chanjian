@@ -3,7 +3,7 @@ package com.yjtech.wisdom.tourism.integration.service;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.yjtech.wisdom.tourism.common.utils.AreaUtils;
-import com.yjtech.wisdom.tourism.infrastructure.constant.EntityConstants;
+import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.integration.entity.TbYjwlHotelInfoEntity;
 import com.yjtech.wisdom.tourism.integration.mapper.TbYjwlHotelInfoMapper;
 import com.yjtech.wisdom.tourism.integration.pojo.bo.hotel.HotelSaleRankListBO;

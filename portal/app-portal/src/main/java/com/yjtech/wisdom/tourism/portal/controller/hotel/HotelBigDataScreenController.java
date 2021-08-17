@@ -4,11 +4,12 @@ import com.yjtech.wisdom.tourism.common.bean.AnalysisBaseInfo;
 import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
 import com.yjtech.wisdom.tourism.common.constant.Constants;
+import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.HotelEvaluateSatisfactionRankDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateStatisticsDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.RoomPriceAnalysisDTO;
-import com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateScreenQueryVO;
+import com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateQueryVO;
 import com.yjtech.wisdom.tourism.marketing.pojo.vo.RoomScreenQueryVO;
 import com.yjtech.wisdom.tourism.marketing.service.MarketingEvaluateService;
 import com.yjtech.wisdom.tourism.marketing.service.MarketingHotelRoomService;
@@ -47,11 +48,11 @@ public class HotelBigDataScreenController {
      * @return
      */
     @PostMapping("queryEvaluateStatistics")
-    public JsonResult<MarketingEvaluateStatisticsDTO> queryEvaluateStatistics(@RequestBody @Valid EvaluateScreenQueryVO vo) {
+    public JsonResult<MarketingEvaluateStatisticsDTO> queryEvaluateStatistics(@RequestBody @Valid EvaluateQueryVO vo) {
         //设置默认酒店状态-启用
-        vo.setStatus(Constants.STATUS_NEGATIVE.byteValue());
+        vo.setStatus(EntityConstants.ENABLED);
         //设置默认评论状态-启用
-        vo.setEquipStatus(Objects.isNull(vo.getEquipStatus()) ? Constants.STATUS_NEGATIVE.byteValue() : vo.getEquipStatus());
+        vo.setEquipStatus(Objects.isNull(vo.getEquipStatus()) ? EntityConstants.ENABLED : vo.getEquipStatus());
 
         return JsonResult.success(marketingEvaluateService.queryEvaluateStatistics(vo));
     }
@@ -63,11 +64,11 @@ public class HotelBigDataScreenController {
      * @return
      */
     @PostMapping("queryEvaluateTypeDistribution")
-    public JsonResult<List<BasePercentVO>> queryEvaluateTypeDistribution(@RequestBody @Valid EvaluateScreenQueryVO vo) {
+    public JsonResult<List<BasePercentVO>> queryEvaluateTypeDistribution(@RequestBody @Valid EvaluateQueryVO vo) {
         //设置默认酒店状态-启用
-        vo.setStatus(Constants.STATUS_NEGATIVE.byteValue());
+        vo.setStatus(EntityConstants.ENABLED);
         //设置默认评论状态-启用
-        vo.setEquipStatus(Objects.isNull(vo.getEquipStatus()) ? Constants.STATUS_NEGATIVE.byteValue() : vo.getEquipStatus());
+        vo.setEquipStatus(Objects.isNull(vo.getEquipStatus()) ? EntityConstants.ENABLED : vo.getEquipStatus());
 
         return JsonResult.success(marketingEvaluateService.queryEvaluateTypeDistribution(vo));
     }
@@ -79,11 +80,11 @@ public class HotelBigDataScreenController {
      * @return
      */
     @PostMapping("queryEvaluateHotRank")
-    public JsonResult<List<BaseVO>> queryEvaluateHotRank(@RequestBody @Valid EvaluateScreenQueryVO vo) {
+    public JsonResult<List<BaseVO>> queryEvaluateHotRank(@RequestBody @Valid EvaluateQueryVO vo) {
         //设置默认酒店状态-启用
-        vo.setStatus(Constants.STATUS_NEGATIVE.byteValue());
+        vo.setStatus(EntityConstants.ENABLED);
         //设置默认评论状态-启用
-        vo.setEquipStatus(Objects.isNull(vo.getEquipStatus()) ? Constants.STATUS_NEGATIVE.byteValue() : vo.getEquipStatus());
+        vo.setEquipStatus(Objects.isNull(vo.getEquipStatus()) ? EntityConstants.ENABLED : vo.getEquipStatus());
 
         return JsonResult.success(marketingEvaluateService.queryEvaluateHotRank(vo));
     }
@@ -95,11 +96,11 @@ public class HotelBigDataScreenController {
      * @return
      */
     @PostMapping("queryEvaluateRank")
-    public JsonResult<List<BaseVO>> queryEvaluateRank(@RequestBody @Valid EvaluateScreenQueryVO vo) {
+    public JsonResult<List<BaseVO>> queryEvaluateRank(@RequestBody @Valid EvaluateQueryVO vo) {
         //设置默认酒店状态-启用
-        vo.setStatus(Constants.STATUS_NEGATIVE.byteValue());
+        vo.setStatus(EntityConstants.ENABLED);
         //设置默认评论状态-启用
-        vo.setEquipStatus(Objects.isNull(vo.getEquipStatus()) ? Constants.STATUS_NEGATIVE.byteValue() : vo.getEquipStatus());
+        vo.setEquipStatus(Objects.isNull(vo.getEquipStatus()) ? EntityConstants.ENABLED : vo.getEquipStatus());
 
         return JsonResult.success(marketingEvaluateService.queryEvaluateRank(vo));
     }
@@ -111,11 +112,11 @@ public class HotelBigDataScreenController {
      * @return
      */
     @PostMapping("queryEvaluateSatisfactionRank")
-    public JsonResult<List<HotelEvaluateSatisfactionRankDTO>> queryEvaluateSatisfactionRank(@RequestBody @Valid EvaluateScreenQueryVO vo) {
+    public JsonResult<List<HotelEvaluateSatisfactionRankDTO>> queryEvaluateSatisfactionRank(@RequestBody @Valid EvaluateQueryVO vo) {
         //设置默认酒店状态-启用
-        vo.setStatus(Constants.STATUS_NEGATIVE.byteValue());
+        vo.setStatus(EntityConstants.ENABLED);
         //设置默认评论状态-启用
-        vo.setEquipStatus(Objects.isNull(vo.getEquipStatus()) ? Constants.STATUS_NEGATIVE.byteValue() : vo.getEquipStatus());
+        vo.setEquipStatus(Objects.isNull(vo.getEquipStatus()) ? EntityConstants.ENABLED : vo.getEquipStatus());
 
         return JsonResult.success(marketingEvaluateService.queryEvaluateSatisfactionRank(vo));
     }
@@ -129,7 +130,7 @@ public class HotelBigDataScreenController {
     @PostMapping("queryRoomPriceAnalysis")
     public JsonResult<List<RoomPriceAnalysisDTO>> queryRoomPriceAnalysis(@RequestBody @Valid RoomScreenQueryVO vo) {
         //设置默认酒店状态-启用
-        vo.setStatus(Constants.STATUS_NEGATIVE.byteValue());
+        vo.setStatus(EntityConstants.ENABLED);
 
         return JsonResult.success(marketingHotelRoomService.queryRoomPriceAnalysis(vo));
     }
@@ -141,7 +142,7 @@ public class HotelBigDataScreenController {
      * @return
      */
     @PostMapping("queryEvaluateAnalysis")
-    public JsonResult<List<AnalysisBaseInfo>> queryEvaluateAnalysis(@RequestBody @Valid EvaluateScreenQueryVO vo) {
+    public JsonResult<List<AnalysisBaseInfo>> queryEvaluateAnalysis(@RequestBody @Valid EvaluateQueryVO vo) {
         return JsonResult.success(marketingEvaluateService.queryEvaluateAnalysis(vo));
     }
 
@@ -152,7 +153,7 @@ public class HotelBigDataScreenController {
      * @return
      */
     @PostMapping("queryEvaluateSatisfactionAnalysis")
-    public JsonResult<List<AnalysisBaseInfo>> queryEvaluateSatisfactionAnalysis(@RequestBody @Valid EvaluateScreenQueryVO vo) {
+    public JsonResult<List<AnalysisBaseInfo>> queryEvaluateSatisfactionAnalysis(@RequestBody @Valid EvaluateQueryVO vo) {
         return JsonResult.success(marketingEvaluateService.queryEvaluateSatisfactionAnalysis(vo));
     }
 }

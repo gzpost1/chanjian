@@ -10,7 +10,7 @@ import com.yjtech.wisdom.tourism.marketing.entity.MarketingEvaluateEntity;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.HotelEvaluateSatisfactionRankDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateListDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateStatisticsDTO;
-import com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateScreenQueryVO;
+import com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateQueryVO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -36,7 +36,7 @@ public interface MarketingEvaluateMapper extends BaseMapper<MarketingEvaluateEnt
      * @param params
      * @return
      */
-    MarketingEvaluateStatisticsDTO queryEvaluateStatistics(@Param("params") EvaluateScreenQueryVO params);
+    MarketingEvaluateStatisticsDTO queryEvaluateStatistics(@Param("params") EvaluateQueryVO params);
 
     /**
      * 查询评价类型分布
@@ -44,7 +44,7 @@ public interface MarketingEvaluateMapper extends BaseMapper<MarketingEvaluateEnt
      * @param params
      * @return
      */
-    List<BasePercentVO> queryEvaluateTypeDistribution(@Param("params") EvaluateScreenQueryVO params);
+    List<BasePercentVO> queryEvaluateTypeDistribution(@Param("params") EvaluateQueryVO params);
 
     /**
      * 查询评价热词排行
@@ -52,7 +52,7 @@ public interface MarketingEvaluateMapper extends BaseMapper<MarketingEvaluateEnt
      * @param params
      * @return
      */
-    List<BaseVO> queryEvaluateHotRank(@Param("params") EvaluateScreenQueryVO params);
+    List<BaseVO> queryEvaluateHotRank(@Param("params") EvaluateQueryVO params);
 
     /**
      * 查询评价排行
@@ -60,7 +60,7 @@ public interface MarketingEvaluateMapper extends BaseMapper<MarketingEvaluateEnt
      * @param params
      * @return
      */
-    List<BaseVO> queryEvaluateRank(@Param("params") EvaluateScreenQueryVO params);
+    List<BaseVO> queryEvaluateRank(@Param("params") EvaluateQueryVO params);
 
     /**
      * 查询满意度排行
@@ -68,7 +68,7 @@ public interface MarketingEvaluateMapper extends BaseMapper<MarketingEvaluateEnt
      * @param params
      * @return
      */
-    List<HotelEvaluateSatisfactionRankDTO> queryEvaluateSatisfactionRank(@Param("params") EvaluateScreenQueryVO params);
+    List<HotelEvaluateSatisfactionRankDTO> queryEvaluateSatisfactionRank(@Param("params") EvaluateQueryVO params);
 
     /**
      * 查询评价分页列表
@@ -76,7 +76,7 @@ public interface MarketingEvaluateMapper extends BaseMapper<MarketingEvaluateEnt
      * @param params
      * @return
      */
-    IPage<MarketingEvaluateListDTO> queryForPage(Page page, @Param("params") EvaluateScreenQueryVO params);
+    IPage<MarketingEvaluateListDTO> queryForPage(Page page, @Param("params") EvaluateQueryVO params);
 
     /**
      * 查询评价量今年搜索月趋势
@@ -84,7 +84,7 @@ public interface MarketingEvaluateMapper extends BaseMapper<MarketingEvaluateEnt
      * @param params
      * @return
      */
-    List<AnalysisMonthChartInfo> queryEvaluateCurrentAnalysis(@Param("params") EvaluateScreenQueryVO params);
+    List<AnalysisMonthChartInfo> queryEvaluateCurrentAnalysis(@Param("params") EvaluateQueryVO params);
 
     /**
      * 查询评价量去年搜索月趋势
@@ -92,7 +92,7 @@ public interface MarketingEvaluateMapper extends BaseMapper<MarketingEvaluateEnt
      * @param params
      * @return
      */
-    List<AnalysisMonthChartInfo> queryEvaluateLastAnalysis(@Param("params") EvaluateScreenQueryVO params);
+    List<AnalysisMonthChartInfo> queryEvaluateLastAnalysis(@Param("params") EvaluateQueryVO params);
 
     /**
      * 查询评价满意度今年搜索月趋势
@@ -100,7 +100,7 @@ public interface MarketingEvaluateMapper extends BaseMapper<MarketingEvaluateEnt
      * @param params
      * @return
      */
-    List<AnalysisMonthChartInfo> queryEvaluateSatisfactionCurrentAnalysis(@Param("params") EvaluateScreenQueryVO params);
+    List<AnalysisMonthChartInfo> queryEvaluateSatisfactionCurrentAnalysis(@Param("params") EvaluateQueryVO params);
 
     /**
      * 查询评价满意度去年搜索月趋势
@@ -108,7 +108,7 @@ public interface MarketingEvaluateMapper extends BaseMapper<MarketingEvaluateEnt
      * @param params
      * @return
      */
-    List<AnalysisMonthChartInfo> queryEvaluateSatisfactionLastAnalysis(@Param("params") EvaluateScreenQueryVO params);
+    List<AnalysisMonthChartInfo> queryEvaluateSatisfactionLastAnalysis(@Param("params") EvaluateQueryVO params);
 
     /**
      * 景区大数据-评价排行top5
@@ -116,7 +116,7 @@ public interface MarketingEvaluateMapper extends BaseMapper<MarketingEvaluateEnt
      * @param params
      * @return
      */
-    IPage<BaseVO> queryEvaluateTop5(Page page, @Param("params") EvaluateScreenQueryVO params);
+    IPage<BaseVO> queryEvaluateTop5(Page page, @Param("params") EvaluateQueryVO params);
 
     /**
      * 景区大数据-满意度排行TOP5
@@ -124,7 +124,7 @@ public interface MarketingEvaluateMapper extends BaseMapper<MarketingEvaluateEnt
      * @param params
      * @return
      */
-    IPage<BaseVO> querySatisfactionTop5(Page page, @Param("params") EvaluateScreenQueryVO params);
+    IPage<BaseVO> querySatisfactionTop5(Page page, @Param("params") EvaluateQueryVO params);
 
     /**
      * 景区分布—查询评价统计
@@ -132,7 +132,7 @@ public interface MarketingEvaluateMapper extends BaseMapper<MarketingEvaluateEnt
      * @param params
      * @return
      */
-    List<BasePercentVO> queryScenicEvaluateTypeDistribution(@Param("params") EvaluateScreenQueryVO params);
+    List<BasePercentVO> queryScenicEvaluateTypeDistribution(@Param("params") EvaluateQueryVO params);
 
     /**
      * 景区分布—查询评价统计
@@ -140,7 +140,7 @@ public interface MarketingEvaluateMapper extends BaseMapper<MarketingEvaluateEnt
      * @param params
      * @return
      */
-    MarketingEvaluateStatisticsDTO queryScenicEvaluateStatistics(@Param("params") EvaluateScreenQueryVO params);
+    MarketingEvaluateStatisticsDTO queryScenicEvaluateStatistics(@Param("params") EvaluateQueryVO params);
 
     /**
      * 景区分布——热度趋势
@@ -148,7 +148,7 @@ public interface MarketingEvaluateMapper extends BaseMapper<MarketingEvaluateEnt
      * @param query
      * @return
      */
-    List<BaseVO> queryHeatTrend(@Param("params") EvaluateScreenQueryVO query);
+    List<BaseVO> queryHeatTrend(@Param("params") EvaluateQueryVO query);
 
     /**
      * 景区分布——满意度趋势
@@ -156,5 +156,5 @@ public interface MarketingEvaluateMapper extends BaseMapper<MarketingEvaluateEnt
      * @param query
      * @return
      */
-    List<BaseVO> querySatisfactionTrend(@Param("params") EvaluateScreenQueryVO query);
+    List<BaseVO> querySatisfactionTrend(@Param("params") EvaluateQueryVO query);
 }

@@ -2,6 +2,7 @@ package com.yjtech.wisdom.tourism.command.dto.travelcomplaint;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.yjtech.wisdom.tourism.common.constant.Constants;
+import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.common.enums.TravelComplaintStatusEnum;
 import com.yjtech.wisdom.tourism.common.enums.TravelComplaintTypeEnum;
 import lombok.Data;
@@ -151,7 +152,7 @@ public class TravelComplaintDTO implements Serializable {
     public void buildDesc(){
         setComplaintTypeDesc(TravelComplaintTypeEnum.getDescByValue(getComplaintType()));
         setStatusDesc(TravelComplaintStatusEnum.getDescByValue(getStatus()));
-        setEquipStatusDesc(Constants.STATUS_NEGATIVE.equals(getEquipStatus().intValue()) ? "启用" : "禁用");
+        setEquipStatusDesc(EntityConstants.ENABLED.equals(getEquipStatus().intValue()) ? "启用" : "禁用");
     }
 
 }

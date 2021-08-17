@@ -21,7 +21,7 @@ public class PlaceQueryVO implements Serializable {
 
 
     /**
-     * 场所类型(0-酒店，1-民宿，2-景点，3-门票，4-美食，5-购物，6-休闲娱乐)
+     * 场所类型(0-民宿，1-景点，2-酒店，3-门票，4-美食，5-购物，6-休闲娱乐)
      */
     private Integer placeType;
 

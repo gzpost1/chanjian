@@ -7,7 +7,7 @@ import com.yjtech.wisdom.tourism.common.core.domain.IdParam;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.common.core.domain.UpdateStatusParam;
 import com.yjtech.wisdom.tourism.common.utils.bean.BeanMapper;
-import com.yjtech.wisdom.tourism.infrastructure.constant.EntityConstants;
+import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.resource.broadcast.entity.BroadcastEntity;
 import com.yjtech.wisdom.tourism.resource.broadcast.entity.dto.BroadcastCreateDto;
 import com.yjtech.wisdom.tourism.resource.broadcast.entity.dto.BroadcastUpdateDto;

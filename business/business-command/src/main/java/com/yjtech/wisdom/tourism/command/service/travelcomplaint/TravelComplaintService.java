@@ -15,7 +15,7 @@ import com.yjtech.wisdom.tourism.command.mapper.travelcomplaint.TravelComplaintM
 import com.yjtech.wisdom.tourism.command.vo.travelcomplaint.*;
 import com.yjtech.wisdom.tourism.common.bean.*;
 import com.yjtech.wisdom.tourism.common.constant.CacheKeyContants;
-import com.yjtech.wisdom.tourism.common.constant.Constants;
+import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.common.core.domain.StatusParam;
 import com.yjtech.wisdom.tourism.common.enums.TravelComplaintStatusEnum;
 import com.yjtech.wisdom.tourism.common.enums.TravelComplaintTypeEnum;
@@ -255,7 +255,7 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
      */
     public Integer queryTravelComplaintTotal(TravelComplaintScreenQueryVO vo){
         LambdaQueryWrapper<TravelComplaintEntity> queryWrapper = new QueryWrapper<TravelComplaintEntity>().lambda()
-                .eq(TravelComplaintEntity::getEquipStatus, Objects.isNull(vo.getEquipStatus()) ? Constants.STATUS_NEGATIVE : vo.getEquipStatus())
+                .eq(TravelComplaintEntity::getEquipStatus, Objects.isNull(vo.getEquipStatus()) ? EntityConstants.ENABLED : vo.getEquipStatus())
                 .between(Objects.nonNull(vo.getBeginTime()) && Objects.nonNull(vo.getEndTime()), TravelComplaintEntity::getComplaintTime, vo.getBeginTime(), vo.getEndTime())
                 ;
 

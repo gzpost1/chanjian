@@ -4,8 +4,8 @@ import com.alibaba.fastjson.annotation.JSONField;
 import com.baomidou.mybatisplus.annotation.*;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.common.validator.BeanValidationGroup;
-import com.yjtech.wisdom.tourism.infrastructure.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.mybatis.typehandler.StringArrayTypeHandler;
 import lombok.*;
 import lombok.experimental.Accessors;
@@ -164,7 +164,7 @@ public class TbHotelInfoEntity extends Model<TbHotelInfoEntity> {
     @TableField(fill = FieldFill.INSERT)
     @TableLogic
     @Builder.Default
-    private Byte deleted=EntityConstants.NOT_DELETED;
+    private Byte deleted= EntityConstants.NOT_DELETED;
 
     /**
      * 状态

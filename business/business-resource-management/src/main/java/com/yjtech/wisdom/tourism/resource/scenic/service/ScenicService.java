@@ -9,6 +9,7 @@ import com.google.common.collect.Maps;
 import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
 import com.yjtech.wisdom.tourism.common.constant.Constants;
+import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.common.utils.*;
 import com.yjtech.wisdom.tourism.common.utils.bean.BeanMapper;
 import com.yjtech.wisdom.tourism.dto.MonthPassengerFlowDto;
@@ -16,7 +17,7 @@ import com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysDictData;
 import com.yjtech.wisdom.tourism.infrastructure.utils.DictUtils;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateListDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateStatisticsDTO;
-import com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateScreenQueryVO;
+import com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateQueryVO;
 import com.yjtech.wisdom.tourism.marketing.service.MarketingEvaluateService;
 import com.yjtech.wisdom.tourism.resource.scenic.entity.ScenicEntity;
 import com.yjtech.wisdom.tourism.resource.scenic.entity.vo.ScenicBaseVo;
@@ -57,7 +58,7 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
     private MarketingEvaluateService evaluateService;
 
     public IPage<ScenicEntity> queryForPage(ScenicPageQuery query) {
-        LambdaQueryWrapper wrapper = getCommonWrapper(query.getName(), Constants.STATUS_NEGATIVE.byteValue()).orderByDesc(ScenicEntity::getCreateTime);
+        LambdaQueryWrapper wrapper = getCommonWrapper(query.getName(), EntityConstants.ENABLED).orderByDesc(ScenicEntity::getCreateTime);
         return page(new Page<>(query.getPageNo(), query.getPageSize()), wrapper);
     }
 
@@ -65,7 +66,7 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
      * 景区分布——分页查询
      */
     public IPage queryScreenForPage(ScenicPageQuery query) {
-        LambdaQueryWrapper wrapper = getCommonWrapper(query.getName(), Constants.STATUS_NEGATIVE.byteValue()).orderByDesc(ScenicEntity::getLevel);
+        LambdaQueryWrapper wrapper = getCommonWrapper(query.getName(), EntityConstants.ENABLED).orderByDesc(ScenicEntity::getLevel);
         IPage page = page(new Page<>(query.getPageNo(), query.getPageSize()), wrapper)
                 .convert(item -> BeanMapper.copyBean(item, ScenicScreenVo.class));
         List<ScenicScreenVo> records = page.getRecords();
@@ -127,15 +128,15 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
      * 评论列表
      */
     public IPage<MarketingEvaluateListDTO> queryCommentForPage(ScenicPageQuery query) {
-        EvaluateScreenQueryVO queryVO = new EvaluateScreenQueryVO();
+        EvaluateQueryVO queryVO = new EvaluateQueryVO();
         queryVO.setBeginTime(query.getBeginTime());
         queryVO.setEndTime(query.getEndTime());
         queryVO.setPlaceId(String.valueOf(query.getScenicId()));
         queryVO.setPageNo(query.getPageNo());
         queryVO.setPageSize(query.getPageSize());
         queryVO.setEvaluateType(query.getEvaluateType());
-        queryVO.setStatus(Constants.STATUS_NEGATIVE.byteValue());
-        queryVO.setEquipStatus(Constants.STATUS_NEGATIVE.byteValue());
+        queryVO.setStatus(EntityConstants.ENABLED);
+        queryVO.setEquipStatus(EntityConstants.ENABLED);
         return evaluateService.queryForPage(queryVO);
     }
 
@@ -143,15 +144,15 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
      * 热词
      */
     public List<BaseVO> queryEvaluateHotRank(ScenicPageQuery query) {
-        EvaluateScreenQueryVO queryVO = new EvaluateScreenQueryVO();
+        EvaluateQueryVO queryVO = new EvaluateQueryVO();
         queryVO.setBeginTime(query.getBeginTime());
         queryVO.setEndTime(query.getEndTime());
         queryVO.setPlaceId(String.valueOf(query.getScenicId()));
         queryVO.setPageNo(query.getPageNo());
         queryVO.setPageSize(query.getPageSize());
         queryVO.setEvaluateType(query.getEvaluateType());
-        queryVO.setStatus(Constants.STATUS_NEGATIVE.byteValue());
-        queryVO.setEquipStatus(Constants.STATUS_NEGATIVE.byteValue());
+        queryVO.setStatus(EntityConstants.ENABLED);
+        queryVO.setEquipStatus(EntityConstants.ENABLED);
         return evaluateService.queryEvaluateHotRank(queryVO);
     }
     /**
@@ -264,7 +265,7 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
      * 景区分布——查询景区评价类型分布
      */
     public List<BasePercentVO> queryEvaluateTypeDistribution(ScenicScreenQuery query) {
-        EvaluateScreenQueryVO queryVO = new EvaluateScreenQueryVO();
+        EvaluateQueryVO queryVO = new EvaluateQueryVO();
         queryVO.setBeginTime(query.getBeginTime());
         queryVO.setEndTime((query.getEndTime()));
         queryVO.setEquipStatus((byte) 1);
@@ -275,10 +276,10 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
      * 景区分布——游客关注及美誉度
      */
     public MarketingEvaluateStatisticsDTO queryScenicEvaluateStatistics(ScenicScreenQuery query) {
-        EvaluateScreenQueryVO queryVO = new EvaluateScreenQueryVO();
+        EvaluateQueryVO queryVO = new EvaluateQueryVO();
         queryVO.setBeginTime(query.getBeginTime());
         queryVO.setEndTime((query.getEndTime()));
-        queryVO.setEquipStatus(Constants.STATUS_NEGATIVE.byteValue());
+        queryVO.setEquipStatus(EntityConstants.ENABLED);
         return evaluateService.queryScenicEvaluateStatistics(queryVO);
     }
 
@@ -293,10 +294,10 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
      * 景区大数据——评价排行
      */
     public IPage<BaseVO> queryEvaluateTop5(ScenicPageQuery query) {
-        EvaluateScreenQueryVO queryVO = new EvaluateScreenQueryVO();
+        EvaluateQueryVO queryVO = new EvaluateQueryVO();
         queryVO.setPageNo(query.getPageNo());
         queryVO.setPageSize(query.getPageSize());
-        queryVO.setEquipStatus(Constants.STATUS_NEGATIVE.byteValue());
+        queryVO.setEquipStatus(EntityConstants.ENABLED);
         return evaluateService.queryEvaluateTop5(queryVO);
     }
 
@@ -304,10 +305,10 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
      * 景区大数据——满意度排行
      */
     public IPage<BaseVO> querySatisfactionTop5(ScenicPageQuery query) {
-        EvaluateScreenQueryVO queryVO = new EvaluateScreenQueryVO();
+        EvaluateQueryVO queryVO = new EvaluateQueryVO();
         queryVO.setPageNo(query.getPageNo());
         queryVO.setPageSize(query.getPageSize());
-        queryVO.setEquipStatus(Constants.STATUS_NEGATIVE.byteValue());
+        queryVO.setEquipStatus(EntityConstants.ENABLED);
         return evaluateService.querySatisfactionTop5(queryVO);
     }
 
@@ -333,11 +334,11 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
             String monthAndDay = (LocalDate.now().getMonthValue() < 10 ? "-0" : "-") + i + "-01";
             abscissa.add(LocalDate.now().getYear() + monthAndDay);
         }
-        EvaluateScreenQueryVO queryVO = new EvaluateScreenQueryVO();
+        EvaluateQueryVO queryVO = new EvaluateQueryVO();
         queryVO.setPlaceId(String.valueOf(query.getScenicId()));
         queryVO.setBeginTime(curBeginDate);
         queryVO.setEndTime(curEndDate);
-        queryVO.setEquipStatus(Constants.STATUS_NEGATIVE.byteValue());
+        queryVO.setEquipStatus(EntityConstants.ENABLED);
         List<BaseVO> curBaseVOS = evaluateService.queryHeatTrend(queryVO);
         Map<String, String> curMap = curBaseVOS.stream().collect(Collectors.toMap(BaseVO::getName, BaseVO::getValue));
         queryVO.setBeginTime(tbBeginDate);
@@ -386,11 +387,11 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
             String monthAndDay = (LocalDate.now().getMonthValue() < 10 ? "-0" : "-") + i + "-01";
             abscissa.add(LocalDate.now().getYear() + monthAndDay);
         }
-        EvaluateScreenQueryVO queryVO = new EvaluateScreenQueryVO();
+        EvaluateQueryVO queryVO = new EvaluateQueryVO();
         queryVO.setPlaceId(String.valueOf(query.getScenicId()));
         queryVO.setBeginTime(curBeginDate);
         queryVO.setEndTime(curEndDate);
-        queryVO.setEquipStatus(Constants.STATUS_NEGATIVE.byteValue());
+        queryVO.setEquipStatus(EntityConstants.ENABLED);
         List<BaseVO> curBaseVOS = evaluateService.querySatisfactionTrend(queryVO);
         Map<String, String> curMap = curBaseVOS.stream().collect(Collectors.toMap(BaseVO::getName, BaseVO::getValue));
         queryVO.setBeginTime(tbBeginDate);

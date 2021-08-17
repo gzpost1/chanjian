@@ -2,12 +2,10 @@ package com.yjtech.wisdom.tourism.framework.config;
 
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import com.baomidou.mybatisplus.core.injector.ISqlInjector;
-import com.baomidou.mybatisplus.extension.injector.LogicSqlInjector;
 import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.PerformanceInterceptor;
-import com.yjtech.wisdom.tourism.common.annotation.Log;
-import com.yjtech.wisdom.tourism.infrastructure.constant.EntityConstants;
-import com.yjtech.wisdom.tourism.infrastructure.constant.ProfileConstants;
+import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
+import com.yjtech.wisdom.tourism.common.constant.ProfileConstants;
 import com.yjtech.wisdom.tourism.infrastructure.utils.SecurityUtils;
 import com.yjtech.wisdom.tourism.mybatis.extension.MySqlInjector;
 import lombok.extern.slf4j.Slf4j;

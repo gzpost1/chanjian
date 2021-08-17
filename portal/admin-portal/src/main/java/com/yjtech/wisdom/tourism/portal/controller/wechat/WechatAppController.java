@@ -12,7 +12,7 @@ import com.yjtech.wisdom.tourism.common.core.domain.UpdateStatusParam;
 import com.yjtech.wisdom.tourism.common.exception.CustomException;
 import com.yjtech.wisdom.tourism.common.exception.ErrorCode;
 import com.yjtech.wisdom.tourism.common.utils.bean.BeanMapper;
-import com.yjtech.wisdom.tourism.infrastructure.constant.EntityConstants;
+import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.wechat.wechat.dto.BindAppCompanyDto;
 import com.yjtech.wisdom.tourism.wechat.wechat.dto.WechatAppForm;
 import com.yjtech.wisdom.tourism.wechat.wechat.entity.CodeTemplate;

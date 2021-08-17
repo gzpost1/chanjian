@@ -2,7 +2,7 @@ package com.yjtech.wisdom.tourism.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.yjtech.wisdom.tourism.infrastructure.constant.EntityConstants;
+import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.mybatis.typehandler.JsonTypeHandler;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -2,7 +2,7 @@ package com.yjtech.wisdom.tourism.portal.controller.wechat;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
-import com.yjtech.wisdom.tourism.infrastructure.constant.EntityConstants;
+import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.wechat.wechat.entity.WechatTabbar;
 import com.yjtech.wisdom.tourism.wechat.wechat.service.WechatTabbarService;
 import org.springframework.beans.factory.annotation.Autowired;

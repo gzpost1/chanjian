@@ -9,6 +9,7 @@ import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
 import com.yjtech.wisdom.tourism.common.bean.zc.params.ZcOtaEvaluateParam;
 import com.yjtech.wisdom.tourism.common.bean.zc.po.ZcOtaEvaluatePO;
+import com.yjtech.wisdom.tourism.common.core.domain.StatusParam;
 import com.yjtech.wisdom.tourism.common.service.ZcInfoSyncService;
 import com.yjtech.wisdom.tourism.common.utils.DateUtils;
 import com.yjtech.wisdom.tourism.marketing.entity.MarketingEvaluateEntity;
@@ -16,11 +17,12 @@ import com.yjtech.wisdom.tourism.marketing.mapper.MarketingEvaluateMapper;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.HotelEvaluateSatisfactionRankDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateListDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateStatisticsDTO;
-import com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateScreenQueryVO;
+import com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateQueryVO;
 import com.yjtech.wisdom.tourism.mybatis.utils.AnalysisUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -70,12 +72,29 @@ public class MarketingEvaluateService extends ServiceImpl<MarketingEvaluateMappe
     }
 
     /**
+     * 启/停用
+     *
+     * @param statusParam
+     * @return
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public int updateStatus(StatusParam statusParam) {
+        //获取评价信息
+        MarketingEvaluateEntity evaluateEntity = baseMapper.selectById(statusParam.getId());
+        Assert.notNull(evaluateEntity, "更新状态失败：评价信息不存在");
+
+        evaluateEntity.setEquipStatus(statusParam.getEquipStatus());
+
+        return baseMapper.updateById(evaluateEntity);
+    }
+
+    /**
      * 查询评价统计
      *
      * @param vo
      * @return
      */
-    public MarketingEvaluateStatisticsDTO queryEvaluateStatistics(EvaluateScreenQueryVO vo) {
+    public MarketingEvaluateStatisticsDTO queryEvaluateStatistics(EvaluateQueryVO vo) {
         return baseMapper.queryEvaluateStatistics(vo);
     }
 
@@ -85,7 +104,7 @@ public class MarketingEvaluateService extends ServiceImpl<MarketingEvaluateMappe
      * @param vo
      * @return
      */
-    public List<BasePercentVO> queryEvaluateTypeDistribution(EvaluateScreenQueryVO vo) {
+    public List<BasePercentVO> queryEvaluateTypeDistribution(EvaluateQueryVO vo) {
         return baseMapper.queryEvaluateTypeDistribution(vo);
     }
 
@@ -95,7 +114,7 @@ public class MarketingEvaluateService extends ServiceImpl<MarketingEvaluateMappe
      * @param vo
      * @return
      */
-    public List<BaseVO> queryEvaluateHotRank(EvaluateScreenQueryVO vo) {
+    public List<BaseVO> queryEvaluateHotRank(EvaluateQueryVO vo) {
         return baseMapper.queryEvaluateHotRank(vo);
     }
 
@@ -105,7 +124,7 @@ public class MarketingEvaluateService extends ServiceImpl<MarketingEvaluateMappe
      * @param vo
      * @return
      */
-    public List<BaseVO> queryEvaluateRank(EvaluateScreenQueryVO vo) {
+    public List<BaseVO> queryEvaluateRank(EvaluateQueryVO vo) {
         return baseMapper.queryEvaluateRank(vo);
     }
 
@@ -115,7 +134,7 @@ public class MarketingEvaluateService extends ServiceImpl<MarketingEvaluateMappe
      * @param vo
      * @return
      */
-    public List<HotelEvaluateSatisfactionRankDTO> queryEvaluateSatisfactionRank(EvaluateScreenQueryVO vo) {
+    public List<HotelEvaluateSatisfactionRankDTO> queryEvaluateSatisfactionRank(EvaluateQueryVO vo) {
         return baseMapper.queryEvaluateSatisfactionRank(vo);
     }
 
@@ -125,7 +144,7 @@ public class MarketingEvaluateService extends ServiceImpl<MarketingEvaluateMappe
      * @param vo
      * @return
      */
-    public IPage<MarketingEvaluateListDTO> queryForPage(EvaluateScreenQueryVO vo) {
+    public IPage<MarketingEvaluateListDTO> queryForPage(EvaluateQueryVO vo) {
         return baseMapper.queryForPage(new Page(vo.getPageNo(), vo.getPageSize()), vo);
     }
 
@@ -135,7 +154,7 @@ public class MarketingEvaluateService extends ServiceImpl<MarketingEvaluateMappe
      * @return
      */
     @Transactional(readOnly = true)
-    public List<AnalysisBaseInfo> queryEvaluateAnalysis(EvaluateScreenQueryVO vo) {
+    public List<AnalysisBaseInfo> queryEvaluateAnalysis(EvaluateQueryVO vo) {
         //初始化当年月份信息
         List<String> monthMarkList = DateUtils.getEveryMonthOfCurrentYear();
 
@@ -153,7 +172,7 @@ public class MarketingEvaluateService extends ServiceImpl<MarketingEvaluateMappe
      * @return
      */
     @Transactional(readOnly = true)
-    public List<AnalysisBaseInfo> queryEvaluateSatisfactionAnalysis(EvaluateScreenQueryVO vo) {
+    public List<AnalysisBaseInfo> queryEvaluateSatisfactionAnalysis(EvaluateQueryVO vo) {
         //初始化当年月份信息
         List<String> monthMarkList = DateUtils.getEveryMonthOfCurrentYear();
 
@@ -170,7 +189,7 @@ public class MarketingEvaluateService extends ServiceImpl<MarketingEvaluateMappe
      *
      * @return
      */
-    public IPage<BaseVO> queryEvaluateTop5(EvaluateScreenQueryVO query) {
+    public IPage<BaseVO> queryEvaluateTop5(EvaluateQueryVO query) {
         return baseMapper.queryEvaluateTop5(new Page(query.getPageNo(), query.getPageSize()), query);
     }
 
@@ -179,7 +198,7 @@ public class MarketingEvaluateService extends ServiceImpl<MarketingEvaluateMappe
      *
      * @return
      */
-    public IPage<BaseVO> querySatisfactionTop5(EvaluateScreenQueryVO query) {
+    public IPage<BaseVO> querySatisfactionTop5(EvaluateQueryVO query) {
         return baseMapper.queryEvaluateTop5(new Page(query.getPageNo(), query.getPageSize()), query);
     }
 
@@ -189,7 +208,7 @@ public class MarketingEvaluateService extends ServiceImpl<MarketingEvaluateMappe
      * @param vo
      * @return
      */
-    public List<BasePercentVO> queryScenicEvaluateTypeDistribution(EvaluateScreenQueryVO vo) {
+    public List<BasePercentVO> queryScenicEvaluateTypeDistribution(EvaluateQueryVO vo) {
         return baseMapper.queryScenicEvaluateTypeDistribution(vo);
     }
 
@@ -199,7 +218,7 @@ public class MarketingEvaluateService extends ServiceImpl<MarketingEvaluateMappe
      * @param vo
      * @return
      */
-    public MarketingEvaluateStatisticsDTO queryScenicEvaluateStatistics(EvaluateScreenQueryVO vo) {
+    public MarketingEvaluateStatisticsDTO queryScenicEvaluateStatistics(EvaluateQueryVO vo) {
         return baseMapper.queryScenicEvaluateStatistics(vo);
     }
 
@@ -209,7 +228,7 @@ public class MarketingEvaluateService extends ServiceImpl<MarketingEvaluateMappe
      * @param query
      * @return
      */
-    public List<BaseVO> queryHeatTrend(EvaluateScreenQueryVO query) {
+    public List<BaseVO> queryHeatTrend(EvaluateQueryVO query) {
         return baseMapper.queryHeatTrend(query);
     }
 
@@ -219,7 +238,7 @@ public class MarketingEvaluateService extends ServiceImpl<MarketingEvaluateMappe
      * @param query
      * @return
      */
-    public List<BaseVO> querySatisfactionTrend(EvaluateScreenQueryVO query) {
+    public List<BaseVO> querySatisfactionTrend(EvaluateQueryVO query) {
         return baseMapper.querySatisfactionTrend(query);
     }
 }

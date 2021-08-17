@@ -11,6 +11,7 @@ import com.yjtech.wisdom.tourism.common.bean.AnalysisBaseInfo;
 import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
 import com.yjtech.wisdom.tourism.common.constant.Constants;
+import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.common.core.domain.IdParam;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +53,7 @@ public class TravelComplaintScreenController {
     @PostMapping("queryComplaintTypeDistribution")
     public JsonResult<List<BasePercentVO>> queryComplaintTypeDistribution(@RequestBody @Valid TravelComplaintScreenQueryVO vo) {
         //默认启用
-        vo.setEquipStatus(Constants.STATUS_NEGATIVE.byteValue());
+        vo.setEquipStatus(EntityConstants.ENABLED);
         return JsonResult.success(travelComplaintService.queryComplaintTypeDistribution(vo));
     }
 
@@ -63,7 +64,7 @@ public class TravelComplaintScreenController {
     @PostMapping("queryComplaintStatusDistribution")
     public JsonResult<List<BasePercentVO>> queryComplaintStatusDistribution(@RequestBody @Valid TravelComplaintScreenQueryVO vo) {
         //默认启用
-        vo.setEquipStatus(Constants.STATUS_NEGATIVE.byteValue());
+        vo.setEquipStatus(EntityConstants.ENABLED);
         return JsonResult.success(travelComplaintService.queryComplaintStatusDistribution(vo));
     }
 
@@ -74,7 +75,7 @@ public class TravelComplaintScreenController {
     @PostMapping("queryComplaintTopByType")
     public JsonResult<List<BaseVO>> queryComplaintTopByType(@RequestBody @Valid TravelComplaintScreenQueryVO vo) {
         //默认启用
-        vo.setEquipStatus(Constants.STATUS_NEGATIVE.byteValue());
+        vo.setEquipStatus(EntityConstants.ENABLED);
         return JsonResult.success(travelComplaintService.queryComplaintTopByType(vo));
     }
 
@@ -85,7 +86,7 @@ public class TravelComplaintScreenController {
     @PostMapping("queryComplaintAnalysis")
     public JsonResult<List<AnalysisBaseInfo>> queryComplaintAnalysis(@RequestBody @Valid TravelComplaintScreenQueryVO vo) {
         //默认启用
-        vo.setEquipStatus(Constants.STATUS_NEGATIVE.byteValue());
+        vo.setEquipStatus(EntityConstants.ENABLED);
         return JsonResult.success(travelComplaintService.queryComplaintAnalysis(vo));
     }
 
@@ -98,7 +99,7 @@ public class TravelComplaintScreenController {
     @PostMapping("queryForPage")
     public JsonResult<IPage<TravelComplaintListDTO>> queryForPage(@RequestBody @Valid TravelComplaintScreenQueryVO vo) {
         //默认启用
-        vo.setEquipStatus(Constants.STATUS_NEGATIVE.byteValue());
+        vo.setEquipStatus(EntityConstants.ENABLED);
         //构建查询参数
         TravelComplaintQueryVO query = BeanUtil.copyProperties(vo, TravelComplaintQueryVO.class);
 

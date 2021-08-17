@@ -6,7 +6,7 @@ import com.yjtech.wisdom.tourism.common.bean.BaseVO;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateListDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateStatisticsDTO;
-import com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateScreenQueryVO;
+import com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateQueryVO;
 import com.yjtech.wisdom.tourism.marketing.service.MarketingEvaluateService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +40,7 @@ public class EvaluateController {
      * @return
      */
     @PostMapping("queryEvaluateStatistics")
-    public JsonResult<MarketingEvaluateStatisticsDTO> queryEvaluateStatistics(@RequestBody @Valid EvaluateScreenQueryVO vo) {
+    public JsonResult<MarketingEvaluateStatisticsDTO> queryEvaluateStatistics(@RequestBody @Valid EvaluateQueryVO vo) {
         return JsonResult.success(marketingEvaluateService.queryEvaluateStatistics(vo));
     }
 
@@ -51,7 +51,7 @@ public class EvaluateController {
      * @return
      */
     @PostMapping("queryEvaluateTypeDistribution")
-    public JsonResult<List<BasePercentVO>> queryEvaluateTypeDistribution(@RequestBody @Valid EvaluateScreenQueryVO vo) {
+    public JsonResult<List<BasePercentVO>> queryEvaluateTypeDistribution(@RequestBody @Valid EvaluateQueryVO vo) {
         return JsonResult.success(marketingEvaluateService.queryEvaluateTypeDistribution(vo));
     }
 
@@ -62,7 +62,7 @@ public class EvaluateController {
      * @return
      */
     @PostMapping("queryEvaluateHotRank")
-    public JsonResult<List<BaseVO>> queryEvaluateHotRank(@RequestBody @Valid EvaluateScreenQueryVO vo) {
+    public JsonResult<List<BaseVO>> queryEvaluateHotRank(@RequestBody @Valid EvaluateQueryVO vo) {
         return JsonResult.success(marketingEvaluateService.queryEvaluateHotRank(vo));
     }
 
@@ -73,7 +73,7 @@ public class EvaluateController {
      * @return
      */
     @PostMapping("queryForPage")
-    public JsonResult<IPage<MarketingEvaluateListDTO>> queryForPage(@RequestBody @Valid EvaluateScreenQueryVO vo) {
+    public JsonResult<IPage<MarketingEvaluateListDTO>> queryForPage(@RequestBody @Valid EvaluateQueryVO vo) {
         return JsonResult.success(marketingEvaluateService.queryForPage(vo));
     }
 

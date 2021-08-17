@@ -141,18 +141,6 @@ public class Constants {
      */
     public static final Byte HOUR = 4;
 
-    /**
-     * 状态
-     * 1-启用
-     */
-    public static final Integer STATUS_NEGATIVE = 1;
-
-    /**
-     * 状态
-     * 0-禁用
-     */
-    public static final Integer STATUS_POSITIVE = 0;
-
 
     /**
      * 数字常量

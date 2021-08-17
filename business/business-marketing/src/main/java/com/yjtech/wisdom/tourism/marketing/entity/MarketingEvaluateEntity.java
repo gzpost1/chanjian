@@ -7,6 +7,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.yjtech.wisdom.tourism.common.bean.zc.params.ZcOtaEvaluateParam;
 import com.yjtech.wisdom.tourism.common.bean.zc.po.ZcOtaEvaluatePO;
+import com.yjtech.wisdom.tourism.common.constant.Constants;
+import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.common.enums.DataSourceTypeEnum;
 import com.yjtech.wisdom.tourism.common.utils.DateUtils;
 import com.yjtech.wisdom.tourism.mybatis.entity.AreaBaseEntity;
@@ -71,13 +73,13 @@ public class MarketingEvaluateEntity extends AreaBaseEntity {
     private Date evaluateTime;
 
     /**
-     * 评价类型(0-差评，1-中评，2-好评)
+     * 评价类型(0-好评，1-中评，2-差评)
      */
     @TableField(value = "evaluate_type")
     private Integer evaluateType;
 
     /**
-     * 数据来源类型(0-酒店，1-民宿，2-景点，3-门票，4-美食，5-购物，6-休闲娱乐)
+     * 数据来源类型(0-民宿，1-景点，2-酒店，3-门票，4-美食，5-购物，6-休闲娱乐)
      */
     @TableField(value = "data_type")
     private Integer dataType;
@@ -130,6 +132,12 @@ public class MarketingEvaluateEntity extends AreaBaseEntity {
     @TableField(value = "evaluate_user")
     private String evaluateUser;
 
+    /**
+     * 配备状态（0-启用 1-禁用）
+     */
+    @TableField(value = "equip_status")
+    private Byte equipStatus;
+
 
     /**
      * 构建评价
@@ -153,6 +161,8 @@ public class MarketingEvaluateEntity extends AreaBaseEntity {
         setSourcePlatform(po.getPlatformName());
         setSourcePlatformId(po.getSourcePlatformId());
         setEvaluateUser(po.getEvaluateUser());
+        //默认启用
+        setEquipStatus(EntityConstants.ENABLED);
 
         setAreaCode(params.getAreaCode());
     }
