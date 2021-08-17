@@ -14,6 +14,7 @@ import com.yjtech.wisdom.tourism.common.utils.bean.BeanMapper;
 import com.yjtech.wisdom.tourism.dto.MonthPassengerFlowDto;
 import com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysDictData;
 import com.yjtech.wisdom.tourism.infrastructure.utils.DictUtils;
+import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateListDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateStatisticsDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateScreenQueryVO;
 import com.yjtech.wisdom.tourism.marketing.service.MarketingEvaluateService;
@@ -122,6 +123,37 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
         return null;
     }
 
+    /**
+     * 评论列表
+     */
+    public IPage<MarketingEvaluateListDTO> queryCommentForPage(ScenicPageQuery query) {
+        EvaluateScreenQueryVO queryVO = new EvaluateScreenQueryVO();
+        queryVO.setBeginTime(query.getBeginTime());
+        queryVO.setEndTime(query.getEndTime());
+        queryVO.setPlaceId(String.valueOf(query.getScenicId()));
+        queryVO.setPageNo(query.getPageNo());
+        queryVO.setPageSize(query.getPageSize());
+        queryVO.setEvaluateType(query.getEvaluateType());
+        queryVO.setStatus(Constants.STATUS_NEGATIVE.byteValue());
+        queryVO.setEquipStatus(Constants.STATUS_NEGATIVE.byteValue());
+        return evaluateService.queryForPage(queryVO);
+    }
+
+    /**
+     * 热词
+     */
+    public List<BaseVO> queryEvaluateHotRank(ScenicPageQuery query) {
+        EvaluateScreenQueryVO queryVO = new EvaluateScreenQueryVO();
+        queryVO.setBeginTime(query.getBeginTime());
+        queryVO.setEndTime(query.getEndTime());
+        queryVO.setPlaceId(String.valueOf(query.getScenicId()));
+        queryVO.setPageNo(query.getPageNo());
+        queryVO.setPageSize(query.getPageSize());
+        queryVO.setEvaluateType(query.getEvaluateType());
+        queryVO.setStatus(Constants.STATUS_NEGATIVE.byteValue());
+        queryVO.setEquipStatus(Constants.STATUS_NEGATIVE.byteValue());
+        return evaluateService.queryEvaluateHotRank(queryVO);
+    }
     /**
      * 游客接待量
      */

@@ -7,6 +7,7 @@ import com.yjtech.wisdom.tourism.common.bean.BaseValueVO;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.common.exception.CustomException;
 import com.yjtech.wisdom.tourism.dto.MonthPassengerFlowDto;
+import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateListDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateStatisticsDTO;
 import com.yjtech.wisdom.tourism.mybatis.utils.AnalysisUtils;
 import com.yjtech.wisdom.tourism.resource.scenic.entity.vo.ScenicBaseVo;
@@ -64,6 +65,28 @@ public class ScenicScreenController {
     @PostMapping("/queryLevelDistribution")
     public JsonResult<List<ScenicBaseVo>> queryLevelDistribution() {
         return JsonResult.success(scenicService.queryLevelDistribution());
+    }
+
+    /**
+     * 景区分布——评论列表
+     *
+     * @Param:
+     * @return:
+     */
+    @PostMapping("/queryCommentForPage")
+    public JsonResult<IPage<MarketingEvaluateListDTO>> queryCommentForPage(@RequestBody @Valid ScenicPageQuery query) {
+        return JsonResult.success(scenicService.queryCommentForPage(query));
+    }
+
+    /**
+     * 查询评价热词排行
+     *
+     * @param query
+     * @return
+     */
+    @PostMapping("queryHotRank")
+    public JsonResult<List<BaseVO>> queryEvaluateHotRank(@RequestBody @Valid ScenicPageQuery query){
+        return JsonResult.success(scenicService.queryEvaluateHotRank(query));
     }
 
     /**
