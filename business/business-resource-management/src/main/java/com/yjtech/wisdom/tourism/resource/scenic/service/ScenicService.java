@@ -86,7 +86,7 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
      * 景区分布——景区等级分布
      */
     public List<ScenicBaseVo> queryLevelDistribution() {
-        LambdaQueryWrapper<ScenicEntity> wrapper = getCommonWrapper(null, (byte) 1);
+        LambdaQueryWrapper<ScenicEntity> wrapper = getCommonWrapper(null, Constants.STATUS_NEGATIVE.byteValue());
         List<ScenicEntity> list = list(wrapper);
         ArrayList<ScenicBaseVo> vos = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(list)) {
@@ -111,7 +111,7 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
         ScenicEntity one = getOne(
                 new LambdaQueryWrapper<ScenicEntity>()
                         .eq(ScenicEntity::getId, query.getScenicId())
-                        .eq(ScenicEntity::getStatus, 1));
+                        .eq(ScenicEntity::getStatus, Constants.STATUS_NEGATIVE.byteValue()));
         if (!isNull(one)) {
             ScenicScreenVo scenicScreenVo = BeanMapper.copyBean(one, ScenicScreenVo.class);
             //天气
@@ -161,10 +161,13 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
     public List<ScenicBaseVo> queryTouristReception(ScenicScreenQuery query) {
         List<ScenicBaseVo> vos = new ArrayList<>();
         //今日检票数
-        Integer todayCheckNum = ticketCheckService.queryCheckNumByTime(LocalDateTime.of(LocalDate.now(), LocalTime.MIN)
-                , LocalDateTime.of(LocalDate.now(), LocalTime.MAX), query.getScenicId());
+        ScenicScreenQuery screenQuery = new ScenicScreenQuery();
+        screenQuery.setScenicId(query.getScenicId());
+        screenQuery.setBeginTime(LocalDateTime.of(LocalDate.now(), LocalTime.MIN));
+        screenQuery.setEndTime(LocalDateTime.of(LocalDate.now(), LocalTime.MAX));
+        Integer todayCheckNum = ticketCheckService.queryCheckNumByTime(screenQuery);
         //累计检票数
-        Integer totalCheckNum = ticketCheckService.queryCheckNumByTime(query.getBeginTime(), query.getEndTime(), query.getScenicId());
+        Integer totalCheckNum = ticketCheckService.queryCheckNumByTime(query);
         //承载度
         ScenicEntity scenicEntity = getOne(new LambdaQueryWrapper<ScenicEntity>().eq(ScenicEntity::getId, query.getScenicId()));
         double BearingRate = scenicEntity.getBearCapacity() == 0 ? 0D : MathUtil.calPercent(new BigDecimal(String.valueOf(todayCheckNum))
@@ -224,6 +227,9 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
                 abscissa.add(LocalDate.now().getYear() + month + day);
             }
         }
+        //设置时间，方便MultipleBuildAnalysis返回
+        query.setBeginTime(curBeginDate);
+        query.setEndTime(LocalDateTime.now());
         ScenicScreenQuery copyQuery = BeanMapper.copyBean(query, ScenicScreenQuery.class);
         //查询当前时间检票数据.
         copyQuery.setBeginTime(curBeginDate);
@@ -268,7 +274,8 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
         EvaluateQueryVO queryVO = new EvaluateQueryVO();
         queryVO.setBeginTime(query.getBeginTime());
         queryVO.setEndTime((query.getEndTime()));
-        queryVO.setEquipStatus((byte) 1);
+        queryVO.setPlaceId(String.valueOf(query.getScenicId()));
+        queryVO.setEquipStatus(Constants.STATUS_NEGATIVE.byteValue());
         return evaluateService.queryScenicEvaluateTypeDistribution(queryVO);
     }
 
@@ -335,9 +342,13 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
             abscissa.add(LocalDate.now().getYear() + monthAndDay);
         }
         EvaluateQueryVO queryVO = new EvaluateQueryVO();
+        //设置时间，方便MultipleBuildAnalysis返回
+        query.setBeginTime(curBeginDate);
+        query.setEndTime(LocalDateTime.now());
         queryVO.setPlaceId(String.valueOf(query.getScenicId()));
         queryVO.setBeginTime(curBeginDate);
         queryVO.setEndTime(curEndDate);
+
         queryVO.setEquipStatus(EntityConstants.ENABLED);
         List<BaseVO> curBaseVOS = evaluateService.queryHeatTrend(queryVO);
         Map<String, String> curMap = curBaseVOS.stream().collect(Collectors.toMap(BaseVO::getName, BaseVO::getValue));
@@ -388,9 +399,12 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
             abscissa.add(LocalDate.now().getYear() + monthAndDay);
         }
         EvaluateQueryVO queryVO = new EvaluateQueryVO();
-        queryVO.setPlaceId(String.valueOf(query.getScenicId()));
+        //设置时间，方便MultipleBuildAnalysis返回
+        query.setBeginTime(curBeginDate);
+        query.setEndTime(LocalDateTime.now());        queryVO.setPlaceId(String.valueOf(query.getScenicId()));
         queryVO.setBeginTime(curBeginDate);
         queryVO.setEndTime(curEndDate);
+
         queryVO.setEquipStatus(EntityConstants.ENABLED);
         List<BaseVO> curBaseVOS = evaluateService.querySatisfactionTrend(queryVO);
         Map<String, String> curMap = curBaseVOS.stream().collect(Collectors.toMap(BaseVO::getName, BaseVO::getValue));
