@@ -308,6 +308,112 @@
         GROUP BY DATE_FORMAT(evaluate.evaluate_time,#{params.sqlDateFormat})
     </select>
 
+    <!--景区大数据-评价排行top5-->
+    <select id="queryEvaluateTop5" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO">
+        SELECT
+        evaluate.place_name name,
+        count(evaluate.id) `value`
+        FROM
+            tb_marketing_evaluate evaluate
+        <include refid="scenic_table_join"/>
+        <trim prefix="WHERE" prefixOverrides="AND |OR ">
+            <include refid="base_screen_query_condition"/>
+        </trim>
+        GROUP BY place_name
+        ORDER BY `value` DESC
+    </select>
+
+    <!--景区大数据-查询满意度排行top5 -->
+    <select id="querySatisfactionTop5" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO">
+        select
+        evaluate.place_name as name,
+        ROUND(SUM(evaluate.evaluate_type = 0)/COUNT(evaluate.id),3)*100 as value
+        from
+        tb_marketing_evaluate evaluate
+        <include refid="scenic_table_join"/>
+        <trim prefix="WHERE" prefixOverrides="AND |OR ">
+            <include refid="base_screen_query_condition"/>
+        </trim>
+        GROUP BY evaluate.place_id
+        ORDER BY value DESC
+    </select>
+
+    <!--景区大数据-评价类型分布 -->
+    <select id="queryScenicEvaluateTypeDistribution" resultType="com.yjtech.wisdom.tourism.common.bean.BasePercentVO">
+        select
+        CASE
+        WHEN evaluate.evaluate_type = 0 THEN '好评'
+        WHEN evaluate.evaluate_type = 1 THEN '中评'
+        WHEN evaluate.evaluate_type = 2 THEN '差评'
+        ELSE '其他' END as name,
+        COUNT(evaluate.id) as value,
+        COALESCE (ROUND(COUNT(evaluate.id)/total.totalNum, 3)*100,0) as rate
+        from
+        tb_marketing_evaluate as evaluate
+        <include refid="scenic_table_join"/>
+        INNER JOIN
+        (select
+        count(evaluate.id) as totalNum
+        from
+        tb_marketing_evaluate evaluate
+        <include refid="scenic_table_join"/>
+        <where>
+            <include refid="base_screen_query_condition"/>
+        </where>
+        ) as total ON 1 = 1
+        <where>
+            <include refid="base_screen_query_condition"/>
+        </where>
+        GROUP BY evaluate.evaluate_type
+    </select>
+
+    <!--景区分布-游客关注及美誉度-->
+    <select id="queryScenicEvaluateStatistics" resultType="com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateStatisticsDTO">
+        select
+        COUNT(evaluate.id) as evaluateTotal,
+        ROUND(SUM( evaluate.evaluate_type = 0)/COUNT(evaluate.id),3)*100 as satisfaction,
+        ROUND(SUM(evaluate.rate)/COUNT(evaluate.id),1) as rate
+        from
+        tb_marketing_evaluate evaluate
+        <include refid="scenic_table_join"/>
+        <where>
+            <include refid="base_screen_query_condition"/>
+        </where>
+    </select>
+
+    <!--景区分布-热度趋势-->
+    <select id="queryHeatTrend" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO">
+        select
+        DATE_FORMAT(evaluate.evaluate_time,'%Y-%m-%d') name,
+        count(evaluate.id) value
+        from
+            tb_marketing_evaluate evaluate
+        <include refid="scenic_table_join"/>
+        <where>
+            <include refid="base_screen_query_condition"/>
+        </where>
+        group by DATE_FORMAT(evaluate.evaluate_time,'%Y-%m-%d')
+        order by evaluate.evaluate_time
+    </select>
+
+    <!--景区分布-满意度趋势-->
+    <select id="querySatisfactionTrend" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO">
+        select
+        DATE_FORMAT(evaluate.evaluate_time,'%Y-%m-%d') name,
+        SUM(evaluate.evaluate_type = 0) value
+        from
+        tb_marketing_evaluate evaluate
+        <include refid="scenic_table_join"/>
+        <where>
+            <include refid="base_screen_query_condition"/>
+        </where>
+        group by DATE_FORMAT(evaluate.evaluate_time,'%Y-%m-%d')
+        order by evaluate.evaluate_time
+    </select>
+
+    <sql id="scenic_table_join">
+        INNER JOIN  tb_scenic s on evaluate.place_id = s.id and s.status=1
+    </sql>
 
     <sql id="table_join">
         <choose>

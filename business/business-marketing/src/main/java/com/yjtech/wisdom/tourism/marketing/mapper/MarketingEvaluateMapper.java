@@ -25,12 +25,14 @@ public interface MarketingEvaluateMapper extends BaseMapper<MarketingEvaluateEnt
 
     /**
      * 批量新增
+     *
      * @param params
      */
     void insertBatch(@Param("params") List<MarketingEvaluateEntity> params);
 
     /**
      * 查询评价统计
+     *
      * @param params
      * @return
      */
@@ -38,6 +40,7 @@ public interface MarketingEvaluateMapper extends BaseMapper<MarketingEvaluateEnt
 
     /**
      * 查询评价类型分布
+     *
      * @param params
      * @return
      */
@@ -45,6 +48,7 @@ public interface MarketingEvaluateMapper extends BaseMapper<MarketingEvaluateEnt
 
     /**
      * 查询评价热词排行
+     *
      * @param params
      * @return
      */
@@ -52,6 +56,7 @@ public interface MarketingEvaluateMapper extends BaseMapper<MarketingEvaluateEnt
 
     /**
      * 查询评价排行
+     *
      * @param params
      * @return
      */
@@ -59,6 +64,7 @@ public interface MarketingEvaluateMapper extends BaseMapper<MarketingEvaluateEnt
 
     /**
      * 查询满意度排行
+     *
      * @param params
      * @return
      */
@@ -66,6 +72,7 @@ public interface MarketingEvaluateMapper extends BaseMapper<MarketingEvaluateEnt
 
     /**
      * 查询评价分页列表
+     *
      * @param params
      * @return
      */
@@ -73,6 +80,7 @@ public interface MarketingEvaluateMapper extends BaseMapper<MarketingEvaluateEnt
 
     /**
      * 查询评价量今年搜索月趋势
+     *
      * @param params
      * @return
      */
@@ -80,6 +88,7 @@ public interface MarketingEvaluateMapper extends BaseMapper<MarketingEvaluateEnt
 
     /**
      * 查询评价量去年搜索月趋势
+     *
      * @param params
      * @return
      */
@@ -87,6 +96,7 @@ public interface MarketingEvaluateMapper extends BaseMapper<MarketingEvaluateEnt
 
     /**
      * 查询评价满意度今年搜索月趋势
+     *
      * @param params
      * @return
      */
@@ -94,9 +104,57 @@ public interface MarketingEvaluateMapper extends BaseMapper<MarketingEvaluateEnt
 
     /**
      * 查询评价满意度去年搜索月趋势
+     *
      * @param params
      * @return
      */
     List<AnalysisMonthChartInfo> queryEvaluateSatisfactionLastAnalysis(@Param("params") EvaluateScreenQueryVO params);
 
+    /**
+     * 景区大数据-评价排行top5
+     *
+     * @param params
+     * @return
+     */
+    IPage<BaseVO> queryEvaluateTop5(Page page, @Param("params") EvaluateScreenQueryVO params);
+
+    /**
+     * 景区大数据-满意度排行TOP5
+     *
+     * @param params
+     * @return
+     */
+    IPage<BaseVO> querySatisfactionTop5(Page page, @Param("params") EvaluateScreenQueryVO params);
+
+    /**
+     * 景区分布—查询评价统计
+     *
+     * @param params
+     * @return
+     */
+    List<BasePercentVO> queryScenicEvaluateTypeDistribution(@Param("params") EvaluateScreenQueryVO params);
+
+    /**
+     * 景区分布—查询评价统计
+     *
+     * @param params
+     * @return
+     */
+    MarketingEvaluateStatisticsDTO queryScenicEvaluateStatistics(@Param("params") EvaluateScreenQueryVO params);
+
+    /**
+     * 景区分布——热度趋势
+     *
+     * @param query
+     * @return
+     */
+    List<BaseVO> queryHeatTrend(@Param("params") EvaluateScreenQueryVO query);
+
+    /**
+     * 景区分布——满意度趋势
+     *
+     * @param query
+     * @return
+     */
+    List<BaseVO> querySatisfactionTrend(@Param("params") EvaluateScreenQueryVO query);
 }
