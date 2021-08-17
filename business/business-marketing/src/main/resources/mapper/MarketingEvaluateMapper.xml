@@ -425,7 +425,7 @@
 
     <!-- 景区分布-热词 -->
     <select id="queryScenicHotRank" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO"
-            parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateScreenQueryVO">
+            parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateQueryVO">
         select
         evaluate.keywords as name,
         COUNT(evaluate.id) as value
