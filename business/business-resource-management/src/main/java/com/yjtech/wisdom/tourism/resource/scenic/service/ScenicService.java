@@ -8,7 +8,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
-import com.yjtech.wisdom.tourism.common.constant.EventContants;
+import com.yjtech.wisdom.tourism.common.constant.Constants;
 import com.yjtech.wisdom.tourism.common.utils.*;
 import com.yjtech.wisdom.tourism.common.utils.bean.BeanMapper;
 import com.yjtech.wisdom.tourism.dto.MonthPassengerFlowDto;
@@ -56,7 +56,7 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
     private MarketingEvaluateService evaluateService;
 
     public IPage<ScenicEntity> queryForPage(ScenicPageQuery query) {
-        LambdaQueryWrapper wrapper = getCommonWrapper(query.getName(), (byte) 1).orderByDesc(ScenicEntity::getCreateTime);
+        LambdaQueryWrapper wrapper = getCommonWrapper(query.getName(), Constants.STATUS_NEGATIVE.byteValue()).orderByDesc(ScenicEntity::getCreateTime);
         return page(new Page<>(query.getPageNo(), query.getPageSize()), wrapper);
     }
 
@@ -64,7 +64,7 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
      * 景区分布——分页查询
      */
     public IPage queryScreenForPage(ScenicPageQuery query) {
-        LambdaQueryWrapper wrapper = getCommonWrapper(query.getName(), (byte)1).orderByDesc(ScenicEntity::getLevel);
+        LambdaQueryWrapper wrapper = getCommonWrapper(query.getName(), Constants.STATUS_NEGATIVE.byteValue()).orderByDesc(ScenicEntity::getLevel);
         IPage page = page(new Page<>(query.getPageNo(), query.getPageSize()), wrapper)
                 .convert(item -> BeanMapper.copyBean(item, ScenicScreenVo.class));
         List<ScenicScreenVo> records = page.getRecords();
@@ -139,7 +139,7 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
 
         vos.add(ScenicBaseVo.builder().name("todayCheckNum").value(String.valueOf(todayCheckNum)).build());
         vos.add(ScenicBaseVo.builder().name("totalCheckNum").value(String.valueOf(totalCheckNum)).build());
-        vos.add(ScenicBaseVo.builder().name("BearingRate").value(String.valueOf(BearingRate)).build());
+        vos.add(ScenicBaseVo.builder().name("bearingRate").value(String.valueOf(BearingRate)).build());
         return vos;
     }
 
@@ -241,7 +241,7 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
         EvaluateScreenQueryVO queryVO = new EvaluateScreenQueryVO();
         queryVO.setBeginTime(query.getBeginTime());
         queryVO.setEndTime((query.getEndTime()));
-        queryVO.setEquipStatus((byte) 1);
+        queryVO.setEquipStatus(Constants.STATUS_NEGATIVE.byteValue());
         return evaluateService.queryScenicEvaluateStatistics(queryVO);
     }
 
@@ -259,7 +259,7 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
         EvaluateScreenQueryVO queryVO = new EvaluateScreenQueryVO();
         queryVO.setPageNo(query.getPageNo());
         queryVO.setPageSize(query.getPageSize());
-        queryVO.setEquipStatus((byte) 1);
+        queryVO.setEquipStatus(Constants.STATUS_NEGATIVE.byteValue());
         return evaluateService.queryEvaluateTop5(queryVO);
     }
 
@@ -270,7 +270,7 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
         EvaluateScreenQueryVO queryVO = new EvaluateScreenQueryVO();
         queryVO.setPageNo(query.getPageNo());
         queryVO.setPageSize(query.getPageSize());
-        queryVO.setEquipStatus((byte) 1);
+        queryVO.setEquipStatus(Constants.STATUS_NEGATIVE.byteValue());
         return evaluateService.querySatisfactionTop5(queryVO);
     }
 
@@ -300,7 +300,7 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
         queryVO.setPlaceId(String.valueOf(query.getScenicId()));
         queryVO.setBeginTime(curBeginDate);
         queryVO.setEndTime(curEndDate);
-        queryVO.setEquipStatus((byte) 1);
+        queryVO.setEquipStatus(Constants.STATUS_NEGATIVE.byteValue());
         List<BaseVO> curBaseVOS = evaluateService.queryHeatTrend(queryVO);
         Map<String, String> curMap = curBaseVOS.stream().collect(Collectors.toMap(BaseVO::getName, BaseVO::getValue));
         queryVO.setBeginTime(tbBeginDate);
@@ -353,7 +353,7 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
         queryVO.setPlaceId(String.valueOf(query.getScenicId()));
         queryVO.setBeginTime(curBeginDate);
         queryVO.setEndTime(curEndDate);
-        queryVO.setEquipStatus((byte) 1);
+        queryVO.setEquipStatus(Constants.STATUS_NEGATIVE.byteValue());
         List<BaseVO> curBaseVOS = evaluateService.querySatisfactionTrend(queryVO);
         Map<String, String> curMap = curBaseVOS.stream().collect(Collectors.toMap(BaseVO::getName, BaseVO::getValue));
         queryVO.setBeginTime(tbBeginDate);
