@@ -11,14 +11,13 @@ import com.yjtech.wisdom.tourism.resource.ticket.mapper.TicketCheckMapper;
 import com.yjtech.wisdom.tourism.resource.ticket.vo.SaleTrendVO;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class TicketCheckService extends ServiceImpl<TicketCheckMapper, TicketCheckEntity> {
 
-    public Integer queryCheckNumByTime(LocalDateTime BeginTime, LocalDateTime EndTime, Long id) {
-        return baseMapper.queryCheckNumByTime(BeginTime, EndTime, id);
+    public Integer queryCheckNumByTime(ScenicScreenQuery query) {
+        return baseMapper.queryCheckNumByTime(query);
     }
 
     public List<SaleTrendVO> queryCheckTrendByTime(ScenicScreenQuery query) {
