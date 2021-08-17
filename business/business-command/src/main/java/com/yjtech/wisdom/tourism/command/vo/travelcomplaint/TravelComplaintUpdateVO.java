@@ -70,7 +70,7 @@ public class TravelComplaintUpdateVO implements Serializable {
     /**
      * 联系电话
      */
-    private List<String> contactMobile;
+    private String contactMobile;
 
     /**
      * 投诉原因

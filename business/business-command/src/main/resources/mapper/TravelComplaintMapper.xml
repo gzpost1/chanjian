@@ -17,8 +17,7 @@
         <result property="longitude" column="longitude" jdbcType="DECIMAL"/>
         <result property="latitude" column="latitude" jdbcType="DECIMAL"/>
         <result property="contactUser" column="contact_user" jdbcType="VARCHAR"/>
-        <result property="contactMobile" column="contact_mobile" jdbcType="VARCHAR"
-                typeHandler="com.yjtech.wisdom.tourism.mybatis.typehandler.JsonTypeHandler"/>
+        <result property="contactMobile" column="contact_mobile" jdbcType="VARCHAR"/>
         <result property="complaintReason" column="complaint_reason" jdbcType="VARCHAR"/>
         <result property="image" column="image" jdbcType="VARCHAR"
                 typeHandler="com.yjtech.wisdom.tourism.mybatis.typehandler.JsonTypeHandler"/>

@@ -79,8 +79,7 @@ public class TravelComplaintEntity extends MyBaseEntity {
     /**
      * 联系电话
      */
-    @TableField(value = "contact_mobile", typeHandler = JsonTypeHandler.class)
-    private List<String> contactMobile;
+    private String contactMobile;
 
     /**
      * 投诉原因
@@ -214,7 +213,7 @@ public class TravelComplaintEntity extends MyBaseEntity {
         if(StringUtils.isNotBlank(vo.getContactUser())){
             setContactUser(vo.getContactUser());
         }
-        if(Objects.nonNull(vo.getContactMobile()) && !vo.getContactMobile().isEmpty()){
+        if(StringUtils.isNotBlank(vo.getContactMobile())){
             setContactMobile(vo.getContactMobile());
         }
         if(StringUtils.isNotBlank(vo.getComplaintReason())){
