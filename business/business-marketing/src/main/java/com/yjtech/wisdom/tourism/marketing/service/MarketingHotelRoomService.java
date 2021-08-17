@@ -97,6 +97,15 @@ public class MarketingHotelRoomService extends ServiceImpl<MarketingHotelRoomMap
         return baseMapper.queryRoomTypePriceDistribution(vo);
     }
 
+    /**
+     * 查询酒店房型价格排行
+     * @param vo
+     * @return
+     */
+    public List<BaseVO> queryRoomPriceRank(RoomScreenQueryVO vo){
+        return baseMapper.queryRoomPriceRank(vo);
+    }
+
 
 
 

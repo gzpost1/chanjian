@@ -25,8 +25,13 @@ public class EvaluateScreenQueryVO extends TimeBaseQuery {
     private Byte evaluateType;
 
     /**
-     * 配备状态（0-启用 1-禁用）
+     * 配备状态（0-禁用 1-启用）
      */
     private Byte equipStatus;
+
+    /**
+     * 酒店状态（0-禁用 1-启用）
+     */
+    private Byte status;
 
 }

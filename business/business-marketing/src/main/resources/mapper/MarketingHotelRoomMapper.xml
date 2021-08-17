@@ -30,12 +30,7 @@
         ROUND(SUM(hotelRoom.price)/COUNT(hotelRoom.id),1)as averagePrice
         from
         tb_marketing_hotel_room hotelRoom
-        <choose>
-            <when test="params.status == 1">
-                INNER JOIN tb_hotel_info hotel ON hotel.id = hotelRoom.hotel_id and hotel.status = #{params.status}
-            </when>
-            <otherwise></otherwise>
-        </choose>
+        <include refid="table_join"/>
         <where>
             <include refid="base_screen_query_condition"/>
         </where>
@@ -91,12 +86,7 @@
         ROUND(SUM(CASE WHEN hotelRoom.room_type = 4 THEN hotelRoom.price ELSE 0 END)/SUM(CASE WHEN hotelRoom.room_type = 4 THEN 1 ELSE 0 END), 1) as suiteRoomPrice
         from
         tb_marketing_hotel_room hotelRoom
-        <choose>
-            <when test="params.status == 1">
-                INNER JOIN tb_hotel_info hotel ON hotel.id = hotelRoom.hotel_id and hotel.status = #{params.status}
-            </when>
-            <otherwise></otherwise>
-        </choose>
+        <include refid="table_join"/>
         <where>
             <if test="params!=null">
                 <if test=" params.hotelId != null and params.hotelId != ''">
@@ -124,18 +114,37 @@
         ROUND(SUM(hotelRoom.price)/COUNT(hotelRoom.id),1)as value
         from
         tb_marketing_hotel_room hotelRoom
-        <choose>
-            <when test="params.status == 1">
-                INNER JOIN tb_hotel_info hotel ON hotel.id = hotelRoom.hotel_id and hotel.status = #{params.status}
-            </when>
-            <otherwise></otherwise>
-        </choose>
+        <include refid="table_join"/>
         <where>
             <include refid="base_screen_query_condition"/>
         </where>
         GROUP BY hotelRoom.room_type
     </select>
 
+    <!-- 查询酒店房型价格排行 -->
+    <select id="queryRoomPriceRank" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO"
+            parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.RoomScreenQueryVO">
+        select
+        hotel.name as name,
+        ROUND(SUM(hotelRoom.price)/COUNT(hotelRoom.id),1)as value
+        from
+        tb_marketing_hotel_room hotelRoom
+        <include refid="table_join"/>
+        <where>
+            <include refid="base_screen_query_condition"/>
+        </where>
+        ORDER BY value DESC
+    </select>
+
+
+    <sql id="table_join">
+        <choose>
+            <when test="params.status != null">
+                INNER JOIN tb_hotel_info hotel ON hotel.id = hotelRoom.hotel_id and hotel.status = #{params.status}
+            </when>
+            <otherwise></otherwise>
+        </choose>
+    </sql>
 
     <sql id="base_screen_query_condition">
         <if test="params!=null">

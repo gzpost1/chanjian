@@ -6,10 +6,10 @@
 
     <insert id="insertBatch" parameterType="list">
         insert into tb_marketing_evaluate
-        (id,create_time,update_time,create_user,update_user,deleted,area_code,tp_id,place_id,place_name,evaluate_content,evaluate_time,evaluate_type,data_type,keywords,rate,resource_info,data_create_time,data_update_time,source_platform,source_platform_id)
+        (id,create_time,update_time,create_user,update_user,deleted,area_code,tp_id,place_id,place_name,evaluate_content,evaluate_time,evaluate_type,data_type,keywords,rate,resource_info,data_create_time,data_update_time,source_platform,source_platform_id,evaluate_user)
         values
         <foreach collection="params" item="item" index="index" separator=",">
-            (#{item.id},#{item.createTime},#{item.updateTime},#{item.createUser},#{item.updateUser},#{item.deleted},#{item.areaCode},#{item.tpId},#{item.placeId},#{item.placeName},#{item.evaluateContent},#{item.evaluateTime},#{item.evaluateType},#{item.dataType},#{item.keywords},#{item.rate},#{item.resourceInfo},#{item.dataCreateTime},#{item.dataUpdateTime},#{item.sourcePlatform},#{item.sourcePlatformId})
+            (#{item.id},#{item.createTime},#{item.updateTime},#{item.createUser},#{item.updateUser},#{item.deleted},#{item.areaCode},#{item.tpId},#{item.placeId},#{item.placeName},#{item.evaluateContent},#{item.evaluateTime},#{item.evaluateType},#{item.dataType},#{item.keywords},#{item.rate},#{item.resourceInfo},#{item.dataCreateTime},#{item.dataUpdateTime},#{item.sourcePlatform},#{item.sourcePlatformId},#{item.evaluateUser})
         </foreach>
         ON DUPLICATE KEY UPDATE tp_id = values(tp_id),
         place_id = values(place_id),
@@ -24,18 +24,20 @@
         data_create_time = values(data_create_time),
         data_update_time = values(data_update_time),
         source_platform = values(source_platform),
-        source_platform_id = values(source_platform_id)
+        source_platform_id = values(source_platform_id),
+        evaluate_user = values(evaluateUser)
     </insert>
 
 
     <select id="queryEvaluateStatistics" resultType="com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateStatisticsDTO"
             parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateScreenQueryVO">
         select
-        COUNT(id) as evaluateTotal,
-        ROUND(SUM(CASE WHEN evaluate_type = 2 THEN 1 ELSE 0 END)/COUNT(id),3)*100 as satisfaction,
-        ROUND(SUM(rate)/COUNT(id),1) as rate
+        COUNT(evaluate.id) as evaluateTotal,
+        ROUND(SUM(CASE WHEN evaluate.evaluate_type = 2 THEN 1 ELSE 0 END)/COUNT(evaluate.id),3)*100 as satisfaction,
+        ROUND(SUM(evaluate.rate)/COUNT(evaluate.id),1) as rate
         from
-        tb_marketing_evaluate
+        tb_marketing_evaluate evaluate
+        <include refid="table_join"/>
         <where>
             <include refid="base_screen_query_condition"/>
         </where>
@@ -45,19 +47,21 @@
             parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateScreenQueryVO">
         select
         CASE
-        WHEN evaluate_type = 0 THEN '差评'
-        WHEN evaluate_type = 1 THEN '中评'
-        WHEN evaluate_type = 2 THEN '好评'
+        WHEN evaluate.evaluate_type = 0 THEN '好评'
+        WHEN evaluate.evaluate_type = 1 THEN '中评'
+        WHEN evaluate.evaluate_type = 2 THEN '差评'
         ELSE '其他' END as name,
-        COUNT(id) as value,
-        COALESCE (ROUND(COUNT(id)/total.totalNum, 3)*100,0) as rate
+        COUNT(evaluate.id) as value,
+        COALESCE (ROUND(COUNT(evaluate.id)/total.totalNum, 3)*100,0) as rate
         from
         tb_marketing_evaluate as evaluate
+        <include refid="table_join"/>
         INNER JOIN
         (select
-        count(id) as totalNum
+        count(evaluate.id) as totalNum
         from
-        tb_marketing_evaluate
+        tb_marketing_evaluate evaluate
+        <include refid="table_join"/>
         <where>
             <include refid="base_screen_query_condition"/>
         </where>
@@ -65,20 +69,55 @@
         <where>
             <include refid="base_screen_query_condition"/>
         </where>
-        GROUP BY status
+        GROUP BY evaluate.evaluate_type
     </select>
 
+    <!-- 查询评论热词排行 -->
     <select id="queryEvaluateHotRank" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO"
             parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateScreenQueryVO">
         select
-        keywords as name,
-        COUNT(id) as value
+        evaluate.keywords as name,
+        COUNT(evaluate.id) as value
         from
-        tb_marketing_evaluate
+        tb_marketing_evaluate evaluate
+        <include refid="table_join"/>
         <where>
             <include refid="base_screen_query_condition"/>
         </where>
-        GROUP BY keywords
+        GROUP BY evaluate.keywords
+    </select>
+
+    <!-- 查询评价排行 -->
+    <select id="queryEvaluateRank" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO"
+            parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateScreenQueryVO">
+        select
+        hotel.name as name,
+        COUNT(evaluate.id) as value
+        from
+        tb_marketing_evaluate evaluate
+        <include refid="table_join"/>
+        <where>
+            <include refid="base_screen_query_condition"/>
+        </where>
+        GROUP BY evaluate.place_id
+        ORDER BY value DESC
+    </select>
+
+    <!-- 查询满意度排行 -->
+    <select id="queryEvaluateSatisfactionRank" resultType="com.yjtech.wisdom.tourism.marketing.pojo.dto.HotelEvaluateSatisfactionRankDTO"
+            parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateScreenQueryVO">
+        select
+        hotel.id as id,
+        hotel.name as name,
+        ROUND(SUM(CASE WHEN evaluate.evaluate_type = 2 THEN 1 ELSE 0 END)/COUNT(evaluate.id),3)*100 as value
+        from
+        tb_marketing_evaluate evaluate
+        <include refid="table_join"/>
+        <where>
+            <include refid="base_screen_query_condition"/>
+        </where>
+        GROUP BY evaluate.place_id
+        ORDER BY value DESC
     </select>
 
     <select id="queryForPage" resultType="com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateListDTO"
@@ -91,13 +130,14 @@
         evaluate_time as evaluateTime,
         evaluate_type as evaluateType,
         CASE
-        WHEN evaluate_type = 0 THEN '差评'
+        WHEN evaluate_type = 0 THEN '好评'
         WHEN evaluate_type = 1 THEN '中评'
-        WHEN evaluate_type = 2 THEN '好评'
+        WHEN evaluate_type = 2 THEN '差评'
         ELSE '其他' END as evaluateTypeDesc,
         rate as rate,
         source_platform as sourcePlatform,
-        source_platform_id as sourcePlatformId
+        source_platform_id as sourcePlatformId,
+        evaluate_user as evaluateUser
         from
         tb_marketing_evaluate
         <where>
@@ -126,25 +166,283 @@
         ORDER BY evaluate_time DESC
     </select>
 
+    <!-- 查询评价量今年搜索月趋势 -->
+    <select id="queryEvaluateCurrentAnalysis" resultType="com.yjtech.wisdom.tourism.common.bean.AnalysisMonthChartInfo"
+            parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateScreenQueryVO">
+        SELECT
+        DATE_FORMAT(evaluate.evaluate_time,#{params.sqlDateFormat}) as time,
+        COUNT(evaluate.id) as count,
+        ROUND(((COUNT(evaluate.id) -
+        (select
+        COUNT(evaluateOne.id)
+        from
+        tb_marketing_evaluate evaluateOne
+        INNER JOIN tb_hotel_info hotel ON hotel.id = evaluateOne.place_id and hotel.status = 1
+        <where>
+            evaluateOne.evaluate_time like concat(left((SELECT DATE_SUB(evaluate.evaluate_time,INTERVAL 1 YEAR)),7),'%') and
+            evaluateOne.equip_status = 1 and
+            evaluateOne.deleted = 0
+        </where>
+        ))/(select COUNT(evaluateTwo.id)
+        from
+        tb_marketing_evaluate evaluateTwo
+        <where>
+            evaluateTwo.evaluate_time like concat(left((SELECT DATE_SUB(evaluate.evaluate_time,INTERVAL 1 YEAR)),7),'%') and
+            evaluateTwo.equip_status = 1 and
+            evaluateTwo.deleted = 0
+        </where>
+        )),3)*100 as same,
+        ROUND(((COUNT(evaluate.id) -
+        (select COUNT(evaluateThree.id)
+        from
+        tb_marketing_evaluate evaluateThree
+        <where>
+            evaluateThree.evaluate_time like concat(left((SELECT DATE_SUB(evaluate.evaluate_time,INTERVAL 1 MONTH)),7),'%') and
+            evaluateThree.equip_status = 1 and
+            evaluateThree.deleted = 0
+        </where>
+        ))/(select COUNT(evaluateFour.id)
+        from
+        tb_marketing_evaluate evaluateFour
+        <where>
+            evaluateFour.evaluate_time like concat(left((SELECT DATE_SUB(evaluate.evaluate_time,INTERVAL 1 MONTH)),7),'%') and
+            evaluateFour.equip_status = 1 and
+            evaluateFour.deleted = 0
+        </where>
+        )),3)*100 as sequential
+        from tb_marketing_evaluate evaluate
+        INNER JOIN tb_hotel_info hotel ON hotel.id = evaluate.place_id and hotel.status = 1
+        <where>
+            <![CDATA[ evaluate.evaluate_time >= CONCAT(YEAR(now()),'-01-01 00:00:00') and ]]>
+            <![CDATA[ evaluate.evaluate_time <= CONCAT(YEAR(now()),'-12-31 23:59:59') and ]]>
+            evaluate.equip_status = 1 and
+            evaluate.deleted = 0
+        </where>
+        GROUP BY DATE_FORMAT(evaluate.evaluate_time,#{params.sqlDateFormat})
+    </select>
+
+    <!-- 查询评价量去年搜索月趋势 -->
+    <select id="queryEvaluateLastAnalysis" resultType="com.yjtech.wisdom.tourism.common.bean.AnalysisMonthChartInfo"
+            parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateScreenQueryVO">
+        SELECT
+        DATE_FORMAT(evaluate.evaluate_time,#{params.sqlDateFormat}) as time,
+        COUNT(evaluate.id) as count
+        from tb_marketing_evaluate evaluate
+        INNER JOIN tb_hotel_info hotel ON hotel.id = evaluate.place_id and hotel.status = 1
+        <where>
+            evaluate.evaluate_time like concat(YEAR(now())-1,'%') and
+            evaluate.equip_status = 1 and
+            evaluate.deleted = 0
+        </where>
+        GROUP BY DATE_FORMAT(evaluate.evaluate_time,#{params.sqlDateFormat})
+    </select>
+
+    <!-- 查询评价满意度今年搜索月趋势 -->
+    <select id="queryEvaluateSatisfactionCurrentAnalysis" resultType="com.yjtech.wisdom.tourism.common.bean.AnalysisMonthChartInfo"
+            parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateScreenQueryVO">
+        SELECT
+        DATE_FORMAT(evaluate.evaluate_time,#{params.sqlDateFormat}) as time,
+        ROUND(SUM(CASE WHEN evaluate.evaluate_type = 2 THEN 1 ELSE 0 END)/COUNT(evaluate.id),3)*100 as count,
+        ROUND((((ROUND(SUM(CASE WHEN evaluate.evaluate_type = 2 THEN 1 ELSE 0 END)/COUNT(evaluate.id),3)*100) -
+        (select
+        ROUND(SUM(CASE WHEN evaluateOne.evaluate_type = 2 THEN 1 ELSE 0 END)/COUNT(evaluateOne.id),3)*100
+        from
+        tb_marketing_evaluate evaluateOne
+        INNER JOIN tb_hotel_info hotel ON hotel.id = evaluateOne.place_id and hotel.status = 1
+        <where>
+            evaluateOne.evaluate_time like concat(left((SELECT DATE_SUB(evaluate.evaluate_time,INTERVAL 1 YEAR)),7),'%') and
+            evaluateOne.equip_status = 1 and
+            evaluateOne.deleted = 0
+        </where>
+        ))/(select ROUND(SUM(CASE WHEN evaluateTwo.evaluate_type = 2 THEN 1 ELSE 0 END)/COUNT(evaluateTwo.id),3)*100
+        from
+        tb_marketing_evaluate evaluateTwo
+        <where>
+            evaluateTwo.evaluate_time like concat(left((SELECT DATE_SUB(evaluate.evaluate_time,INTERVAL 1 YEAR)),7),'%') and
+            evaluateTwo.equip_status = 1 and
+            evaluateTwo.deleted = 0
+        </where>
+        )),3)*100 as same,
+        ROUND((((ROUND(SUM(CASE WHEN evaluate.evaluate_type = 2 THEN 1 ELSE 0 END)/COUNT(evaluate.id),3)*100) -
+        (select ROUND(SUM(CASE WHEN evaluateThree.evaluate_type = 2 THEN 1 ELSE 0 END)/COUNT(evaluateThree.id),3)*100
+        from
+        tb_marketing_evaluate evaluateThree
+        <where>
+            evaluateThree.evaluate_time like concat(left((SELECT DATE_SUB(evaluate.evaluate_time,INTERVAL 1 MONTH)),7),'%') and
+            evaluateThree.equip_status = 1 and
+            evaluateThree.deleted = 0
+        </where>
+        ))/(select ROUND(SUM(CASE WHEN evaluateFour.evaluate_type = 2 THEN 1 ELSE 0 END)/COUNT(evaluateFour.id),3)*100
+        from
+        tb_marketing_evaluate evaluateFour
+        <where>
+            evaluateFour.evaluate_time like concat(left((SELECT DATE_SUB(evaluate.evaluate_time,INTERVAL 1 MONTH)),7),'%') and
+            evaluateFour.equip_status = 1 and
+            evaluateFour.deleted = 0
+        </where>
+        )),3)*100 as sequential
+        from tb_marketing_evaluate evaluate
+        INNER JOIN tb_hotel_info hotel ON hotel.id = evaluate.place_id and hotel.status = 1
+        <where>
+            <![CDATA[ evaluate.evaluate_time >= CONCAT(YEAR(now()),'-01-01 00:00:00') and ]]>
+            <![CDATA[ evaluate.evaluate_time <= CONCAT(YEAR(now()),'-12-31 23:59:59') and ]]>
+            evaluate.equip_status = 1 and
+            evaluate.deleted = 0
+        </where>
+        GROUP BY DATE_FORMAT(evaluate.evaluate_time,#{params.sqlDateFormat})
+    </select>
+
+    <!-- 查询评价满意度去年搜索月趋势 -->
+    <select id="queryEvaluateSatisfactionLastAnalysis" resultType="com.yjtech.wisdom.tourism.common.bean.AnalysisMonthChartInfo"
+            parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateScreenQueryVO">
+        SELECT
+        DATE_FORMAT(evaluate.evaluate_time,#{params.sqlDateFormat}) as time,
+        ROUND(SUM(CASE WHEN evaluate.evaluate_type = 2 THEN 1 ELSE 0 END)/COUNT(evaluate.id),3)*100 as count
+        from tb_marketing_evaluate evaluate
+        INNER JOIN tb_hotel_info hotel ON hotel.id = evaluate.place_id and hotel.status = 1
+        <where>
+            evaluate.evaluate_time like concat(YEAR(now())-1,'%') and
+            evaluate.equip_status = 1 and
+            evaluate.deleted = 0
+        </where>
+        GROUP BY DATE_FORMAT(evaluate.evaluate_time,#{params.sqlDateFormat})
+    </select>
+
+    <!--景区大数据-评价排行top5-->
+    <select id="queryEvaluateTop5" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO">
+        SELECT
+        evaluate.place_name name,
+        count(evaluate.id) `value`
+        FROM
+            tb_marketing_evaluate evaluate
+        <include refid="scenic_table_join"/>
+        <trim prefix="WHERE" prefixOverrides="AND |OR ">
+            <include refid="base_screen_query_condition"/>
+        </trim>
+        GROUP BY place_name
+        ORDER BY `value` DESC
+    </select>
+
+    <!--景区大数据-查询满意度排行top5 -->
+    <select id="querySatisfactionTop5" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO">
+        select
+        evaluate.place_name as name,
+        ROUND(SUM(evaluate.evaluate_type = 0)/COUNT(evaluate.id),3)*100 as value
+        from
+        tb_marketing_evaluate evaluate
+        <include refid="scenic_table_join"/>
+        <trim prefix="WHERE" prefixOverrides="AND |OR ">
+            <include refid="base_screen_query_condition"/>
+        </trim>
+        GROUP BY evaluate.place_id
+        ORDER BY value DESC
+    </select>
+
+    <!--景区大数据-评价类型分布 -->
+    <select id="queryScenicEvaluateTypeDistribution" resultType="com.yjtech.wisdom.tourism.common.bean.BasePercentVO">
+        select
+        CASE
+        WHEN evaluate.evaluate_type = 0 THEN '好评'
+        WHEN evaluate.evaluate_type = 1 THEN '中评'
+        WHEN evaluate.evaluate_type = 2 THEN '差评'
+        ELSE '其他' END as name,
+        COUNT(evaluate.id) as value,
+        COALESCE (ROUND(COUNT(evaluate.id)/total.totalNum, 3)*100,0) as rate
+        from
+        tb_marketing_evaluate as evaluate
+        <include refid="scenic_table_join"/>
+        INNER JOIN
+        (select
+        count(evaluate.id) as totalNum
+        from
+        tb_marketing_evaluate evaluate
+        <include refid="scenic_table_join"/>
+        <where>
+            <include refid="base_screen_query_condition"/>
+        </where>
+        ) as total ON 1 = 1
+        <where>
+            <include refid="base_screen_query_condition"/>
+        </where>
+        GROUP BY evaluate.evaluate_type
+    </select>
+
+    <!--景区分布-游客关注及美誉度-->
+    <select id="queryScenicEvaluateStatistics" resultType="com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateStatisticsDTO">
+        select
+        COUNT(evaluate.id) as evaluateTotal,
+        ROUND(SUM( evaluate.evaluate_type = 0)/COUNT(evaluate.id),3)*100 as satisfaction,
+        ROUND(SUM(evaluate.rate)/COUNT(evaluate.id),1) as rate
+        from
+        tb_marketing_evaluate evaluate
+        <include refid="scenic_table_join"/>
+        <where>
+            <include refid="base_screen_query_condition"/>
+        </where>
+    </select>
+
+    <!--景区分布-热度趋势-->
+    <select id="queryHeatTrend" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO">
+        select
+        DATE_FORMAT(evaluate.evaluate_time,'%Y-%m-%d') name,
+        count(evaluate.id) value
+        from
+            tb_marketing_evaluate evaluate
+        <include refid="scenic_table_join"/>
+        <where>
+            <include refid="base_screen_query_condition"/>
+        </where>
+        group by DATE_FORMAT(evaluate.evaluate_time,'%Y-%m-%d')
+        order by evaluate.evaluate_time
+    </select>
+
+    <!--景区分布-满意度趋势-->
+    <select id="querySatisfactionTrend" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO">
+        select
+        DATE_FORMAT(evaluate.evaluate_time,'%Y-%m-%d') name,
+        SUM(evaluate.evaluate_type = 0) value
+        from
+        tb_marketing_evaluate evaluate
+        <include refid="scenic_table_join"/>
+        <where>
+            <include refid="base_screen_query_condition"/>
+        </where>
+        group by DATE_FORMAT(evaluate.evaluate_time,'%Y-%m-%d')
+        order by evaluate.evaluate_time
+    </select>
+
+    <sql id="scenic_table_join">
+        INNER JOIN  tb_scenic s on evaluate.place_id = s.id and s.status=1
+    </sql>
+
+    <sql id="table_join">
+        <choose>
+            <when test="params.status != null">
+                INNER JOIN tb_hotel_info hotel ON hotel.id = evaluate.place_id and hotel.status = #{params.status}
+            </when>
+            <otherwise></otherwise>
+        </choose>
+    </sql>
+
     <sql id="base_screen_query_condition">
         <if test="params != null">
             <if test="params.placeId != null and params.placeId != ''">
-                place_id = #{params.placeId} and
+                evaluate.place_id = #{params.placeId} and
             </if>
             <if test="params.equipStatus != null">
-                equip_status = #{params.equipStatus} and
+                evaluate.equip_status = #{params.equipStatus} and
             </if>
             <if test="params.areaCode != null and params.areaCode != ''">
-                area_code LIKE CONCAT('${params.areaCode}','%') and
+                evaluate.area_code LIKE CONCAT('${params.areaCode}','%') and
             </if>
             <if test="params.beginTime != null">
-                <![CDATA[ evaluate_time >= #{params.beginTime} ]]> and
+                <![CDATA[ evaluate.evaluate_time >= #{params.beginTime} ]]> and
             </if>
             <if test="params.endTime != null">
-                <![CDATA[ evaluate_time <= #{params.endTime} ]]> and
+                <![CDATA[ evaluate.evaluate_time <= #{params.endTime} ]]> and
             </if>
         </if>
-        deleted = 0
+        evaluate.deleted = 0
     </sql>
 
     <sql id="query_screen_where">

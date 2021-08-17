@@ -124,6 +124,12 @@ public class MarketingEvaluateEntity extends AreaBaseEntity {
     @TableField(value = "data_update_time")
     private Date dataUpdateTime;
 
+    /**
+     * 评论用户
+     */
+    @TableField(value = "evaluate_user")
+    private String evaluateUser;
+
 
     /**
      * 构建评价
@@ -146,6 +152,7 @@ public class MarketingEvaluateEntity extends AreaBaseEntity {
 
         setSourcePlatform(po.getPlatformName());
         setSourcePlatformId(po.getSourcePlatformId());
+        setEvaluateUser(po.getEvaluateUser());
 
         setAreaCode(params.getAreaCode());
     }

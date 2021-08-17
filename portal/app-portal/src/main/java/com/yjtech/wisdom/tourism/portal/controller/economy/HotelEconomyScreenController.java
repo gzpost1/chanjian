@@ -30,8 +30,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/hotelEconomy/screen/")
-public class HotelEconomyScreenController
-        extends BaseCurdController<TbHotelInfoService, TbHotelInfoEntity, TbHotelInfoEntityParam> {
+public class HotelEconomyScreenController {
 
 
     @Autowired
@@ -75,6 +74,19 @@ public class HotelEconomyScreenController
         //默认状态为启用
         vo.setStatus(Constants.STATUS_NEGATIVE.byteValue());
         return JsonResult.success(marketingHotelRoomService.queryRoomTypePriceDistribution(vo));
+    }
+
+    /**
+     * 查询酒店房型价格排行
+     *
+     * @param vo
+     * @return
+     */
+    @PostMapping("queryRoomPriceRank")
+    public JsonResult<List<BaseVO>> queryRoomPriceRank(@RequestBody @Valid RoomScreenQueryVO vo) {
+        //默认状态为启用
+        vo.setStatus(Constants.STATUS_NEGATIVE.byteValue());
+        return JsonResult.success(marketingHotelRoomService.queryRoomPriceRank(vo));
     }
 
 

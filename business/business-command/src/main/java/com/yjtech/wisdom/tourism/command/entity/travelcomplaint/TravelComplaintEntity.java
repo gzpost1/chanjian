@@ -5,10 +5,12 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.yjtech.wisdom.tourism.command.vo.travelcomplaint.TravelComplaintCreateVO;
+import com.yjtech.wisdom.tourism.command.vo.travelcomplaint.TravelComplaintUpdateVO;
 import com.yjtech.wisdom.tourism.common.constant.Constants;
 import com.yjtech.wisdom.tourism.common.core.domain.StatusParam;
 import com.yjtech.wisdom.tourism.common.enums.TravelComplaintStatusEnum;
 import com.yjtech.wisdom.tourism.common.utils.IdWorker;
+import com.yjtech.wisdom.tourism.common.utils.StringUtils;
 import com.yjtech.wisdom.tourism.mybatis.entity.MyBaseEntity;
 import com.yjtech.wisdom.tourism.mybatis.typehandler.JsonTypeHandler;
 import lombok.Data;
@@ -17,6 +19,7 @@ import lombok.EqualsAndHashCode;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -76,8 +79,7 @@ public class TravelComplaintEntity extends MyBaseEntity {
     /**
      * 联系电话
      */
-    @TableField(value = "contact_mobile", typeHandler = JsonTypeHandler.class)
-    private List<String> contactMobile;
+    private String contactMobile;
 
     /**
      * 投诉原因
@@ -167,7 +169,7 @@ public class TravelComplaintEntity extends MyBaseEntity {
     }
 
     /**
-     * 构建新增
+     * 构建状态
      * @param vo
      */
     public void build(StatusParam vo){
@@ -184,6 +186,47 @@ public class TravelComplaintEntity extends MyBaseEntity {
             setAssignAcceptUserId(vo.getAssignAcceptUserId().stream().map(String::valueOf).collect(Collectors.toList()));
         }
     }
+
+    /**
+     * 构建编辑
+     * @param vo
+     */
+    public void build(TravelComplaintUpdateVO vo){
+        if(Objects.nonNull(vo.getComplaintType())){
+            setComplaintType(vo.getComplaintType());
+        }
+        if(StringUtils.isNotBlank(vo.getComplaintObject())){
+            setComplaintObject(vo.getComplaintObject());
+        }
+        if(Objects.nonNull(vo.getObjectId())){
+            setObjectId(vo.getObjectId());
+        }
+        if(StringUtils.isNotBlank(vo.getLocation())){
+            setLocation(vo.getLocation());
+        }
+        if(Objects.nonNull(vo.getLongitude())){
+            setLongitude(vo.getLongitude());
+        }
+        if(Objects.nonNull(vo.getLatitude())){
+            setLatitude(vo.getLatitude());
+        }
+        if(StringUtils.isNotBlank(vo.getContactUser())){
+            setContactUser(vo.getContactUser());
+        }
+        if(StringUtils.isNotBlank(vo.getContactMobile())){
+            setContactMobile(vo.getContactMobile());
+        }
+        if(StringUtils.isNotBlank(vo.getComplaintReason())){
+            setComplaintReason(vo.getComplaintReason());
+        }
+        if(Objects.nonNull(vo.getImage()) && !vo.getImage().isEmpty()){
+            setImage(vo.getImage());
+        }
+        if(Objects.nonNull(vo.getComplaintTime())){
+            setComplaintTime(vo.getComplaintTime());
+        }
+    }
+
 
 
 
