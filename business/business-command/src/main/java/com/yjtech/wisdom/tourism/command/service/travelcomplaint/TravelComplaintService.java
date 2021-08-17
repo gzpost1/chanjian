@@ -78,20 +78,9 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
 
         Assert.isTrue(TravelComplaintStatusEnum.TRAVEL_COMPLAINT_STATUS_NO_ASSIGN.getValue().equals(complaintEntity.getStatus()), "更新状态失败：旅游投诉信息状态异常");
 
-        LambdaUpdateWrapper<TravelComplaintEntity> updateWrapper = new UpdateWrapper<TravelComplaintEntity>().lambda()
-                .set(Objects.nonNull(vo.getComplaintType()), TravelComplaintEntity::getComplaintType, vo.getComplaintType())
-                .set(StringUtils.isNotBlank(vo.getComplaintObject()), TravelComplaintEntity::getComplaintObject, vo.getComplaintObject())
-                .set(Objects.nonNull(vo.getObjectId()), TravelComplaintEntity::getObjectId, vo.getObjectId())
-                .set(StringUtils.isNotBlank(vo.getLocation()), TravelComplaintEntity::getLocation, vo.getLocation())
-                .set(Objects.nonNull(vo.getLongitude()), TravelComplaintEntity::getLongitude, vo.getLongitude())
-                .set(Objects.nonNull(vo.getLatitude()), TravelComplaintEntity::getLatitude, vo.getLatitude())
-                .set(StringUtils.isNotBlank(vo.getContactUser()), TravelComplaintEntity::getContactUser, vo.getContactUser())
-                .set(Objects.nonNull(vo.getContactMobile()) && !vo.getContactMobile().isEmpty(), TravelComplaintEntity::getContactMobile, vo.getContactMobile())
-                .set(StringUtils.isNotBlank(vo.getComplaintReason()), TravelComplaintEntity::getComplaintReason, vo.getComplaintReason())
-                .set(Objects.nonNull(vo.getImage()) && !vo.getImage().isEmpty(), TravelComplaintEntity::getImage, vo.getImage())
-                .set(Objects.nonNull(vo.getComplaintTime()), TravelComplaintEntity::getComplaintTime, vo.getComplaintTime());
+        complaintEntity.build(vo);
 
-        return baseMapper.update(complaintEntity, updateWrapper);
+        return baseMapper.updateById(complaintEntity);
     }
 
     /**
