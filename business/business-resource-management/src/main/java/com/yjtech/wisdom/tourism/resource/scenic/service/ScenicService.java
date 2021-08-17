@@ -56,7 +56,7 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
     private MarketingEvaluateService evaluateService;
 
     public IPage<ScenicEntity> queryForPage(ScenicPageQuery query) {
-        LambdaQueryWrapper wrapper = getCommonWrapper(query.getName(), query.getStatus()).orderByDesc(ScenicEntity::getCreateTime);
+        LambdaQueryWrapper wrapper = getCommonWrapper(query.getName(), (byte) 1).orderByDesc(ScenicEntity::getCreateTime);
         return page(new Page<>(query.getPageNo(), query.getPageSize()), wrapper);
     }
 
@@ -64,7 +64,7 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
      * 景区分布——分页查询
      */
     public IPage queryScreenForPage(ScenicPageQuery query) {
-        LambdaQueryWrapper wrapper = getCommonWrapper(query.getName(), query.getStatus()).orderByDesc(ScenicEntity::getLevel);
+        LambdaQueryWrapper wrapper = getCommonWrapper(query.getName(), (byte)1).orderByDesc(ScenicEntity::getLevel);
         IPage page = page(new Page<>(query.getPageNo(), query.getPageSize()), wrapper)
                 .convert(item -> BeanMapper.copyBean(item, ScenicScreenVo.class));
         List<ScenicScreenVo> records = page.getRecords();

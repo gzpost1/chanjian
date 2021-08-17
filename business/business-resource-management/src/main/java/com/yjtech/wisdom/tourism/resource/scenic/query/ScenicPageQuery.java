@@ -12,14 +12,6 @@ public class ScenicPageQuery extends PageQuery {
     /**景区名称*/
     private String name;
 
-    /**起停用状态*/
-    private Byte status;
-
-    /**
-     * 配备状态（0-禁用 1-启用）
-     */
-    private Byte equipStatus;
-
     /**景区id*/
     private Long scenicId;
 
