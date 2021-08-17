@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yjtech.wisdom.tourism.resource.ticket.mapper.TicketCheckMapper">
+    <resultMap id="BaseResultMap" type="com.yjtech.wisdom.tourism.resource.ticket.entity.TicketCheckEntity">
+        <id column="check_id" property="checkId" jdbcType="BIGINT"/>
+        <result column="scenic_name" property="scenicName" jdbcType="VARCHAR"/>
+        <result column="scenic_id" property="scenicId" jdbcType="BIGINT"/>
+        <result column="check_place" property="checkPlace" jdbcType="VARCHAR"/>
+        <result column="check_time" property="checkTime" jdbcType="TIMESTAMP"/>
+        <result column="gate_no" property="gateNo" jdbcType="VARCHAR"/>
+        <result column="check_num" property="checkNum" jdbcType="INTEGER"/>
+        <result column="ticket_no" property="ticketNo" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="create_user" property="createUser" jdbcType="BIGINT"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="update_user" property="updateUser" jdbcType="BIGINT"/>
+        <result column="deleted" property="deleted" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        check_id, scenic_name,scenic_id, check_place, check_time, gate_no, check_num, ticket_no, create_time,
+        create_user, update_time, update_user, deleted
+    </sql>
+
+    <select id="queryCheckNumByTime" resultType="java.lang.Integer">
+        select IFNULL(sum(check_num),0) check_num from tb_ticket_check
+        <trim prefix="WHERE" prefixOverrides="AND |OR ">
+            <include refid="condition_sql_where"/>
+        </trim>
+    </select>
+
+    <select id="queryCheckTrendByTime" parameterType="com.yjtech.wisdom.tourism.resource.scenic.query.ScenicScreenQuery"
+            resultType="com.yjtech.wisdom.tourism.resource.ticket.vo.SaleTrendVO">
+        SELECT
+            <if test="type == 1">
+                DATE_FORMAT( check_time, '%Y-%m' ) `time`,
+            </if>
+            <if test="type == 2">
+                DATE_FORMAT( check_time, '%Y-%m-%d' ) `time`,
+            </if>
+            sum(check_num) visitQuantity
+        FROM
+            tb_ticket_check
+        <trim prefix="WHERE" prefixOverrides="AND |OR ">
+            <include refid="condition_sql_where"/>
+        </trim>
+        GROUP BY
+            <if test="type == 1">
+                DATE_FORMAT( check_time, '%Y-%m' )
+            </if>
+            <if test="type == 2">
+                DATE_FORMAT( check_time, '%Y-%m-%d' )
+            </if>
+        ORDER BY check_time
+    </select>
+
+    <select id="queryPassengerFlowTop5" parameterType="com.yjtech.wisdom.tourism.resource.scenic.query.ScenicPageQuery"
+            resultType="com.yjtech.wisdom.tourism.resource.scenic.entity.vo.ScenicBaseVo">
+        SELECT
+            scenic_name name,
+            sum( check_num ) `value`
+        FROM
+            tb_ticket_check
+        <trim prefix="WHERE" prefixOverrides="AND |OR ">
+            <include refid="condition_sql_where"/>
+        </trim>
+        GROUP BY scenic_name
+        ORDER BY check_num DESC
+    </select>
+
+    <sql id="condition_sql_where">
+        <if test="beginTime != null and endTime != null">
+            and (check_time <![CDATA[ >= ]]> #{beginTime,jdbcType=TIMESTAMP} AND check_time <![CDATA[ < ]]> #{endTime,jdbcType=TIMESTAMP})
+        </if>
+        <if test="scenicId != null and scenicId != null">
+            and scenic_id = ( SELECT id FROM tb_scenic WHERE id = #{scenicId,jdbcType=BIGINT} AND `status` = 1 )
+        </if>
+        and deleted = 0
+    </sql>
+
+</mapper>

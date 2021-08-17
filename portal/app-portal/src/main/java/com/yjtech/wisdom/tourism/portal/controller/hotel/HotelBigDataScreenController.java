@@ -155,8 +155,4 @@ public class HotelBigDataScreenController {
     public JsonResult<List<AnalysisBaseInfo>> queryEvaluateSatisfactionAnalysis(@RequestBody @Valid EvaluateScreenQueryVO vo) {
         return JsonResult.success(marketingEvaluateService.queryEvaluateSatisfactionAnalysis(vo));
     }
-
-
-
-
 }

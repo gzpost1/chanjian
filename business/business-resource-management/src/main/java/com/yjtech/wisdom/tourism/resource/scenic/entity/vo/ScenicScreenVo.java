@@ -4,12 +4,13 @@ import com.yjtech.wisdom.tourism.weather.vo.WeatherInfoVO;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import static com.yjtech.wisdom.tourism.common.utils.StringUtils.isNull;
 
 /**大屏景区分布分页vo*/
 @Data
-public class ScenicScreenPageVo {
+public class ScenicScreenVo {
 
     /**id*/
     private Long id;
@@ -66,7 +67,7 @@ public class ScenicScreenPageVo {
     private String frontPicUrl;
 
     /**其他图片Url，多张用“,”逗号分割*/
-    private String otherPicUrl;
+    private List<String> otherPicUrl;
 
     /**简介*/
     private String introduction;
@@ -82,5 +83,10 @@ public class ScenicScreenPageVo {
 
     public void setEnterNum(Integer enterNum) {
         this.enterNum = isNull(enterNum) ? 0 : enterNum;
+    }
+
+    public String getComfortCategory() {
+        String comfort = (this.enterNum / this.bearCapacity) >= this.comfortWarnRate.intValue() ? "拥挤" : "舒适";
+        return comfort;
     }
 }
