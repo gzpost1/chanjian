@@ -423,6 +423,21 @@
         order by evaluate.evaluate_time
     </select>
 
+    <!-- 景区分布-热词 -->
+    <select id="queryScenicHotRank" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO"
+            parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateScreenQueryVO">
+        select
+        evaluate.keywords as name,
+        COUNT(evaluate.id) as value
+        from
+        tb_marketing_evaluate evaluate
+        <include refid="scenic_table_join"/>
+        <where>
+            <include refid="base_screen_query_condition"/>
+        </where>
+        GROUP BY evaluate.keywords
+    </select>
+
     <sql id="scenic_table_join">
         INNER JOIN  tb_scenic s on evaluate.place_id = s.id and s.status=1
     </sql>

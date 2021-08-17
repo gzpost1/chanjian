@@ -86,7 +86,7 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
      * 景区分布——景区等级分布
      */
     public List<ScenicBaseVo> queryLevelDistribution() {
-        LambdaQueryWrapper<ScenicEntity> wrapper = getCommonWrapper(null, Constants.STATUS_NEGATIVE.byteValue());
+        LambdaQueryWrapper<ScenicEntity> wrapper = getCommonWrapper(null, EntityConstants.ENABLED);
         List<ScenicEntity> list = list(wrapper);
         ArrayList<ScenicBaseVo> vos = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(list)) {
@@ -111,7 +111,7 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
         ScenicEntity one = getOne(
                 new LambdaQueryWrapper<ScenicEntity>()
                         .eq(ScenicEntity::getId, query.getScenicId())
-                        .eq(ScenicEntity::getStatus, Constants.STATUS_NEGATIVE.byteValue()));
+                        .eq(ScenicEntity::getStatus, EntityConstants.ENABLED));
         if (!isNull(one)) {
             ScenicScreenVo scenicScreenVo = BeanMapper.copyBean(one, ScenicScreenVo.class);
             //天气
@@ -275,7 +275,7 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
         queryVO.setBeginTime(query.getBeginTime());
         queryVO.setEndTime((query.getEndTime()));
         queryVO.setPlaceId(String.valueOf(query.getScenicId()));
-        queryVO.setEquipStatus(Constants.STATUS_NEGATIVE.byteValue());
+        queryVO.setEquipStatus(EntityConstants.ENABLED);
         return evaluateService.queryScenicEvaluateTypeDistribution(queryVO);
     }
 
@@ -430,6 +430,15 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
             resultList.forEach(item -> item.setTime(item.getDate()));
         }
         return resultList;
+    }
+
+    public List<BaseVO> queryScenicHotRank(ScenicPageQuery query){
+        EvaluateQueryVO queryVO = new EvaluateQueryVO();
+        queryVO.setBeginTime(query.getBeginTime());
+        queryVO.setEndTime((query.getEndTime()));
+        queryVO.setPlaceId(String.valueOf(query.getScenicId()));
+        queryVO.setEquipStatus(EntityConstants.ENABLED);
+        return evaluateService.queryScenicHotRank(queryVO);
     }
 
     //获取天气

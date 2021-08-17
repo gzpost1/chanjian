@@ -241,4 +241,14 @@ public class MarketingEvaluateService extends ServiceImpl<MarketingEvaluateMappe
     public List<BaseVO> querySatisfactionTrend(EvaluateQueryVO query) {
         return baseMapper.querySatisfactionTrend(query);
     }
+
+    /**
+     * 景区分布——热词
+     *
+     * @param vo
+     * @return
+     */
+    public List<BaseVO> queryScenicHotRank(EvaluateQueryVO vo) {
+        return baseMapper.queryScenicHotRank(vo);
+    }
 }

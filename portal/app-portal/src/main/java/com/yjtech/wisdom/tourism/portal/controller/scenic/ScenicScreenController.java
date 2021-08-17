@@ -85,8 +85,8 @@ public class ScenicScreenController {
      * @return
      */
     @PostMapping("queryHotRank")
-    public JsonResult<List<BaseVO>> queryEvaluateHotRank(@RequestBody @Valid ScenicPageQuery query){
-        return JsonResult.success(scenicService.queryEvaluateHotRank(query));
+    public JsonResult<List<BaseVO>> queryScenicHotRank(@RequestBody @Valid ScenicPageQuery query){
+        return JsonResult.success(scenicService.queryScenicHotRank(query));
     }
 
     /**
