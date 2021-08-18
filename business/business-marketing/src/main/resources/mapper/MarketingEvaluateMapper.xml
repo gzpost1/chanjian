@@ -424,15 +424,19 @@
 
     <!--景区大数据-评价排行top5-->
     <select id="queryEvaluateTop5" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO">
-        SELECT
-        evaluate.place_name name,
-        count(evaluate.id) `value`
+        select
+        evaluate_new.place_name name,
+        count(evaluate_new.id) `value`
+        from
+        (SELECT
+        evaluate.place_name,evaluate.id
         FROM
             tb_marketing_evaluate evaluate
         <include refid="scenic_table_join"/>
         <trim prefix="WHERE" prefixOverrides="AND |OR ">
             <include refid="base_screen_query_condition"/>
         </trim>
+        GROUP BY evaluate.id) evaluate_new
         GROUP BY place_name
         ORDER BY `value` DESC
     </select>
@@ -441,7 +445,7 @@
     <select id="querySatisfactionTop5" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO">
         select
         evaluate.place_name as name,
-        ROUND(SUM(evaluate.evaluate_type = 0)/COUNT(evaluate.id),3)*100 as value
+        ROUND(SUM(CASE WHEN evaluate.evaluate_type = 0 THEN 1 ELSE 0 END)/COUNT(evaluate.id),3)*100 as `value`
         from
         tb_marketing_evaluate evaluate
         <include refid="scenic_table_join"/>
@@ -454,90 +458,127 @@
 
     <!--景区大数据-评价类型分布 -->
     <select id="queryScenicEvaluateTypeDistribution" resultType="com.yjtech.wisdom.tourism.common.bean.BasePercentVO">
-        select
+        SELECT
         CASE
-        WHEN evaluate.evaluate_type = 0 THEN '好评'
-        WHEN evaluate.evaluate_type = 1 THEN '中评'
-        WHEN evaluate.evaluate_type = 2 THEN '差评'
-        ELSE '其他' END as name,
-        COUNT(evaluate.id) as value,
-        COALESCE (ROUND(COUNT(evaluate.id)/total.totalNum, 3)*100,0) as rate
-        from
-        tb_marketing_evaluate as evaluate
-        <include refid="scenic_table_join"/>
-        INNER JOIN
-        (select
-        count(evaluate.id) as totalNum
-        from
+        WHEN evaluate_new_s.evaluate_type = 0 THEN '好评'
+        WHEN evaluate_new_s.evaluate_type = 1 THEN '中评'
+        WHEN evaluate_new_s.evaluate_type = 2 THEN '差评'
+        ELSE '其他'
+        END AS NAME,
+        COUNT( evaluate_new_s.id ) AS
+        `value`,
+        COALESCE ( ROUND( COUNT( evaluate_new_s.id )/ evaluate_new_s.totalNum, 3 )* 100, 0 ) AS rate
+        FROM
+        (SELECT
+        evaluate.id,
+        evaluate.evaluate_type,
+        total.totalNum
+        FROM
+        tb_marketing_evaluate AS evaluate
+        INNER JOIN tb_scenic s ON evaluate.place_id = s.id
+        AND s.STATUS = 1
+        INNER JOIN (
+        SELECT
+        count( evaluate_new.id ) AS totalNum
+        FROM
+        (SELECT
+        evaluate.id
+        FROM
         tb_marketing_evaluate evaluate
         <include refid="scenic_table_join"/>
-        <where>
+        <trim prefix="WHERE" prefixOverrides="AND |OR ">
             <include refid="base_screen_query_condition"/>
-        </where>
-        ) as total ON 1 = 1
-        <where>
+        </trim>
+        GROUP BY
+        evaluate.id
+        ) evaluate_new
+        ) AS total ON 1 = 1
+        <trim prefix="WHERE" prefixOverrides="AND |OR ">
             <include refid="base_screen_query_condition"/>
-        </where>
-        GROUP BY evaluate.evaluate_type
+        </trim>
+        GROUP BY
+        evaluate.id
+        ) evaluate_new_s
+        GROUP BY
+        evaluate_new_s.evaluate_type
     </select>
 
     <!--景区分布-游客关注及美誉度-->
     <select id="queryScenicEvaluateStatistics" resultType="com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateStatisticsDTO">
         select
-        COUNT(evaluate.id) as evaluateTotal,
-        ROUND(SUM( evaluate.evaluate_type = 0)/COUNT(evaluate.id),3)*100 as satisfaction,
-        ROUND(SUM(evaluate.rate)/COUNT(evaluate.id),1) as rate
+        COUNT(evaluate_new.id) as evaluateTotal,
+        IFNULL(ROUND(SUM(CASE WHEN evaluate_new.evaluate_type = 0 THEN 1 ELSE 0 END)/COUNT(evaluate_new.id),3)*100,0) as satisfaction,
+        IFNULL(ROUND(SUM(evaluate_new.rate)/COUNT(evaluate_new.id),1),0) as rate
+        from
+        (select
+        evaluate.id, evaluate.evaluate_type,evaluate.rate
         from
         tb_marketing_evaluate evaluate
         <include refid="scenic_table_join"/>
         <where>
             <include refid="base_screen_query_condition"/>
         </where>
+        GROUP BY evaluate.id) evaluate_new
     </select>
 
     <!--景区分布-热度趋势-->
     <select id="queryHeatTrend" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO">
-        select
-        DATE_FORMAT(evaluate.evaluate_time,'%Y-%m-%d') name,
-        count(evaluate.id) value
-        from
-            tb_marketing_evaluate evaluate
+        SELECT
+        DATE_FORMAT( evaluate_new.evaluate_time, '%Y-%m-01' ) name,
+        count( evaluate_new.id ) `value`
+        FROM
+        (SELECT
+        evaluate.evaluate_time,
+        evaluate.id
+        FROM
+        tb_marketing_evaluate evaluate
         <include refid="scenic_table_join"/>
         <where>
             <include refid="base_screen_query_condition"/>
         </where>
-        group by DATE_FORMAT(evaluate.evaluate_time,'%Y-%m-%d')
-        order by evaluate.evaluate_time
+        GROUP BY evaluate.id
+        ) evaluate_new
+        GROUP BY DATE_FORMAT( evaluate_new.evaluate_time, '%Y-%m-%d' )
+        ORDER BY evaluate_new.evaluate_time
     </select>
 
     <!--景区分布-满意度趋势-->
     <select id="querySatisfactionTrend" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO">
-        select
-        DATE_FORMAT(evaluate.evaluate_time,'%Y-%m-%d') name,
-        SUM(evaluate.evaluate_type = 0) value
+        SELECT
+        DATE_FORMAT(evaluate_new.evaluate_time,'%Y-%m-01') name,
+        SUM(CASE WHEN evaluate_new.evaluate_type = 0 THEN 1 ELSE 0 END) `value`
+        from
+        (select
+        evaluate.evaluate_time,evaluate.evaluate_type
         from
         tb_marketing_evaluate evaluate
         <include refid="scenic_table_join"/>
         <where>
             <include refid="base_screen_query_condition"/>
         </where>
-        group by DATE_FORMAT(evaluate.evaluate_time,'%Y-%m-%d')
-        order by evaluate.evaluate_time
+        GROUP BY evaluate.id
+        ) evaluate_new
+        group by DATE_FORMAT(evaluate_new.evaluate_time,'%Y-%m-%d')
+        order by evaluate_new.evaluate_time
     </select>
 
     <!-- 景区分布-热词 -->
     <select id="queryScenicHotRank" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO"
             parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateQueryVO">
-        select
-        evaluate.keywords as name,
-        COUNT(evaluate.id) as value
+        SELECT
+        evaluate_new.keywords as name,
+        COUNT(evaluate_new.id) as `value`
+        from
+        (select
+        evaluate.keywords,evaluate.id
         from
         tb_marketing_evaluate evaluate
         <include refid="scenic_table_join"/>
         <where>
             <include refid="base_screen_query_condition"/>
         </where>
-        GROUP BY evaluate.keywords
+        GROUP BY evaluate.id) evaluate_new
+        GROUP BY evaluate_new.keywords
     </select>
 
     <sql id="scenic_table_join">

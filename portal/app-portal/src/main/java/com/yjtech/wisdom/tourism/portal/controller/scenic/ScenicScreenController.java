@@ -164,9 +164,6 @@ public class ScenicScreenController {
      */
     @PostMapping("/queryScenicEvaluateStatistics")
     public JsonResult<MarketingEvaluateStatisticsDTO> queryScenicEvaluateStatistics(@RequestBody @Valid ScenicScreenQuery query) {
-        if (isNull(query.getBeginTime()) || isNull(query.getEndTime())) {
-            throw new CustomException("统计时间不能为空");
-        }
         return JsonResult.success(scenicService.queryScenicEvaluateStatistics(query));
     }
 
