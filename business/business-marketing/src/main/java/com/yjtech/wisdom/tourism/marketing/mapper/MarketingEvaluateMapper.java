@@ -135,7 +135,7 @@ public interface MarketingEvaluateMapper extends BaseMapper<MarketingEvaluateEnt
      * @param params
      * @return
      */
-    IPage<BaseVO> querySatisfactionTop5(Page page, @Param("params") EvaluateQueryVO params);
+    IPage<HotelEvaluateSatisfactionRankDTO> querySatisfactionTop5(Page page, @Param("params") EvaluateQueryVO params);
 
     /**
      * 景区分布—查询评价统计

@@ -14,6 +14,7 @@ import com.yjtech.wisdom.tourism.common.utils.bean.BeanMapper;
 import com.yjtech.wisdom.tourism.dto.MonthPassengerFlowDto;
 import com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysDictData;
 import com.yjtech.wisdom.tourism.infrastructure.utils.DictUtils;
+import com.yjtech.wisdom.tourism.marketing.pojo.dto.HotelEvaluateSatisfactionRankDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateListDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateStatisticsDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateQueryVO;
@@ -242,8 +243,9 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
     /**
      * 景区大数据——满意度排行
      */
-    public IPage<BaseVO> querySatisfactionTop5(ScenicScreenQuery query) {
-        return evaluateService.querySatisfactionTop5(queryToEvaluateQueryVO(query));
+    public IPage<ScenicBaseVo> querySatisfactionTop5(ScenicScreenQuery query) {
+        IPage<HotelEvaluateSatisfactionRankDTO> page = evaluateService.querySatisfactionTop5(queryToEvaluateQueryVO(query));
+        return page.convert(item -> BeanMapper.copyBean(item, ScenicBaseVo.class));
     }
 
     /**

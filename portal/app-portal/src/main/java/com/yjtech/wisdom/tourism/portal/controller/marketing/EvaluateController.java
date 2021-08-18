@@ -130,7 +130,7 @@ public class EvaluateController {
      * @return:
      */
     @PostMapping("/querySatisfactionTop5")
-    public JsonResult<IPage<BaseVO>> querySatisfactionTop5(@RequestBody @Valid EvaluateQueryVO vo) {
+    public JsonResult<IPage<HotelEvaluateSatisfactionRankDTO>> querySatisfactionTop5(@RequestBody @Valid EvaluateQueryVO vo) {
         vo.buildStatus();
         return JsonResult.success(marketingEvaluateService.querySatisfactionTop5(vo));
     }

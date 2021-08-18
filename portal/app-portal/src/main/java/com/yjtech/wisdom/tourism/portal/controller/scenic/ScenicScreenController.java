@@ -196,7 +196,7 @@ public class ScenicScreenController {
      * @return:
      */
     @PostMapping("/querySatisfactionTop5")
-    public JsonResult<IPage<BaseVO>> querySatisfactionTop5(@RequestBody @Valid ScenicScreenQuery query) {
+    public JsonResult<IPage<ScenicBaseVo>> querySatisfactionTop5(@RequestBody @Valid ScenicScreenQuery query) {
         return JsonResult.success(scenicService.querySatisfactionTop5(query));
     }
 

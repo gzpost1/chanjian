@@ -442,8 +442,9 @@
     </select>
 
     <!--景区大数据-查询满意度排行top5 -->
-    <select id="querySatisfactionTop5" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO">
+    <select id="querySatisfactionTop5" resultType="com.yjtech.wisdom.tourism.marketing.pojo.dto.HotelEvaluateSatisfactionRankDTO">
         select
+        place_id id,
         evaluate.place_name as name,
         ROUND(SUM(CASE WHEN evaluate.evaluate_type = 0 THEN 1 ELSE 0 END)/COUNT(evaluate.id),3)*100 as `value`
         from
