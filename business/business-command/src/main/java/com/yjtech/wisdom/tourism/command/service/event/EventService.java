@@ -226,7 +226,7 @@ public class EventService extends ServiceImpl<EventMapper, EventEntity> {
                 if(CollectionUtils.isNotEmpty(vo.getAppointHandlePersonnel())){
                     for(String userId : vo.getAppointHandlePersonnel()){
                         SysUser sysUser1 = longSysUserMap.get(Long.valueOf(userId));
-                        userName.add(Objects.isNull(sysUser1) ? null : sysUser.getNickName());
+                        userName.add(Objects.isNull(sysUser1) ? null : sysUser1.getNickName());
                     }
                 }
                 vo.setAppointHandlePersonnel(userName);
