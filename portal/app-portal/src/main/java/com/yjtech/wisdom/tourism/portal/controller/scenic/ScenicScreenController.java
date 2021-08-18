@@ -12,7 +12,6 @@ import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateStatisticsD
 import com.yjtech.wisdom.tourism.mybatis.utils.AnalysisUtils;
 import com.yjtech.wisdom.tourism.resource.scenic.entity.vo.ScenicBaseVo;
 import com.yjtech.wisdom.tourism.resource.scenic.entity.vo.ScenicScreenVo;
-import com.yjtech.wisdom.tourism.resource.scenic.query.ScenicPageQuery;
 import com.yjtech.wisdom.tourism.resource.scenic.query.ScenicScreenQuery;
 import com.yjtech.wisdom.tourism.resource.scenic.service.ScenicService;
 import com.yjtech.wisdom.tourism.resource.video.entity.TbVideoEntity;
@@ -51,7 +50,7 @@ public class ScenicScreenController {
      * @return:
      */
     @PostMapping("/queryForPage")
-    public JsonResult<IPage<ScenicScreenVo>> queryScreenForPage(@RequestBody ScenicPageQuery query) {
+    public JsonResult<IPage<ScenicScreenVo>> queryScreenForPage(@RequestBody ScenicScreenQuery query) {
         return JsonResult.success(scenicService.queryScreenForPage(query));
     }
 
@@ -63,7 +62,7 @@ public class ScenicScreenController {
      * @return:
      */
     @PostMapping("/queryLevelDistribution")
-    public JsonResult<List<ScenicBaseVo>> queryLevelDistribution() {
+    public JsonResult<List<BaseVO>> queryLevelDistribution() {
         return JsonResult.success(scenicService.queryLevelDistribution());
     }
 
@@ -74,7 +73,7 @@ public class ScenicScreenController {
      * @return:
      */
     @PostMapping("/queryCommentForPage")
-    public JsonResult<IPage<MarketingEvaluateListDTO>> queryCommentForPage(@RequestBody @Valid ScenicPageQuery query) {
+    public JsonResult<IPage<MarketingEvaluateListDTO>> queryCommentForPage(@RequestBody @Valid ScenicScreenQuery query) {
         return JsonResult.success(scenicService.queryCommentForPage(query));
     }
 
@@ -85,7 +84,7 @@ public class ScenicScreenController {
      * @return
      */
     @PostMapping("queryHotRank")
-    public JsonResult<List<BaseVO>> queryScenicHotRank(@RequestBody @Valid ScenicPageQuery query){
+    public JsonResult<List<BaseVO>> queryScenicHotRank(@RequestBody @Valid ScenicScreenQuery query){
         return JsonResult.success(scenicService.queryScenicHotRank(query));
     }
 
@@ -107,7 +106,7 @@ public class ScenicScreenController {
      * @return:
      */
     @PostMapping("/queryTouristReception")
-    public JsonResult<List<ScenicBaseVo>> queryTouristReception(@RequestBody @Valid ScenicScreenQuery query) {
+    public JsonResult<List<BaseVO>> queryTouristReception(@RequestBody @Valid ScenicScreenQuery query) {
         if (isNull(query.getBeginTime()) || isNull(query.getEndTime())) {
             throw new CustomException("统计时间不能为空");
         }
@@ -121,7 +120,7 @@ public class ScenicScreenController {
      * @return:
      */
     @PostMapping("/queryVideoByScenicId")
-    public JsonResult<IPage<TbVideoEntity>> queryVideoByScenicId(@RequestBody ScenicPageQuery query) {
+    public JsonResult<IPage<TbVideoEntity>> queryVideoByScenicId(@RequestBody ScenicScreenQuery query) {
         if (isNull(query) || isNull(query.getScenicId())) {
             throw new CustomException("景区id不能为空");
         }
@@ -178,18 +177,18 @@ public class ScenicScreenController {
      * @return:
      */
     @PostMapping("/queryPassengerFlowTop5")
-    public JsonResult<IPage<ScenicBaseVo>> queryPassengerFlowTop5(@RequestBody @Valid ScenicPageQuery query) {
+    public JsonResult<IPage<ScenicBaseVo>> queryPassengerFlowTop5(@RequestBody @Valid ScenicScreenQuery query) {
         return JsonResult.success(scenicService.queryPassengerFlowTop5(query));
     }
 
     /**
-     * 景区大数据——评价排行
+     * 景区大数据——评价排行TOP5
      *
      * @Param: query
      * @return:
      */
     @PostMapping("/queryEvaluateTop5")
-    public JsonResult<IPage<BaseVO>> queryEvaluateTop5(@RequestBody @Valid ScenicPageQuery query) {
+    public JsonResult<IPage<BaseVO>> queryEvaluateTop5(@RequestBody @Valid ScenicScreenQuery query) {
         return JsonResult.success(scenicService.queryEvaluateTop5(query));
     }
 
@@ -200,7 +199,7 @@ public class ScenicScreenController {
      * @return:
      */
     @PostMapping("/querySatisfactionTop5")
-    public JsonResult<IPage<BaseVO>> querySatisfactionTop5(@RequestBody @Valid ScenicPageQuery query) {
+    public JsonResult<IPage<BaseVO>> querySatisfactionTop5(@RequestBody @Valid ScenicScreenQuery query) {
         return JsonResult.success(scenicService.querySatisfactionTop5(query));
     }
 

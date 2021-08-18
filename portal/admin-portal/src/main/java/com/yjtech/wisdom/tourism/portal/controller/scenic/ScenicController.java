@@ -11,7 +11,7 @@ import com.yjtech.wisdom.tourism.resource.scenic.entity.dto.OpenTimeDto;
 import com.yjtech.wisdom.tourism.resource.scenic.entity.dto.ScenicCreateDto;
 import com.yjtech.wisdom.tourism.resource.scenic.entity.dto.ScenicUpdateDto;
 import com.yjtech.wisdom.tourism.resource.scenic.entity.ScenicEntity;
-import com.yjtech.wisdom.tourism.resource.scenic.query.ScenicPageQuery;
+import com.yjtech.wisdom.tourism.resource.scenic.query.ScenicScreenQuery;
 import com.yjtech.wisdom.tourism.resource.scenic.service.ScenicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -45,7 +45,7 @@ public class ScenicController {
      * @return:
      */
     @PostMapping("/queryForPage")
-    public JsonResult<IPage<ScenicEntity>> queryForPage(@RequestBody ScenicPageQuery query) {
+    public JsonResult<IPage<ScenicEntity>> queryForPage(@RequestBody ScenicScreenQuery query) {
         return JsonResult.success(scenicService.queryForPage(query));
     }
 

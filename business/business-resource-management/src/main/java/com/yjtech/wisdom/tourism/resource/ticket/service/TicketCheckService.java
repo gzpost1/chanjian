@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yjtech.wisdom.tourism.resource.scenic.entity.vo.ScenicBaseVo;
-import com.yjtech.wisdom.tourism.resource.scenic.query.ScenicPageQuery;
 import com.yjtech.wisdom.tourism.resource.scenic.query.ScenicScreenQuery;
 import com.yjtech.wisdom.tourism.resource.ticket.entity.TicketCheckEntity;
 import com.yjtech.wisdom.tourism.resource.ticket.mapper.TicketCheckMapper;
@@ -24,7 +23,7 @@ public class TicketCheckService extends ServiceImpl<TicketCheckMapper, TicketChe
         return baseMapper.queryCheckTrendByTime(query);
     }
 
-    public IPage<ScenicBaseVo> queryPassengerFlowTop5(ScenicPageQuery query) {
+    public IPage<ScenicBaseVo> queryPassengerFlowTop5(ScenicScreenQuery query) {
         return baseMapper.queryPassengerFlowTop5(new Page(query.getPageNo(), query.getPageSize()), query);
     }
 }

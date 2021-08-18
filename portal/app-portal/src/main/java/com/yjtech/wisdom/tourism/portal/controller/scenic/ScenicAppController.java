@@ -3,7 +3,7 @@ package com.yjtech.wisdom.tourism.portal.controller.scenic;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.resource.scenic.entity.ScenicEntity;
-import com.yjtech.wisdom.tourism.resource.scenic.query.ScenicPageQuery;
+import com.yjtech.wisdom.tourism.resource.scenic.query.ScenicScreenQuery;
 import com.yjtech.wisdom.tourism.resource.scenic.service.ScenicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,7 +30,7 @@ public class ScenicAppController {
      * @return:
      */
     @PostMapping("/queryForPage")
-    public JsonResult<IPage<ScenicEntity>> queryForPage(@RequestBody ScenicPageQuery query) {
+    public JsonResult<IPage<ScenicEntity>> queryForPage(@RequestBody ScenicScreenQuery query) {
         return JsonResult.success(scenicService.queryForPage(query));
     }
 }

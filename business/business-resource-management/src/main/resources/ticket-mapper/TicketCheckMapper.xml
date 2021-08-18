@@ -30,30 +30,18 @@
         </trim>
     </select>
 
-    <!--    <select id="queryPassengerFlowTop5" resultType="com.yjtech.wisdom.tourism.resource.scenic.entity.vo.ScenicBaseVo">-->
-    <!--        SELECT-->
-    <!--        tc.scenic_name name,-->
-    <!--        sum( tc.check_num ) `value`-->
-    <!--        FROM-->
-    <!--        tb_ticket_check tc-->
-    <!--        <include refid="scenic_table_join"/>-->
-    <!--        <trim prefix="WHERE" prefixOverrides="AND |OR ">-->
-    <!--            <include refid="condition_sql_where"/>-->
-    <!--        </trim>-->
-    <!--        GROUP BY tc.scenic_name-->
-    <!--        ORDER BY tc.check_num DESC-->
-    <!--    </select>-->
     <select id="queryPassengerFlowTop5" resultType="com.yjtech.wisdom.tourism.resource.scenic.entity.vo.ScenicBaseVo">
         SELECT
+        tc.scenic_id scenicId,
         tc.scenic_name name,
-        tc.check_num `value`
+        sum(tc.check_num) `value`
         FROM
         tb_ticket_check tc
         <include refid="scenic_table_join"/>
         <trim prefix="WHERE" prefixOverrides="AND |OR ">
             <include refid="condition_sql_where"/>
         </trim>
-        GROUP BY tc.scenic_name
+        GROUP BY tc.scenic_id
         ORDER BY tc.check_num DESC
     </select>
 
