@@ -94,5 +94,15 @@ public class MarketingEvaluateListDTO implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;
 
+    /**
+     * 配备状态（0-禁用 1-启用）
+     */
+    private Byte equipStatus;
+
+    /**
+     * 配备状态描述
+     */
+    private String equipStatusDesc;
+
 
 }

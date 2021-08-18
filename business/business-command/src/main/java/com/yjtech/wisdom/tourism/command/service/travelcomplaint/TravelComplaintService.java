@@ -123,8 +123,6 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
         List<String> userNameList = sysUserService.selectUserNameListById(dto.getAssignAcceptUserId());
         dto.setAssignAcceptUser(userNameList);
 
-        //todo:获取投诉对象名称（景区、酒店）
-
         return dto;
     }
 
