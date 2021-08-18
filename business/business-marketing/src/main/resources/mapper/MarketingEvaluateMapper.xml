@@ -43,6 +43,7 @@
         </where>
     </select>
 
+    <!-- 查询评论类型分布 -->
     <select id="queryEvaluateTypeDistribution" resultType="com.yjtech.wisdom.tourism.common.bean.BasePercentVO"
             parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateQueryVO">
         select
@@ -72,6 +73,35 @@
         GROUP BY evaluate.evaluate_type
     </select>
 
+    <!-- 查询评论对象分布 -->
+    <select id="queryEvaluateObjectDistribution" resultType="com.yjtech.wisdom.tourism.common.bean.BasePercentVO"
+            parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateQueryVO">
+        select
+        CASE
+        WHEN evaluate.data_type = 1 THEN '景区'
+        WHEN evaluate.data_type = 2 THEN '酒店'
+        ELSE '其他' END as name,
+        COUNT(evaluate.id) as value,
+        COALESCE (ROUND(COUNT(evaluate.id)/total.totalNum, 3)*100,0) as rate
+        from
+        tb_marketing_evaluate as evaluate
+        <include refid="table_join"/>
+        INNER JOIN
+        (select
+        count(evaluate.id) as totalNum
+        from
+        tb_marketing_evaluate evaluate
+        <include refid="table_join"/>
+        <where>
+            <include refid="base_screen_query_condition"/>
+        </where>
+        ) as total ON 1 = 1
+        <where>
+            <include refid="base_screen_query_condition"/>
+        </where>
+        GROUP BY evaluate.data_type
+    </select>
+
     <!-- 查询评论热词排行 -->
     <select id="queryEvaluateHotRank" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO"
             parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateQueryVO">
@@ -85,6 +115,7 @@
             <include refid="base_screen_query_condition"/>
         </where>
         GROUP BY evaluate.keywords
+        ORDER BY value DESC
     </select>
 
     <!-- 查询评价排行 -->

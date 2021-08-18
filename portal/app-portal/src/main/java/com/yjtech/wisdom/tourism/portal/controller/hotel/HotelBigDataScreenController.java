@@ -1,9 +1,9 @@
 package com.yjtech.wisdom.tourism.portal.controller.hotel;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.yjtech.wisdom.tourism.common.bean.AnalysisBaseInfo;
 import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
-import com.yjtech.wisdom.tourism.common.constant.Constants;
 import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.HotelEvaluateSatisfactionRankDTO;
@@ -96,7 +96,7 @@ public class HotelBigDataScreenController {
      * @return
      */
     @PostMapping("queryEvaluateRank")
-    public JsonResult<List<BaseVO>> queryEvaluateRank(@RequestBody @Valid EvaluateQueryVO vo) {
+    public JsonResult<IPage<BaseVO>> queryEvaluateRank(@RequestBody @Valid EvaluateQueryVO vo) {
         //设置默认酒店状态-启用
         vo.setStatus(EntityConstants.ENABLED);
         //设置默认评论状态-启用
@@ -112,7 +112,7 @@ public class HotelBigDataScreenController {
      * @return
      */
     @PostMapping("queryEvaluateSatisfactionRank")
-    public JsonResult<List<HotelEvaluateSatisfactionRankDTO>> queryEvaluateSatisfactionRank(@RequestBody @Valid EvaluateQueryVO vo) {
+    public JsonResult<IPage<HotelEvaluateSatisfactionRankDTO>> queryEvaluateSatisfactionRank(@RequestBody @Valid EvaluateQueryVO vo) {
         //设置默认酒店状态-启用
         vo.setStatus(EntityConstants.ENABLED);
         //设置默认评论状态-启用
@@ -156,4 +156,5 @@ public class HotelBigDataScreenController {
     public JsonResult<List<AnalysisBaseInfo>> queryEvaluateSatisfactionAnalysis(@RequestBody @Valid EvaluateQueryVO vo) {
         return JsonResult.success(marketingEvaluateService.queryEvaluateSatisfactionAnalysis(vo));
     }
+
 }

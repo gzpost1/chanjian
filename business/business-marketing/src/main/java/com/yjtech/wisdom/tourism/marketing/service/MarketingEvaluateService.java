@@ -109,6 +109,16 @@ public class MarketingEvaluateService extends ServiceImpl<MarketingEvaluateMappe
     }
 
     /**
+     * 查询评价对象分布
+     *
+     * @param vo
+     * @return
+     */
+    public List<BasePercentVO> queryEvaluateObjectDistribution(EvaluateQueryVO vo) {
+        return baseMapper.queryEvaluateObjectDistribution(vo);
+    }
+
+    /**
      * 查询评价热词排行
      *
      * @param vo
@@ -124,8 +134,8 @@ public class MarketingEvaluateService extends ServiceImpl<MarketingEvaluateMappe
      * @param vo
      * @return
      */
-    public List<BaseVO> queryEvaluateRank(EvaluateQueryVO vo) {
-        return baseMapper.queryEvaluateRank(vo);
+    public IPage<BaseVO> queryEvaluateRank(EvaluateQueryVO vo) {
+        return baseMapper.queryEvaluateRank(new Page(vo.getPageNo(), vo.getPageSize()), vo);
     }
 
     /**
@@ -134,8 +144,8 @@ public class MarketingEvaluateService extends ServiceImpl<MarketingEvaluateMappe
      * @param vo
      * @return
      */
-    public List<HotelEvaluateSatisfactionRankDTO> queryEvaluateSatisfactionRank(EvaluateQueryVO vo) {
-        return baseMapper.queryEvaluateSatisfactionRank(vo);
+    public IPage<HotelEvaluateSatisfactionRankDTO> queryEvaluateSatisfactionRank(EvaluateQueryVO vo) {
+        return baseMapper.queryEvaluateSatisfactionRank(new Page(vo.getPageNo(), vo.getPageSize()), vo);
     }
 
     /**

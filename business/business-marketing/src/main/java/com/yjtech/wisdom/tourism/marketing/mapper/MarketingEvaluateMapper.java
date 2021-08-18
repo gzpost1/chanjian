@@ -47,6 +47,14 @@ public interface MarketingEvaluateMapper extends BaseMapper<MarketingEvaluateEnt
     List<BasePercentVO> queryEvaluateTypeDistribution(@Param("params") EvaluateQueryVO params);
 
     /**
+     * 查询评价对象分布
+     *
+     * @param params
+     * @return
+     */
+    List<BasePercentVO> queryEvaluateObjectDistribution(@Param("params") EvaluateQueryVO params);
+
+    /**
      * 查询评价热词排行
      *
      * @param params
@@ -57,18 +65,20 @@ public interface MarketingEvaluateMapper extends BaseMapper<MarketingEvaluateEnt
     /**
      * 查询评价排行
      *
+     * @param page
      * @param params
      * @return
      */
-    List<BaseVO> queryEvaluateRank(@Param("params") EvaluateQueryVO params);
+    IPage<BaseVO> queryEvaluateRank(Page page, @Param("params") EvaluateQueryVO params);
 
     /**
      * 查询满意度排行
      *
+     * @param page
      * @param params
      * @return
      */
-    List<HotelEvaluateSatisfactionRankDTO> queryEvaluateSatisfactionRank(@Param("params") EvaluateQueryVO params);
+    IPage<HotelEvaluateSatisfactionRankDTO> queryEvaluateSatisfactionRank(Page page, @Param("params") EvaluateQueryVO params);
 
     /**
      * 查询评价分页列表

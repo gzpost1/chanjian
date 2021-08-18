@@ -40,7 +40,7 @@ public class EvaluateQueryVO extends TimeBaseQuery {
     private Byte equipStatus;
 
     /**
-     * 酒店状态（0-禁用 1-启用）
+     * 景区/酒店状态（0-禁用 1-启用）
      */
     private Byte status;
 
