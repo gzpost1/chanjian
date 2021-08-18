@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.yjtech.wisdom.tourism.common.bean.AnalysisBaseInfo;
 import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
+import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.HotelEvaluateSatisfactionRankDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateListDTO;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 大屏_评论分析
@@ -43,6 +45,8 @@ public class EvaluateController {
      */
     @PostMapping("queryEvaluateStatistics")
     public JsonResult<MarketingEvaluateStatisticsDTO> queryEvaluateStatistics(@RequestBody @Valid EvaluateQueryVO vo) {
+        //设置默认评论状态-启用
+        vo.setEquipStatus(Objects.isNull(vo.getEquipStatus()) ? EntityConstants.ENABLED : vo.getEquipStatus());
         return JsonResult.success(marketingEvaluateService.queryEvaluateStatistics(vo));
     }
 
@@ -54,6 +58,8 @@ public class EvaluateController {
      */
     @PostMapping("queryEvaluateTypeDistribution")
     public JsonResult<List<BasePercentVO>> queryEvaluateTypeDistribution(@RequestBody @Valid EvaluateQueryVO vo) {
+        //设置默认评论状态-启用
+        vo.setEquipStatus(Objects.isNull(vo.getEquipStatus()) ? EntityConstants.ENABLED : vo.getEquipStatus());
         return JsonResult.success(marketingEvaluateService.queryEvaluateTypeDistribution(vo));
     }
 
@@ -65,11 +71,13 @@ public class EvaluateController {
      */
     @PostMapping("queryEvaluateObjectDistribution")
     public JsonResult<List<BasePercentVO>> queryEvaluateObjectDistribution(@RequestBody @Valid EvaluateQueryVO vo) {
+        //设置默认评论状态-启用
+        vo.setEquipStatus(Objects.isNull(vo.getEquipStatus()) ? EntityConstants.ENABLED : vo.getEquipStatus());
         return JsonResult.success(marketingEvaluateService.queryEvaluateObjectDistribution(vo));
     }
 
     /**
-     * 查询评价量趋势、同比、环比
+     * 查询评价热度（评价量）趋势、同比、环比
      *
      * @param vo
      * @return
@@ -80,7 +88,7 @@ public class EvaluateController {
     }
 
     /**
-     * 查询评价热度趋势、同比、环比
+     * 查询评价满意度趋势、同比、环比
      *
      * @param vo
      * @return
@@ -98,6 +106,8 @@ public class EvaluateController {
      */
     @PostMapping("queryEvaluateHotRank")
     public JsonResult<List<BaseVO>> queryEvaluateHotRank(@RequestBody @Valid EvaluateQueryVO vo) {
+        //设置默认评论状态-启用
+        vo.setEquipStatus(Objects.isNull(vo.getEquipStatus()) ? EntityConstants.ENABLED : vo.getEquipStatus());
         return JsonResult.success(marketingEvaluateService.queryEvaluateHotRank(vo));
     }
 
@@ -109,6 +119,7 @@ public class EvaluateController {
      */
     @PostMapping("/queryEvaluateTop5")
     public JsonResult<IPage<BaseVO>> queryEvaluateTop5(@RequestBody @Valid EvaluateQueryVO vo) {
+        vo.buildStatus();
         return JsonResult.success(marketingEvaluateService.queryEvaluateTop5(vo));
     }
 
@@ -119,8 +130,9 @@ public class EvaluateController {
      * @return:
      */
     @PostMapping("/querySatisfactionTop5")
-    public JsonResult<IPage<BaseVO>> querySatisfactionTop5(@RequestBody @Valid EvaluateQueryVO query) {
-        return JsonResult.success(marketingEvaluateService.querySatisfactionTop5(query));
+    public JsonResult<IPage<BaseVO>> querySatisfactionTop5(@RequestBody @Valid EvaluateQueryVO vo) {
+        vo.buildStatus();
+        return JsonResult.success(marketingEvaluateService.querySatisfactionTop5(vo));
     }
 
     /**
@@ -131,6 +143,7 @@ public class EvaluateController {
      */
     @PostMapping("queryHotelEvaluateRank")
     public JsonResult<IPage<BaseVO>> queryEvaluateRank(@RequestBody @Valid EvaluateQueryVO vo) {
+        vo.buildStatus();
         return JsonResult.success(marketingEvaluateService.queryEvaluateRank(vo));
     }
 
@@ -142,6 +155,7 @@ public class EvaluateController {
      */
     @PostMapping("queryHotelEvaluateSatisfactionRank")
     public JsonResult<IPage<HotelEvaluateSatisfactionRankDTO>> queryEvaluateSatisfactionRank(@RequestBody @Valid EvaluateQueryVO vo) {
+        vo.buildStatus();
         return JsonResult.success(marketingEvaluateService.queryEvaluateSatisfactionRank(vo));
     }
 

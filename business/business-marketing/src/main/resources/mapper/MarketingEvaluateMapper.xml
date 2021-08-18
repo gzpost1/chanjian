@@ -33,7 +33,7 @@
             parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateQueryVO">
         select
         COUNT(evaluate.id) as evaluateTotal,
-        ROUND(SUM(CASE WHEN evaluate.evaluate_type = 2 THEN 1 ELSE 0 END)/COUNT(evaluate.id),3)*100 as satisfaction,
+        ROUND(SUM(CASE WHEN evaluate.evaluate_type = 0 THEN 1 ELSE 0 END)/COUNT(evaluate.id),3)*100 as satisfaction,
         ROUND(SUM(evaluate.rate)/COUNT(evaluate.id),1) as rate
         from
         tb_marketing_evaluate evaluate
@@ -140,7 +140,7 @@
         select
         hotel.id as id,
         hotel.name as name,
-        ROUND(SUM(CASE WHEN evaluate.evaluate_type = 2 THEN 1 ELSE 0 END)/COUNT(evaluate.id),3)*100 as value
+        ROUND(SUM(CASE WHEN evaluate.evaluate_type = 0 THEN 1 ELSE 0 END)/COUNT(evaluate.id),3)*100 as value
         from
         tb_marketing_evaluate evaluate
         <include refid="table_join"/>
@@ -220,7 +220,12 @@
         COUNT(evaluateOne.id)
         from
         tb_marketing_evaluate evaluateOne
-        INNER JOIN tb_hotel_info hotel ON hotel.id = evaluateOne.place_id and hotel.status = 1
+        <choose>
+            <when test="params.status != null">
+                INNER JOIN tb_hotel_info hotel ON hotel.id = evaluateOne.place_id and hotel.status = #{params.status}
+            </when>
+            <otherwise></otherwise>
+        </choose>
         <where>
             evaluateOne.evaluate_time like concat(left((SELECT DATE_SUB(evaluate.evaluate_time,INTERVAL 1 YEAR)),7),'%') and
             evaluateOne.equip_status = 1 and
@@ -229,6 +234,12 @@
         ))/(select COUNT(evaluateTwo.id)
         from
         tb_marketing_evaluate evaluateTwo
+        <choose>
+            <when test="params.status != null">
+                INNER JOIN tb_hotel_info hotel ON hotel.id = evaluateTwo.place_id and hotel.status = #{params.status}
+            </when>
+            <otherwise></otherwise>
+        </choose>
         <where>
             evaluateTwo.evaluate_time like concat(left((SELECT DATE_SUB(evaluate.evaluate_time,INTERVAL 1 YEAR)),7),'%') and
             evaluateTwo.equip_status = 1 and
@@ -239,6 +250,12 @@
         (select COUNT(evaluateThree.id)
         from
         tb_marketing_evaluate evaluateThree
+        <choose>
+            <when test="params.status != null">
+                INNER JOIN tb_hotel_info hotel ON hotel.id = evaluateThree.place_id and hotel.status = #{params.status}
+            </when>
+            <otherwise></otherwise>
+        </choose>
         <where>
             evaluateThree.evaluate_time like concat(left((SELECT DATE_SUB(evaluate.evaluate_time,INTERVAL 1 MONTH)),7),'%') and
             evaluateThree.equip_status = 1 and
@@ -247,6 +264,12 @@
         ))/(select COUNT(evaluateFour.id)
         from
         tb_marketing_evaluate evaluateFour
+        <choose>
+            <when test="params.status != null">
+                INNER JOIN tb_hotel_info hotel ON hotel.id = evaluateFour.place_id and hotel.status = #{params.status}
+            </when>
+            <otherwise></otherwise>
+        </choose>
         <where>
             evaluateFour.evaluate_time like concat(left((SELECT DATE_SUB(evaluate.evaluate_time,INTERVAL 1 MONTH)),7),'%') and
             evaluateFour.equip_status = 1 and
@@ -254,7 +277,12 @@
         </where>
         )),3)*100 as sequential
         from tb_marketing_evaluate evaluate
-        INNER JOIN tb_hotel_info hotel ON hotel.id = evaluate.place_id and hotel.status = 1
+        <choose>
+            <when test="params.status != null">
+                INNER JOIN tb_hotel_info hotel ON hotel.id = evaluate.place_id and hotel.status = #{params.status}
+            </when>
+            <otherwise></otherwise>
+        </choose>
         <where>
             <![CDATA[ evaluate.evaluate_time >= CONCAT(YEAR(now()),'-01-01 00:00:00') and ]]>
             <![CDATA[ evaluate.evaluate_time <= CONCAT(YEAR(now()),'-12-31 23:59:59') and ]]>
@@ -271,7 +299,12 @@
         DATE_FORMAT(evaluate.evaluate_time,#{params.sqlDateFormat}) as time,
         COUNT(evaluate.id) as count
         from tb_marketing_evaluate evaluate
-        INNER JOIN tb_hotel_info hotel ON hotel.id = evaluate.place_id and hotel.status = 1
+        <choose>
+            <when test="params.status != null">
+                INNER JOIN tb_hotel_info hotel ON hotel.id = evaluate.place_id and hotel.status = #{params.status}
+            </when>
+            <otherwise></otherwise>
+        </choose>
         <where>
             evaluate.evaluate_time like concat(YEAR(now())-1,'%') and
             evaluate.equip_status = 1 and
@@ -285,39 +318,62 @@
             parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateQueryVO">
         SELECT
         DATE_FORMAT(evaluate.evaluate_time,#{params.sqlDateFormat}) as time,
-        ROUND(SUM(CASE WHEN evaluate.evaluate_type = 2 THEN 1 ELSE 0 END)/COUNT(evaluate.id),3)*100 as count,
-        ROUND((((ROUND(SUM(CASE WHEN evaluate.evaluate_type = 2 THEN 1 ELSE 0 END)/COUNT(evaluate.id),3)*100) -
+        ROUND(SUM(CASE WHEN evaluate.evaluate_type = 0 THEN 1 ELSE 0 END)/COUNT(evaluate.id),3)*100 as count,
+        ROUND((((ROUND(SUM(CASE WHEN evaluate.evaluate_type = 0 THEN 1 ELSE 0 END)/COUNT(evaluate.id),3)*100) -
         (select
-        ROUND(SUM(CASE WHEN evaluateOne.evaluate_type = 2 THEN 1 ELSE 0 END)/COUNT(evaluateOne.id),3)*100
+        ROUND(SUM(CASE WHEN evaluateOne.evaluate_type = 0 THEN 1 ELSE 0 END)/COUNT(evaluateOne.id),3)*100
         from
         tb_marketing_evaluate evaluateOne
-        INNER JOIN tb_hotel_info hotel ON hotel.id = evaluateOne.place_id and hotel.status = 1
+        <choose>
+            <when test="params.status != null">
+                INNER JOIN tb_hotel_info hotel ON hotel.id = evaluateOne.place_id and hotel.status = #{params.status}
+            </when>
+            <otherwise></otherwise>
+        </choose>
         <where>
             evaluateOne.evaluate_time like concat(left((SELECT DATE_SUB(evaluate.evaluate_time,INTERVAL 1 YEAR)),7),'%') and
             evaluateOne.equip_status = 1 and
             evaluateOne.deleted = 0
         </where>
-        ))/(select ROUND(SUM(CASE WHEN evaluateTwo.evaluate_type = 2 THEN 1 ELSE 0 END)/COUNT(evaluateTwo.id),3)*100
+        ))/(select ROUND(SUM(CASE WHEN evaluateTwo.evaluate_type = 0 THEN 1 ELSE 0 END)/COUNT(evaluateTwo.id),3)*100
         from
         tb_marketing_evaluate evaluateTwo
+        <choose>
+            <when test="params.status != null">
+                INNER JOIN tb_hotel_info hotel ON hotel.id = evaluateTwo.place_id and hotel.status = #{params.status}
+            </when>
+            <otherwise></otherwise>
+        </choose>
         <where>
             evaluateTwo.evaluate_time like concat(left((SELECT DATE_SUB(evaluate.evaluate_time,INTERVAL 1 YEAR)),7),'%') and
             evaluateTwo.equip_status = 1 and
             evaluateTwo.deleted = 0
         </where>
         )),3)*100 as same,
-        ROUND((((ROUND(SUM(CASE WHEN evaluate.evaluate_type = 2 THEN 1 ELSE 0 END)/COUNT(evaluate.id),3)*100) -
-        (select ROUND(SUM(CASE WHEN evaluateThree.evaluate_type = 2 THEN 1 ELSE 0 END)/COUNT(evaluateThree.id),3)*100
+        ROUND((((ROUND(SUM(CASE WHEN evaluate.evaluate_type = 0 THEN 1 ELSE 0 END)/COUNT(evaluate.id),3)*100) -
+        (select ROUND(SUM(CASE WHEN evaluateThree.evaluate_type = 0 THEN 1 ELSE 0 END)/COUNT(evaluateThree.id),3)*100
         from
         tb_marketing_evaluate evaluateThree
+        <choose>
+            <when test="params.status != null">
+                INNER JOIN tb_hotel_info hotel ON hotel.id = evaluateThree.place_id and hotel.status = #{params.status}
+            </when>
+            <otherwise></otherwise>
+        </choose>
         <where>
             evaluateThree.evaluate_time like concat(left((SELECT DATE_SUB(evaluate.evaluate_time,INTERVAL 1 MONTH)),7),'%') and
             evaluateThree.equip_status = 1 and
             evaluateThree.deleted = 0
         </where>
-        ))/(select ROUND(SUM(CASE WHEN evaluateFour.evaluate_type = 2 THEN 1 ELSE 0 END)/COUNT(evaluateFour.id),3)*100
+        ))/(select ROUND(SUM(CASE WHEN evaluateFour.evaluate_type = 0 THEN 1 ELSE 0 END)/COUNT(evaluateFour.id),3)*100
         from
         tb_marketing_evaluate evaluateFour
+        <choose>
+            <when test="params.status != null">
+                INNER JOIN tb_hotel_info hotel ON hotel.id = evaluateFour.place_id and hotel.status = #{params.status}
+            </when>
+            <otherwise></otherwise>
+        </choose>
         <where>
             evaluateFour.evaluate_time like concat(left((SELECT DATE_SUB(evaluate.evaluate_time,INTERVAL 1 MONTH)),7),'%') and
             evaluateFour.equip_status = 1 and
@@ -325,7 +381,12 @@
         </where>
         )),3)*100 as sequential
         from tb_marketing_evaluate evaluate
-        INNER JOIN tb_hotel_info hotel ON hotel.id = evaluate.place_id and hotel.status = 1
+        <choose>
+            <when test="params.status != null">
+                INNER JOIN tb_hotel_info hotel ON hotel.id = evaluate.place_id and hotel.status = #{params.status}
+            </when>
+            <otherwise></otherwise>
+        </choose>
         <where>
             <![CDATA[ evaluate.evaluate_time >= CONCAT(YEAR(now()),'-01-01 00:00:00') and ]]>
             <![CDATA[ evaluate.evaluate_time <= CONCAT(YEAR(now()),'-12-31 23:59:59') and ]]>
@@ -340,9 +401,14 @@
             parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateQueryVO">
         SELECT
         DATE_FORMAT(evaluate.evaluate_time,#{params.sqlDateFormat}) as time,
-        ROUND(SUM(CASE WHEN evaluate.evaluate_type = 2 THEN 1 ELSE 0 END)/COUNT(evaluate.id),3)*100 as count
+        ROUND(SUM(CASE WHEN evaluate.evaluate_type = 0 THEN 1 ELSE 0 END)/COUNT(evaluate.id),3)*100 as count
         from tb_marketing_evaluate evaluate
-        INNER JOIN tb_hotel_info hotel ON hotel.id = evaluate.place_id and hotel.status = 1
+        <choose>
+            <when test="params.status != null">
+                INNER JOIN tb_hotel_info hotel ON hotel.id = evaluate.place_id and hotel.status = #{params.status}
+            </when>
+            <otherwise></otherwise>
+        </choose>
         <where>
             evaluate.evaluate_time like concat(YEAR(now())-1,'%') and
             evaluate.equip_status = 1 and

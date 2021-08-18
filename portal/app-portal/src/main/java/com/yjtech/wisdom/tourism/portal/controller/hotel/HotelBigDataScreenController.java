@@ -131,29 +131,32 @@ public class HotelBigDataScreenController {
     public JsonResult<List<RoomPriceAnalysisDTO>> queryRoomPriceAnalysis(@RequestBody @Valid RoomScreenQueryVO vo) {
         //设置默认酒店状态-启用
         vo.setStatus(EntityConstants.ENABLED);
-
         return JsonResult.success(marketingHotelRoomService.queryRoomPriceAnalysis(vo));
     }
 
     /**
-     * 查询评价量趋势、同比、环比
+     * 查询评价热度（评价量）趋势、同比、环比
      *
      * @param vo
      * @return
      */
     @PostMapping("queryEvaluateAnalysis")
     public JsonResult<List<AnalysisBaseInfo>> queryEvaluateAnalysis(@RequestBody @Valid EvaluateQueryVO vo) {
+        //设置默认酒店状态-启用
+        vo.setStatus(EntityConstants.ENABLED);
         return JsonResult.success(marketingEvaluateService.queryEvaluateAnalysis(vo));
     }
 
     /**
-     * 查询评价热度趋势、同比、环比
+     * 查询评价满意度趋势、同比、环比
      *
      * @param vo
      * @return
      */
     @PostMapping("queryEvaluateSatisfactionAnalysis")
     public JsonResult<List<AnalysisBaseInfo>> queryEvaluateSatisfactionAnalysis(@RequestBody @Valid EvaluateQueryVO vo) {
+        //设置默认酒店状态-启用
+        vo.setStatus(EntityConstants.ENABLED);
         return JsonResult.success(marketingEvaluateService.queryEvaluateSatisfactionAnalysis(vo));
     }
 

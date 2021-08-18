@@ -1,7 +1,10 @@
 package com.yjtech.wisdom.tourism.marketing.pojo.vo;
 
+import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.mybatis.entity.TimeBaseQuery;
 import lombok.Data;
+
+import java.util.Objects;
 
 /**
  * 评价 大屏 查询VO
@@ -43,5 +46,15 @@ public class EvaluateQueryVO extends TimeBaseQuery {
      * 景区/酒店状态（0-禁用 1-启用）
      */
     private Byte status;
+
+
+    /**
+     * 构建状态
+     */
+    public void buildStatus(){
+        this.status = Objects.isNull(getStatus()) ? EntityConstants.ENABLED : getStatus();
+        this.equipStatus = Objects.isNull(getEquipStatus()) ? EntityConstants.ENABLED : getEquipStatus();
+    }
+
 
 }
