@@ -2,24 +2,22 @@ package com.yjtech.wisdom.tourism.decisionsupport.base.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.yjtech.wisdom.tourism.common.path.DistrictPathEnum;
+import com.yjtech.wisdom.tourism.common.constant.DecisionSupportConstants;
 import com.yjtech.wisdom.tourism.common.utils.DateTimeUtil;
-import com.yjtech.wisdom.tourism.common.utils.JsonUtils;
-import com.yjtech.wisdom.tourism.decisionsupport.base.dto.LastMonthDto;
 import com.yjtech.wisdom.tourism.decisionsupport.base.dto.TargetDto;
 import com.yjtech.wisdom.tourism.decisionsupport.base.dto.WarnConfigDto;
 import com.yjtech.wisdom.tourism.decisionsupport.base.entity.WarnConfigEntity;
 import com.yjtech.wisdom.tourism.decisionsupport.base.mapper.TargetLibraryMapper;
 import com.yjtech.wisdom.tourism.decisionsupport.base.mapper.WarnConfigMapper;
-import com.yjtech.wisdom.tourism.decisionsupport.base.vo.VisitNumberVo;
 import com.yjtech.wisdom.tourism.decisionsupport.base.vo.WarnConfigVo;
 import com.yjtech.wisdom.tourism.decisionsupport.common.constant.TargetQueryConstants;
 import com.yjtech.wisdom.tourism.dto.MonthPassengerFlowDto;
 import com.yjtech.wisdom.tourism.integration.service.DistrictBigDataService;
-import com.yjtech.wisdom.tourism.service.DistrictTourService;
+import com.yjtech.wisdom.tourism.service.impl.DistrictTourImplService;
 import com.yjtech.wisdom.tourism.system.service.PlatformService;
 import com.yjtech.wisdom.tourism.system.service.SysConfigService;
 import com.yjtech.wisdom.tourism.system.vo.PlatformVO;
+import com.yjtech.wisdom.tourism.vo.DataOverviewVo;
 import com.yjtech.wisdom.tourism.vo.PassengerFlowVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -47,10 +45,7 @@ public class TargetQueryService {
     private PlatformService platformService;
 
     @Autowired
-    private DistrictBigDataService districtBigDataService;
-
-    @Autowired
-    private DistrictTourService districtTourService;
+    private DistrictTourImplService districtTourService;
 
     @Autowired
     private SysConfigService sysConfigService;
@@ -83,17 +78,6 @@ public class TargetQueryService {
     }
 
     /**
-     * GET 获取统计年月
-     *
-     * @return
-     */
-    public LastMonthDto queryLastMonth() {
-        return LastMonthDto.builder()
-                .yearMonth(DateTimeUtil.getCurrentLastMonthStr())
-               .build();
-    }
-
-    /**
      * GET 获取平台简称
      *
      * @return
@@ -107,23 +91,22 @@ public class TargetQueryService {
     /**
      * 省外客流数据查询
      */
-    public String queryProvinceOutsideNumber (String statisticsType) {
+    public String queryProvinceOutsideNumber (String statisticsType, Integer isSimulation) {
         String beginDate = DateTimeUtil.getCurrentLastMonthFirstDayStr();
         String endTime = DateTimeUtil.getCurrentLastMonthLastDayStr();
 
         String areaCode = sysConfigService.selectConfigByKey(configAreaCodeKey);
 
         // 请求参数构造
-        VisitNumberVo visitNumberVo = VisitNumberVo.builder()
-                .statisticsType(statisticsType)
-                .beginDate(beginDate)
-                .endDate(endTime)
-                .adcode(areaCode)
-                .build();
-        String result = districtBigDataService.requestDistrict(DistrictPathEnum.VISIT_NUMBER.getPath(),
-                visitNumberVo,
-                DistrictPathEnum.VISIT_NUMBER.getDesc());
-        return String.valueOf(JsonUtils.getValueByKey(result, TargetQueryConstants.DATA));
+        DataOverviewVo dataOverviewVo = new DataOverviewVo();
+        dataOverviewVo.setStatisticsType(statisticsType);
+        dataOverviewVo.setBeginDate(beginDate);
+        dataOverviewVo.setEndDate(endTime);
+        dataOverviewVo.setAdcode(areaCode);
+        dataOverviewVo.setIsSimulation(isSimulation);
+
+        Long provinceOutsideTouristNum = districtTourService.queryDataOverview(dataOverviewVo).getProvinceOutsideTouristNum();
+        return String.valueOf(provinceOutsideTouristNum);
     }
 
     /**
@@ -131,12 +114,13 @@ public class TargetQueryService {
      *
      * @param sign
      */
-    public String queryProvinceInsideScale(String sign, String statisticsType) {
+    public String queryProvinceScale(String sign, String statisticsType, Integer isSimulation) {
         PassengerFlowVo passengerFlowVo = new PassengerFlowVo();
         passengerFlowVo.setStatisticsType(statisticsType);
         passengerFlowVo.setBeginTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentYearStr() + TargetQueryConstants.FIRST_STRING));
         passengerFlowVo.setEndTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentYearStr() + TargetQueryConstants.END_STRING));
-        passengerFlowVo.setType((byte)2);
+        passengerFlowVo.setType(DecisionSupportConstants.YEAR_MONTH);
+        passengerFlowVo.setIsSimulation(isSimulation);
 
         List<MonthPassengerFlowDto> yearPassengerFlowDto = districtTourService.queryYearPassengerFlow(passengerFlowVo);
         // 上月 年月日期

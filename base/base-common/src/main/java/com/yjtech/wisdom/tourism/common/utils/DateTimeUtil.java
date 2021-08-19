@@ -180,7 +180,7 @@ public class DateTimeUtil {
   public static String[] getLast12Months(String date) {
     String[] months = new String[12];
     LocalDate today = LocalDate.parse(date);
-    for (int i = 12; i > 0; i--) {
+     for (int i = 12; i > 0; i--) {
       LocalDate localDate = today.minusMonths(i);
       String ss = localDate.toString().substring(0, 7);
       months[12 - i] = ss;
@@ -329,6 +329,17 @@ public class DateTimeUtil {
   }
 
   /**
+   * 获取去年年份
+   *
+   * @return
+   */
+  public static String getLastYearStr() {
+    Calendar calendar = Calendar.getInstance();
+    int year = calendar.get(Calendar.YEAR) - 1;
+    return String.valueOf(year);
+  }
+
+  /**
    * 获取当前月份
    *
    * @return
@@ -342,6 +353,17 @@ public class DateTimeUtil {
     }
     return monthStr;
   }
+
+  /**
+   * 获取当前日期号数
+   *
+   * @return
+   */
+  public static int getCurrentDayNumber() {
+    Calendar calendar = Calendar.getInstance();
+    return calendar.get(Calendar.DATE);
+  }
+
 
   /**
    * 获取上月
@@ -372,6 +394,18 @@ public class DateTimeUtil {
   }
 
   /**
+   * 获取当前年 的上上月  yyyy-MM
+   *
+   * @return
+   */
+  public static String getCurrentLastLastMonthStr() {
+    Calendar calendar = Calendar.getInstance();
+    calendar.add(Calendar.MONTH, -2);
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+    return sdf.format(calendar.getTime());
+  }
+
+  /**
    * 获取上一年 的上月  yyyy-MM
    *
    * @return
@@ -380,6 +414,18 @@ public class DateTimeUtil {
     Calendar calendar = Calendar.getInstance();
     calendar.add(Calendar.YEAR, -1);
     calendar.add(Calendar.MONTH, -1);
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+    return sdf.format(calendar.getTime());
+  }
+
+  /**
+   * 获取上一年 的同月  yyyy-MM
+   *
+   * @return
+   */
+  public static String getLastYearAndMonthStr() {
+    Calendar calendar = Calendar.getInstance();
+    calendar.add(Calendar.YEAR, -1);
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
     return sdf.format(calendar.getTime());
   }
@@ -473,6 +519,16 @@ public class DateTimeUtil {
   }
 
   /**
+   * 获取当前时间 天数
+   *
+   * @return
+   */
+  public static int getCurrentDay() {
+    Calendar calendar = Calendar.getInstance();
+    return calendar.get(Calendar.DAY_OF_MONTH);
+  }
+
+  /**
    * LocalDateTime时间转换
    *
    * @param localDateTime
@@ -495,4 +551,27 @@ public class DateTimeUtil {
     return ldt;
   }
 
+  /**
+   * 根据月份获取天数
+   *
+   * @param year
+   * @param month
+   * @return
+   */
+  public static int getDayNumber(String year, int month) {
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+    Date date = null;
+    String monthStr = month + "";
+    if (month < 10) {
+      monthStr = "0" + month;
+    }
+    try {
+      date = sdf.parse(year + "-" + monthStr);
+    } catch (ParseException e) {
+      e.printStackTrace();
+    }
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTime(date);
+    return calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+  }
 }

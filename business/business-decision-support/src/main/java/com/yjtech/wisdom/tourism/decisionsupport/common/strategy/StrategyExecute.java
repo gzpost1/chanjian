@@ -28,7 +28,7 @@ public abstract class StrategyExecute {
      * @param e
      * @return
      */
-    public Object execute(Enum e, DecisionEntity o){return null;}
+    public Object execute(Enum e, DecisionEntity o, Integer isSimulation){return null;}
 
     /**
      * 执行方法

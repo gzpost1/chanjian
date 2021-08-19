@@ -31,6 +31,22 @@ public class DecisionDto implements Serializable {
      */
     private String targetName;
 
+    /**
+     * 预警配置id
+     */
+    private Long configId;
+
+    /**
+     * 预警配置名称
+     */
+    private String configName;
+
+    /**
+     * 预警配置类型 0：文本 1：数值
+     */
+    private Integer configType;
+
+
     /** ======================================= 数值 配置类型 ======================================= */
 
     /**
@@ -64,5 +80,10 @@ public class DecisionDto implements Serializable {
      * 话术
      */
     private String conclusionText;
+
+    /**
+     * 更新时间
+     */
+    private String updateTime;
 
 }
