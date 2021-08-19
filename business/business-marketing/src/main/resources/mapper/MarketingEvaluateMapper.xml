@@ -600,6 +600,9 @@
             <if test="params.placeId != null and params.placeId != ''">
                 evaluate.place_id = #{params.placeId} and
             </if>
+            <if test="params.dataType != null">
+                evaluate.data_type = #{params.dataType} and
+            </if>
             <if test="params.equipStatus != null">
                 evaluate.equip_status = #{params.equipStatus} and
             </if>

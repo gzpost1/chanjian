@@ -10,7 +10,7 @@ import com.yjtech.wisdom.tourism.resource.ticket.extensionpoint.TicketExtensionC
 import com.yjtech.wisdom.tourism.resource.ticket.extensionpoint.TicketQryExtPt;
 import com.yjtech.wisdom.tourism.resource.ticket.query.TicketRankingQuery;
 import com.yjtech.wisdom.tourism.resource.ticket.query.TicketSaleQuantityQuery;
-import com.yjtech.wisdom.tourism.resource.ticket.query.TicketSumaryQuery;
+import com.yjtech.wisdom.tourism.resource.ticket.query.TicketSummaryQuery;
 import com.yjtech.wisdom.tourism.resource.ticket.service.TicketChannelHourSummaryService;
 import com.yjtech.wisdom.tourism.resource.ticket.service.TicketHourSummaryService;
 import com.yjtech.wisdom.tourism.resource.ticket.service.TicketModelHourSummaryService;
@@ -45,12 +45,12 @@ public class TicketQryExtImpl implements TicketQryExtPt {
     private TicketModelHourSummaryService ticketModelHourSummaryService;
 
     @Override
-    public List<SaleTrendVO> querySaleTrend(TicketSumaryQuery query) {
+    public List<SaleTrendVO> querySaleTrend(TicketSummaryQuery query) {
         return ticketHourSummaryService.getBaseMapper().queryTrend(query);
     }
 
     @Override
-    public List<SaleTrendVO> queryVisitTrend(TicketSumaryQuery query) {
+    public List<SaleTrendVO> queryVisitTrend(TicketSummaryQuery query) {
         return ticketHourSummaryService.getBaseMapper().queryTrend(query);
     }
 
@@ -60,7 +60,7 @@ public class TicketQryExtImpl implements TicketQryExtPt {
     }
 
     @Override
-    public VisitorSourceInfo queryVisitorSource(TicketSumaryQuery query) {
+    public VisitorSourceInfo queryVisitorSource(TicketSummaryQuery query) {
         return ticketVisitorSourceHourSummaryService.queryVisitorSourceTypeInfo(query);
     }
 

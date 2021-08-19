@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yjtech.wisdom.tourism.common.constant.VisitorSourceConstants;
 import com.yjtech.wisdom.tourism.resource.ticket.entity.TicketVisitorSourceHourSummary;
 import com.yjtech.wisdom.tourism.resource.ticket.mapper.TicketVisitorSourceHourSummaryMapper;
-import com.yjtech.wisdom.tourism.resource.ticket.query.TicketSumaryQuery;
+import com.yjtech.wisdom.tourism.resource.ticket.query.TicketSummaryQuery;
 import com.yjtech.wisdom.tourism.resource.ticket.vo.CityInfo;
 import com.yjtech.wisdom.tourism.resource.ticket.vo.ProvinceInfo;
 import com.yjtech.wisdom.tourism.resource.ticket.vo.TicketSourceSummaryVo;
@@ -28,7 +28,7 @@ import static java.util.stream.Collectors.toList;
 public class TicketVisitorSourceHourSummaryService extends ServiceImpl<TicketVisitorSourceHourSummaryMapper, TicketVisitorSourceHourSummary> {
 
 
-    public VisitorSourceInfo queryVisitorSourceTypeInfo(TicketSumaryQuery query) {
+    public VisitorSourceInfo queryVisitorSourceTypeInfo(TicketSummaryQuery query) {
         List<TicketSourceSummaryVo> dbResult = this.getBaseMapper().sourceType(query);
 
         List<TicketSourceSummaryVo> inside = new ArrayList<>();

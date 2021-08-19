@@ -40,7 +40,7 @@
     </sql>
 
     <select id="queryTrend" resultType="com.yjtech.wisdom.tourism.resource.ticket.vo.SaleTrendVO"
-            parameterType="com.yjtech.wisdom.tourism.resource.ticket.query.TicketSumaryQuery">
+            parameterType="com.yjtech.wisdom.tourism.resource.ticket.query.TicketSummaryQuery">
         SELECT
         DATE_FORMAT( record_time, #{params.sqlDateFormat} ) AS time,
         COALESCE(sum( sale_quantity ),0) AS sale_quantity,
@@ -55,7 +55,7 @@
     </select>
 
     <select id="querySaleQuantity" resultType="integer"
-            parameterType= "com.yjtech.wisdom.tourism.resource.ticket.query.TicketSumaryQuery">
+            parameterType= "com.yjtech.wisdom.tourism.resource.ticket.query.TicketSummaryQuery">
         SELECT
         COALESCE(sum( sale_quantity ),0) AS sale_quantity
         FROM
@@ -68,7 +68,7 @@
     </select>
 
     <select id="queryFareCollection" resultType="com.yjtech.wisdom.tourism.resource.ticket.vo.TicketFareCollectionVO"
-            parameterType= "com.yjtech.wisdom.tourism.resource.ticket.query.TicketSumaryQuery">
+            parameterType= "com.yjtech.wisdom.tourism.resource.ticket.query.TicketSummaryQuery">
         SELECT
         COALESCE(sum( will_visit_group_quantity ),0) AS will_visit_group_quantity,
         COALESCE(sum( group_quantity ),0) AS group_quantity,
@@ -82,4 +82,28 @@
             </if>
         </where>
     </select>
+
+    <!-- 查询入园统计 -->
+    <select id="queryVisitStatistics" resultType="long"
+            parameterType="com.yjtech.wisdom.tourism.resource.ticket.query.TicketSummaryQuery">
+        select
+        COALESCE (SUM(visit_quantity),0)
+        from
+        tb_ticket_hour_summary
+        <where>
+            <if test="params != null">
+                <if test="params.beginTime != null">
+                    (<![CDATA[ year >= YEAR(#{params.beginTime}) ]]> and
+                    <![CDATA[ month >= MONTH(#{params.beginTime}) ]]> and
+                    <![CDATA[ day >= DAY(#{params.beginTime}) ]]>) and
+                </if>
+                <if test="params.endTime != null">
+                    (<![CDATA[ year <= YEAR(#{params.endTime}) ]]> and
+                    <![CDATA[ month <= MONTH(#{params.endTime}) ]]> and
+                    <![CDATA[ day <= DAY(#{params.endTime}) ]]>)
+                </if>
+            </if>
+        </where>
+    </select>
+
 </mapper>

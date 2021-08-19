@@ -186,7 +186,7 @@ public class BeanUtils extends org.springframework.beans.BeanUtils {
     public static <T, V> Map<String, V> beanToMap(T tBean) {
         Map<String, V> map = new HashMap<>(16);
 
-        if(Objects.isNull(tBean)){
+        if (Objects.isNull(tBean)) {
             return map;
         }
         try {
@@ -194,7 +194,7 @@ public class BeanUtils extends org.springframework.beans.BeanUtils {
             List<Field> fieldList = new ArrayList<>();
 
             Class<?> tBeanClass = tBean.getClass();
-            while (Objects.nonNull(tBeanClass)){
+            while (Objects.nonNull(tBeanClass)) {
                 fieldList.addAll(Arrays.asList(tBeanClass.getDeclaredFields()));
                 tBeanClass = tBeanClass.getSuperclass();
             }
@@ -202,22 +202,43 @@ public class BeanUtils extends org.springframework.beans.BeanUtils {
             for (Field field : fieldList) {
                 field.setAccessible(true);
                 //排除static、final属性
-                if(Modifier.isStatic(field.getModifiers()) || Modifier.isFinal(field.getModifiers())){
+                if (Modifier.isStatic(field.getModifiers()) || Modifier.isFinal(field.getModifiers())) {
                     continue;
                 }
                 //获取属性值
                 Object value = field.get(tBean);
                 //无效属性值不作映射
-                if(Objects.isNull(value)){
+                if (Objects.isNull(value)) {
                     continue;
                 }
-                map.put(field.getName(), (V)value);
+                map.put(field.getName(), (V) value);
             }
         } catch (Exception e) {
             log.info("====================> {} <====================\n", "实体转换Map异常");
             e.printStackTrace();
         }
         return map;
+    }
+
+    /**
+     * copy类 ,可防止LocalDateTime类型复制出错
+     *
+     * @param source
+     * @param destinationClass
+     * @param <T>
+     * @return
+     */
+    public static <T> T copyBean(Object source, Class<T> destinationClass) {
+        T t = null;
+        try {
+            t = destinationClass.newInstance();
+            org.springframework.beans.BeanUtils.copyProperties(source, t);
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return t;
     }
 
 }
