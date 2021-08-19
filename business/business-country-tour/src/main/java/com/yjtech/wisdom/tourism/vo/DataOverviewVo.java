@@ -30,4 +30,9 @@ public class DataOverviewVo extends DateBaseVo implements Serializable {
      */
     private String adcode;
 
+    /**
+     * is_simulation 是否有模拟数据 1有 0无
+     */
+    private Integer isSimulation = 0;
+
 }

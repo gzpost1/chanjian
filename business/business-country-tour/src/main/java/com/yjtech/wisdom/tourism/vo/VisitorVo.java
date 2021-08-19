@@ -40,4 +40,9 @@ public class VisitorVo extends VisitorPageVo implements Serializable {
      * top排名数,如果输入5就显示top5
      */
     private Integer limit;
+
+    /**
+     * is_simulation 是否有模拟数据 1有 0无
+     */
+    private Integer isSimulation = 0;
 }

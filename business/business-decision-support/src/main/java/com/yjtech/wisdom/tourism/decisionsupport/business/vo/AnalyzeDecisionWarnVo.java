@@ -5,15 +5,15 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * 决策预警查询
+ * 分析决策风险
  *
  * @author renguangqian
- * @date 2021/7/29 10:04
+ * @date 2021/8/11 14:52
  */
 @Data
-public class DecisionWarnVo implements Serializable {
+public class AnalyzeDecisionWarnVo implements Serializable {
 
-    private static final long serialVersionUID = -6491336512086877569L;
+    private static final long serialVersionUID = -331407363531709265L;
 
     /**
      * is_simulation 是否有模拟数据 1有 0无
