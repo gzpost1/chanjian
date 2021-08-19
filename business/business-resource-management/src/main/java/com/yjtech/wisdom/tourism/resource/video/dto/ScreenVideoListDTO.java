@@ -28,7 +28,7 @@ public class ScreenVideoListDTO implements Serializable {
     /**
      * 监控名称
      */
-    private Long videoName;
+    private String videoName;
 
     /**
      * 监控流地址

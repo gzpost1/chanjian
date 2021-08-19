@@ -94,7 +94,7 @@ public class IndexController {
         //获取景区承载量
         Long scenicBearCapacity = scenicService.queryScenicBearCapacity();
         //计算承载度
-        BigDecimal bearCapacityPercent = 0 == scenicBearCapacity ? BigDecimal.ZERO :
+        BigDecimal bearCapacityPercent = null == scenicBearCapacity || 0 == scenicBearCapacity ? BigDecimal.ZERO :
                 new BigDecimal(todayScenicReception).divide(new BigDecimal(scenicBearCapacity),3,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
 
         //一码游访问次数
@@ -197,10 +197,18 @@ public class IndexController {
     public JsonResult<DataOverviewDto> touristStatistics(@RequestBody @Valid TimeBaseQuery vo) {
         //构建游客结构查询条件
         DataOverviewVo dataOverviewVo = new DataOverviewVo();
-        dataOverviewVo.setBeginDate(vo.getBeginTime().toString());
-        dataOverviewVo.setEndDate(vo.getEndTime().toString());
+        dataOverviewVo.setBeginDate(vo.getBeginTime().toLocalDate().toString());
+        dataOverviewVo.setEndDate(vo.getEndTime().toLocalDate().toString());
 
-        return JsonResult.success(districtTourService.queryDataOverview(dataOverviewVo));
+        DataOverviewDto dto = districtTourService.queryDataOverview(dataOverviewVo);
+        //计算省内游客占比
+        dto.setProvinceInsideRate(null == dto.getAllTouristNum() || 0 == dto.getAllTouristNum() ?
+                BigDecimal.ZERO :  new BigDecimal(dto.getProvinceInsideTouristNum()).divide(new BigDecimal(dto.getAllTouristNum()),3,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)));
+        //计算省外游客占比
+        dto.setProvinceOutsideRate(null == dto.getAllTouristNum() || 0 == dto.getAllTouristNum() ?
+                BigDecimal.ZERO :  new BigDecimal(dto.getProvinceOutsideTouristNum()).divide(new BigDecimal(dto.getAllTouristNum()),3,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)));
+
+        return JsonResult.success(dto);
     }
 
     /**

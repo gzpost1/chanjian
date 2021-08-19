@@ -27,6 +27,10 @@ public enum MessagePlatformTypeEnum {
 
     ;
 
+    public static final Integer[] PLATFORM = {MESSAGE_PLATFORM_TYPE_BACK.value.intValue()};
+
+    public static final Integer[] PLATFORM_APP_MESSAGE = {MESSAGE_PLATFORM_TYPE_BACK.value.intValue(), MESSAGE_PLATFORM_TYPE_APP.value.intValue(), MESSAGE_PLATFORM_TYPE_APP.value.intValue()};
+
     @Getter
     private Byte value;
     @Getter

@@ -64,7 +64,13 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
         TravelComplaintEntity entity = new TravelComplaintEntity();
         entity.build(vo);
 
-        return baseMapper.insert(entity);
+        int result = baseMapper.insert(entity);
+
+        if(result > 0){
+
+        }
+
+        return result;
     }
 
     /**
@@ -338,5 +344,20 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
     }
 
 
+//    private void sendMessageNotice(String cacheKey, Long dataId, String title, String content){
+//        Long[] eventDealPersonIdArray;
+//        //获取当前指派人员信息
+//        Object cacheObject = redisCache.getCacheObject(cacheKey);
+//        if(null == cacheObject){
+//            //默认给超管用户发送消息
+//            Long adminId = messageMangerService.queryAdimnId();
+//        }else {
+//            //获取指派人员信息
+////            JSONObject.parseObject()
+//        }
+//
+//        //为指派人推送消息
+//        messageMangerService.sendMessage(new SendMessageVo());
+//    }
 
 }

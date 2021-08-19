@@ -73,7 +73,7 @@
             video.deleted = 0 and
             scenic.deleted = 0
         </where>
-        ORDER BY sort, create_time DESC
+        ORDER BY video.sort, video.create_time DESC
         LIMIT 6
     </select>
 
