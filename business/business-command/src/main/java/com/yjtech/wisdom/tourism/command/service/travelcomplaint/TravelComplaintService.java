@@ -232,17 +232,13 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
     /**
      * 获取指派人员
      */
-    public List<SysUser> queryAssignUser(){
+    public List<Long> queryAssignUser(){
         //获取当前指派人员信息
         Object cacheObject = redisCache.getCacheObject(CacheKeyContants.KEY_ASSIGN_TRAVEL_COMPLAINT);
         if(null != cacheObject){
             AssignUserInfo assignUserInfo = JSONObject.parseObject(JSONObject.toJSONString(cacheObject), AssignUserInfo.class);
-
             //获取指派人员id
-            List<Long> assignUserIdList = assignUserInfo.getAssignUserIdList();
-            if(null != assignUserIdList && !assignUserIdList.isEmpty()){
-                return sysUserService.selectUserListById(assignUserIdList);
-            }
+            return assignUserInfo.getAssignUserIdList();
         }
         return Collections.emptyList();
     }
@@ -252,18 +248,14 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
      * @param dataId
      * @return
      */
-    public List<SysUser> queryDealUser(Long dataId){
+    public List<Long> queryDealUser(Long dataId){
         //获取当前处理人员信息
         Object cacheObject = redisCache.getCacheObject(CacheKeyContants.KEY_DEAL_TRAVEL_COMPLAINT + dataId);
 
         if(null != cacheObject){
             DealUserInfo dealUserInfo = JSONObject.parseObject(JSONObject.toJSONString(cacheObject), DealUserInfo.class);
-
             //获取处理人员id
-            List<Long> assignUserIdList = dealUserInfo.getAssignUserIdList();
-            if(null != assignUserIdList && !assignUserIdList.isEmpty()){
-                return sysUserService.selectUserListById(assignUserIdList);
-            }
+            return dealUserInfo.getAssignUserIdList();
         }
         return Collections.emptyList();
     }

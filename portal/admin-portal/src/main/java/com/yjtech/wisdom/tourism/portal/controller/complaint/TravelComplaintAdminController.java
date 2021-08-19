@@ -156,8 +156,7 @@ public class TravelComplaintAdminController {
      */
     @PostMapping("queryAssignUser")
     public JsonResult queryAssignUser() {
-        travelComplaintService.queryAssignUser();
-        return JsonResult.success();
+        return JsonResult.success(travelComplaintService.queryAssignUser());
     }
 
     /**
@@ -168,8 +167,7 @@ public class TravelComplaintAdminController {
      */
     @PostMapping("queryDealUser")
     public JsonResult queryDealUser(@RequestBody @Valid IdParam idParam) {
-        travelComplaintService.queryDealUser(idParam.getId());
-        return JsonResult.success();
+        return JsonResult.success(travelComplaintService.queryDealUser(idParam.getId()));
     }
 
 }
