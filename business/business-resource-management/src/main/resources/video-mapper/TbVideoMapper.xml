@@ -74,6 +74,7 @@
             scenic.deleted = 0
         </where>
         ORDER BY sort, create_time DESC
+        LIMIT 6
     </select>
 
     <!-- 通用查询结果列 -->
