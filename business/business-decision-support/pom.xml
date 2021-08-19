@@ -16,6 +16,10 @@
         <business-system.version>1.0-SNAPSHOT</business-system.version>
         <business-integration.version>1.0-SNAPSHOT</business-integration.version>
         <business-country-tour.version>1.0-SNAPSHOT</business-country-tour.version>
+        <business-command.version>1.0-SNAPSHOT</business-command.version>
+        <framework.version>1.0-SNAPSHOT</framework.version>
+        <business-marketing.version>1.0-SNAPSHOT</business-marketing.version>
+        <business-resource-management.version>1.0-SNAPSHOT</business-resource-management.version>
     </properties>
 
     <dependencies>
@@ -36,6 +40,30 @@
             <groupId>com.yjtech.wisdom.tourism</groupId>
             <artifactId>business-country-tour</artifactId>
             <version>${business-country-tour.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.yjtech.wisdom.tourism</groupId>
+            <artifactId>business-command</artifactId>
+            <version>${business-command.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.yjtech.wisdom.tourism</groupId>
+            <artifactId>framework</artifactId>
+            <version>${framework.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.yjtech.wisdom.tourism</groupId>
+            <artifactId>business-marketing</artifactId>
+            <version>${business-marketing.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.yjtech.wisdom.tourism</groupId>
+            <artifactId>business-resource-management</artifactId>
+            <version>${business-resource-management.version}</version>
         </dependency>
 
     </dependencies>

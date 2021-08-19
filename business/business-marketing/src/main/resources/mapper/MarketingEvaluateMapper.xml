@@ -185,7 +185,7 @@
         <where>
             <if test="params != null">
                 <if test="params.placeName != null and params.placeName != ''">
-                    place_ame LIKE CONCAT('%', #{params.placeName}, '%') and
+                    place_name LIKE CONCAT('%', #{params.placeName}, '%') and
                 </if>
                 <if test="params.placeId != null and params.placeId != ''">
                     place_id = #{params.placeId} and
@@ -442,8 +442,9 @@
     </select>
 
     <!--景区大数据-查询满意度排行top5 -->
-    <select id="querySatisfactionTop5" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO">
+    <select id="querySatisfactionTop5" resultType="com.yjtech.wisdom.tourism.marketing.pojo.dto.HotelEvaluateSatisfactionRankDTO">
         select
+        place_id id,
         evaluate.place_name as name,
         ROUND(SUM(CASE WHEN evaluate.evaluate_type = 0 THEN 1 ELSE 0 END)/COUNT(evaluate.id),3)*100 as `value`
         from
@@ -598,6 +599,9 @@
         <if test="params != null">
             <if test="params.placeId != null and params.placeId != ''">
                 evaluate.place_id = #{params.placeId} and
+            </if>
+            <if test="params.dataType != null">
+                evaluate.data_type = #{params.dataType} and
             </if>
             <if test="params.equipStatus != null">
                 evaluate.equip_status = #{params.equipStatus} and

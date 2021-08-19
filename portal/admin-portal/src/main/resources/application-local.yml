@@ -112,9 +112,9 @@ sms.wo:
   key: b76367f18e4b8871f787e5b07d90c9af
   # templetid: 185409
   # 旅游投诉短信模板
-  tourTemplateId:
+  tourTemplateId: 1086274
   # 应急事件短信模板
-  emergencyTemplateId:
+  emergencyTemplateId: 1086283
   url: http://rcsapi.wo.cn:8000/umcinterface/sendtempletmsg
   msg:
 

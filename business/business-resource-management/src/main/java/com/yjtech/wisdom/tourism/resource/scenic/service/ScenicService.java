@@ -9,11 +9,15 @@ import com.google.common.collect.Maps;
 import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
 import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
-import com.yjtech.wisdom.tourism.common.utils.*;
+import com.yjtech.wisdom.tourism.common.utils.DateTimeUtil;
+import com.yjtech.wisdom.tourism.common.utils.EncryptUtil;
+import com.yjtech.wisdom.tourism.common.utils.MathUtil;
+import com.yjtech.wisdom.tourism.common.utils.StringUtils;
 import com.yjtech.wisdom.tourism.common.utils.bean.BeanMapper;
 import com.yjtech.wisdom.tourism.dto.MonthPassengerFlowDto;
 import com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysDictData;
 import com.yjtech.wisdom.tourism.infrastructure.utils.DictUtils;
+import com.yjtech.wisdom.tourism.marketing.pojo.dto.HotelEvaluateSatisfactionRankDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateListDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateStatisticsDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateQueryVO;
@@ -32,7 +36,7 @@ import com.yjtech.wisdom.tourism.weather.web.WeatherQuery;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -242,8 +246,9 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
     /**
      * 景区大数据——满意度排行
      */
-    public IPage<BaseVO> querySatisfactionTop5(ScenicScreenQuery query) {
-        return evaluateService.querySatisfactionTop5(queryToEvaluateQueryVO(query));
+    public IPage<ScenicBaseVo> querySatisfactionTop5(ScenicScreenQuery query) {
+        IPage<HotelEvaluateSatisfactionRankDTO> page = evaluateService.querySatisfactionTop5(queryToEvaluateQueryVO(query));
+        return page.convert(item -> BeanMapper.copyBean(item, ScenicBaseVo.class));
     }
 
     /**
@@ -332,6 +337,15 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
 
     public List<BaseVO> queryScenicHotRank(ScenicScreenQuery query) {
         return evaluateService.queryScenicHotRank(queryToEvaluateQueryVO(query));
+    }
+
+    /**
+     * 查询景区承载量统计
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public Long queryScenicBearCapacity() {
+        return baseMapper.queryScenicBearCapacity();
     }
 
     /**

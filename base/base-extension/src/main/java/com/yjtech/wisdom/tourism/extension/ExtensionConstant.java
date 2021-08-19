@@ -27,6 +27,11 @@ public final class ExtensionConstant {
      * 应急事件
      */
     public static final String BIZ_EVENT = "event";
+
+    /**
+     * 游客结构
+     */
+    public static final String DISTRICT = "district";
     /*  业务---end */
 
     /*  用例常量参考(TicketExtensionConstant) */

@@ -32,7 +32,7 @@
 
     <select id="queryPassengerFlowTop5" resultType="com.yjtech.wisdom.tourism.resource.scenic.entity.vo.ScenicBaseVo">
         SELECT
-        tc.scenic_id scenicId,
+        tc.scenic_id id,
         tc.scenic_name name,
         sum(tc.check_num) `value`
         FROM

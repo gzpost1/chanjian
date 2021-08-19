@@ -15,7 +15,7 @@ import com.yjtech.wisdom.tourism.resource.ticket.extensionpoint.TicketExtensionC
 import com.yjtech.wisdom.tourism.resource.ticket.extensionpoint.TicketQryExtPt;
 import com.yjtech.wisdom.tourism.resource.ticket.query.TicketRankingQuery;
 import com.yjtech.wisdom.tourism.resource.ticket.query.TicketSaleQuantityQuery;
-import com.yjtech.wisdom.tourism.resource.ticket.query.TicketSumaryQuery;
+import com.yjtech.wisdom.tourism.resource.ticket.query.TicketSummaryQuery;
 import com.yjtech.wisdom.tourism.resource.ticket.vo.SaleTrendVO;
 import com.yjtech.wisdom.tourism.resource.ticket.vo.TicketRankingVO;
 import com.yjtech.wisdom.tourism.resource.ticket.vo.VisitorSourceInfo;
@@ -53,7 +53,7 @@ public class TicketController {
      * @return
      */
     @PostMapping("/querySaleTrend")
-    public JsonResult<List<BaseValueVO>> querySaleTrend(@RequestBody @Valid TicketSumaryQuery query) {
+    public JsonResult<List<BaseValueVO>> querySaleTrend(@RequestBody @Valid TicketSummaryQuery query) {
         // 定义业务+用例+场景
         List<SaleTrendVO> saleTrendVos = extensionExecutor.execute(TicketQryExtPt.class, buildBizScenario(query.getIsSimulation()),
                 extension -> extension.querySaleTrend(query));
@@ -68,7 +68,7 @@ public class TicketController {
      * @return
      */
     @PostMapping("/queryVisitTrend")
-    public JsonResult<List<BaseValueVO>> queryVisitTrend(@RequestBody @Valid TicketSumaryQuery query) {
+    public JsonResult<List<BaseValueVO>> queryVisitTrend(@RequestBody @Valid TicketSummaryQuery query) {
         List<SaleTrendVO> saleTrendVOS = extensionExecutor.execute(TicketQryExtPt.class, buildBizScenario(query.getIsSimulation()),
                 extension -> extension.queryVisitTrend(query));
         //今日需要补齐未来时间  其他不需要
@@ -130,7 +130,7 @@ public class TicketController {
      * @return
      */
     @PostMapping(value = "queryVisitorSource")
-    public JsonResult<VisitorSourceInfo> queryVisitorSource(@RequestBody TicketSumaryQuery query) {
+    public JsonResult<VisitorSourceInfo> queryVisitorSource(@RequestBody TicketSummaryQuery query) {
         return JsonResult.success(extensionExecutor.execute(TicketQryExtPt.class, buildBizScenario(query.getIsSimulation()),
                 extension -> extension.queryVisitorSource(query)));
     }

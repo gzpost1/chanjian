@@ -208,7 +208,7 @@ public class MarketingEvaluateService extends ServiceImpl<MarketingEvaluateMappe
      *
      * @return
      */
-    public IPage<BaseVO> querySatisfactionTop5(EvaluateQueryVO query) {
+    public IPage<HotelEvaluateSatisfactionRankDTO> querySatisfactionTop5(EvaluateQueryVO query) {
         return baseMapper.querySatisfactionTop5(new Page(query.getPageNo(), query.getPageSize()), query);
     }
 

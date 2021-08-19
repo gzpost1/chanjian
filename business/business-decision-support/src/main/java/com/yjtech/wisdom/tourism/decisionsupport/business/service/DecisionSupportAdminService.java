@@ -47,7 +47,6 @@ public class DecisionSupportAdminService extends ServiceImpl<DecisionMapper, Dec
         try {
             baseMapper.insert(decisionEntity);
         } catch (Exception e) {
-            // todo 捕获新增重复主键异常
             throw new CustomException("该指标已设定记录");
         }
     }

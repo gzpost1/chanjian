@@ -1,13 +1,11 @@
 package com.yjtech.wisdom.tourism.dto;
 
-import com.yjtech.wisdom.tourism.common.utils.DateUtils;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 
 /**
  * 访客实体
@@ -19,7 +17,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
-public class VisitorDto implements Serializable {
+public class VisitorDto implements Serializable , Comparable<VisitorDto>{
 
     private static final long serialVersionUID = -323341781811385734L;
 
@@ -48,4 +46,9 @@ public class VisitorDto implements Serializable {
      */
     private String name;
 
+
+    @Override
+    public int compareTo(VisitorDto o) {
+        return o.getNumber() - this.number;
+    }
 }

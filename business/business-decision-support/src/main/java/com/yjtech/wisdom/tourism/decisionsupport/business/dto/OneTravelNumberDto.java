@@ -12,7 +12,7 @@ import java.io.Serializable;
  * @date 2021/8/9 17:59
  */
 @Data
-public class OneTravelComplaintsNumberDto implements Serializable {
+public class OneTravelNumberDto implements Serializable {
 
     private static final long serialVersionUID = 7846712143726571936L;
 

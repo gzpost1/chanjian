@@ -91,7 +91,7 @@ public class DecisionSupportMangerController {
     }
 
     /**
-     * 指标列表查询
+     * 配置项列表查询
      *
      * @param vo
      * @return

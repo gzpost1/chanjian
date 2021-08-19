@@ -39,4 +39,9 @@ public class MonthPassengerFlowVo extends TimeBaseQuery implements Serializable 
      * 结束日期- 不用传,使用endTime
      */
     private String endDate;
+
+    /**
+     * is_simulation 是否有模拟数据 1有 0无
+     */
+    private Integer isSimulation = 0;
 }

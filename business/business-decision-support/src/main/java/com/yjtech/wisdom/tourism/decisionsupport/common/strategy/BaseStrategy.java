@@ -42,7 +42,7 @@ public abstract class BaseStrategy {
      *
      * @return
      */
-    public Object init(DecisionEntity entity){return null;}
+    public Object init(DecisionEntity entity, Integer isSimulation){return null;}
 
     /**
      * 初始化方法 - 综合概况
@@ -186,5 +186,29 @@ public abstract class BaseStrategy {
             return MathUtil.calPercent(new BigDecimal(cs - bcs), new BigDecimal(cs), 2).toString();
         }
         return "-";
+    }
+
+    /**
+     * 设置比例
+     *
+     * @param scale
+     * @return
+     */
+    protected static String getScale(String scale) {
+        if (StringUtils.isEmpty(scale)
+                || DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE.equals(scale)
+                || DecisionSupportConstants.ZERO.equals(scale)
+                || DecisionSupportConstants.NULL.equals(scale)) {
+            return DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE;
+        }
+        double scaleDouble;
+        try {
+            scaleDouble = Double.parseDouble(scale);
+        }catch (Exception e) {
+            return DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE;
+        }
+        return scaleDouble > DecisionSupportConstants.ZERO_NUMBER ?
+                DecisionSupportConstants.ADD + scale  + DecisionSupportConstants.PERCENT
+                : DecisionSupportConstants.REDUCE + scale + DecisionSupportConstants.PERCENT;
     }
 }

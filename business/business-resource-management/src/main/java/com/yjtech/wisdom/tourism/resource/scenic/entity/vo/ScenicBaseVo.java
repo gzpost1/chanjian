@@ -15,7 +15,7 @@ public class ScenicBaseVo {
     /**
      * id
      */
-    private String scenicId;
+    private Long id;
 
     /**名称*/
     private String name;
