@@ -27,7 +27,7 @@
         select
         MAX(hotelRoom.price) as highestPrice,
         MIN(hotelRoom.price) as lowestPrice,
-        ROUND(SUM(hotelRoom.price)/COUNT(hotelRoom.id),1)as averagePrice
+        COALESCE (ROUND(SUM(hotelRoom.price)/COUNT(hotelRoom.id),1),0) as averagePrice
         from
         tb_marketing_hotel_room hotelRoom
         <include refid="table_join"/>
@@ -111,7 +111,7 @@
         WHEN hotelRoom.room_type = 3 THEN '亲子/家庭房'
         WHEN hotelRoom.room_type = 4 THEN '套房'
         ELSE '其他' END as name,
-        ROUND(SUM(hotelRoom.price)/COUNT(hotelRoom.id),1)as value
+        COALESCE (ROUND(SUM(hotelRoom.price)/COUNT(hotelRoom.id),1),0) as value
         from
         tb_marketing_hotel_room hotelRoom
         <include refid="table_join"/>
@@ -126,7 +126,7 @@
             parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.RoomScreenQueryVO">
         select
         hotel.name as name,
-        ROUND(SUM(hotelRoom.price)/COUNT(hotelRoom.id),1)as value
+        COALESCE (ROUND(SUM(hotelRoom.price)/COUNT(hotelRoom.id),1),0) as value
         from
         tb_marketing_hotel_room hotelRoom
         <include refid="table_join"/>

@@ -33,8 +33,8 @@
             parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateQueryVO">
         select
         COUNT(evaluate.id) as evaluateTotal,
-        ROUND(SUM(CASE WHEN evaluate.evaluate_type = 0 THEN 1 ELSE 0 END)/COUNT(evaluate.id),3)*100 as satisfaction,
-        ROUND(SUM(evaluate.rate)/COUNT(evaluate.id),1) as rate
+        COALESCE (ROUND(SUM(CASE WHEN evaluate.evaluate_type = 0 THEN 1 ELSE 0 END)/COUNT(evaluate.id),3)*100,0) as satisfaction,
+        COALESCE (ROUND(SUM(evaluate.rate)/COUNT(evaluate.id),1),0) as rate
         from
         tb_marketing_evaluate evaluate
         <include refid="table_join"/>
@@ -140,7 +140,7 @@
         select
         hotel.id as id,
         hotel.name as name,
-        ROUND(SUM(CASE WHEN evaluate.evaluate_type = 0 THEN 1 ELSE 0 END)/COUNT(evaluate.id),3)*100 as value
+        COALESCE (ROUND(SUM(CASE WHEN evaluate.evaluate_type = 0 THEN 1 ELSE 0 END)/COUNT(evaluate.id),3)*100,0) as value
         from
         tb_marketing_evaluate evaluate
         <include refid="table_join"/>
@@ -406,7 +406,7 @@
             parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateQueryVO">
         SELECT
         DATE_FORMAT(evaluate.evaluate_time,#{params.sqlDateFormat}) as time,
-        ROUND(SUM(CASE WHEN evaluate.evaluate_type = 0 THEN 1 ELSE 0 END)/COUNT(evaluate.id),3)*100 as count
+        COALESCE (ROUND(SUM(CASE WHEN evaluate.evaluate_type = 0 THEN 1 ELSE 0 END)/COUNT(evaluate.id),3)*100,0) as count
         from tb_marketing_evaluate evaluate
         <choose>
             <when test="params.status != null">
