@@ -133,7 +133,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		left join sys_dept d on u.dept_id = d.dept_id
 		left join sys_user_role ur on u.user_id = ur.user_id
 		left join sys_role r on r.role_id = ur.role_id
-		where u.deleted = '0'
 		<where>
 			u.user_id in
 			<foreach collection="userIdList" item="item" index="index" open="(" separator="," close=")">
