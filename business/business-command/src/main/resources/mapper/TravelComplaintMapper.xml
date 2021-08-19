@@ -104,11 +104,11 @@
         tb_travel_complaint complaint
         <where>
             <if test="params != null">
-                <if test="params.complaintObject != null and params.complaintObject != '' and params.objectId = null">
-                    complaint_object LIKE CONCACT('%', '${params.complaintObject}', '%') and
+                <if test="params.complaintObject != null and params.complaintObject != ''">
+                    complaint_object LIKE CONCAT('%', #{params.complaintObject}, '%') and
                 </if>
-                <if test="params.objectId != null and (params.complaintObject = null or params.complaintObject = '')">
-                    object_id = #{params.object_id} and
+                <if test="params.objectId != null">
+                    object_id = #{params.objectId} and
                 </if>
                 <if test="params.complaintType != null">
                     complaint_type = #{params.complaintType} and
