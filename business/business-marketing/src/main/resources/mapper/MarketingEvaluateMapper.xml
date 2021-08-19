@@ -185,7 +185,7 @@
         <where>
             <if test="params != null">
                 <if test="params.placeName != null and params.placeName != ''">
-                    place_ame LIKE CONCAT('%', #{params.placeName}, '%') and
+                    place_name LIKE CONCAT('%', #{params.placeName}, '%') and
                 </if>
                 <if test="params.placeId != null and params.placeId != ''">
                     place_id = #{params.placeId} and
