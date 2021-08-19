@@ -7,11 +7,14 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.yjtech.wisdom.tourism.command.dto.plan.EmergencyPlanCreateDto;
 import com.yjtech.wisdom.tourism.command.dto.plan.EmergencyPlanUpdateDto;
+import com.yjtech.wisdom.tourism.command.entity.event.EventEntity;
 import com.yjtech.wisdom.tourism.command.entity.plan.EmergencyPlanEntity;
 import com.yjtech.wisdom.tourism.command.query.plan.EmergencyPlanQuery;
+import com.yjtech.wisdom.tourism.command.service.event.EventService;
 import com.yjtech.wisdom.tourism.command.service.plan.EmergencyPlanService;
 import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
+import com.yjtech.wisdom.tourism.common.utils.AssertUtil;
 import com.yjtech.wisdom.tourism.common.utils.DeleteParam;
 import com.yjtech.wisdom.tourism.common.utils.IdParam;
 import com.yjtech.wisdom.tourism.common.utils.bean.BeanMapper;
@@ -38,6 +41,9 @@ public class EmergencyPlanController {
     @Autowired
     private EmergencyPlanService emergencyPlanService;
 
+
+    @Autowired
+    private EventService eventService;
     /**
      * 列表
      * @param query
@@ -111,6 +117,9 @@ public class EmergencyPlanController {
      */
     @PostMapping("/delete")
     public JsonResult delete(@RequestBody @Valid DeleteParam deleteParam) {
+        //检查是否被引用
+        int count = eventService.count(new LambdaQueryWrapper<EventEntity>().eq(EventEntity::getPlanId, deleteParam.getId()));
+        AssertUtil.isFalse(count >= 1, "已有事件关联，不能被删除");
         LambdaUpdateWrapper<EmergencyPlanEntity> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper.set(EmergencyPlanEntity::getDeleted, EntityConstants.DELETED);
         updateWrapper.eq(EmergencyPlanEntity::getId, deleteParam.getId());
