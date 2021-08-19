@@ -1,5 +1,6 @@
 package com.yjtech.wisdom.tourism.command.service.travelcomplaint;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
@@ -32,6 +33,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -215,9 +217,9 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
      */
     public void refreshDealUser(DealUserInfo dealUserInfo){
         //删除已配置的指派人员信息
-        redisCache.deleteObject(CacheKeyContants.KEY_DEAL_TRAVEL_COMPLAINT);
+        redisCache.deleteObject(CacheKeyContants.KEY_DEAL_TRAVEL_COMPLAINT + dealUserInfo.getDataId());
 
-        redisCache.setCacheObject(CacheKeyContants.KEY_DEAL_TRAVEL_COMPLAINT, dealUserInfo);
+        redisCache.setCacheObject(CacheKeyContants.KEY_DEAL_TRAVEL_COMPLAINT + dealUserInfo.getDataId(), dealUserInfo);
 
         //更新数据状态为待处理，并且更新该条投诉的指定处理人
         updateStatus(new StatusParam().toBuilder()
@@ -225,6 +227,45 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
                 .status(TravelComplaintStatusEnum.TRAVEL_COMPLAINT_STATUS_NO_DEAL.getValue())
                 .assignAcceptUserId(dealUserInfo.getAssignUserIdList())
                 .build());
+    }
+
+    /**
+     * 获取指派人员
+     */
+    public List<SysUser> queryAssignUser(){
+        //获取当前指派人员信息
+        Object cacheObject = redisCache.getCacheObject(CacheKeyContants.KEY_ASSIGN_TRAVEL_COMPLAINT);
+        if(null != cacheObject){
+            AssignUserInfo assignUserInfo = JSONObject.parseObject(JSONObject.toJSONString(cacheObject), AssignUserInfo.class);
+
+            //获取指派人员id
+            List<Long> assignUserIdList = assignUserInfo.getAssignUserIdList();
+            if(null != assignUserIdList && !assignUserIdList.isEmpty()){
+                return sysUserService.selectUserListById(assignUserIdList);
+            }
+        }
+        return Collections.emptyList();
+    }
+
+    /**
+     * 获取处理人员
+     * @param dataId
+     * @return
+     */
+    public List<SysUser> queryDealUser(Long dataId){
+        //获取当前处理人员信息
+        Object cacheObject = redisCache.getCacheObject(CacheKeyContants.KEY_DEAL_TRAVEL_COMPLAINT + dataId);
+
+        if(null != cacheObject){
+            DealUserInfo dealUserInfo = JSONObject.parseObject(JSONObject.toJSONString(cacheObject), DealUserInfo.class);
+
+            //获取处理人员id
+            List<Long> assignUserIdList = dealUserInfo.getAssignUserIdList();
+            if(null != assignUserIdList && !assignUserIdList.isEmpty()){
+                return sysUserService.selectUserListById(assignUserIdList);
+            }
+        }
+        return Collections.emptyList();
     }
 
     /**

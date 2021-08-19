@@ -45,6 +45,14 @@ public interface SysUserMapper {
   public List<String> selectUserNameListById(@Param("userIdList") List<?> userIdList);
 
   /**
+   * 通过用户ID列表查询用户列表
+   *
+   * @param userIdList 用户ID列表
+   * @return 用户昵称列表
+   */
+  public List<SysUser> selectUserListById(@Param("userIdList") List<?> userIdList);
+
+  /**
    * 新增用户信息
    *
    * @param user 用户信息

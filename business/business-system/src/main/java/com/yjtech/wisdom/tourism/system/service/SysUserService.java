@@ -82,11 +82,26 @@ public class SysUserService {
    * @param userIdList 用户ID列表
    * @return 用户对象信息
    */
+  @Transactional(readOnly = true)
   public List<String> selectUserNameListById(List<?> userIdList) {
     if(null == userIdList || userIdList.isEmpty()){
       return new ArrayList<>();
     }
     return userMapper.selectUserNameListById(userIdList);
+  }
+
+  /**
+   * 通过用户ID列表查询用户列表
+   *
+   * @param userIdList 用户ID列表
+   * @return 用户对象信息
+   */
+  @Transactional(readOnly = true)
+  public List<SysUser> selectUserListById(List<?> userIdList) {
+    if(null == userIdList || userIdList.isEmpty()){
+      return new ArrayList<>();
+    }
+    return userMapper.selectUserListById(userIdList);
   }
 
   /**
