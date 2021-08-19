@@ -4,19 +4,15 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
-import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.common.utils.MathUtil;
 import com.yjtech.wisdom.tourism.extension.ExtensionExecutor;
 import com.yjtech.wisdom.tourism.resource.ticket.entity.TicketHourSummaryEntity;
 import com.yjtech.wisdom.tourism.resource.ticket.extensionpoint.TicketQryExtPt;
 import com.yjtech.wisdom.tourism.resource.ticket.mapper.TicketHourSummaryMapper;
-import com.yjtech.wisdom.tourism.resource.ticket.query.TicketSaleQuantityQuery;
-import com.yjtech.wisdom.tourism.resource.ticket.query.TicketSumaryQuery;
+import com.yjtech.wisdom.tourism.resource.ticket.query.TicketSummaryQuery;
 import com.yjtech.wisdom.tourism.resource.ticket.vo.SaleTrendVO;
 import com.yjtech.wisdom.tourism.resource.ticket.vo.TicketFareCollectionVO;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -27,7 +23,6 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * <p>
@@ -43,13 +38,13 @@ public class TicketHourSummaryService extends ServiceImpl<TicketHourSummaryMappe
     @Resource
     private ExtensionExecutor extensionExecutor;
 
-    public List<SaleTrendVO> saleTrend(TicketSumaryQuery query) {
+    public List<SaleTrendVO> saleTrend(TicketSummaryQuery query) {
         // 调用扩展点执行器
         return extensionExecutor.execute(TicketQryExtPt.class, query.getBizScenario(),
                 extension -> extension.querySaleTrend(query));
     }
 
-    public List<SaleTrendVO> queryVisitTrend(TicketSumaryQuery query) {
+    public List<SaleTrendVO> queryVisitTrend(TicketSummaryQuery query) {
         return extensionExecutor.execute(TicketQryExtPt.class, null,
                 extension -> extension.queryVisitTrend(query));
     }
@@ -63,31 +58,31 @@ public class TicketHourSummaryService extends ServiceImpl<TicketHourSummaryMappe
 
         LocalDate now = LocalDate.now();
         JSONObject result = new JSONObject();
-        TicketSumaryQuery todayQuery = new TicketSumaryQuery();
+        TicketSummaryQuery todayQuery = new TicketSummaryQuery();
         todayQuery.setBeginTime(LocalDateTime.of(now, LocalTime.MIN));
         todayQuery.setEndTime(LocalDateTime.of(now, LocalTime.MAX));
         Integer today = this.getBaseMapper().querySaleQuantity(todayQuery);
         result.put("today", Objects.isNull(today) ? 0 : today);
 
-        TicketSumaryQuery lastSevenDaysQuery = new TicketSumaryQuery();
+        TicketSummaryQuery lastSevenDaysQuery = new TicketSummaryQuery();
         lastSevenDaysQuery.setBeginTime(LocalDateTime.of(now.plusDays(-6), LocalTime.MIN));
         lastSevenDaysQuery.setEndTime(LocalDateTime.of(now, LocalTime.MAX));
         Integer lastSevenDays = this.getBaseMapper().querySaleQuantity(lastSevenDaysQuery);
         result.put("lastSevenDays", Objects.isNull(lastSevenDays) ? 0 : lastSevenDays);
 
-        TicketSumaryQuery monthQuery = new TicketSumaryQuery();
+        TicketSummaryQuery monthQuery = new TicketSummaryQuery();
         monthQuery.setBeginTime(LocalDateTime.of(now.with(TemporalAdjusters.firstDayOfMonth()), LocalTime.MIN));
         monthQuery.setEndTime(LocalDateTime.of(now, LocalTime.MAX));
         Integer month = this.getBaseMapper().querySaleQuantity(monthQuery);
         result.put("month", Objects.isNull(month) ? 0 : month);
 
-        TicketSumaryQuery yearQuery = new TicketSumaryQuery();
+        TicketSummaryQuery yearQuery = new TicketSummaryQuery();
         yearQuery.setBeginTime(LocalDateTime.of(now.with(TemporalAdjusters.firstDayOfYear()), LocalTime.MIN));
         yearQuery.setEndTime(LocalDateTime.of(now, LocalTime.MAX));
         Integer year = this.getBaseMapper().querySaleQuantity(yearQuery);
         result.put("year", Objects.isNull(year) ? 0 : year);
 
-        Integer total = this.getBaseMapper().querySaleQuantity(new TicketSumaryQuery());
+        Integer total = this.getBaseMapper().querySaleQuantity(new TicketSummaryQuery());
         result.put("total", Objects.isNull(total) ? 0 : total);
         return result;
     }
@@ -95,7 +90,7 @@ public class TicketHourSummaryService extends ServiceImpl<TicketHourSummaryMappe
 
     public List<BaseVO> queryFareCollection(){
         LocalDate now = LocalDate.now();
-        TicketSumaryQuery todayQuery = new TicketSumaryQuery();
+        TicketSummaryQuery todayQuery = new TicketSummaryQuery();
         todayQuery.setBeginTime(LocalDateTime.of(now, LocalTime.MIN));
         todayQuery.setEndTime(LocalDateTime.of(now, LocalTime.MAX));
         TicketFareCollectionVO vo = this.getBaseMapper().queryFareCollection(todayQuery);
@@ -121,4 +116,14 @@ public class TicketHourSummaryService extends ServiceImpl<TicketHourSummaryMappe
         result.add(BaseVO.builder().name("individualRate").value(String.valueOf(individualRate)).build());
         return  result;
     }
+
+    /**
+     * 查询入园统计
+     * @param vo
+     * @return
+     */
+    public Long queryVisitStatistics(TicketSummaryQuery vo){
+        return baseMapper.queryVisitStatistics(vo);
+    }
+
 }

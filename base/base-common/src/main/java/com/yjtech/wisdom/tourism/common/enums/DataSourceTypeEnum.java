@@ -9,17 +9,17 @@ package com.yjtech.wisdom.tourism.common.enums;
 public enum DataSourceTypeEnum {
 
     /**
-     * 酒店
-     */
-    DATA_SOURCE_TYPE_HOTEL(0, "酒店", 2),
-    /**
      * 民宿
      */
-    DATA_SOURCE_TYPE_GUESTHOUSE(1, "民宿", -666),
+    DATA_SOURCE_TYPE_GUESTHOUSE(0, "民宿", -666),
     /**
      * 景点
      */
-    DATA_SOURCE_TYPE_SCENIC_SPOT(2, "景点", 1),
+    DATA_SOURCE_TYPE_SCENIC_SPOT(1, "景点", 1),
+    /**
+     * 酒店
+     */
+    DATA_SOURCE_TYPE_HOTEL(2, "酒店", 2),
     /**
      * 门票
      */

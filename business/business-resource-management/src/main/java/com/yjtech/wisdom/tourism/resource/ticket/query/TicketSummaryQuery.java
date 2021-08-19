@@ -9,7 +9,7 @@ import lombok.Data;
  * @create 2021-07-03 14:26
  */
 @Data
-public class TicketSumaryQuery extends TimeBaseQuery {
+public class TicketSummaryQuery extends TimeBaseQuery {
     private Integer isSimulation = 0;
 
     private BizScenario bizScenario;

@@ -9,7 +9,7 @@ import com.yjtech.wisdom.tourism.resource.ticket.extensionpoint.TicketExtensionC
 import com.yjtech.wisdom.tourism.resource.ticket.extensionpoint.TicketQryExtPt;
 import com.yjtech.wisdom.tourism.resource.ticket.query.TicketRankingQuery;
 import com.yjtech.wisdom.tourism.resource.ticket.query.TicketSaleQuantityQuery;
-import com.yjtech.wisdom.tourism.resource.ticket.query.TicketSumaryQuery;
+import com.yjtech.wisdom.tourism.resource.ticket.query.TicketSummaryQuery;
 import com.yjtech.wisdom.tourism.resource.ticket.vo.SaleTrendVO;
 import com.yjtech.wisdom.tourism.resource.ticket.vo.TicketRankingVO;
 import com.yjtech.wisdom.tourism.resource.ticket.vo.VisitorSourceInfo;
@@ -28,12 +28,12 @@ import java.util.List;
 public class MockTicketQryExt implements TicketQryExtPt {
 
     @Override
-    public List<SaleTrendVO> querySaleTrend(TicketSumaryQuery query) {
+    public List<SaleTrendVO> querySaleTrend(TicketSummaryQuery query) {
         return null;
     }
 
     @Override
-    public List<SaleTrendVO> queryVisitTrend(TicketSumaryQuery query) {
+    public List<SaleTrendVO> queryVisitTrend(TicketSummaryQuery query) {
         return null;
     }
 
@@ -43,7 +43,7 @@ public class MockTicketQryExt implements TicketQryExtPt {
     }
 
     @Override
-    public VisitorSourceInfo queryVisitorSource(TicketSumaryQuery query) {
+    public VisitorSourceInfo queryVisitorSource(TicketSummaryQuery query) {
         return null;
     }
 

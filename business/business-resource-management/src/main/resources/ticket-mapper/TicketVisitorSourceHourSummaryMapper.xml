@@ -22,7 +22,7 @@
     </sql>
 
     <select id="sourceType" resultType="com.yjtech.wisdom.tourism.resource.ticket.vo.TicketSourceSummaryVo"
-            parameterType="com.yjtech.wisdom.tourism.resource.ticket.query.TicketSumaryQuery">
+            parameterType="com.yjtech.wisdom.tourism.resource.ticket.query.TicketSummaryQuery">
         SELECT
         source_type,
         province,
