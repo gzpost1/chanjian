@@ -1,11 +1,13 @@
 package com.yjtech.wisdom.tourism.common.sms;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * 消息中心-通过事件id，查询事件信息dto
@@ -46,7 +48,8 @@ public class MessageCallDto implements Serializable {
     /**
      * 事件发生日期/投诉时间
      */
-    private String eventHappenDate;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private LocalDateTime eventHappenDate;
 
     /**
      * 事件业务类型 由各业务模块自行定义传输，暂定中文传输，只做前端展示
@@ -66,5 +69,6 @@ public class MessageCallDto implements Serializable {
     /**
      * 事件创建时间
      */
-    private String createTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private LocalDateTime createTime;
 }
