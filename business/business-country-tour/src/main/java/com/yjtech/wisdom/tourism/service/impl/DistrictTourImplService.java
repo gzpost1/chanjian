@@ -72,12 +72,11 @@ public class DistrictTourImplService implements DistrictExtPt {
         vo.setAdcode(areaCode);
 
         if (StringUtils.isEmpty(vo.getBeginDate())) {
-            vo.setBeginDate(DateTimeUtil.localDateTimeToString(vo.getBeginTime(), "yyyy-MM-dd HH:mm:ss"));
+            vo.setBeginDate(DateTimeUtil.localDateTimeToString(vo.getBeginTime(), "yyyy-MM-dd"));
         }
         if (StringUtils.isEmpty(vo.getEndDate())) {
-            vo.setEndDate(DateTimeUtil.localDateTimeToString(vo.getEndTime(), "yyyy-MM-dd HH:mm:ss"));
+            vo.setEndDate(DateTimeUtil.localDateTimeToString(vo.getEndTime(), "yyyy-MM-dd"));
         }
-
         // 10.到访全部游客
         vo.setStatisticsType(DecisionSupportConstants.PROVINCE_ALL_TYPE);
         long allTouristNum = Long.parseLong(String.valueOf(JsonUtils.getValueByKey(districtBigDataService.requestDistrict(DistrictPathEnum.DATA_OVERVIEW.getPath(), vo, "到访全部游客"), "data")));
@@ -109,10 +108,10 @@ public class DistrictTourImplService implements DistrictExtPt {
     @Override
     public IPage<VisitorDto> queryPageVisitor(VisitorVo vo) {
         if (StringUtils.isEmpty(vo.getBeginDate())) {
-            vo.setBeginDate(DateTimeUtil.localDateTimeToString(vo.getBeginTime(), "yyyy-MM-dd HH:mm:ss"));
+            vo.setBeginDate(DateTimeUtil.localDateTimeToString(vo.getBeginTime(), "yyyy-MM-dd"));
         }
         if (StringUtils.isEmpty(vo.getEndDate())) {
-            vo.setEndDate(DateTimeUtil.localDateTimeToString(vo.getEndTime(), "yyyy-MM-dd HH:mm:ss"));
+            vo.setEndDate(DateTimeUtil.localDateTimeToString(vo.getEndTime(), "yyyy-MM-dd"));
         }
 
         String areaCode = sysConfigService.selectConfigByKey(configAreaCodeKey);
