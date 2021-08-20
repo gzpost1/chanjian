@@ -11,6 +11,7 @@ import com.yjtech.wisdom.tourism.command.vo.travelcomplaint.TravelComplaintScree
 import com.yjtech.wisdom.tourism.common.bean.AnalysisMonthChartInfo;
 import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
+import com.yjtech.wisdom.tourism.common.sms.MessageCallDto;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -80,6 +81,13 @@ public interface TravelComplaintMapper extends BaseMapper<TravelComplaintEntity>
      * @return
      */
     List<AnalysisMonthChartInfo> queryComplaintLastAnalysisMonthInfo(@Param("params") TravelComplaintScreenQueryVO params);
+
+    /**
+     * 通过事件id，查询事件信息
+     * @param ids
+     * @return
+     */
+    List<MessageCallDto> queryEvent(@Param("ids") Long[] ids);
 
 
 

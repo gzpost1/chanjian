@@ -207,6 +207,16 @@
         GROUP BY lev
     </select>
 
+    <select id="queryNameById" resultType="string" parameterType="long">
+        select
+        name
+        from
+        tb_hotel_info
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         id,

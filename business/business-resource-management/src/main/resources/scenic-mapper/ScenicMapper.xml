@@ -14,4 +14,15 @@
         </where>
     </select>
 
+    <!-- 查询景区承载量统计 -->
+    <select id="queryNameById" resultType="string" parameterType="long">
+        select
+        name
+        from
+        tb_scenic
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
 </mapper>

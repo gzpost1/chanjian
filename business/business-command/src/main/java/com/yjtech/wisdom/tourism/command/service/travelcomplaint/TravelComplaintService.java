@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.common.collect.Lists;
 import com.yjtech.wisdom.tourism.command.dto.travelcomplaint.TravelComplaintDTO;
 import com.yjtech.wisdom.tourism.command.dto.travelcomplaint.TravelComplaintListDTO;
 import com.yjtech.wisdom.tourism.command.dto.travelcomplaint.TravelComplaintStatusStatisticsDTO;
@@ -17,15 +18,26 @@ import com.yjtech.wisdom.tourism.command.vo.travelcomplaint.*;
 import com.yjtech.wisdom.tourism.common.bean.*;
 import com.yjtech.wisdom.tourism.common.constant.CacheKeyContants;
 import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
+import com.yjtech.wisdom.tourism.common.constant.TemplateConstants;
 import com.yjtech.wisdom.tourism.common.core.domain.StatusParam;
+import com.yjtech.wisdom.tourism.common.enums.MessageEventTypeEnum;
+import com.yjtech.wisdom.tourism.common.enums.MessagePlatformTypeEnum;
 import com.yjtech.wisdom.tourism.common.enums.TravelComplaintStatusEnum;
 import com.yjtech.wisdom.tourism.common.enums.TravelComplaintTypeEnum;
+import com.yjtech.wisdom.tourism.common.exception.CustomException;
+import com.yjtech.wisdom.tourism.common.exception.ErrorCode;
+import com.yjtech.wisdom.tourism.common.sms.MessageCall;
+import com.yjtech.wisdom.tourism.common.sms.MessageCallDto;
 import com.yjtech.wisdom.tourism.common.utils.DateUtils;
 import com.yjtech.wisdom.tourism.common.utils.StringUtils;
 import com.yjtech.wisdom.tourism.common.utils.bean.BeanUtils;
+import com.yjtech.wisdom.tourism.hotel.service.TbHotelInfoService;
 import com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysUser;
+import com.yjtech.wisdom.tourism.message.admin.service.MessageMangerService;
+import com.yjtech.wisdom.tourism.message.admin.vo.SendMessageVo;
 import com.yjtech.wisdom.tourism.mybatis.utils.AnalysisUtils;
 import com.yjtech.wisdom.tourism.redis.RedisCache;
+import com.yjtech.wisdom.tourism.resource.scenic.service.ScenicService;
 import com.yjtech.wisdom.tourism.system.service.SysUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +45,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import java.lang.reflect.Field;
+import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -45,12 +59,18 @@ import java.util.Objects;
  */
 @Slf4j
 @Service
-public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, TravelComplaintEntity> {
+public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, TravelComplaintEntity> implements MessageCall {
 
     @Autowired
     private RedisCache redisCache;
     @Autowired
     private SysUserService sysUserService;
+    @Autowired
+    private MessageMangerService messageMangerService;
+    @Autowired
+    private TbHotelInfoService tbHotelInfoService;
+    @Autowired
+    private ScenicService scenicService;
 
 
     /**
@@ -66,8 +86,20 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
 
         int result = baseMapper.insert(entity);
 
-        if(result > 0){
-
+        if (result > 0) {
+            //构建后台消息模板
+            String platformTemplate = MessageFormat.format(
+                    TemplateConstants.TEMPLATE_PLATFORM_TRAVEL_COMPLAINT_INSERT,
+                    TravelComplaintTypeEnum.getDescByValue(vo.getComplaintType()),
+                    getComplaintObject(entity.getComplaintType(), entity.getComplaintObject(), entity.getObjectId()),
+                    vo.getComplaintTime().toString(),
+                    vo.getLocation());
+            //发送消息
+            sendMessageNotice(CacheKeyContants.KEY_ASSIGN_TRAVEL_COMPLAINT,
+                    entity.getId(),
+                    platformTemplate,
+                    platformTemplate,
+                    AssignUserInfo.class);
         }
 
         return result;
@@ -159,7 +191,30 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
 
         complaintEntity.build(statusParam);
 
-        return baseMapper.updateById(complaintEntity);
+        int result = baseMapper.updateById(complaintEntity);
+
+        //更新成功，且数据状态为待处理时，发送消息
+        if(result > 0 && TravelComplaintStatusEnum.TRAVEL_COMPLAINT_STATUS_NO_DEAL.getValue().equals(complaintEntity.getStatus())){
+            //构建后台消息模板
+            String platformTemplate = MessageFormat.format(
+                    TemplateConstants.TEMPLATE_PLATFORM_TRAVEL_COMPLAINT_ASSIGN,
+                    TravelComplaintTypeEnum.getDescByValue(complaintEntity.getComplaintType()),
+                    getComplaintObject(complaintEntity.getComplaintType(), complaintEntity.getComplaintObject(), complaintEntity.getObjectId()),
+                    complaintEntity.getComplaintTime().toString(),
+                    complaintEntity.getLocation());
+            //构建App消息模板
+            String appTemplate = MessageFormat.format(
+                    TemplateConstants.TEMPLATE_APP_TRAVEL_COMPLAINT_ASSIGN,
+                    getComplaintObject(complaintEntity.getComplaintType(), complaintEntity.getComplaintObject(), complaintEntity.getObjectId()));
+            //发送消息
+            sendMessageNotice(CacheKeyContants.KEY_ASSIGN_TRAVEL_COMPLAINT,
+                    complaintEntity.getId(),
+                    platformTemplate,
+                    platformTemplate,
+                    AssignUserInfo.class);
+        }
+
+        return result;
     }
 
     /**
@@ -184,13 +239,12 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
                 .set(TravelComplaintEntity::getAcceptTime, vo.getAcceptTime())
                 .set(TravelComplaintEntity::getAcceptResult, vo.getAcceptResult())
                 //默认已处理
-                .set(TravelComplaintEntity::getStatus, TravelComplaintStatusEnum.TRAVEL_COMPLAINT_STATUS_DEAL_FINISHED.getValue())
-                ;
+                .set(TravelComplaintEntity::getStatus, TravelComplaintStatusEnum.TRAVEL_COMPLAINT_STATUS_DEAL_FINISHED.getValue());
 
         int result = baseMapper.update(complaintEntity, updateWrapper);
 
         if (result > 0) {
-            //todo：进行消息推送
+            //todo：是否进行消息推送
         }
 
         return result;
@@ -198,6 +252,7 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
 
     /**
      * 查询状态统计
+     *
      * @param vo
      * @return
      */
@@ -208,9 +263,10 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
 
     /**
      * 配置/刷新指派人员
+     *
      * @param assignUserInfo
      */
-    public void refreshAssignUser(AssignUserInfo assignUserInfo){
+    public void refreshAssignUser(AssignUserInfo assignUserInfo) {
         //删除已配置的指派人员信息
         redisCache.deleteObject(CacheKeyContants.KEY_ASSIGN_TRAVEL_COMPLAINT);
 
@@ -219,9 +275,10 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
 
     /**
      * 配置/刷新处理人员
+     *
      * @param dealUserInfo
      */
-    public void refreshDealUser(DealUserInfo dealUserInfo){
+    public void refreshDealUser(DealUserInfo dealUserInfo) {
         //删除已配置的指派人员信息
         redisCache.deleteObject(CacheKeyContants.KEY_DEAL_TRAVEL_COMPLAINT + dealUserInfo.getDataId());
 
@@ -238,10 +295,10 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
     /**
      * 获取指派人员
      */
-    public List<Long> queryAssignUser(){
+    public List<Long> queryAssignUser() {
         //获取当前指派人员信息
         Object cacheObject = redisCache.getCacheObject(CacheKeyContants.KEY_ASSIGN_TRAVEL_COMPLAINT);
-        if(null != cacheObject){
+        if (null != cacheObject) {
             AssignUserInfo assignUserInfo = JSONObject.parseObject(JSONObject.toJSONString(cacheObject), AssignUserInfo.class);
             //获取指派人员id
             return assignUserInfo.getAssignUserIdList();
@@ -251,14 +308,15 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
 
     /**
      * 获取处理人员
+     *
      * @param dataId
      * @return
      */
-    public List<Long> queryDealUser(Long dataId){
+    public List<Long> queryDealUser(Long dataId) {
         //获取当前处理人员信息
         Object cacheObject = redisCache.getCacheObject(CacheKeyContants.KEY_DEAL_TRAVEL_COMPLAINT + dataId);
 
-        if(null != cacheObject){
+        if (null != cacheObject) {
             DealUserInfo dealUserInfo = JSONObject.parseObject(JSONObject.toJSONString(cacheObject), DealUserInfo.class);
             //获取处理人员id
             return dealUserInfo.getAssignUserIdList();
@@ -268,12 +326,13 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
 
     /**
      * 校验投诉类型
+     *
      * @param complaintType
      * @param complaintObject
      * @param objectId
      */
-    public void checkType(Byte complaintType, String complaintObject, Long objectId){
-        if(null != complaintType){
+    public void checkType(Byte complaintType, String complaintObject, Long objectId) {
+        if (null != complaintType) {
             //当投诉类型为其他时，投诉对象不能为空；当投诉类型为非其他时，投诉对象id不能为空
             Assert.isTrue((TravelComplaintTypeEnum.TRAVEL_COMPLAINT_TYPE_ELSE.getValue().equals(complaintType) && StringUtils.isNotBlank(complaintObject))
                             || (!TravelComplaintTypeEnum.TRAVEL_COMPLAINT_TYPE_ELSE.getValue().equals(complaintType) && Objects.nonNull(objectId)),
@@ -282,56 +341,59 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
     }
 
 
-
     /** ******************** 大屏 ******************** */
 
     /**
      * 查询旅游投诉总量
+     *
      * @param vo
      * @return
      */
-    public Integer queryTravelComplaintTotal(TravelComplaintScreenQueryVO vo){
+    public Integer queryTravelComplaintTotal(TravelComplaintScreenQueryVO vo) {
         LambdaQueryWrapper<TravelComplaintEntity> queryWrapper = new QueryWrapper<TravelComplaintEntity>().lambda()
                 .eq(TravelComplaintEntity::getEquipStatus, Objects.isNull(vo.getEquipStatus()) ? EntityConstants.ENABLED : vo.getEquipStatus())
-                .between(Objects.nonNull(vo.getBeginTime()) && Objects.nonNull(vo.getEndTime()), TravelComplaintEntity::getComplaintTime, vo.getBeginTime(), vo.getEndTime())
-                ;
+                .between(Objects.nonNull(vo.getBeginTime()) && Objects.nonNull(vo.getEndTime()), TravelComplaintEntity::getComplaintTime, vo.getBeginTime(), vo.getEndTime());
 
         return baseMapper.selectCount(queryWrapper);
     }
 
     /**
      * 查询旅游投诉类型分布
+     *
      * @param vo
      * @return
      */
-    public List<BasePercentVO> queryComplaintTypeDistribution(TravelComplaintScreenQueryVO vo){
+    public List<BasePercentVO> queryComplaintTypeDistribution(TravelComplaintScreenQueryVO vo) {
         return baseMapper.queryComplaintTypeDistribution(vo);
     }
 
     /**
      * 查询旅游投诉状态分布
+     *
      * @param vo
      * @return
      */
-    public List<BasePercentVO> queryComplaintStatusDistribution(TravelComplaintScreenQueryVO vo){
+    public List<BasePercentVO> queryComplaintStatusDistribution(TravelComplaintScreenQueryVO vo) {
         return baseMapper.queryComplaintStatusDistribution(vo);
     }
 
     /**
      * 查询旅游投诉类型Top排行
+     *
      * @param vo
      * @return
      */
-    public List<BaseVO> queryComplaintTopByType(TravelComplaintScreenQueryVO vo){
+    public List<BaseVO> queryComplaintTopByType(TravelComplaintScreenQueryVO vo) {
         return baseMapper.queryComplaintTopByType(vo);
     }
 
     /**
      * 查询旅游投诉趋势、同比、环比
+     *
      * @return
      */
     @Transactional(readOnly = true)
-    public List<AnalysisBaseInfo> queryComplaintAnalysis(TravelComplaintScreenQueryVO vo){
+    public List<AnalysisBaseInfo> queryComplaintAnalysis(TravelComplaintScreenQueryVO vo) {
         //初始化当年月份信息
         List<String> monthMarkList = DateUtils.getEveryMonthOfCurrentYear();
 
@@ -343,21 +405,108 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
         return AnalysisUtils.buildAnalysisInfo(monthMarkList, currentAnalysisMonthInfo, lastAnalysisMonthInfo);
     }
 
+    /**
+     * 获取投诉对象名称
+     * @param complaintType
+     * @param complaintObject
+     * @param objectId
+     * @return
+     */
+    private String getComplaintObject(Byte complaintType, String complaintObject, Long objectId){
+        if(TravelComplaintTypeEnum.TRAVEL_COMPLAINT_TYPE_ELSE.getValue().equals(complaintType)){
+            return complaintObject;
+        }
+        return TravelComplaintTypeEnum.TRAVEL_COMPLAINT_TYPE_SCENIC.getValue().equals(complaintType) ? scenicService.queryNameById(objectId) : tbHotelInfoService.queryNameById(objectId);
+    }
 
-//    private void sendMessageNotice(String cacheKey, Long dataId, String title, String content){
-//        Long[] eventDealPersonIdArray;
-//        //获取当前指派人员信息
-//        Object cacheObject = redisCache.getCacheObject(cacheKey);
-//        if(null == cacheObject){
-//            //默认给超管用户发送消息
-//            Long adminId = messageMangerService.queryAdimnId();
-//        }else {
-//            //获取指派人员信息
-////            JSONObject.parseObject()
-//        }
-//
-//        //为指派人推送消息
-//        messageMangerService.sendMessage(new SendMessageVo());
-//    }
+    /**
+     * 发送消息
+     * @param cacheKey
+     * @param dataId
+     * @param title
+     * @param content
+     * @param tClass
+     * @param <T>
+     */
+    private <T> void sendMessageNotice(String cacheKey, Long dataId, String title, String content, Class<T> tClass) {
+        //构建用户id列表
+        List<Long> eventDealPersonIdArray = Lists.newArrayList();
+        //构建发送类型
+        List<Integer> sendType = Lists.newArrayList();
+        //发送标识
+        Boolean sendFlag = false;
+
+        //获取当前指派/处理人员信息
+        Object cacheObject = redisCache.getCacheObject(cacheKey);
+        if (null == cacheObject) {
+            //默认给超管用户发送消息
+            eventDealPersonIdArray.add(messageMangerService.queryAdimnId());
+            sendFlag = true;
+        } else {
+            try {
+                //获取指派/处理人员信息
+                T cacheInfo = JSONObject.parseObject(JSONObject.toJSONString(cacheObject), tClass);
+                //获取用户id列表
+                Field assignUserIdList = cacheInfo.getClass().getDeclaredField("assignUserIdList");
+                if (null != assignUserIdList) {
+                    assignUserIdList.setAccessible(true);
+                    eventDealPersonIdArray = (List<Long>) assignUserIdList.get(cacheInfo);
+                }
+                //获取平台通知标识
+                Field platformNoticeFlag = cacheInfo.getClass().getDeclaredField("platformNoticeFlag");
+                if (null != platformNoticeFlag) {
+                    platformNoticeFlag.setAccessible(true);
+                    Boolean platformFlag = (Boolean) platformNoticeFlag.get(cacheInfo);
+                    if (null != platformFlag && platformFlag) {
+                        //设置发送类型
+                        sendType.add(MessagePlatformTypeEnum.MESSAGE_PLATFORM_TYPE_BACK.getValue().intValue());
+                        sendFlag = true;
+                    }
+                }
+                //获取App消息通知标识
+                Field appNoticeFlag = cacheInfo.getClass().getDeclaredField("appNoticeFlag");
+                if (null != appNoticeFlag) {
+                    appNoticeFlag.setAccessible(true);
+                    Boolean appFlag = (Boolean) appNoticeFlag.get(cacheInfo);
+                    if (null != appFlag && appFlag) {
+                        //设置发送类型
+                        sendType.add(MessagePlatformTypeEnum.MESSAGE_PLATFORM_TYPE_APP.getValue().intValue());
+                        sendFlag = true;
+                    }
+                }
+                //获取短信通知标识
+                Field textMessageNoticeFlag = cacheInfo.getClass().getDeclaredField("textMessageNoticeFlag");
+                if (null != textMessageNoticeFlag) {
+                    textMessageNoticeFlag.setAccessible(true);
+                    Boolean textMessageFlag = (Boolean) textMessageNoticeFlag.get(cacheInfo);
+                    if (null != textMessageFlag && textMessageFlag) {
+                        //设置发送类型
+                        sendType.add(MessagePlatformTypeEnum.MESSAGE_PLATFORM_TYPE_SHORT_MESSAGE.getValue().intValue());
+                        sendFlag = true;
+                    }
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+                throw new CustomException(ErrorCode.BUSINESS_EXCEPTION, "发送消息失败：配置消息模板异常");
+            }
+        }
+
+        if(sendFlag){
+            //为指派人推送消息
+            messageMangerService.sendMessage(new SendMessageVo(sendType.toArray(new Integer[0]), dataId,
+                    MessageEventTypeEnum.MESSAGE_EVENT_TYPE_TRAVEL_COMPLAINT.getValue().intValue(),
+                    title, content, eventDealPersonIdArray.toArray(new Long[0])));
+        }
+    }
+
+    /**
+     * 通过事件id，查询事件信息
+     * @param ids
+     * @return
+     */
+    @Override
+    public List<MessageCallDto> queryEvent(Long[] ids) {
+       return baseMapper.queryEvent(ids);
+    }
 
 }

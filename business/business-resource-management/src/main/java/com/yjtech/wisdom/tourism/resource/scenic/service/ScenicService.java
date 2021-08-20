@@ -349,6 +349,18 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
     }
 
     /**
+     * 根据id查询名称
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public String queryNameById(Long id) {
+        if(null == id){
+            return null;
+        }
+        return baseMapper.queryNameById(id);
+    }
+
+    /**
      * 查询当前时间检票数据.
      */
     private Map<String, Integer> queryCheckTrendByTime(ScenicScreenQuery query) {

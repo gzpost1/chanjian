@@ -10,7 +10,6 @@ import com.yjtech.wisdom.tourism.hotel.mapper.TbHotelInfoMapper;
 import com.yjtech.wisdom.tourism.hotel.vo.HotelScreenQueryVO;
 import com.yjtech.wisdom.tourism.hotel.vo.StaticNumVo;
 import com.yjtech.wisdom.tourism.mybatis.base.BaseMybatisServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -81,6 +80,19 @@ public class TbHotelInfoService extends BaseMybatisServiceImpl<TbHotelInfoMapper
     @Transactional(readOnly = true)
     public List<BasePercentVO> queryHotelStarDistribution(HotelScreenQueryVO params) {
         return baseMapper.queryHotelStarDistribution(params);
+    }
+
+    /**
+     * 根据id查询名称
+     * @param id
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public String queryNameById(Long id){
+        if(null == id){
+            return null;
+        }
+        return baseMapper.queryNameById(id);
     }
 
 }
