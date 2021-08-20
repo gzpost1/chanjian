@@ -46,4 +46,10 @@ public interface TbHotelInfoMapper extends BaseMybatisMapper<TbHotelInfoEntity> 
      */
     List<BasePercentVO> queryHotelStarDistribution(@Param("params") HotelScreenQueryVO params);
 
+    /**
+     * 根据id查询名称
+     * @param id
+     * @return
+     */
+    String queryNameById(@Param("id") Long id);
 }
