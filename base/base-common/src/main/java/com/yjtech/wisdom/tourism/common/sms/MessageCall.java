@@ -1,6 +1,4 @@
-package com.yjtech.wisdom.tourism.message.common;
-
-import com.yjtech.wisdom.tourism.message.admin.dto.MessageCallDto;
+package com.yjtech.wisdom.tourism.common.sms;
 
 import java.util.List;
 

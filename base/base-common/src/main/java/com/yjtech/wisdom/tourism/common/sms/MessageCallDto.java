@@ -1,4 +1,4 @@
-package com.yjtech.wisdom.tourism.message.admin.dto;
+package com.yjtech.wisdom.tourism.common.sms;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

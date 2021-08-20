@@ -39,12 +39,6 @@
             <version>${framework.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.yjtech.wisdom.tourism</groupId>
-            <artifactId>business-command</artifactId>
-            <version>${base-command.version}</version>
-        </dependency>
-
     </dependencies>
 
 
