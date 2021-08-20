@@ -47,6 +47,11 @@ public class MessageEntity implements Serializable {
     private Integer eventType;
 
     /**
+     * 标题
+     */
+    private String title;
+
+    /**
      * 事件/投诉 处理人Id
      */
     @TableField(typeHandler = JsonTypeHandler.class)

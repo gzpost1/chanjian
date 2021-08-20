@@ -203,7 +203,7 @@ public abstract class BaseStrategy {
         }
         double scaleDouble;
         try {
-            scaleDouble = Double.parseDouble(scale);
+            scaleDouble = new BigDecimal(scale).divide(new BigDecimal(1), 1).doubleValue();
         }catch (Exception e) {
             return DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE;
         }

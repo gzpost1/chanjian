@@ -26,7 +26,7 @@ import com.yjtech.wisdom.tourism.message.admin.vo.SendMessageVo;
 import com.yjtech.wisdom.tourism.message.app.bo.TpnsPushBO;
 import com.yjtech.wisdom.tourism.message.app.service.TpnsPushService;
 import com.yjtech.wisdom.tourism.message.common.PageHelpUtil;
-import com.yjtech.wisdom.tourism.message.sms.service.SmsService;
+import com.yjtech.wisdom.tourism.message.sms.service.SmsUseService;
 import com.yjtech.wisdom.tourism.system.service.SysConfigService;
 import com.yjtech.wisdom.tourism.system.service.SysUserService;
 import lombok.extern.slf4j.Slf4j;
@@ -62,7 +62,7 @@ public class MessageMangerService extends ServiceImpl<MessageMapper, MessageEnti
     private SysUserService sysUserService;
 
     @Autowired
-    private SmsService smsService;
+    private SmsUseService smsService;
 
     @Autowired
     private MessageRecordMapper messageRecordMapper;
@@ -251,6 +251,7 @@ public class MessageMangerService extends ServiceImpl<MessageMapper, MessageEnti
                             .eventDealPersonId(list)
                             .eventId(vo.getEventId())
                             .eventType(vo.getEventType())
+                            .title(vo.getPcTitle())
                             .build();
                     int records = baseMapper.insert(messageEntity);
 
@@ -309,7 +310,7 @@ public class MessageMangerService extends ServiceImpl<MessageMapper, MessageEnti
                         recordEntity.setSendObject(phoneNumber);
                         try {
                             if (!StringUtils.isEmpty(phoneNumber)) {
-                                smsService.smsSend(phoneNumber, vo.getEventType());
+                                smsService.smsSend(phoneNumber, vo.getEventType(), vo.getSmsContent());
                                 recordEntity.setSuccess((byte) 1);
                             }else {
                                 recordEntity.setSuccess((byte) 0);

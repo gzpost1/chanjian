@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * 发送通知
@@ -37,14 +38,24 @@ public class SendMessageVo implements Serializable {
     private Integer eventType;
 
     /**
-     * 标题 app通知为必填
+     * app:标题
      */
     private String title;
 
     /**
-     * 内容 app通知为必填
+     * app:内容
      */
     private String content;
+
+    /**
+     * 管理后台
+     */
+    private String pcTitle;
+
+    /**
+     * 短信模板内容
+     */
+    private List<String> smsContent;
 
     /**
      * 事件处理人Id

@@ -156,3 +156,17 @@ xss:
   excludes: /system/notice/*
   # 匹配链接
   urlPatterns: /system/*,/monitor/*,/tool/*
+
+sms.sdk:
+  appid: 1400255422
+  appkey: 1234b0f5d2004eb490341d9ee8003828
+  smsSign: 云景文旅科技有限公司
+  ipSmsLimitCount: 100 # 调用终端的ip限制次数
+  ipSmsLimitExpire: 86400 # 调用终端的ip限制次数的时间,单位为秒,默认1天
+  phoneSmsLimitExpire: 60 # 限制目标手机号调用间隔,单位为秒,默认1分钟
+  phoneCodeLen: 6 # 手机验证码长度
+  phoneCodeExpire: 300 # 手机验证码有效期,单位为秒,默认5分钟
+  # 旅游投诉短信模板
+  tourTemplateId: 1086274
+  # 应急事件短信模板
+  emergencyTemplateId: 1086283
