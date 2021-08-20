@@ -15,6 +15,7 @@ import com.yjtech.wisdom.tourism.constant.DistrictExtensionConstant;
 import com.yjtech.wisdom.tourism.dto.DataOverviewDto;
 import com.yjtech.wisdom.tourism.dto.MonthPassengerFlowDto;
 import com.yjtech.wisdom.tourism.dto.VisitorDto;
+import com.yjtech.wisdom.tourism.dto.VisitorTempDto;
 import com.yjtech.wisdom.tourism.extension.Extension;
 import com.yjtech.wisdom.tourism.extension.ExtensionConstant;
 import com.yjtech.wisdom.tourism.integration.service.DistrictBigDataService;
@@ -28,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -69,6 +71,13 @@ public class DistrictTourImplService implements DistrictExtPt {
         String areaCode = sysConfigService.selectConfigByKey(configAreaCodeKey);
         vo.setAdcode(areaCode);
 
+        if (StringUtils.isEmpty(vo.getBeginDate())) {
+            vo.setBeginDate(DateTimeUtil.localDateTimeToString(vo.getBeginTime(), "yyyy-MM-dd HH:mm:ss"));
+        }
+        if (StringUtils.isEmpty(vo.getEndDate())) {
+            vo.setEndDate(DateTimeUtil.localDateTimeToString(vo.getEndTime(), "yyyy-MM-dd HH:mm:ss"));
+        }
+
         // 10.到访全部游客
         vo.setStatisticsType(DecisionSupportConstants.PROVINCE_ALL_TYPE);
         long allTouristNum = Long.parseLong(String.valueOf(JsonUtils.getValueByKey(districtBigDataService.requestDistrict(DistrictPathEnum.DATA_OVERVIEW.getPath(), vo, "到访全部游客"), "data")));
@@ -99,6 +108,13 @@ public class DistrictTourImplService implements DistrictExtPt {
      */
     @Override
     public IPage<VisitorDto> queryPageVisitor(VisitorVo vo) {
+        if (StringUtils.isEmpty(vo.getBeginDate())) {
+            vo.setBeginDate(DateTimeUtil.localDateTimeToString(vo.getBeginTime(), "yyyy-MM-dd HH:mm:ss"));
+        }
+        if (StringUtils.isEmpty(vo.getEndDate())) {
+            vo.setEndDate(DateTimeUtil.localDateTimeToString(vo.getEndTime(), "yyyy-MM-dd HH:mm:ss"));
+        }
+
         String areaCode = sysConfigService.selectConfigByKey(configAreaCodeKey);
         vo.setAdcode(areaCode);
         long pageNo = vo.getPageNo();
@@ -108,7 +124,9 @@ public class DistrictTourImplService implements DistrictExtPt {
             limit = LIMIT_VALUE;
         }
         vo.setLimit(limit.intValue());
-        String result = districtBigDataService.requestDistrict(DistrictPathEnum.TOURISTS_SOURCE.getPath(), vo, DistrictBigDataConstants.TOUR_SOURCE);
+        VisitorTempDto visitorTempDto = JSONObject.parseObject(JSONObject.toJSONString(vo), VisitorTempDto.class);
+        visitorTempDto.setType(vo.getStatisticsType());
+        String result = districtBigDataService.requestDistrict(DistrictPathEnum.TOURISTS_SOURCE.getPath(), visitorTempDto, DistrictBigDataConstants.TOUR_SOURCE);
         List<VisitorDto> visitorDtoList = JSONObject.parseArray(String.valueOf(JsonUtils.getValueByKey(result, DistrictBigDataConstants.DATA)), VisitorDto.class);
         return page(pageNo, pageSize, visitorDtoList);
     }
@@ -316,9 +334,16 @@ public class DistrictTourImplService implements DistrictExtPt {
         int begin = pageNo * pageSize - pageSize;
         int end = pageNo * pageSize;
         int pages = 0;
+        int size = 0;
 
-        if (end > list.size()) {
-            end = list.size();
+        if (CollectionUtils.isEmpty(list)) {
+            end = 0;
+        }
+        else {
+            size = list.size();
+        }
+        if (end > size) {
+            end = size;
         }
         for (int i = begin; i < end; i++) {
             newList.add(list.get(i));
@@ -336,7 +361,7 @@ public class DistrictTourImplService implements DistrictExtPt {
         Page<E> page  = new Page<>();
         page.setPages(pages);
         page.setCurrent(pageNo);
-        page.setTotal(list.size());
+        page.setTotal(size);
         page.setSize(pageSize);
         page.setRecords(newList);
         return page;
