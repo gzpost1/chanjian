@@ -53,6 +53,7 @@ public class DecisionEntity implements Serializable {
     /**
      * 预警配置类型 0：文本 1：数值
      */
+    @TableField(strategy = FieldStrategy.IGNORED)
     private Integer configType;
 
     /** ======================================= 数值 配置类型 ======================================= */
@@ -60,21 +61,25 @@ public class DecisionEntity implements Serializable {
     /**
      * 变化类型 0：上升  1：下降 2：忽略变化
      */
+    @TableField(strategy = FieldStrategy.IGNORED)
     private Integer changeType;
 
     /**
      * 低风险预警值
      */
+    @TableField(strategy = FieldStrategy.IGNORED)
     private Double lowRiskThreshold;
 
     /**
      * 中风险预警值
      */
+    @TableField(strategy = FieldStrategy.IGNORED)
     private Double mediumRiskThreshold;
 
     /**
      * 高风险预警值
      */
+    @TableField(strategy = FieldStrategy.IGNORED)
     private Double highRiskThreshold;
 
     /** ======================================= 文本 配置类型 ======================================= */
@@ -82,11 +87,13 @@ public class DecisionEntity implements Serializable {
     /**
      * 风险类型 0：低风险 1：中风险 2：高风险 3：无风险
      */
+    @TableField(strategy = FieldStrategy.IGNORED)
     private Integer riskType;
 
     /**
      * 话术
      */
+    @TableField(strategy = FieldStrategy.IGNORED)
     private String conclusionText;
 
     /**
@@ -122,7 +129,6 @@ public class DecisionEntity implements Serializable {
      * 是否删除, 0:否, 1:是
      */
     @TableField(fill = FieldFill.INSERT)
-    @TableLogic
     @JsonIgnore
     @JSONField(serialize = false)
     private Byte deleted;
