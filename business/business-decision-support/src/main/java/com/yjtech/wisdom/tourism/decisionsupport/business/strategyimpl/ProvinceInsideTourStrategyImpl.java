@@ -43,11 +43,14 @@ public class ProvinceInsideTourStrategyImpl extends BaseStrategy {
         // 平台简称
         String simpleName = super.getPlatformSimpleName();
         // 省内游客数量
-        String provinceInsideNumber = targetQueryService.queryProvinceOutsideNumber(DecisionSupportConstants.PROVINCE_INSIDE_TYPE, isSimulation);
+        String provinceInsideNumber = targetQueryService.queryProvinceNumber(DecisionSupportConstants.PROVINCE_INSIDE_TYPE, isSimulation).getProvinceInsideTouristNum().toString();
         // 环比
         String hb = targetQueryService.queryProvinceScale(TargetQueryConstants.PROVINCE_SCALE_HB, DecisionSupportConstants.PROVINCE_INSIDE_TYPE, isSimulation);
         // 同比
         String tb = targetQueryService.queryProvinceScale(TargetQueryConstants.PROVINCE_SCALE_TB, DecisionSupportConstants.PROVINCE_INSIDE_TYPE, isSimulation);
+
+        // 图标数据：月客流趋势
+        result.setChartData(getProvinceCharData(DecisionSupportConstants.PROVINCE_INSIDE_TYPE));
 
         // 处理指标报警
         switch (configId) {

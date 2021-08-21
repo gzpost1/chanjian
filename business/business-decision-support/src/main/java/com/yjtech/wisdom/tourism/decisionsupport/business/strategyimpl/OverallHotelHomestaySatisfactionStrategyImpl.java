@@ -19,6 +19,7 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 整体酒店民宿满意度 -pass
@@ -96,6 +97,9 @@ public class OverallHotelHomestaySatisfactionStrategyImpl extends BaseStrategy {
         if (!DecisionSupportConstants.ZERO.equals(lastYearLastMonth.getSatisfaction())) {
             tb = MathUtil.calPercent(new BigDecimal(Double.parseDouble(lastMonth.getSatisfaction()) - Double.parseDouble(lastYearLastMonth.getSatisfaction())), new BigDecimal(lastMonth.getSatisfaction()), 2).toString();
         }
+
+        // 图表数据：评价类型分布
+        result.setChartData(getCharData(startDate, endDate));
 
         // 处理指标报警
         switch (configId) {
@@ -176,6 +180,21 @@ public class OverallHotelHomestaySatisfactionStrategyImpl extends BaseStrategy {
         // 设置月环比
         result.setMonthHbScale(hb);
         return result;
+    }
+
+    /**
+     * 图表数据：酒店民宿 评价类型分布
+     *
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    private List getCharData(LocalDateTime startDate, LocalDateTime endDate) {
+        EvaluateQueryVO evaluateQueryVO = new EvaluateQueryVO();
+        evaluateQueryVO.setBeginTime(startDate);
+        evaluateQueryVO.setEndTime(endDate);
+        evaluateQueryVO.setStatus(DecisionSupportConstants.ENABLE);
+        return marketingEvaluateService.queryEvaluateTypeDistribution(evaluateQueryVO);
     }
 
     /**

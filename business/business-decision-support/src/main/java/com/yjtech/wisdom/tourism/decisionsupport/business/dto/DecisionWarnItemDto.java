@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * 决策预警项
@@ -62,4 +63,9 @@ public class DecisionWarnItemDto implements Serializable {
      * 话术
      */
     private String conclusionText;
+
+    /**
+     * 图表数据
+     */
+    private List chartData;
 }

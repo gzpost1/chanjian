@@ -3,13 +3,17 @@ package com.yjtech.wisdom.tourism.decisionsupport.business.entity;
 import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.yjtech.wisdom.tourism.common.bean.BaseValueVO;
+import com.yjtech.wisdom.tourism.mybatis.typehandler.JsonTypeHandler;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.servlet.annotation.HandlesTypes;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 决策预警数据
@@ -21,7 +25,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
-@TableName("tb_decision_warn")
+@TableName(value = "tb_decision_warn", autoResultMap = true)
 public class DecisionWarnEntity implements Serializable {
 
     private static final long serialVersionUID = 803197240906158093L;
@@ -112,5 +116,11 @@ public class DecisionWarnEntity implements Serializable {
     @JsonIgnore
     @TableField(fill = FieldFill.UPDATE)
     private Long updateUser;
+
+    /**
+     * 图标数据 -新增
+     */
+    @TableField(typeHandler = JsonTypeHandler.class)
+    private List chartData;
 
 }

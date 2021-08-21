@@ -1,6 +1,8 @@
 package com.yjtech.wisdom.tourism.decisionsupport.business.strategyimpl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.yjtech.wisdom.tourism.command.query.event.EventSumaryQuery;
 import com.yjtech.wisdom.tourism.command.service.screen.EmergencyEvenScreenService;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
@@ -15,11 +17,15 @@ import com.yjtech.wisdom.tourism.decisionsupport.common.strategy.BaseStrategy;
 import com.yjtech.wisdom.tourism.decisionsupport.common.util.PlaceholderUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 高发应急事件 -pass
@@ -100,6 +106,9 @@ public class HighIncidenceEmergencyEventStrategyImpl extends BaseStrategy {
 
         // 高发事件等级
         HighIncidenceEventTypeDto maxEventLevel = findMaxObject(lastMonthLevelData, lastLastMonthLevelData, lastYearLastMonthLevelData);
+
+        // 图表数据：
+        result.setChartData(getCharData(maxEventType, maxEventLevel));
 
         // 处理指标报警
         switch (configId) {
@@ -205,6 +214,20 @@ public class HighIncidenceEmergencyEventStrategyImpl extends BaseStrategy {
 
         // 设置月环比
         result.setMonthHbScale(maxEventType.getHb());
+        return result;
+    }
+
+    /**
+     * 获取事件类型、等级
+     *
+     * @param maxEventType
+     * @param maxEventLevel
+     * @return
+     */
+    private List getCharData(HighIncidenceEventTypeDto maxEventType, HighIncidenceEventTypeDto maxEventLevel) {
+        ArrayList<Object> result = Lists.newArrayList();
+        result.add(maxEventType);
+        result.add(maxEventLevel);
         return result;
     }
 

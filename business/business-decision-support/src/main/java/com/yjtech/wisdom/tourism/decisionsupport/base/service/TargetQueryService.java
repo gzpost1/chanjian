@@ -11,6 +11,7 @@ import com.yjtech.wisdom.tourism.decisionsupport.base.mapper.TargetLibraryMapper
 import com.yjtech.wisdom.tourism.decisionsupport.base.mapper.WarnConfigMapper;
 import com.yjtech.wisdom.tourism.decisionsupport.base.vo.WarnConfigVo;
 import com.yjtech.wisdom.tourism.decisionsupport.common.constant.TargetQueryConstants;
+import com.yjtech.wisdom.tourism.dto.DataOverviewDto;
 import com.yjtech.wisdom.tourism.dto.MonthPassengerFlowDto;
 import com.yjtech.wisdom.tourism.integration.service.DistrictBigDataService;
 import com.yjtech.wisdom.tourism.service.impl.DistrictTourImplService;
@@ -49,6 +50,8 @@ public class TargetQueryService {
 
     @Autowired
     private SysConfigService sysConfigService;
+
+    private static DataOverviewDto cache;
 
     @Value("${tourist.configAreaCodeKey}")
     private String configAreaCodeKey;
@@ -91,7 +94,7 @@ public class TargetQueryService {
     /**
      * 省外客流数据查询
      */
-    public String queryProvinceOutsideNumber (String statisticsType, Integer isSimulation) {
+    public DataOverviewDto queryProvinceNumber(String statisticsType, Integer isSimulation) {
         String beginDate = DateTimeUtil.getCurrentLastMonthFirstDayStr();
         String endTime = DateTimeUtil.getCurrentLastMonthLastDayStr();
 
@@ -104,9 +107,10 @@ public class TargetQueryService {
         dataOverviewVo.setEndDate(endTime);
         dataOverviewVo.setAdcode(areaCode);
         dataOverviewVo.setIsSimulation(isSimulation);
+        dataOverviewVo.setType(DecisionSupportConstants.YEAR_MONTH);
 
-        Long provinceOutsideTouristNum = districtTourService.queryDataOverview(dataOverviewVo).getProvinceOutsideTouristNum();
-        return String.valueOf(provinceOutsideTouristNum);
+        return districtTourService.queryDataOverview(dataOverviewVo);
+
     }
 
     /**

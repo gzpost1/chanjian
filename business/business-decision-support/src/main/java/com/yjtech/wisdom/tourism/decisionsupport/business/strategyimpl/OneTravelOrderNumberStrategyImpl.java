@@ -48,6 +48,8 @@ public class OneTravelOrderNumberStrategyImpl extends BaseStrategy {
 
         // 一码游订单数量
         FxDistQueryVO fxDistQueryVO = new FxDistQueryVO();
+        fxDistQueryVO.setBeginTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentLastMonthStr() + DecisionSupportConstants.START_DAY_STR));
+        fxDistQueryVO.setEndTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentLastMonthStr() + DecisionSupportConstants.END_DAY_STR));
         String orderTotal = fxDistApiService.queryOrderStatistics(fxDistQueryVO).getOrderCount().toString();
 
 
@@ -78,6 +80,9 @@ public class OneTravelOrderNumberStrategyImpl extends BaseStrategy {
                 }
             }
         }
+
+        // 图表数据：订单趋势
+        result.setChartData(order);
 
         // 处理指标报警
         switch (configId) {

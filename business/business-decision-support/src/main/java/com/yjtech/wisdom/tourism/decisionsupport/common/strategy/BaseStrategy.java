@@ -1,18 +1,26 @@
 package com.yjtech.wisdom.tourism.decisionsupport.common.strategy;
 
 
+import com.yjtech.wisdom.tourism.common.bean.BaseValueVO;
 import com.yjtech.wisdom.tourism.common.constant.DecisionSupportConstants;
 import com.yjtech.wisdom.tourism.common.utils.DateTimeUtil;
 import com.yjtech.wisdom.tourism.common.utils.MathUtil;
 import com.yjtech.wisdom.tourism.decisionsupport.base.service.TargetQueryService;
 import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionEntity;
 import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionWarnEntity;
+import com.yjtech.wisdom.tourism.dto.MonthPassengerFlowDto;
+import com.yjtech.wisdom.tourism.mybatis.utils.AnalysisUtils;
+import com.yjtech.wisdom.tourism.service.impl.DistrictTourImplService;
+import com.yjtech.wisdom.tourism.vo.DataOverviewVo;
+import com.yjtech.wisdom.tourism.vo.MonthPassengerFlowVo;
+import com.yjtech.wisdom.tourism.vo.PassengerFlowVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 基础策略
@@ -29,6 +37,9 @@ public abstract class BaseStrategy {
 
     @Autowired
     private TargetQueryService targetQueryService;
+
+    @Autowired
+    private DistrictTourImplService districtTourService;
 
     /**
      * 初始化方法
@@ -177,13 +188,26 @@ public abstract class BaseStrategy {
     /**
      * 计算比例
      *
-     * @param cs 除数
-     * @param bcs 被除数
+     * @param bcs 除数
+     * @param cs 被除数
      */
-    protected String computeScale(Integer cs, Integer bcs) {
-        if (0 != cs) {
+    protected String computeScale(Integer bcs, Integer cs) {
+        if (0 != bcs) {
             // 比例 = （本月生成 - 上月生成 ）/ 本月生成
-            return MathUtil.calPercent(new BigDecimal(cs - bcs), new BigDecimal(cs), 2).toString();
+            return MathUtil.calPercent(new BigDecimal(bcs - cs), new BigDecimal(bcs), 1).toString();
+        }
+        return "-";
+    }
+    /**
+     * 计算比例
+     *
+     * @param bcs 除数
+     * @param cs 被除数
+     */
+    protected String computeScale(Double bcs, Double cs) {
+        if (0 != bcs) {
+            // 比例 = （本月生成 - 上月生成 ）/ 本月生成
+            return MathUtil.calPercent(new BigDecimal(bcs - cs), new BigDecimal(bcs), 1).toString();
         }
         return "-";
     }
@@ -210,5 +234,32 @@ public abstract class BaseStrategy {
         return scaleDouble > DecisionSupportConstants.ZERO_NUMBER ?
                 DecisionSupportConstants.ADD + scale  + DecisionSupportConstants.PERCENT
                 : DecisionSupportConstants.REDUCE + scale + DecisionSupportConstants.PERCENT;
+    }
+
+    /**
+     * 获取图表数据
+     *
+     * @return
+     */
+    protected List<BaseValueVO> getProvinceCharData(String statisticsType) {
+        String beginDate = DateTimeUtil.getCurrentYearStr() + DecisionSupportConstants.START_DATE_STR;
+        String endTime = DateTimeUtil.getCurrentYearStr() + DecisionSupportConstants.END_DATE_STR;
+
+        // 请求参数构造
+        PassengerFlowVo yearPassengerFlowVo = new PassengerFlowVo();
+        yearPassengerFlowVo.setStatisticsType(statisticsType);
+        yearPassengerFlowVo.setBeginTime(DateTimeUtil.getLocalDateTime(beginDate));
+        yearPassengerFlowVo.setEndTime(DateTimeUtil.getLocalDateTime(endTime));
+        yearPassengerFlowVo.setType(DecisionSupportConstants.YEAR_MONTH);
+        List<MonthPassengerFlowDto> yearPassengerFlowDtos = districtTourService.queryYearPassengerFlow(yearPassengerFlowVo);
+        yearPassengerFlowDtos = yearPassengerFlowDtos.stream().map(v -> {
+            v.setTime(v.getDate());
+            return v;
+        }).collect(Collectors.toList());
+        return AnalysisUtils.MultipleBuildAnalysis(
+                yearPassengerFlowVo,
+                yearPassengerFlowDtos,
+                true,
+                MonthPassengerFlowDto::getNumber, MonthPassengerFlowDto::getTbNumber, MonthPassengerFlowDto::getHbScale, MonthPassengerFlowDto::getTbScale);
     }
 }

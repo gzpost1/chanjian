@@ -71,9 +71,9 @@ public class DecisionSupportScreenService extends ServiceImpl<DecisionWarnMapper
      * @return
      */
     public IPage<DecisionWarnWrapperDto> queryPageDecisionWarn (DecisionWarnPageVo vo) {
-        // 上月第一天日期
+        // 当月第一天日期
         String currentLastMonthFirstDayStr = DateTimeUtil.getCurrentMonthFirstDayStr() + DecisionSupportConstants.START_TIME_STR;
-        // 上月最后一天日期
+        // 当月最后一天日期
         String currentLastMonthLastDayStr = DateTimeUtil.getCurrentMonthLastDayStr() + DecisionSupportConstants.END_TIME_STR;
 
         // 查询缺失话术
@@ -140,10 +140,10 @@ public class DecisionSupportScreenService extends ServiceImpl<DecisionWarnMapper
      */
     public DecisionWarnWrapperDto queryDecisionWarnList (DecisionWarnVo vo) {
 
-        // 上月第一天日期
-        String currentLastMonthFirstDayStr = DateTimeUtil.getCurrentLastMonthFirstDayStr() + DecisionSupportConstants.START_TIME_STR;
-        // 上月最后一天日期
-        String currentLastMonthLastDayStr = DateTimeUtil.getCurrentLastMonthLastDayStr() + DecisionSupportConstants.END_TIME_STR;
+        // 当月第一天日期
+        String currentLastMonthFirstDayStr = DateTimeUtil.getCurrentMonthFirstDayStr() + DecisionSupportConstants.START_TIME_STR;
+        // 当月最后一天日期
+        String currentLastMonthLastDayStr = DateTimeUtil.getCurrentMonthLastDayStr() + DecisionSupportConstants.END_TIME_STR;
 
         // 查询缺失话术
         String missConclusionText = sysConfigService.selectConfigByKey(missConclusionTextKey);
