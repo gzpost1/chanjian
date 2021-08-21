@@ -20,7 +20,6 @@ import com.yjtech.wisdom.tourism.marketing.pojo.dto.HotelEvaluateSatisfactionRan
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateStatisticsDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateQueryVO;
 import com.yjtech.wisdom.tourism.marketing.service.MarketingEvaluateService;
-import com.yjtech.wisdom.tourism.resource.scenic.entity.vo.ScenicBaseVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -28,7 +27,8 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
+import java.util.TreeMap;
 
 /**
  * 整体酒店民宿满意度排行 -pass
@@ -74,14 +74,18 @@ public class OverallHotelHomestaySatisfactionRankingStrategyImpl extends BaseStr
 
         // 满意度下降 最多 酒店民宿名称
         List<RankingDto> satisfactionDownMax = getSatisfactionDownMax();
-        String downMaxName = "";
-        RankingDto maxDown = satisfactionDownMax.get(0);
-        if (!CollectionUtils.isEmpty(satisfactionDownMax)) {
-            downMaxName = maxDown.getName();
-        }
 
         // 其他满意度下降酒店民宿名称 显示第2-5个；如果小于2个则不显示；多个以顿号“、”分割
         String otherDownName = setOtherDownName(satisfactionDownMax);
+
+        if (CollectionUtils.isEmpty(satisfactionDownMax)) {
+            result.setMonthHbScale(DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE);
+            result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
+            result.setWarnNum(DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE);
+            return result;
+        }
+        RankingDto maxDown = satisfactionDownMax.get(0);
+        String downMaxName = maxDown.getName();
 
         // 本年满意度趋势
         List<AnalysisBaseInfo> analysisBaseInfos = marketingEvaluateService.queryEvaluateSatisfactionAnalysis(vo);
@@ -290,6 +294,8 @@ public class OverallHotelHomestaySatisfactionRankingStrategyImpl extends BaseStr
         // 上月
         vo.setBeginTime(startDate);
         vo.setEndTime(endDate);
+        vo.setType(DecisionSupportConstants.YEAR_MONTH);
+        vo.setStatus(DecisionSupportConstants.ENABLE);
         vo.setPageSize(500L);
         List<HotelEvaluateSatisfactionRankDTO> lastMonth = marketingEvaluateService.queryEvaluateSatisfactionRank(vo).getRecords();
 
@@ -308,7 +314,7 @@ public class OverallHotelHomestaySatisfactionRankingStrategyImpl extends BaseStr
                     int lastMonthValue = Integer.parseInt(last.getValue());
                     int lastLastMonthValue = Integer.parseInt(lastLast.getValue());
                     if (lastMonthValue < lastLastMonthValue) {
-                        double scale = MathUtil.calPercent(new BigDecimal(lastMonthValue - lastLastMonthValue), new BigDecimal(lastMonthValue), 2).doubleValue();
+                        double scale = Double.parseDouble(computeScale(lastMonthValue, lastLastMonthValue));
                         map.put(scale, last.getName());
                     }
                 }

@@ -3,13 +3,10 @@ package com.yjtech.wisdom.tourism.decisionsupport.business.strategyimpl;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.yjtech.wisdom.tourism.common.bean.BaseVO;
 import com.yjtech.wisdom.tourism.common.constant.DecisionSupportConstants;
 import com.yjtech.wisdom.tourism.common.enums.DecisionSupportConfigEnum;
 import com.yjtech.wisdom.tourism.common.utils.DateTimeUtil;
-import com.yjtech.wisdom.tourism.common.utils.MathUtil;
 import com.yjtech.wisdom.tourism.decisionsupport.business.dto.ScaleDto;
-import com.yjtech.wisdom.tourism.decisionsupport.business.dto.StatisticsDto;
 import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionEntity;
 import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionWarnEntity;
 import com.yjtech.wisdom.tourism.decisionsupport.common.strategy.BaseStrategy;
@@ -22,12 +19,13 @@ import com.yjtech.wisdom.tourism.resource.scenic.service.ScenicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 
 /**
@@ -100,6 +98,8 @@ public class OverallScenicSpotsSatisfactionRankingStrategyImpl extends BaseStrat
             ScenicScreenQuery vo = new ScenicScreenQuery();
             vo.setBeginTime(startDate);
             vo.setEndTime(endDate);
+            // 1：景区
+            vo.setDataType((byte)1);
             vo.setScenicId(rankingDto.getId());
             MarketingEvaluateStatisticsDTO evaluateStatisticsDTO = scenicService.queryScenicEvaluateStatistics(vo);
 
@@ -120,6 +120,9 @@ public class OverallScenicSpotsSatisfactionRankingStrategyImpl extends BaseStrat
             lastLastMonthDownMaxGoodEvaluation = new BigDecimal(lastLastMonthDownMaxEvaluation).multiply(new BigDecimal(lastLastMonthDownMaxSatisfaction)).divide(new BigDecimal(100), 0).intValue();
             rankingDto.getScale();
         }
+
+        // 景区满意度月环比下降Top5
+        result.setChartData(getCharData(satisfactionDownMax));
 
         // 处理指标报警
         switch (configId) {
@@ -151,7 +154,7 @@ public class OverallScenicSpotsSatisfactionRankingStrategyImpl extends BaseStrat
 
             // 景区满意度排行 _满意度下降最多景区评价量 （数值）
             case DecisionSupportConstants.JQMYDPH_MYDXJZDJQPJL :
-                String scale = MathUtil.calPercent(new BigDecimal(downMaxEvaluation - lastLastMonthDownMaxEvaluation), new BigDecimal(downMaxEvaluation), 2).toString();
+                String scale = computeScale(downMaxEvaluation, downMaxEvaluation);
                 result.setWarnNum(String.valueOf(downMaxEvaluation));
                 numberAlarmDeal(entity, result, scale);
                 // 判断是否使用缺失话术
@@ -162,7 +165,7 @@ public class OverallScenicSpotsSatisfactionRankingStrategyImpl extends BaseStrat
 
             // 景区满意度排行 _满意度下降最多景区好评量 （数值）
             case DecisionSupportConstants.JQMYDPH_MYDXJZDJQHPL :
-                String goodScale = MathUtil.calPercent(new BigDecimal(downMaxGoodEvaluation - lastLastMonthDownMaxGoodEvaluation), new BigDecimal(downMaxGoodEvaluation), 2).toString();
+                String goodScale = computeScale(downMaxGoodEvaluation, lastLastMonthDownMaxGoodEvaluation);
                 result.setWarnNum(String.valueOf(downMaxGoodEvaluation));
                 numberAlarmDeal(entity, result, goodScale);
                 // 判断是否使用缺失话术
@@ -173,7 +176,7 @@ public class OverallScenicSpotsSatisfactionRankingStrategyImpl extends BaseStrat
 
             // 景区满意度排行 _满意度下降最多景区满意度 （数值）
             case DecisionSupportConstants.JQMYDPH_MYDXJZDJQMYD :
-                String satisfactionScale = MathUtil.calPercent(new BigDecimal(Double.parseDouble(lastDownMaxSatisfaction) - Double.parseDouble(lastLastMonthDownMaxSatisfaction)), new BigDecimal(lastDownMaxSatisfaction), 2).toString();
+                String satisfactionScale = computeScale(Double.parseDouble(lastDownMaxSatisfaction),  Double.parseDouble(lastLastMonthDownMaxSatisfaction));
                 result.setWarnNum(lastDownMaxSatisfaction);
                 numberAlarmDeal(entity, result, satisfactionScale);
                 // 判断是否使用缺失话术
@@ -239,6 +242,8 @@ public class OverallScenicSpotsSatisfactionRankingStrategyImpl extends BaseStrat
         ScenicScreenQuery vo = new ScenicScreenQuery();
         vo.setBeginTime(startDate);
         vo.setEndTime(endDate);
+        // 1：景点
+        vo.setDataType((byte)1);
         return scenicService.querySatisfactionTop5(vo).getRecords();
     }
 
@@ -281,7 +286,7 @@ public class OverallScenicSpotsSatisfactionRankingStrategyImpl extends BaseStrat
                 // 满意度下降景区
                 if (lastName.equals(lastLastName) && lastValue < lastLastValue) {
                     // 满意度环比
-                    double hb = MathUtil.calPercent(new BigDecimal(lastValue - lastLastValue), new BigDecimal(lastValue), 2).doubleValue();
+                    double hb = Double.parseDouble(computeScale(lastValue, lastLastValue));
                     ScaleDto build = ScaleDto.builder().hb(String.valueOf(hb)).name(lastName).build();
                     // 上月满意度
                     build.setLastMonthSatisfaction(String.valueOf(lastLastValue));
@@ -291,7 +296,7 @@ public class OverallScenicSpotsSatisfactionRankingStrategyImpl extends BaseStrat
                         String lastYearLastMonthName = lastYearLastMonth.getName();
                         double lastYearLastMonthValue = Double.parseDouble(lastYearLastMonth.getValue());
                         if (lastName.equals(lastYearLastMonthName)) {
-                            String tb = MathUtil.calPercent(new BigDecimal(lastValue - lastYearLastMonthValue), new BigDecimal(lastValue), 2).toString();
+                            String tb = computeScale(lastValue, lastYearLastMonthValue);
                             // 满意度同比
                             build.setTb(tb);
                             // 上年 同月 满意度
@@ -343,5 +348,21 @@ public class OverallScenicSpotsSatisfactionRankingStrategyImpl extends BaseStrat
             }
         }
         return result.toString();
+    }
+
+    /**
+     * 图表：景区客流月环比下降Top5
+     *
+     * @param tourDownMax
+     * @return
+     */
+    private List getCharData(List<RankingDto> tourDownMax) {
+        List<Map> list = Lists.newArrayList();
+        for (RankingDto v : tourDownMax) {
+            HashMap<String, String> map = Maps.newHashMap();
+            double scale = Math.abs(Double.parseDouble(v.getScale()));
+            map.put(v.getName(), String.valueOf(scale));
+        }
+        return list;
     }
 }

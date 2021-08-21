@@ -48,6 +48,8 @@ public class OneTravelTransactionsNumberStrategyImpl extends BaseStrategy {
 
         // 一码游订单数量
         FxDistQueryVO fxDistQueryVO = new FxDistQueryVO();
+        fxDistQueryVO.setBeginTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentLastMonthStr() + DecisionSupportConstants.START_DAY_STR));
+        fxDistQueryVO.setEndTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentLastMonthStr() + DecisionSupportConstants.END_DAY_STR));
         String orderSalesTotal = fxDistApiService.queryOrderStatistics(fxDistQueryVO).getOrderSum().toString();
 
         fxDistQueryVO.setBeginTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentYearStr() + DecisionSupportConstants.START_DATE_STR));
@@ -77,6 +79,9 @@ public class OneTravelTransactionsNumberStrategyImpl extends BaseStrategy {
                 }
             }
         }
+
+        // 图表：一码游交易额年趋势
+        result.setChartData(sales);
 
         // 处理指标报警
         switch (configId) {

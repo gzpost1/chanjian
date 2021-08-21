@@ -14,6 +14,10 @@ public class DecisionSupportConstants {
     public static final String TOTAL_CHECK_NUM = "totalCheckNum";
 
     /**
+     * 启用
+     */
+    public static final Byte ENABLE = 1;
+    /**
      * 月
      */
     public static final String MONTH = "月";

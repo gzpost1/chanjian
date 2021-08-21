@@ -1,6 +1,7 @@
 package com.yjtech.wisdom.tourism.decisionsupport.business.strategyimpl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.yjtech.wisdom.tourism.common.bean.BaseValueVO;
 import com.yjtech.wisdom.tourism.common.constant.DecisionSupportConstants;
 import com.yjtech.wisdom.tourism.common.enums.DecisionSupportConfigEnum;
 import com.yjtech.wisdom.tourism.common.utils.DateTimeUtil;
@@ -9,12 +10,14 @@ import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionWarnEnt
 import com.yjtech.wisdom.tourism.decisionsupport.common.strategy.BaseStrategy;
 import com.yjtech.wisdom.tourism.decisionsupport.common.util.PlaceholderUtils;
 import com.yjtech.wisdom.tourism.dto.MonthPassengerFlowDto;
+import com.yjtech.wisdom.tourism.mybatis.utils.AnalysisUtils;
 import com.yjtech.wisdom.tourism.resource.scenic.query.ScenicScreenQuery;
 import com.yjtech.wisdom.tourism.resource.scenic.service.ScenicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -69,6 +72,9 @@ public class OverallScenicSpotsTouristFlowStrategyImpl extends BaseStrategy {
                 hb = v.getHbScale();
             }
         }
+
+        // 图表数据：月景区客流趋势
+        result.setChartData(getCharData(query));
 
         // 处理指标报警
         switch (configId) {
@@ -138,5 +144,28 @@ public class OverallScenicSpotsTouristFlowStrategyImpl extends BaseStrategy {
         // 设置月环比
         result.setMonthHbScale(hb);
         return result;
+    }
+
+    /**
+     * 图表：月景区客流
+     *
+     * @param query
+     * @return
+     */
+    private List<BaseValueVO> getCharData(ScenicScreenQuery query) {
+        // 当年 上月
+        LocalDateTime startDate = DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentYearStr() + DecisionSupportConstants.START_DATE_STR);
+        LocalDateTime endDate = DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentYearStr() + DecisionSupportConstants.END_DATE_STR);
+        query.setBeginTime(startDate);
+        query.setEndTime(endDate);
+
+        query.setType(DecisionSupportConstants.YEAR_MONTH);
+
+        return AnalysisUtils.MultipleBuildAnalysis(
+                query,
+                scenicService.queryPassengerFlowTrend(query),
+                true,
+                MonthPassengerFlowDto::getNumber, MonthPassengerFlowDto::getTbNumber, MonthPassengerFlowDto::getHbScale, MonthPassengerFlowDto::getTbScale);
+
     }
 }

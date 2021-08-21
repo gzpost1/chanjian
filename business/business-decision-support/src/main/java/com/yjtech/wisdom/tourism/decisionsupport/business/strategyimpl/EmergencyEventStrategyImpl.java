@@ -50,7 +50,10 @@ public class EmergencyEventStrategyImpl extends BaseStrategy {
 
         // 应急事件数量
         String total = DecisionSupportConstants.ZERO;
-        List<BaseVO> totalList = emergencyEvenScreenService.queryEventQuantity(new EventSumaryQuery());
+        EventSumaryQuery eventSumaryQuery = new EventSumaryQuery();
+        eventSumaryQuery.setBeginTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentLastMonthStr() + DecisionSupportConstants.START_DAY_STR));
+        eventSumaryQuery.setEndTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentLastMonthStr() + DecisionSupportConstants.END_DAY_STR));
+        List<BaseVO> totalList = emergencyEvenScreenService.queryEventQuantity(eventSumaryQuery);
         for (BaseVO v : totalList) {
             if (DecisionSupportConstants.TOTAL_STR.equals(v.getName())) {
                 total = v.getValue();
@@ -58,7 +61,6 @@ public class EmergencyEventStrategyImpl extends BaseStrategy {
         }
 
         // 年趋势
-        EventSumaryQuery eventSumaryQuery = new EventSumaryQuery();
         eventSumaryQuery.setBeginTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentYearStr() + DecisionSupportConstants.START_DATE_STR));
         eventSumaryQuery.setEndTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentYearStr() + DecisionSupportConstants.END_DATE_STR));
         eventSumaryQuery.setType(DecisionSupportConstants.YEAR_MONTH);
@@ -82,6 +84,9 @@ public class EmergencyEventStrategyImpl extends BaseStrategy {
                 hb = String.valueOf(JsonUtils.getValueByKey(value.get(i), DecisionSupportConstants.MOM));
             }
         }
+
+        // 图表数据：应急事件趋势
+        result.setChartData(baseValueList);
 
         // 处理指标报警
         switch (configId) {

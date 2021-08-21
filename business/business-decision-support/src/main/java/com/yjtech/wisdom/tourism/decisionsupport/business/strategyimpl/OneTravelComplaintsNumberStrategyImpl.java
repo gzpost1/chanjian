@@ -49,7 +49,9 @@ public class OneTravelComplaintsNumberStrategyImpl extends BaseStrategy {
         String currentLastMonthStr = super.getCurrentLastMonthStr();
 
         OneTravelQueryVO oneTravelQueryVO = new OneTravelQueryVO();
-        oneTravelQueryVO.setType(DecisionSupportConstants.YEAR_MONTH);
+        oneTravelQueryVO.setBeginTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentLastMonthStr() + DecisionSupportConstants.START_DAY_STR));
+        oneTravelQueryVO.setEndTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentLastMonthStr() + DecisionSupportConstants.END_DAY_STR));
+        oneTravelQueryVO.setType(DecisionSupportConstants.YEAR_MONTH_DAY);
         List<AnalysisBaseInfo> analysisBaseInfos = oneTravelApiService.queryComplaintAnalysis(oneTravelQueryVO);
 
         String currentLastMonthStr1 = DateTimeUtil.getCurrentLastMonthStr();
@@ -79,6 +81,9 @@ public class OneTravelComplaintsNumberStrategyImpl extends BaseStrategy {
                 }
             }
         }
+
+        // 图表数据：投诉趋势
+        result.setChartData(analysisBaseInfos);
 
         // 处理指标报警
         switch (configId) {

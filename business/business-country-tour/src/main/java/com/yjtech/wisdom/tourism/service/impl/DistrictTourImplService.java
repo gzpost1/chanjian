@@ -207,10 +207,10 @@ public class DistrictTourImplService implements DistrictExtPt {
 
                 // 前一天的数据
                 Integer beforeNumber = currentYear.get(i - 1).getNumber();
-                String beforeDay = MathUtil.calPercent(new BigDecimal(currentNumber - beforeNumber), new BigDecimal(currentNumber), 2).toString();
+                String beforeDay = MathUtil.calPercent(new BigDecimal(currentNumber - beforeNumber), new BigDecimal(currentNumber), 1).toString();
                 currentYear.get(i).setHbScale(beforeDay);
 
-                String LastYearDay = MathUtil.calPercent(new BigDecimal(currentNumber - lastNumber), new BigDecimal(currentNumber), 2).toString();
+                String LastYearDay = MathUtil.calPercent(new BigDecimal(currentNumber - lastNumber), new BigDecimal(currentNumber), 1).toString();
                 currentYear.get(i).setTbScale(LastYearDay);
 
                 // 设置去年 数量
@@ -281,10 +281,10 @@ public class DistrictTourImplService implements DistrictExtPt {
 
             // 前一天的数据
             Integer beforeNumber = currentMonth.get(i - 1).getNumber();
-            String beforeDay = MathUtil.calPercent(new BigDecimal(currentNumber - beforeNumber), new BigDecimal(currentNumber), 2).toString();
+            String beforeDay = MathUtil.calPercent(new BigDecimal(currentNumber - beforeNumber), new BigDecimal(currentNumber), 1).toString();
             currentMonth.get(i).setHbScale(beforeDay);
 
-            String LastYearDay = MathUtil.calPercent(new BigDecimal(currentNumber - lastNumber), new BigDecimal(currentNumber), 2).toString();
+            String LastYearDay = MathUtil.calPercent(new BigDecimal(currentNumber - lastNumber), new BigDecimal(currentNumber), 1).toString();
             currentMonth.get(i).setTbScale(LastYearDay);
 
             // 设置去年 数量

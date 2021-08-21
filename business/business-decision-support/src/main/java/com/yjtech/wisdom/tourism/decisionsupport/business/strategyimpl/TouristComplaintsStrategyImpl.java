@@ -48,6 +48,8 @@ public class TouristComplaintsStrategyImpl extends BaseStrategy {
 
         // 旅游投诉总量
         TravelComplaintScreenQueryVO travelComplaintScreenQueryVO = new TravelComplaintScreenQueryVO();
+        travelComplaintScreenQueryVO.setBeginTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentLastMonthStr() + DecisionSupportConstants.START_DAY_STR));
+        travelComplaintScreenQueryVO.setEndTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentLastMonthStr() + DecisionSupportConstants.END_DAY_STR));
         Integer total = travelComplaintService.queryTravelComplaintTotal(travelComplaintScreenQueryVO);
 
         travelComplaintScreenQueryVO.setBeginTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentYearStr() + DecisionSupportConstants.START_DATE_STR));
@@ -78,6 +80,9 @@ public class TouristComplaintsStrategyImpl extends BaseStrategy {
                 }
             }
         }
+
+        // 图表： 投诉趋势
+        result.setChartData(tourComplaintTotal);
 
         // 处理指标报警
         switch (configId) {

@@ -23,7 +23,9 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 
 /**
@@ -90,6 +92,9 @@ public class OverallScenicSpotsTouristFlowRankingStrategyImpl extends BaseStrate
                 hb = v.getHbScale();
             }
         }
+
+        // 图标：景区客流月环比下降Top5
+        result.setChartData(getCharData(tourDownMax));
 
         // 处理指标报警
         switch (configId) {
@@ -172,6 +177,22 @@ public class OverallScenicSpotsTouristFlowRankingStrategyImpl extends BaseStrate
     }
 
     /**
+     * 图表：景区客流月环比下降Top5
+     *
+     * @param tourDownMax
+     * @return
+     */
+    private List getCharData(List<RankingDto> tourDownMax) {
+        List<Map> list = Lists.newArrayList();
+        for (RankingDto v : tourDownMax) {
+            HashMap<String, String> map = Maps.newHashMap();
+            double scale = Math.abs(Double.parseDouble(v.getScale()));
+            map.put(v.getName(), String.valueOf(scale));
+        }
+        return list;
+    }
+
+    /**
      * 获取满意度下降最多的酒店民宿名称
      *
      * @return
@@ -188,7 +209,6 @@ public class OverallScenicSpotsTouristFlowRankingStrategyImpl extends BaseStrate
 
         ScenicScreenQuery vo = new ScenicScreenQuery();
         vo.setBeginTime(startDate);
-        vo.setEndTime(endDate);
         vo.setEndTime(endDate);
         vo.setPageSize(500L);
         List<ScenicBaseVo> records = scenicService.queryPassengerFlowTop5(vo).getRecords();
@@ -208,9 +228,9 @@ public class OverallScenicSpotsTouristFlowRankingStrategyImpl extends BaseStrate
                 if (last.getName().equals(lastLast.getName())) {
                     int lastMonthValue = Integer.parseInt(last.getValue());
                     int lastLastMonthValue = Integer.parseInt(lastLast.getValue());
-                    // 计算下降 的景区同比
+                    // 计算下降 的景区环比比
                     if (lastMonthValue < lastLastMonthValue) {
-                        double scale = MathUtil.calPercent(new BigDecimal(lastMonthValue - lastLastMonthValue), new BigDecimal(lastMonthValue), 2).doubleValue();
+                        double scale = Double.parseDouble(computeScale(lastMonthValue, lastLastMonthValue));
                         map.put(scale, last.getValue());
                     }
                 }

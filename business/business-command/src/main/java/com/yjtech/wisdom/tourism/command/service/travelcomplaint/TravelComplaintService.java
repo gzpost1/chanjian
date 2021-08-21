@@ -491,12 +491,12 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
             }
         }
 
-        if(sendFlag){
+       /* if(sendFlag){
             //为指派人推送消息
             messageMangerService.sendMessage(new SendMessageVo(sendType.toArray(new Integer[0]), dataId,
                     MessageEventTypeEnum.MESSAGE_EVENT_TYPE_TRAVEL_COMPLAINT.getValue().intValue(),
                     title, content, eventDealPersonIdArray.toArray(new Long[0])));
-        }
+        }*/
     }
 
     /**

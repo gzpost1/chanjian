@@ -25,6 +25,7 @@ public class ProvinceOutsideTourStrategyImpl extends BaseStrategy {
     @Autowired
     private TargetQueryService targetQueryService;
 
+
     /**
      * 对象赋值方法
      *
@@ -42,11 +43,14 @@ public class ProvinceOutsideTourStrategyImpl extends BaseStrategy {
         // 平台简称
         String simpleName = super.getPlatformSimpleName();
         // 省外游客数量
-        String provinceOutsideNumber = targetQueryService.queryProvinceOutsideNumber(DecisionSupportConstants.PROVINCE_OUTSIDE_TYPE, isSimulation);
+        String provinceOutsideNumber = targetQueryService.queryProvinceNumber(DecisionSupportConstants.PROVINCE_OUTSIDE_TYPE, isSimulation).getProvinceOutsideTouristNum().toString();
         // 环比
         String hb = targetQueryService.queryProvinceScale(TargetQueryConstants.PROVINCE_SCALE_HB, TargetQueryConstants.PROVINCE_OUTSIDE_TYPE, isSimulation);
         // 同比
         String tb = targetQueryService.queryProvinceScale(TargetQueryConstants.PROVINCE_SCALE_TB, TargetQueryConstants.PROVINCE_OUTSIDE_TYPE, isSimulation);
+
+        // 图标数据：月客流趋势
+        result.setChartData(getProvinceCharData(DecisionSupportConstants.PROVINCE_OUTSIDE_TYPE));
 
         // 处理指标报警
         switch (configId) {
@@ -118,4 +122,6 @@ public class ProvinceOutsideTourStrategyImpl extends BaseStrategy {
         result.setMonthHbScale(hb);
         return result;
     }
+
+
 }

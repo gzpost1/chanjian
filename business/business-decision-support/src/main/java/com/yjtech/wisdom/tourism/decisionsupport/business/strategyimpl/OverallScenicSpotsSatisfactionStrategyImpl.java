@@ -1,6 +1,8 @@
 package com.yjtech.wisdom.tourism.decisionsupport.business.strategyimpl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.yjtech.wisdom.tourism.common.constant.DecisionSupportConstants;
 import com.yjtech.wisdom.tourism.common.constant.DecisionSupportTargetConstants;
 import com.yjtech.wisdom.tourism.common.enums.DecisionSupportConfigEnum;
@@ -12,6 +14,7 @@ import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionWarnEnt
 import com.yjtech.wisdom.tourism.decisionsupport.common.strategy.BaseStrategy;
 import com.yjtech.wisdom.tourism.decisionsupport.common.util.PlaceholderUtils;
 import com.yjtech.wisdom.tourism.dto.MonthPassengerFlowDto;
+import com.yjtech.wisdom.tourism.dto.RankingDto;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateStatisticsDTO;
 import com.yjtech.wisdom.tourism.resource.scenic.query.ScenicScreenQuery;
 import com.yjtech.wisdom.tourism.resource.scenic.service.ScenicService;
@@ -22,7 +25,9 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 整体景区满意度 - pass
@@ -79,22 +84,24 @@ public class OverallScenicSpotsSatisfactionStrategyImpl extends BaseStrategy {
         String tb = "-";
 
         if (!DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE.equals(lastLastMonthSatisfaction.getSatisfaction())) {
-            hb = MathUtil.calPercent(new BigDecimal(Double.parseDouble(lastMonthSatisfaction.getSatisfaction()) - Double.parseDouble(lastLastMonthSatisfaction.getSatisfaction())), new BigDecimal(lastMonthSatisfaction.getSatisfaction()), 2).toString();
-            tb = MathUtil.calPercent(new BigDecimal(Double.parseDouble(lastMonthSatisfaction.getSatisfaction()) - Double.parseDouble(lastYearLastMonthSatisfaction.getSatisfaction())), new BigDecimal(lastMonthSatisfaction.getSatisfaction()), 2).toString();
+            hb = computeScale(Double.parseDouble(lastMonthSatisfaction.getSatisfaction()), Double.parseDouble(lastLastMonthSatisfaction.getSatisfaction()));
+            tb = computeScale(Double.parseDouble(lastMonthSatisfaction.getSatisfaction()), Double.parseDouble(lastYearLastMonthSatisfaction.getSatisfaction()));
         }
 
         // 评价数量 环比
         String evaluateHb = "-";
         if (!DecisionSupportConstants.ZERO_NUMBER.equals(lastLastMonthSatisfaction.getTotal())) {
-            evaluateHb = MathUtil.calPercent(new BigDecimal(lastMonthSatisfaction.getTotal() - lastLastMonthSatisfaction.getTotal()), new BigDecimal(lastMonthSatisfaction.getTotal()), 2).toString();
+            evaluateHb = computeScale(lastMonthSatisfaction.getTotal(), lastLastMonthSatisfaction.getTotal());
         }
 
         // 好评数量 环比
         String goodEvaluateHb = "-";
         if (!DecisionSupportConstants.ZERO_NUMBER.equals(lastLastMonthSatisfaction.getGoodTotal())) {
-            evaluateHb = MathUtil.calPercent(new BigDecimal(lastMonthSatisfaction.getGoodTotal() - lastLastMonthSatisfaction.getGoodTotal()), new BigDecimal(lastMonthSatisfaction.getGoodTotal()), 2).toString();
+            evaluateHb = computeScale(lastMonthSatisfaction.getGoodTotal(), lastLastMonthSatisfaction.getGoodTotal());
         }
 
+        // 图标数据：景区评价分布
+        result.setChartData(getCharData(startDate, endDate));
 
         // 处理指标报警
         switch (configId) {
@@ -178,6 +185,21 @@ public class OverallScenicSpotsSatisfactionStrategyImpl extends BaseStrategy {
     }
 
     /**
+     * 图标数据：景区评价分布
+     *
+     * @param startDate
+     * @return
+     */
+    private List getCharData(LocalDateTime startDate, LocalDateTime endDate) {
+        ScenicScreenQuery vo = new ScenicScreenQuery();
+        vo.setBeginTime(startDate);
+        vo.setEndTime(endDate);
+        // 1：景区
+        vo.setDataType((byte)1);
+        return scenicService.queryEvaluateTypeDistribution(vo);
+    }
+
+    /**
      * 获取评价
      *
      * @param startDate
@@ -185,10 +207,27 @@ public class OverallScenicSpotsSatisfactionStrategyImpl extends BaseStrategy {
      * @return
      */
     private StatisticsDto getSatisfaction (LocalDateTime startDate, LocalDateTime endDate) {
+       return getSatisfaction(startDate, endDate, null);
+    }
+
+    /**
+     * 获取评价
+     *
+     * @param startDate
+     * @param endDate
+     * @param type
+     * @return
+     */
+    private StatisticsDto getSatisfaction (LocalDateTime startDate, LocalDateTime endDate, Byte type) {
         // 整体景区评价数量、好评数量、整体景区满意度
         ScenicScreenQuery vo = new ScenicScreenQuery();
         vo.setBeginTime(startDate);
         vo.setEndTime(endDate);
+        // 1:景点
+        vo.setDataType((byte)1);
+        if (type != null) {
+            vo.setEvaluateType(type);
+        }
         MarketingEvaluateStatisticsDTO marketingEvaluateStatisticsDTO = scenicService.queryScenicEvaluateStatistics(vo);
 
         int total = 0;
@@ -204,6 +243,5 @@ public class OverallScenicSpotsSatisfactionStrategyImpl extends BaseStrategy {
 
         return StatisticsDto.builder().total(total).goodTotal(good).satisfaction(satisfaction).build();
     }
-
 
 }
