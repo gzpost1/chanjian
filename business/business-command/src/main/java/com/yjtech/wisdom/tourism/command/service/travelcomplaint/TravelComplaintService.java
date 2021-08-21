@@ -47,6 +47,7 @@ import org.springframework.util.Assert;
 
 import java.lang.reflect.Field;
 import java.text.MessageFormat;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -97,8 +98,10 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
             //发送消息
             sendMessageNotice(CacheKeyContants.KEY_ASSIGN_TRAVEL_COMPLAINT,
                     entity.getId(),
+                    null,
+                    null,
                     platformTemplate,
-                    platformTemplate,
+                    null,
                     AssignUserInfo.class);
         }
 
@@ -195,22 +198,26 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
 
         //更新成功，且数据状态为待处理时，发送消息
         if(result > 0 && TravelComplaintStatusEnum.TRAVEL_COMPLAINT_STATUS_NO_DEAL.getValue().equals(complaintEntity.getStatus())){
+            //获取投诉对象名称
+            String complaintObject = getComplaintObject(complaintEntity.getComplaintType(), complaintEntity.getComplaintObject(), complaintEntity.getObjectId());
             //构建后台消息模板
             String platformTemplate = MessageFormat.format(
                     TemplateConstants.TEMPLATE_PLATFORM_TRAVEL_COMPLAINT_ASSIGN,
                     TravelComplaintTypeEnum.getDescByValue(complaintEntity.getComplaintType()),
-                    getComplaintObject(complaintEntity.getComplaintType(), complaintEntity.getComplaintObject(), complaintEntity.getObjectId()),
+                    complaintObject,
                     complaintEntity.getComplaintTime().toString(),
                     complaintEntity.getLocation());
             //构建App消息模板
             String appTemplate = MessageFormat.format(
                     TemplateConstants.TEMPLATE_APP_TRAVEL_COMPLAINT_ASSIGN,
-                    getComplaintObject(complaintEntity.getComplaintType(), complaintEntity.getComplaintObject(), complaintEntity.getObjectId()));
+                    complaintObject);
             //发送消息
             sendMessageNotice(CacheKeyContants.KEY_ASSIGN_TRAVEL_COMPLAINT,
                     complaintEntity.getId(),
+                    appTemplate,
+                    appTemplate,
                     platformTemplate,
-                    platformTemplate,
+                    Arrays.asList(complaintObject),
                     AssignUserInfo.class);
         }
 
@@ -425,10 +432,12 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
      * @param dataId
      * @param title
      * @param content
+     * @param pcTitle
+     * @param smsContent
      * @param tClass
      * @param <T>
      */
-    private <T> void sendMessageNotice(String cacheKey, Long dataId, String title, String content, Class<T> tClass) {
+    private <T> void sendMessageNotice(String cacheKey, Long dataId, String title, String content, String pcTitle, List<String> smsContent, Class<T> tClass) {
         //构建用户id列表
         List<Long> eventDealPersonIdArray = Lists.newArrayList();
         //构建发送类型
@@ -491,12 +500,13 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
             }
         }
 
-       /* if(sendFlag){
+        if(sendFlag){
             //为指派人推送消息
             messageMangerService.sendMessage(new SendMessageVo(sendType.toArray(new Integer[0]), dataId,
                     MessageEventTypeEnum.MESSAGE_EVENT_TYPE_TRAVEL_COMPLAINT.getValue().intValue(),
-                    title, content, eventDealPersonIdArray.toArray(new Long[0])));
-        }*/
+                    title, content, pcTitle, smsContent,
+                    eventDealPersonIdArray.toArray(new Long[0])));
+        }
     }
 
     /**
