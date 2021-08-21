@@ -28,7 +28,6 @@ import com.yjtech.wisdom.tourism.common.exception.CustomException;
 import com.yjtech.wisdom.tourism.common.exception.ErrorCode;
 import com.yjtech.wisdom.tourism.common.sms.MessageCall;
 import com.yjtech.wisdom.tourism.common.sms.MessageCallDto;
-import com.yjtech.wisdom.tourism.common.utils.DateUtils;
 import com.yjtech.wisdom.tourism.common.utils.StringUtils;
 import com.yjtech.wisdom.tourism.common.utils.bean.BeanUtils;
 import com.yjtech.wisdom.tourism.hotel.service.TbHotelInfoService;
@@ -250,10 +249,6 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
 
         int result = baseMapper.update(complaintEntity, updateWrapper);
 
-        if (result > 0) {
-            //todo：是否进行消息推送
-        }
-
         return result;
     }
 
@@ -351,6 +346,19 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
     /** ******************** 大屏 ******************** */
 
     /**
+     * 查询综合总览-旅游投诉总量
+     *
+     * @param vo
+     * @return
+     */
+    public Integer queryTravelComplaintTotalToIndex(TravelComplaintScreenQueryVO vo) {
+        LambdaQueryWrapper<TravelComplaintEntity> queryWrapper = new QueryWrapper<TravelComplaintEntity>().lambda()
+                .between(Objects.nonNull(vo.getBeginTime()) && Objects.nonNull(vo.getEndTime()), TravelComplaintEntity::getComplaintTime, vo.getBeginTime(), vo.getEndTime());
+
+        return baseMapper.selectCount(queryWrapper);
+    }
+
+    /**
      * 查询旅游投诉总量
      *
      * @param vo
@@ -401,15 +409,12 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
      */
     @Transactional(readOnly = true)
     public List<AnalysisBaseInfo> queryComplaintAnalysis(TravelComplaintScreenQueryVO vo) {
-        //初始化当年月份信息
-        List<String> monthMarkList = DateUtils.getEveryMonthOfCurrentYear();
-
         //获取当前年度月趋势信息
         List<AnalysisMonthChartInfo> currentAnalysisMonthInfo = this.baseMapper.queryComplaintCurrentAnalysisMonthInfo(vo);
         //获取去年度月趋势信息
         List<AnalysisMonthChartInfo> lastAnalysisMonthInfo = this.baseMapper.queryComplaintLastAnalysisMonthInfo(vo);
 
-        return AnalysisUtils.buildAnalysisInfo(monthMarkList, currentAnalysisMonthInfo, lastAnalysisMonthInfo);
+        return AnalysisUtils.buildAnalysisInfo(currentAnalysisMonthInfo, lastAnalysisMonthInfo);
     }
 
     /**

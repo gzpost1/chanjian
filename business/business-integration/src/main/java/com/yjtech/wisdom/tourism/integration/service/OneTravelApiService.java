@@ -132,15 +132,12 @@ public class OneTravelApiService {
      */
     @Transactional(readOnly = true)
     public List<AnalysisBaseInfo> queryComplaintAnalysis(OneTravelQueryVO vo){
-        //初始化当年月份信息
-        List<String> monthMarkList = DateUtils.getEveryMonthOfCurrentYear();
-
         //获取当前年度月趋势信息
         List<AnalysisMonthChartInfo> currentAnalysisMonthInfo = oneTravelApiMapper.queryComplaintCurrentAnalysisMonthInfo(vo);
         //获取去年度月趋势信息
         List<AnalysisMonthChartInfo> lastAnalysisMonthInfo = oneTravelApiMapper.queryComplaintLastAnalysisMonthInfo(vo);
 
-        return AnalysisUtils.buildAnalysisInfo(monthMarkList, currentAnalysisMonthInfo, lastAnalysisMonthInfo);
+        return AnalysisUtils.buildAnalysisInfo(currentAnalysisMonthInfo, lastAnalysisMonthInfo);
     }
 
 }

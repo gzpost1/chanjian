@@ -45,4 +45,22 @@ public class AnalysisMonthChartInfo implements Serializable {
         this.time = time;
         this.count = BigDecimal.ZERO;
     }
+
+    /**
+     * 构建
+     * @param time
+     * @param count
+     * @param lastYearCount 去年同月数据量，用于计算同比
+     * @param lastMonthCount 同年上月数据量，用于计算环比
+     */
+    public AnalysisMonthChartInfo build(String time, BigDecimal count, BigDecimal lastYearCount, BigDecimal lastMonthCount) {
+        setTime(time);
+        setCount(count);
+        setSame(null != lastYearCount && BigDecimal.ZERO.compareTo(lastYearCount) < 0 ?
+                (count.subtract(lastYearCount)).divide(lastYearCount,3,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)).setScale(1,BigDecimal.ROUND_HALF_UP) : null);
+        setSequential(null != lastMonthCount && BigDecimal.ZERO.compareTo(lastMonthCount) < 0 ?
+                (count.subtract(lastMonthCount)).divide(lastMonthCount,3,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)).setScale(1,BigDecimal.ROUND_HALF_UP) : null);
+        return this;
+    }
+
 }

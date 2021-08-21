@@ -3,7 +3,10 @@ package com.yjtech.wisdom.tourism.mybatis.utils;
 import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateUtil;
 import com.google.common.collect.Lists;
-import com.yjtech.wisdom.tourism.common.bean.*;
+import com.yjtech.wisdom.tourism.common.bean.AnalysisBaseInfo;
+import com.yjtech.wisdom.tourism.common.bean.AnalysisMonthChartInfo;
+import com.yjtech.wisdom.tourism.common.bean.BaseSaleTrendVO;
+import com.yjtech.wisdom.tourism.common.bean.BaseValueVO;
 import com.yjtech.wisdom.tourism.common.enums.AnalysisDateTypeEnum;
 import com.yjtech.wisdom.tourism.common.utils.*;
 import com.yjtech.wisdom.tourism.mybatis.entity.TimeBaseQuery;
@@ -187,13 +190,14 @@ public class AnalysisUtils {
      * 构建趋势信息
      *
      * ps：构建部分大屏月趋势信息，具有强耦合性
-     * @param monthMarkList
      * @param currentAnalysisMonthInfo
      * @param lastAnalysisMonthInfo
      * @return
      */
-    public static List<AnalysisBaseInfo> buildAnalysisInfo(List<String> monthMarkList,
-                                         List<AnalysisMonthChartInfo> currentAnalysisMonthInfo, List<AnalysisMonthChartInfo> lastAnalysisMonthInfo){
+    public static List<AnalysisBaseInfo> buildAnalysisInfo(List<AnalysisMonthChartInfo> currentAnalysisMonthInfo, List<AnalysisMonthChartInfo> lastAnalysisMonthInfo){
+        //初始化当年月份信息
+        List<String> monthMarkList = DateUtils.getEveryMonthOfCurrentYear();
+
         //构建今年月趋势信息
         List<AnalysisMonthChartInfo> currentData = new ArrayList<>();
         //构建去年月趋势信息

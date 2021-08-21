@@ -4,22 +4,27 @@ import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.yjtech.wisdom.tourism.command.dto.travelcomplaint.TravelComplaintDTO;
 import com.yjtech.wisdom.tourism.command.dto.travelcomplaint.TravelComplaintListDTO;
+import com.yjtech.wisdom.tourism.command.extensionpoint.TravelComplaintExtensionConstant;
+import com.yjtech.wisdom.tourism.command.extensionpoint.TravelComplaintQryExtPt;
 import com.yjtech.wisdom.tourism.command.service.travelcomplaint.TravelComplaintService;
 import com.yjtech.wisdom.tourism.command.vo.travelcomplaint.TravelComplaintQueryVO;
 import com.yjtech.wisdom.tourism.command.vo.travelcomplaint.TravelComplaintScreenQueryVO;
 import com.yjtech.wisdom.tourism.common.bean.AnalysisBaseInfo;
 import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
-import com.yjtech.wisdom.tourism.common.constant.Constants;
 import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.common.core.domain.IdParam;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
+import com.yjtech.wisdom.tourism.extension.BizScenario;
+import com.yjtech.wisdom.tourism.extension.ExtensionConstant;
+import com.yjtech.wisdom.tourism.extension.ExtensionExecutor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -35,6 +40,8 @@ public class TravelComplaintScreenController {
 
     @Autowired
     private TravelComplaintService travelComplaintService;
+    @Resource
+    private ExtensionExecutor extensionExecutor;
 
 
     /**
@@ -42,8 +49,10 @@ public class TravelComplaintScreenController {
      * @return
      */
     @PostMapping("queryTravelComplaintTotal")
-    public JsonResult queryTravelComplaintTotal(@RequestBody @Valid TravelComplaintScreenQueryVO vo) {
-        return JsonResult.success(travelComplaintService.queryTravelComplaintTotal(vo));
+    public JsonResult<Integer> queryTravelComplaintTotal(@RequestBody @Valid TravelComplaintScreenQueryVO vo) {
+        return JsonResult.success(extensionExecutor.execute(TravelComplaintQryExtPt.class,
+                buildBizScenario(TravelComplaintExtensionConstant.TRAVEL_COMPLAINT_QUANTITY, vo.getIsSimulation()),
+                extension -> extension.queryTravelComplaintTotal(vo)));
     }
 
     /**
@@ -54,7 +63,9 @@ public class TravelComplaintScreenController {
     public JsonResult<List<BasePercentVO>> queryComplaintTypeDistribution(@RequestBody @Valid TravelComplaintScreenQueryVO vo) {
         //默认启用
         vo.setEquipStatus(EntityConstants.ENABLED);
-        return JsonResult.success(travelComplaintService.queryComplaintTypeDistribution(vo));
+        return JsonResult.success(extensionExecutor.execute(TravelComplaintQryExtPt.class,
+                buildBizScenario(TravelComplaintExtensionConstant.TRAVEL_COMPLAINT_QUANTITY, vo.getIsSimulation()),
+                extension -> extension.queryComplaintTypeDistribution(vo)));
     }
 
     /**
@@ -65,7 +76,9 @@ public class TravelComplaintScreenController {
     public JsonResult<List<BasePercentVO>> queryComplaintStatusDistribution(@RequestBody @Valid TravelComplaintScreenQueryVO vo) {
         //默认启用
         vo.setEquipStatus(EntityConstants.ENABLED);
-        return JsonResult.success(travelComplaintService.queryComplaintStatusDistribution(vo));
+        return JsonResult.success(extensionExecutor.execute(TravelComplaintQryExtPt.class,
+                buildBizScenario(TravelComplaintExtensionConstant.TRAVEL_COMPLAINT_QUANTITY, vo.getIsSimulation()),
+                extension -> extension.queryComplaintStatusDistribution(vo)));
     }
 
     /**
@@ -76,7 +89,9 @@ public class TravelComplaintScreenController {
     public JsonResult<List<BaseVO>> queryComplaintTopByType(@RequestBody @Valid TravelComplaintScreenQueryVO vo) {
         //默认启用
         vo.setEquipStatus(EntityConstants.ENABLED);
-        return JsonResult.success(travelComplaintService.queryComplaintTopByType(vo));
+        return JsonResult.success(extensionExecutor.execute(TravelComplaintQryExtPt.class,
+                buildBizScenario(TravelComplaintExtensionConstant.TRAVEL_COMPLAINT_QUANTITY, vo.getIsSimulation()),
+                extension -> extension.queryComplaintTopByType(vo)));
     }
 
     /**
@@ -87,7 +102,9 @@ public class TravelComplaintScreenController {
     public JsonResult<List<AnalysisBaseInfo>> queryComplaintAnalysis(@RequestBody @Valid TravelComplaintScreenQueryVO vo) {
         //默认启用
         vo.setEquipStatus(EntityConstants.ENABLED);
-        return JsonResult.success(travelComplaintService.queryComplaintAnalysis(vo));
+        return JsonResult.success(extensionExecutor.execute(TravelComplaintQryExtPt.class,
+                buildBizScenario(TravelComplaintExtensionConstant.TRAVEL_COMPLAINT_QUANTITY, vo.getIsSimulation()),
+                extension -> extension.queryComplaintAnalysis(vo)));
     }
 
     /**
@@ -117,6 +134,17 @@ public class TravelComplaintScreenController {
     public JsonResult<TravelComplaintDTO> queryById(@RequestBody @Valid IdParam idParam) {
         TravelComplaintDTO dto = travelComplaintService.queryById(idParam.getId());
         return JsonResult.success(dto);
+    }
+
+    /**
+     * 构建业务扩展点
+     * @param useCasePraiseType
+     * @param isSimulation
+     * @return
+     */
+    private BizScenario buildBizScenario(String useCasePraiseType, Byte isSimulation) {
+        return BizScenario.valueOf(ExtensionConstant.TRAVEL_COMPLAINT, useCasePraiseType
+                , isSimulation == 0 ? ExtensionConstant.SCENARIO_IMPL : ExtensionConstant.SCENARIO_MOCK);
     }
 
 }

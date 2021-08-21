@@ -197,15 +197,12 @@ public class FxDistApiService {
      */
     @Transactional(readOnly = true)
     public List<AnalysisBaseInfo> queryOrderAnalysis(FxDistQueryVO vo){
-        //初始化当年月份信息
-        List<String> monthMarkList = DateUtils.getEveryMonthOfCurrentYear();
-
         //获取当前年度月趋势信息
         List<AnalysisMonthChartInfo> currentAnalysisMonthInfo = fxDistApiMapper.queryOrderCurrentAnalysisMonthInfo(vo);
         //获取去年度月趋势信息
         List<AnalysisMonthChartInfo> lastAnalysisMonthInfo = fxDistApiMapper.queryOrderLastAnalysisMonthInfo(vo);
 
-        return AnalysisUtils.buildAnalysisInfo(monthMarkList, currentAnalysisMonthInfo, lastAnalysisMonthInfo);
+        return AnalysisUtils.buildAnalysisInfo(currentAnalysisMonthInfo, lastAnalysisMonthInfo);
     }
 
     /**
@@ -214,15 +211,12 @@ public class FxDistApiService {
      */
     @Transactional(readOnly = true)
     public List<AnalysisBaseInfo> queryOrderSumAnalysis(FxDistQueryVO vo){
-        //初始化当年月份信息
-        List<String> monthMarkList = DateUtils.getEveryMonthOfCurrentYear();
-
         //获取当前年度月趋势信息
         List<AnalysisMonthChartInfo> currentAnalysisMonthInfo = fxDistApiMapper.queryOrderSumCurrentAnalysisMonthInfo(vo);
         //获取去年度月趋势信息
         List<AnalysisMonthChartInfo> lastAnalysisMonthInfo = fxDistApiMapper.queryOrderSumLastAnalysisMonthInfo(vo);
 
-        return AnalysisUtils.buildAnalysisInfo(monthMarkList, currentAnalysisMonthInfo, lastAnalysisMonthInfo);
+        return AnalysisUtils.buildAnalysisInfo(currentAnalysisMonthInfo, lastAnalysisMonthInfo);
     }
 
 }

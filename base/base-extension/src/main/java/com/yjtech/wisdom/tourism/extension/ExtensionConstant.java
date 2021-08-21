@@ -32,6 +32,22 @@ public final class ExtensionConstant {
      * 游客结构
      */
     public static final String DISTRICT = "district";
+
+    /**
+     * 旅游投诉
+     */
+    public static final String TRAVEL_COMPLAINT = "travelComplaint";
+
+    /**
+     * 酒店民宿
+     */
+    public static final String HOTEL = "hotel";
+
+    /**
+     * 一码游
+     */
+    public static final String ONE_TRAVEL = "oneTravel";
+
     /*  业务---end */
 
     /*  用例常量参考(TicketExtensionConstant) */

@@ -1,9 +1,9 @@
 package com.yjtech.wisdom.tourism.portal.controller.index;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.yjtech.wisdom.tourism.command.entity.travelcomplaint.TravelComplaintEntity;
+import com.yjtech.wisdom.tourism.command.extensionpoint.TravelComplaintExtensionConstant;
+import com.yjtech.wisdom.tourism.command.extensionpoint.TravelComplaintQryExtPt;
 import com.yjtech.wisdom.tourism.command.service.travelcomplaint.TravelComplaintService;
+import com.yjtech.wisdom.tourism.command.vo.travelcomplaint.TravelComplaintScreenQueryVO;
 import com.yjtech.wisdom.tourism.common.bean.index.ComplaintStatisticsDTO;
 import com.yjtech.wisdom.tourism.common.bean.index.HotelStatisticsDTO;
 import com.yjtech.wisdom.tourism.common.bean.index.ScenicBuildingDTO;
@@ -12,6 +12,9 @@ import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.common.utils.bean.BeanUtils;
 import com.yjtech.wisdom.tourism.dto.DataOverviewDto;
+import com.yjtech.wisdom.tourism.extension.BizScenario;
+import com.yjtech.wisdom.tourism.extension.ExtensionConstant;
+import com.yjtech.wisdom.tourism.extension.ExtensionExecutor;
 import com.yjtech.wisdom.tourism.integration.pojo.bo.fxdist.FxDistOrderStatisticsBO;
 import com.yjtech.wisdom.tourism.integration.pojo.bo.onetravel.OneTravelVisitStatisticsBO;
 import com.yjtech.wisdom.tourism.integration.pojo.vo.FxDistQueryVO;
@@ -39,11 +42,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * 大屏_首页 综合总览
@@ -73,6 +76,8 @@ public class IndexController {
     private TravelComplaintService travelComplaintService;
     @Autowired
     private DistrictTourService districtTourService;
+    @Resource
+    private ExtensionExecutor extensionExecutor;
 
 
     /**
@@ -177,14 +182,13 @@ public class IndexController {
      * @return
      */
     @PostMapping("complaint")
-    public JsonResult<ComplaintStatisticsDTO> complaint(@RequestBody @Valid TimeBaseQuery vo) {
+    public JsonResult<ComplaintStatisticsDTO> complaint(@RequestBody @Valid TravelComplaintScreenQueryVO vo) {
         //构建一码游投诉查询条件
         OneTravelQueryVO oneTravelQueryVO = BeanUtils.copyBean(vo, OneTravelQueryVO.class);
-        //构建旅游投诉查询条件
-        LambdaQueryWrapper<TravelComplaintEntity> queryWrapper = new QueryWrapper<TravelComplaintEntity>().lambda()
-                .between(Objects.nonNull(vo.getBeginTime()) && Objects.nonNull(vo.getEndTime()), TravelComplaintEntity::getComplaintTime, vo.getBeginTime(), vo.getEndTime());
 
-        return JsonResult.success(new ComplaintStatisticsDTO(oneTravelApiService.queryComplaintStatistics(oneTravelQueryVO), travelComplaintService.count(queryWrapper)));
+        return JsonResult.success(new ComplaintStatisticsDTO(oneTravelApiService.queryComplaintStatistics(oneTravelQueryVO), extensionExecutor.execute(TravelComplaintQryExtPt.class,
+                buildTravelComplaintBizScenario(TravelComplaintExtensionConstant.TRAVEL_COMPLAINT_QUANTITY, vo.getIsSimulation()),
+                extension -> extension.queryTravelComplaintTotalToIndex(vo))));
     }
 
     /**
@@ -225,6 +229,18 @@ public class IndexController {
         evaluateQueryVO.setEquipStatus(EntityConstants.ENABLED);
 
         return evaluateQueryVO;
+    }
+
+
+    /**
+     * 构建旅游投诉业务扩展点
+     * @param useCasePraiseType
+     * @param isSimulation
+     * @return
+     */
+    private BizScenario buildTravelComplaintBizScenario(String useCasePraiseType, Byte isSimulation) {
+        return BizScenario.valueOf(ExtensionConstant.TRAVEL_COMPLAINT, useCasePraiseType
+                , isSimulation == 0 ? ExtensionConstant.SCENARIO_IMPL : ExtensionConstant.SCENARIO_MOCK);
     }
 
 }
