@@ -4,7 +4,6 @@ import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
 import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.SimulationCommonDto;
 import lombok.Data;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -33,24 +32,44 @@ public class SimulationOneTravelDTO extends SimulationCommonDto {
     private Integer dayOfTotalVisit;
 
     /**
-     * 昨日访问数
+     * 昨日访问数-系数
      */
-    private Params yesterdayVisit;
+    private BigDecimal yesterdayVisitCoefficient;
 
     /**
-     * 昨日活跃用户数
+     * 昨日访问数-增加数
      */
-    private Params yesterdayActive;
+    private Integer yesterdayVisitAdditions;
 
     /**
-     * 使用总人数
+     * 昨日活跃用户数-系数
      */
-    private Params userTotal;
+    private BigDecimal yesterdayActiveCoefficient;
 
     /**
-     * 总访问数
+     * 昨日活跃用户数-增加数
      */
-    private Params visitTotal;
+    private Integer yesterdayActiveAdditions;
+
+    /**
+     * 使用总人数-系数
+     */
+    private BigDecimal userTotalCoefficient;
+
+    /**
+     * 使用总人数-增加数
+     */
+    private Integer userTotalAdditions;
+
+    /**
+     * 总访问数-系数
+     */
+    private BigDecimal visitTotalCoefficient;
+
+    /**
+     * 总访问数-增加数
+     */
+    private Integer visitTotalAdditions;
 
     /**
      * 省外来源分布（%）
@@ -112,27 +131,4 @@ public class SimulationOneTravelDTO extends SimulationCommonDto {
      */
     private List<BasePercentVO> complaintTypeDistribution;
 
-
-    /**
-     * 输入值
-     *
-     * @date 2021/8/22 12:48
-     * @author horadirm
-     */
-    @Data
-    public static class Params implements Serializable {
-
-        private static final long serialVersionUID = 2990797648939875457L;
-
-        /**
-         * 输入值A
-         */
-        private Integer paramsA;
-
-        /**
-         * 输入值B
-         */
-        private Integer paramsB;
-
-    }
 }
