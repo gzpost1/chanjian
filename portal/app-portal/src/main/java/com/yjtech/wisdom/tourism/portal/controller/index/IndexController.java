@@ -2,7 +2,6 @@ package com.yjtech.wisdom.tourism.portal.controller.index;
 
 import com.yjtech.wisdom.tourism.command.extensionpoint.TravelComplaintExtensionConstant;
 import com.yjtech.wisdom.tourism.command.extensionpoint.TravelComplaintQryExtPt;
-import com.yjtech.wisdom.tourism.command.service.travelcomplaint.TravelComplaintService;
 import com.yjtech.wisdom.tourism.command.vo.travelcomplaint.TravelComplaintScreenQueryVO;
 import com.yjtech.wisdom.tourism.common.bean.index.ComplaintStatisticsDTO;
 import com.yjtech.wisdom.tourism.common.bean.index.HotelStatisticsDTO;
@@ -21,13 +20,15 @@ import com.yjtech.wisdom.tourism.integration.pojo.vo.FxDistQueryVO;
 import com.yjtech.wisdom.tourism.integration.pojo.vo.OneTravelQueryVO;
 import com.yjtech.wisdom.tourism.integration.service.FxDistApiService;
 import com.yjtech.wisdom.tourism.integration.service.OneTravelApiService;
+import com.yjtech.wisdom.tourism.marketing.extensionpoint.HotelExtensionConstant;
+import com.yjtech.wisdom.tourism.marketing.extensionpoint.HotelQryExtPt;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateStatisticsDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.RoomTypePriceScreenDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateQueryVO;
 import com.yjtech.wisdom.tourism.marketing.pojo.vo.RoomScreenQueryVO;
 import com.yjtech.wisdom.tourism.marketing.service.MarketingEvaluateService;
 import com.yjtech.wisdom.tourism.marketing.service.MarketingHotelRoomService;
-import com.yjtech.wisdom.tourism.mybatis.entity.TimeBaseQuery;
+import com.yjtech.wisdom.tourism.mybatis.entity.IndexQueryVO;
 import com.yjtech.wisdom.tourism.resource.scenic.service.ScenicService;
 import com.yjtech.wisdom.tourism.resource.ticket.query.TicketSummaryQuery;
 import com.yjtech.wisdom.tourism.resource.ticket.service.TicketHourSummaryService;
@@ -73,8 +74,6 @@ public class IndexController {
     @Autowired
     private OneTravelApiService oneTravelApiService;
     @Autowired
-    private TravelComplaintService travelComplaintService;
-    @Autowired
     private DistrictTourService districtTourService;
     @Resource
     private ExtensionExecutor extensionExecutor;
@@ -87,7 +86,7 @@ public class IndexController {
      * @return
      */
     @PostMapping("todayRealTimeStatistics")
-    public JsonResult<TodayRealTimeStatisticsDTO> todayRealTimeStatistics(@RequestBody @Valid TimeBaseQuery vo) {
+    public JsonResult<TodayRealTimeStatisticsDTO> todayRealTimeStatistics(@RequestBody @Valid IndexQueryVO vo) {
         //根据票务统计获取接待人数
         //构建票务查询条件，默认获取今天
         TicketSummaryQuery ticketSummaryQuery = BeanUtils.copyBean(vo, TicketSummaryQuery.class);
@@ -115,7 +114,7 @@ public class IndexController {
      * @return
      */
     @PostMapping("scenicBuilding")
-    public JsonResult<ScenicBuildingDTO> scenicBuilding(@RequestBody @Valid TimeBaseQuery vo) {
+    public JsonResult<ScenicBuildingDTO> scenicBuilding(@RequestBody @Valid IndexQueryVO vo) {
         //获取景区评论统计
         MarketingEvaluateStatisticsDTO evaluateStatistics = marketingEvaluateService.queryScenicEvaluateStatistics(buildEvaluateCondition(vo));
 
@@ -133,15 +132,21 @@ public class IndexController {
      * @return
      */
     @PostMapping("hotelStatistics")
-    public JsonResult<HotelStatisticsDTO> hotelStatistics(@RequestBody @Valid TimeBaseQuery vo) {
+    public JsonResult<HotelStatisticsDTO> hotelStatistics(@RequestBody @Valid IndexQueryVO vo) {
+        //构建查询参数
+        EvaluateQueryVO evaluateQueryVO = buildEvaluateCondition(vo);
         //获取酒店评论统计
-        MarketingEvaluateStatisticsDTO evaluateStatistics = marketingEvaluateService.queryEvaluateStatistics(buildEvaluateCondition(vo));
+        MarketingEvaluateStatisticsDTO evaluateStatistics = extensionExecutor.execute(HotelQryExtPt.class,
+                buildHotelBizScenario(HotelExtensionConstant.HOTEL_QUANTITY, vo.getIsSimulation()),
+                extension -> extension.queryEvaluateStatisticsIndex(evaluateQueryVO));
 
         //构建房型价格查询条件
         RoomScreenQueryVO roomScreenQueryVO = BeanUtils.copyBean(vo, RoomScreenQueryVO.class);
         //默认酒店状态-启用
         roomScreenQueryVO.setStatus(EntityConstants.ENABLED);
-        RoomTypePriceScreenDTO roomPriceStatistics = marketingHotelRoomService.queryRoomPriceStatistics(roomScreenQueryVO);
+        RoomTypePriceScreenDTO roomPriceStatistics = extensionExecutor.execute(HotelQryExtPt.class,
+                buildHotelBizScenario(HotelExtensionConstant.HOTEL_QUANTITY, vo.getIsSimulation()),
+                extension -> extension.queryRoomPriceStatistics(roomScreenQueryVO));
 
         return JsonResult.success(new HotelStatisticsDTO(evaluateStatistics.getEvaluateTotal(), evaluateStatistics.getSatisfaction(), roomPriceStatistics.getAveragePrice()));
     }
@@ -169,7 +174,7 @@ public class IndexController {
      * @return
      */
     @PostMapping("oneTravelTrade")
-    public JsonResult<FxDistOrderStatisticsBO> oneTravelTrade(@RequestBody @Valid TimeBaseQuery vo) {
+    public JsonResult<FxDistOrderStatisticsBO> oneTravelTrade(@RequestBody @Valid IndexQueryVO vo) {
         //构建一码游订单查询条件
         FxDistQueryVO fxDistQueryVO = BeanUtils.copyBean(vo, FxDistQueryVO.class);
         return JsonResult.success(fxDistApiService.queryOrderStatistics(fxDistQueryVO));
@@ -198,7 +203,7 @@ public class IndexController {
      * @return
      */
     @PostMapping("touristStatistics")
-    public JsonResult<DataOverviewDto> touristStatistics(@RequestBody @Valid TimeBaseQuery vo) {
+    public JsonResult<DataOverviewDto> touristStatistics(@RequestBody @Valid IndexQueryVO vo) {
         //构建游客结构查询条件
         DataOverviewVo dataOverviewVo = new DataOverviewVo();
         dataOverviewVo.setBeginDate(vo.getBeginTime().toLocalDate().toString());
@@ -220,7 +225,7 @@ public class IndexController {
      * @param vo
      * @return
      */
-    private EvaluateQueryVO buildEvaluateCondition(TimeBaseQuery vo){
+    private EvaluateQueryVO buildEvaluateCondition(IndexQueryVO vo){
         //构建评价查询条件
         EvaluateQueryVO evaluateQueryVO = BeanUtils.copyBean(vo, EvaluateQueryVO.class);
         //默认场所状态-启用
@@ -240,6 +245,17 @@ public class IndexController {
      */
     private BizScenario buildTravelComplaintBizScenario(String useCasePraiseType, Byte isSimulation) {
         return BizScenario.valueOf(ExtensionConstant.TRAVEL_COMPLAINT, useCasePraiseType
+                , isSimulation == 0 ? ExtensionConstant.SCENARIO_IMPL : ExtensionConstant.SCENARIO_MOCK);
+    }
+
+    /**
+     * 构建酒店民宿业务扩展点
+     * @param useCasePraiseType
+     * @param isSimulation
+     * @return
+     */
+    private BizScenario buildHotelBizScenario(String useCasePraiseType, Byte isSimulation) {
+        return BizScenario.valueOf(ExtensionConstant.HOTEL, useCasePraiseType
                 , isSimulation == 0 ? ExtensionConstant.SCENARIO_IMPL : ExtensionConstant.SCENARIO_MOCK);
     }
 

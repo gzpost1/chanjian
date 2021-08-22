@@ -11,10 +11,9 @@ import com.yjtech.wisdom.tourism.common.bean.zc.params.ZcOtaEvaluateParam;
 import com.yjtech.wisdom.tourism.common.bean.zc.po.ZcOtaEvaluatePO;
 import com.yjtech.wisdom.tourism.common.core.domain.StatusParam;
 import com.yjtech.wisdom.tourism.common.service.ZcInfoSyncService;
-import com.yjtech.wisdom.tourism.common.utils.DateUtils;
 import com.yjtech.wisdom.tourism.marketing.entity.MarketingEvaluateEntity;
 import com.yjtech.wisdom.tourism.marketing.mapper.MarketingEvaluateMapper;
-import com.yjtech.wisdom.tourism.marketing.pojo.dto.HotelEvaluateSatisfactionRankDTO;
+import com.yjtech.wisdom.tourism.marketing.pojo.dto.EvaluateSatisfactionRankDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateListDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateStatisticsDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateQueryVO;
@@ -144,7 +143,7 @@ public class MarketingEvaluateService extends ServiceImpl<MarketingEvaluateMappe
      * @param vo
      * @return
      */
-    public IPage<HotelEvaluateSatisfactionRankDTO> queryEvaluateSatisfactionRank(EvaluateQueryVO vo) {
+    public IPage<EvaluateSatisfactionRankDTO> queryEvaluateSatisfactionRank(EvaluateQueryVO vo) {
         return baseMapper.queryEvaluateSatisfactionRank(new Page(vo.getPageNo(), vo.getPageSize()), vo);
     }
 
@@ -202,7 +201,7 @@ public class MarketingEvaluateService extends ServiceImpl<MarketingEvaluateMappe
      *
      * @return
      */
-    public IPage<HotelEvaluateSatisfactionRankDTO> querySatisfactionTop5(EvaluateQueryVO query) {
+    public IPage<EvaluateSatisfactionRankDTO> querySatisfactionTop5(EvaluateQueryVO query) {
         return baseMapper.querySatisfactionTop5(new Page(query.getPageNo(), query.getPageSize()), query);
     }
 

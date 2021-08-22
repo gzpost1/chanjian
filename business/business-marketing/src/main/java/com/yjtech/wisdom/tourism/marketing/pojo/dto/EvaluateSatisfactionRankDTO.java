@@ -10,7 +10,7 @@ import lombok.Data;
  * @author horadirm
  */
 @Data
-public class HotelEvaluateSatisfactionRankDTO extends BaseVO {
+public class EvaluateSatisfactionRankDTO extends BaseVO {
 
     /**
      * 酒店id

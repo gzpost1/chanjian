@@ -6,7 +6,12 @@ import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
 import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
-import com.yjtech.wisdom.tourism.marketing.pojo.dto.HotelEvaluateSatisfactionRankDTO;
+import com.yjtech.wisdom.tourism.extension.BizScenario;
+import com.yjtech.wisdom.tourism.extension.ExtensionConstant;
+import com.yjtech.wisdom.tourism.extension.ExtensionExecutor;
+import com.yjtech.wisdom.tourism.marketing.extensionpoint.HotelExtensionConstant;
+import com.yjtech.wisdom.tourism.marketing.extensionpoint.HotelQryExtPt;
+import com.yjtech.wisdom.tourism.marketing.pojo.dto.EvaluateSatisfactionRankDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateListDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateStatisticsDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateQueryVO;
@@ -18,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Objects;
@@ -35,6 +41,9 @@ public class EvaluateController {
 
     @Autowired
     private MarketingEvaluateService marketingEvaluateService;
+    @Resource
+    private ExtensionExecutor extensionExecutor;
+
 
 
     /**
@@ -47,7 +56,10 @@ public class EvaluateController {
     public JsonResult<MarketingEvaluateStatisticsDTO> queryEvaluateStatistics(@RequestBody @Valid EvaluateQueryVO vo) {
         //设置默认评论状态-启用
         vo.setEquipStatus(Objects.isNull(vo.getEquipStatus()) ? EntityConstants.ENABLED : vo.getEquipStatus());
-        return JsonResult.success(marketingEvaluateService.queryEvaluateStatistics(vo));
+
+        return JsonResult.success(extensionExecutor.execute(HotelQryExtPt.class,
+                buildBizScenario(HotelExtensionConstant.HOTEL_QUANTITY, vo.getIsSimulation()),
+                extension -> extension.queryEvaluateStatisticsDetail(vo)));
     }
 
     /**
@@ -60,7 +72,10 @@ public class EvaluateController {
     public JsonResult<List<BasePercentVO>> queryEvaluateTypeDistribution(@RequestBody @Valid EvaluateQueryVO vo) {
         //设置默认评论状态-启用
         vo.setEquipStatus(Objects.isNull(vo.getEquipStatus()) ? EntityConstants.ENABLED : vo.getEquipStatus());
-        return JsonResult.success(marketingEvaluateService.queryEvaluateTypeDistribution(vo));
+
+        return JsonResult.success(extensionExecutor.execute(HotelQryExtPt.class,
+                buildBizScenario(HotelExtensionConstant.HOTEL_QUANTITY, vo.getIsSimulation()),
+                extension -> extension.queryEvaluateTypeDistribution(vo)));
     }
 
     /**
@@ -108,7 +123,10 @@ public class EvaluateController {
     public JsonResult<List<BaseVO>> queryEvaluateHotRank(@RequestBody @Valid EvaluateQueryVO vo) {
         //设置默认评论状态-启用
         vo.setEquipStatus(Objects.isNull(vo.getEquipStatus()) ? EntityConstants.ENABLED : vo.getEquipStatus());
-        return JsonResult.success(marketingEvaluateService.queryEvaluateHotRank(vo));
+
+        return JsonResult.success(extensionExecutor.execute(HotelQryExtPt.class,
+                buildBizScenario(HotelExtensionConstant.HOTEL_QUANTITY, vo.getIsSimulation()),
+                extension -> extension.queryEvaluateHotRank(vo)));
     }
 
     /**
@@ -130,7 +148,7 @@ public class EvaluateController {
      * @return:
      */
     @PostMapping("/querySatisfactionTop5")
-    public JsonResult<IPage<HotelEvaluateSatisfactionRankDTO>> querySatisfactionTop5(@RequestBody @Valid EvaluateQueryVO vo) {
+    public JsonResult<IPage<EvaluateSatisfactionRankDTO>> querySatisfactionTop5(@RequestBody @Valid EvaluateQueryVO vo) {
         vo.buildStatus();
         return JsonResult.success(marketingEvaluateService.querySatisfactionTop5(vo));
     }
@@ -154,7 +172,7 @@ public class EvaluateController {
      * @return
      */
     @PostMapping("queryHotelEvaluateSatisfactionRank")
-    public JsonResult<IPage<HotelEvaluateSatisfactionRankDTO>> queryEvaluateSatisfactionRank(@RequestBody @Valid EvaluateQueryVO vo) {
+    public JsonResult<IPage<EvaluateSatisfactionRankDTO>> queryEvaluateSatisfactionRank(@RequestBody @Valid EvaluateQueryVO vo) {
         vo.buildStatus();
         return JsonResult.success(marketingEvaluateService.queryEvaluateSatisfactionRank(vo));
     }
@@ -168,6 +186,18 @@ public class EvaluateController {
     @PostMapping("queryForPage")
     public JsonResult<IPage<MarketingEvaluateListDTO>> queryForPage(@RequestBody @Valid EvaluateQueryVO vo) {
         return JsonResult.success(marketingEvaluateService.queryForPage(vo));
+    }
+
+
+    /**
+     * 构建业务扩展点
+     * @param useCasePraiseType
+     * @param isSimulation
+     * @return
+     */
+    private BizScenario buildBizScenario(String useCasePraiseType, Byte isSimulation) {
+        return BizScenario.valueOf(ExtensionConstant.HOTEL, useCasePraiseType
+                , isSimulation == 0 ? ExtensionConstant.SCENARIO_IMPL : ExtensionConstant.SCENARIO_MOCK);
     }
 
 }

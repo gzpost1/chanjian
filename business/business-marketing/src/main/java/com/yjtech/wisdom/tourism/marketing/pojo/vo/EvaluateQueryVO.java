@@ -47,6 +47,11 @@ public class EvaluateQueryVO extends TimeBaseQuery {
      */
     private Byte status;
 
+    /**
+     * is_simulation 是否有模拟数据 1有 0无
+     */
+    private Byte isSimulation = 0;
+
 
     /**
      * 构建状态

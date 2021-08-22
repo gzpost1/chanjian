@@ -2,6 +2,7 @@ package com.yjtech.wisdom.tourism.marketing.pojo.vo;
 
 import com.yjtech.wisdom.tourism.mybatis.entity.TimeBaseQuery;
 import lombok.Data;
+import org.hibernate.validator.constraints.Range;
 
 /**
  * 酒店房型 大屏查询VO
@@ -22,7 +23,13 @@ public class RoomScreenQueryVO extends TimeBaseQuery {
     /**
      * 配备状态（0-禁用 1-启用）
      */
+    @Range(min = 0, max = 1)
     private Byte status;
+
+    /**
+     * is_simulation 是否有模拟数据 1有 0无
+     */
+    private Byte isSimulation = 0;
 
 
 }

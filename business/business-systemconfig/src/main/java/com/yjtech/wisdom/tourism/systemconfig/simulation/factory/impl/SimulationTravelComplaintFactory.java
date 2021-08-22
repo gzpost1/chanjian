@@ -29,7 +29,7 @@ public class SimulationTravelComplaintFactory implements SimulationFactory<Simul
 
     @Override
     public Object parse(String json) {
-        return JSONObject.parseObject(json, SimulationPraiseDto.class);
+        return JSONObject.parseObject(json, SimulationTravelComplaintDTO.class);
     }
 
     @Override

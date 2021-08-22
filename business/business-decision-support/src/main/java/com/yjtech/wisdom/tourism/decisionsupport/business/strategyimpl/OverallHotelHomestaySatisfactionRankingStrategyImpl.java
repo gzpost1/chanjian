@@ -16,7 +16,7 @@ import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionWarnEnt
 import com.yjtech.wisdom.tourism.decisionsupport.common.strategy.BaseStrategy;
 import com.yjtech.wisdom.tourism.decisionsupport.common.util.PlaceholderUtils;
 import com.yjtech.wisdom.tourism.dto.RankingDto;
-import com.yjtech.wisdom.tourism.marketing.pojo.dto.HotelEvaluateSatisfactionRankDTO;
+import com.yjtech.wisdom.tourism.marketing.pojo.dto.EvaluateSatisfactionRankDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateStatisticsDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateQueryVO;
 import com.yjtech.wisdom.tourism.marketing.service.MarketingEvaluateService;
@@ -297,12 +297,12 @@ public class OverallHotelHomestaySatisfactionRankingStrategyImpl extends BaseStr
         vo.setType(DecisionSupportConstants.YEAR_MONTH);
         vo.setStatus(DecisionSupportConstants.ENABLE);
         vo.setPageSize(500L);
-        List<HotelEvaluateSatisfactionRankDTO> lastMonth = marketingEvaluateService.queryEvaluateSatisfactionRank(vo).getRecords();
+        List<EvaluateSatisfactionRankDTO> lastMonth = marketingEvaluateService.queryEvaluateSatisfactionRank(vo).getRecords();
 
         // 上上月
         vo.setBeginTime(starLastDate);
         vo.setEndTime(endLastDate);
-        List<HotelEvaluateSatisfactionRankDTO> lastLastMonth = marketingEvaluateService.queryEvaluateSatisfactionRank(vo).getRecords();
+        List<EvaluateSatisfactionRankDTO> lastLastMonth = marketingEvaluateService.queryEvaluateSatisfactionRank(vo).getRecords();
 
         TreeMap<Double, String> map = Maps.newTreeMap();
 
@@ -323,7 +323,7 @@ public class OverallHotelHomestaySatisfactionRankingStrategyImpl extends BaseStr
 
         List<RankingDto> result = Lists.newArrayList();
         map.forEach((key, value) -> {
-            for (HotelEvaluateSatisfactionRankDTO last : lastMonth) {
+            for (EvaluateSatisfactionRankDTO last : lastMonth) {
                 if (value.equals(last.getName())) {
                     result.add(RankingDto.builder().name(value).scale(key.toString()).id(last.getId()).value(last.getValue()).build());
                 }

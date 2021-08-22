@@ -135,7 +135,7 @@
     </select>
 
     <!-- 查询满意度排行 -->
-    <select id="queryEvaluateSatisfactionRank" resultType="com.yjtech.wisdom.tourism.marketing.pojo.dto.HotelEvaluateSatisfactionRankDTO"
+    <select id="queryEvaluateSatisfactionRank" resultType="com.yjtech.wisdom.tourism.marketing.pojo.dto.EvaluateSatisfactionRankDTO"
             parameterType="com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateQueryVO">
         select
         hotel.id as id,
@@ -442,7 +442,7 @@
     </select>
 
     <!--景区大数据-查询满意度排行top5 -->
-    <select id="querySatisfactionTop5" resultType="com.yjtech.wisdom.tourism.marketing.pojo.dto.HotelEvaluateSatisfactionRankDTO">
+    <select id="querySatisfactionTop5" resultType="com.yjtech.wisdom.tourism.marketing.pojo.dto.EvaluateSatisfactionRankDTO">
         select
         place_id id,
         evaluate.place_name as name,

@@ -6,7 +6,12 @@ import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
 import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
-import com.yjtech.wisdom.tourism.marketing.pojo.dto.HotelEvaluateSatisfactionRankDTO;
+import com.yjtech.wisdom.tourism.extension.BizScenario;
+import com.yjtech.wisdom.tourism.extension.ExtensionConstant;
+import com.yjtech.wisdom.tourism.extension.ExtensionExecutor;
+import com.yjtech.wisdom.tourism.marketing.extensionpoint.HotelExtensionConstant;
+import com.yjtech.wisdom.tourism.marketing.extensionpoint.HotelQryExtPt;
+import com.yjtech.wisdom.tourism.marketing.pojo.dto.EvaluateSatisfactionRankDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateStatisticsDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.RoomPriceAnalysisDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateQueryVO;
@@ -20,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Objects;
@@ -39,6 +45,8 @@ public class HotelBigDataScreenController {
     private MarketingEvaluateService marketingEvaluateService;
     @Autowired
     private MarketingHotelRoomService marketingHotelRoomService;
+    @Resource
+    private ExtensionExecutor extensionExecutor;
 
 
     /**
@@ -54,7 +62,9 @@ public class HotelBigDataScreenController {
         //设置默认评论状态-启用
         vo.setEquipStatus(Objects.isNull(vo.getEquipStatus()) ? EntityConstants.ENABLED : vo.getEquipStatus());
 
-        return JsonResult.success(marketingEvaluateService.queryEvaluateStatistics(vo));
+        return JsonResult.success(extensionExecutor.execute(HotelQryExtPt.class,
+                buildBizScenario(HotelExtensionConstant.HOTEL_QUANTITY, vo.getIsSimulation()),
+                extension -> extension.queryEvaluateStatisticsBigData(vo)));
     }
 
     /**
@@ -70,7 +80,9 @@ public class HotelBigDataScreenController {
         //设置默认评论状态-启用
         vo.setEquipStatus(Objects.isNull(vo.getEquipStatus()) ? EntityConstants.ENABLED : vo.getEquipStatus());
 
-        return JsonResult.success(marketingEvaluateService.queryEvaluateTypeDistribution(vo));
+        return JsonResult.success(extensionExecutor.execute(HotelQryExtPt.class,
+                buildBizScenario(HotelExtensionConstant.HOTEL_QUANTITY, vo.getIsSimulation()),
+                extension -> extension.queryEvaluateTypeDistribution(vo)));
     }
 
     /**
@@ -86,7 +98,9 @@ public class HotelBigDataScreenController {
         //设置默认评论状态-启用
         vo.setEquipStatus(Objects.isNull(vo.getEquipStatus()) ? EntityConstants.ENABLED : vo.getEquipStatus());
 
-        return JsonResult.success(marketingEvaluateService.queryEvaluateHotRank(vo));
+        return JsonResult.success(extensionExecutor.execute(HotelQryExtPt.class,
+                buildBizScenario(HotelExtensionConstant.HOTEL_QUANTITY, vo.getIsSimulation()),
+                extension -> extension.queryEvaluateHotRank(vo)));
     }
 
     /**
@@ -102,7 +116,9 @@ public class HotelBigDataScreenController {
         //设置默认评论状态-启用
         vo.setEquipStatus(Objects.isNull(vo.getEquipStatus()) ? EntityConstants.ENABLED : vo.getEquipStatus());
 
-        return JsonResult.success(marketingEvaluateService.queryEvaluateRank(vo));
+        return JsonResult.success(extensionExecutor.execute(HotelQryExtPt.class,
+                buildBizScenario(HotelExtensionConstant.HOTEL_QUANTITY, vo.getIsSimulation()),
+                extension -> extension.queryEvaluateRank(vo)));
     }
 
     /**
@@ -112,13 +128,15 @@ public class HotelBigDataScreenController {
      * @return
      */
     @PostMapping("queryEvaluateSatisfactionRank")
-    public JsonResult<IPage<HotelEvaluateSatisfactionRankDTO>> queryEvaluateSatisfactionRank(@RequestBody @Valid EvaluateQueryVO vo) {
+    public JsonResult<IPage<EvaluateSatisfactionRankDTO>> queryEvaluateSatisfactionRank(@RequestBody @Valid EvaluateQueryVO vo) {
         //设置默认酒店状态-启用
         vo.setStatus(EntityConstants.ENABLED);
         //设置默认评论状态-启用
         vo.setEquipStatus(Objects.isNull(vo.getEquipStatus()) ? EntityConstants.ENABLED : vo.getEquipStatus());
 
-        return JsonResult.success(marketingEvaluateService.queryEvaluateSatisfactionRank(vo));
+        return JsonResult.success(extensionExecutor.execute(HotelQryExtPt.class,
+                buildBizScenario(HotelExtensionConstant.HOTEL_QUANTITY, vo.getIsSimulation()),
+                extension -> extension.queryEvaluateSatisfactionRank(vo)));
     }
 
     /**
@@ -144,7 +162,9 @@ public class HotelBigDataScreenController {
     public JsonResult<List<AnalysisBaseInfo>> queryEvaluateAnalysis(@RequestBody @Valid EvaluateQueryVO vo) {
         //设置默认酒店状态-启用
         vo.setStatus(EntityConstants.ENABLED);
-        return JsonResult.success(marketingEvaluateService.queryEvaluateAnalysis(vo));
+        return JsonResult.success(extensionExecutor.execute(HotelQryExtPt.class,
+                buildBizScenario(HotelExtensionConstant.HOTEL_QUANTITY, vo.getIsSimulation()),
+                extension -> extension.queryEvaluateAnalysis(vo)));
     }
 
     /**
@@ -157,7 +177,21 @@ public class HotelBigDataScreenController {
     public JsonResult<List<AnalysisBaseInfo>> queryEvaluateSatisfactionAnalysis(@RequestBody @Valid EvaluateQueryVO vo) {
         //设置默认酒店状态-启用
         vo.setStatus(EntityConstants.ENABLED);
-        return JsonResult.success(marketingEvaluateService.queryEvaluateSatisfactionAnalysis(vo));
+        return JsonResult.success(extensionExecutor.execute(HotelQryExtPt.class,
+                buildBizScenario(HotelExtensionConstant.HOTEL_QUANTITY, vo.getIsSimulation()),
+                extension -> extension.queryEvaluateSatisfactionAnalysis(vo)));
+    }
+
+
+    /**
+     * 构建酒店民宿业务扩展点
+     * @param useCasePraiseType
+     * @param isSimulation
+     * @return
+     */
+    private BizScenario buildBizScenario(String useCasePraiseType, Byte isSimulation) {
+        return BizScenario.valueOf(ExtensionConstant.HOTEL, useCasePraiseType
+                , isSimulation == 0 ? ExtensionConstant.SCENARIO_IMPL : ExtensionConstant.SCENARIO_MOCK);
     }
 
 }

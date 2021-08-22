@@ -7,7 +7,7 @@ import com.yjtech.wisdom.tourism.common.bean.AnalysisMonthChartInfo;
 import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
 import com.yjtech.wisdom.tourism.marketing.entity.MarketingEvaluateEntity;
-import com.yjtech.wisdom.tourism.marketing.pojo.dto.HotelEvaluateSatisfactionRankDTO;
+import com.yjtech.wisdom.tourism.marketing.pojo.dto.EvaluateSatisfactionRankDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateListDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateStatisticsDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateQueryVO;
@@ -78,7 +78,7 @@ public interface MarketingEvaluateMapper extends BaseMapper<MarketingEvaluateEnt
      * @param params
      * @return
      */
-    IPage<HotelEvaluateSatisfactionRankDTO> queryEvaluateSatisfactionRank(Page page, @Param("params") EvaluateQueryVO params);
+    IPage<EvaluateSatisfactionRankDTO> queryEvaluateSatisfactionRank(Page page, @Param("params") EvaluateQueryVO params);
 
     /**
      * 查询评价分页列表
@@ -135,7 +135,7 @@ public interface MarketingEvaluateMapper extends BaseMapper<MarketingEvaluateEnt
      * @param params
      * @return
      */
-    IPage<HotelEvaluateSatisfactionRankDTO> querySatisfactionTop5(Page page, @Param("params") EvaluateQueryVO params);
+    IPage<EvaluateSatisfactionRankDTO> querySatisfactionTop5(Page page, @Param("params") EvaluateQueryVO params);
 
     /**
      * 景区分布—查询评价统计
