@@ -25,11 +25,11 @@ public class OriginDistributedProvinceOutsideDto implements Serializable {
     /**
      * 区域名称
      */
-    private String areaName;
+    private String name;
 
     /**
      * 比例 %
      */
-    private double scale;
+    private double value;
 
 }

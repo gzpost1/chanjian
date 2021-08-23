@@ -94,7 +94,7 @@ public class DistrictTourMockService implements DistrictExtPt, ApplicationListen
 
         // 计算省内人数
         if (!ObjectUtils.isEmpty(province)) {
-            double scale = province.getScale();
+            double scale = province.getValue();
             provinceInsideTouristNum = DistrictTourMockService.multiply(scale, allTouristNum);
         }
 
@@ -140,13 +140,13 @@ public class DistrictTourMockService implements DistrictExtPt, ApplicationListen
         // 全国
         if (DistrictBigDataConstants.TOUR_SOURCE_COUNTRY.equals(vo.getType())) {
             for (OriginDistributedProvinceOutsideDto provinceOutsideDto : provinceOutsideDistributed) {
-                setList(vo, allTouristNum, record, provinceOutsideDto.getScale(), provinceOutsideDto.getAreaName());
+                setList(vo, allTouristNum, record, provinceOutsideDto.getValue(), provinceOutsideDto.getName());
             }
         }
         // 全省
         else if(DistrictBigDataConstants.TOUR_SOURCE_PROVINCE.equals(vo.getType())) {
             for (OriginDistributedProvinceInsideDto provinceInsideDto : city) {
-                setList(vo, allTouristNum, record, provinceInsideDto.getScale(), provinceInsideDto.getAreaName());
+                setList(vo, allTouristNum, record, provinceInsideDto.getValue(), provinceInsideDto.getName());
             }
         }
 
@@ -179,11 +179,11 @@ public class DistrictTourMockService implements DistrictExtPt, ApplicationListen
 
         // 省外游客
         if (DistrictBigDataConstants.PROVINCE_OUTSIDE.equals(vo.getStatisticsType())) {
-            scale = DistrictBigDataConstants.ONE_HUNDRED - province.getScale();
+            scale = DistrictBigDataConstants.ONE_HUNDRED - province.getValue();
         }
         // 省内游客
         else if (DistrictBigDataConstants.PROVINCE_INSIDI.equals(vo.getStatisticsType())) {
-            scale = province.getScale();
+            scale = province.getValue();
         }
 
         // 获取当前月份
@@ -264,11 +264,11 @@ public class DistrictTourMockService implements DistrictExtPt, ApplicationListen
 
         // 省内游客
         if (DistrictBigDataConstants.PROVINCE_INSIDI.equals(vo.getStatisticsType())) {
-            scale = province.getScale();
+            scale = province.getValue();
         }
         // 省外游客
         else if (DistrictBigDataConstants.PROVINCE_OUTSIDE.equals(vo.getStatisticsType())) {
-            scale = DistrictBigDataConstants.ONE_HUNDRED - province.getScale();
+            scale = DistrictBigDataConstants.ONE_HUNDRED - province.getValue();
         }
 
         // 当前日期号数
@@ -482,7 +482,7 @@ public class DistrictTourMockService implements DistrictExtPt, ApplicationListen
         List<OriginDistributedProvinceOutsideDto> provinceOutsideDistributed = mockRule.getProvinceOutsideDistributed();
         String provinceName = com.yjtech.wisdom.tourism.common.utils.StringUtils.substringBefore(platformService.getPlatform().getAreaName(), "/");
         for (OriginDistributedProvinceOutsideDto provinceOutsideDto : provinceOutsideDistributed) {
-            if (provinceName.equals(provinceOutsideDto.getAreaName())) {
+            if (provinceName.equals(provinceOutsideDto.getName())) {
                 province = provinceOutsideDto;
             }
         }
