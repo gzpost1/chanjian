@@ -27,7 +27,9 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 
 /**
@@ -148,6 +150,9 @@ public class OverallHotelHomestaySatisfactionRankingStrategyImpl extends BaseStr
         // 上上月 满意度下降最多酒店民宿好评量
         Integer maxDownGoodEvaluateTotalLastLastMonth = maxDownGoodHotelLastLastMonth.getEvaluateTotal();
 
+        // 图表：满意度下降月环比Top5
+        result.setChartData(getCharData(satisfactionDownMax));
+
         // 处理指标报警
         switch (configId) {
             // 酒店民宿满意度排行 _统计年月 （文本）
@@ -251,6 +256,22 @@ public class OverallHotelHomestaySatisfactionRankingStrategyImpl extends BaseStr
         // 设置月环比
         result.setMonthHbScale(hb);
         return result;
+    }
+
+    /**
+     * 图表：满意度下降月环比Top5
+     *
+     * @param satisfactionDownMax
+     * @return
+     */
+    private List getCharData(List<RankingDto> satisfactionDownMax) {
+        List<Map> list = Lists.newArrayList();
+        for (RankingDto v : satisfactionDownMax) {
+            HashMap<String, String> map = Maps.newHashMap();
+            double scale = Math.abs(Double.parseDouble(v.getScale()));
+            map.put(v.getName(), String.valueOf(scale));
+        }
+        return list;
     }
 
     /**

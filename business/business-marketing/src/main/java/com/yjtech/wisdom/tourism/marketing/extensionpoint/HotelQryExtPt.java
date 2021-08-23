@@ -28,7 +28,7 @@ public interface HotelQryExtPt extends ExtensionPointI {
      * @param vo
      * @return
      */
-    MarketingEvaluateStatisticsDTO queryEvaluateStatisticsDetail(EvaluateQueryVO vo);
+    MarketingEvaluateStatisticsDTO queryEvaluateStatistics(EvaluateQueryVO vo);
 
     /**
      * 查询评价统计-综合总览
@@ -37,14 +37,6 @@ public interface HotelQryExtPt extends ExtensionPointI {
      * @return
      */
     MarketingEvaluateStatisticsDTO queryEvaluateStatisticsIndex(EvaluateQueryVO vo);
-
-    /**
-     * 查询评价统计-酒店民宿大数据
-     *
-     * @param vo
-     * @return
-     */
-    MarketingEvaluateStatisticsDTO queryEvaluateStatisticsBigData(EvaluateQueryVO vo);
 
     /**
      * 查询评价类型分布
