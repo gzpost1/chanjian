@@ -48,6 +48,7 @@ public class TouristComplaintsStrategyImpl extends BaseStrategy {
 
         // 旅游投诉总量
         TravelComplaintScreenQueryVO travelComplaintScreenQueryVO = new TravelComplaintScreenQueryVO();
+        travelComplaintScreenQueryVO.setIsSimulation(isSimulation.byteValue());
         travelComplaintScreenQueryVO.setBeginTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentLastMonthStr() + DecisionSupportConstants.START_DAY_STR));
         travelComplaintScreenQueryVO.setEndTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentLastMonthStr() + DecisionSupportConstants.END_DAY_STR));
         Integer total = travelComplaintService.queryTravelComplaintTotal(travelComplaintScreenQueryVO);
@@ -90,13 +91,13 @@ public class TouristComplaintsStrategyImpl extends BaseStrategy {
             // 旅游投诉_统计年月 （文本）
             case DecisionSupportConstants.LYTS_TJNY :
                 result.setWarnNum(currentLastMonthStr);
-                textAlarmDeal(entity, result, currentLastMonthStr);
+                textAlarmDeal(entity, result, currentLastMonthStr, isSimulation);
                 break;
 
             // 旅游投诉_旅游投诉数量 （数值）
             case DecisionSupportConstants.LYTS_YLTSSL :
                 result.setWarnNum(String.valueOf(total));
-                numberAlarmDeal(entity, result, hb);
+                numberAlarmDeal(entity, result, hb, isSimulation);
                 // 判断是否使用缺失话术
                 if (DecisionSupportConstants.MISS_CONCLUSION_TEXT_NUMBER_VALUE.equals(total)) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -106,7 +107,7 @@ public class TouristComplaintsStrategyImpl extends BaseStrategy {
             // 旅游投诉_环比变化（较上月） （数值）
             case DecisionSupportConstants.LYTS_HBBH :
                 result.setWarnNum(hb);
-                numberAlarmDeal(entity, result, hb);
+                numberAlarmDeal(entity, result, hb, isSimulation);
                 // 判断是否使用缺失话术
                 if (DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE.equals(hb)) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -116,7 +117,7 @@ public class TouristComplaintsStrategyImpl extends BaseStrategy {
             // 旅游投诉_同比变化（较去年同月） （数值）
             case DecisionSupportConstants.LYTS_TBBH :
                 result.setWarnNum(tb);
-                numberAlarmDeal(entity, result, tb);
+                numberAlarmDeal(entity, result, tb, isSimulation);
                 // 判断是否使用缺失话术
                 if (DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE.equals(tb)) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);

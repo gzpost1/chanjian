@@ -190,9 +190,9 @@ public class MessageMangerService extends ServiceImpl<MessageMapper, MessageEnti
         // 获取消息记录总数
         IPage<MessageDto> page = queryPageMessage(QueryMessageVo.builder().queryType(MessageConstants.MESSAGE_LIST_ALL).build(), false, messageCall);
 
-        Long userId = tokenService.getLoginUser(ServletUtils.getRequest()).getUser().getUserId();
+        /*Long userId = tokenService.getLoginUser(ServletUtils.getRequest()).getUser().getUserId();
         String tokenStr = String.valueOf(redisTemplate.opsForValue().get(MessageConstants.MESSAGE_RECORD_NUM + userId));
-        if (com.yjtech.wisdom.tourism.common.utils.StringUtils.isEmpty(tokenStr)) {
+        if (com.yjtech.wisdom.tourism.common.utils.StringUtils.isEmpty(tokenStr) || MessageConstants.NULL.equals(tokenStr)) {
             redisTemplate.opsForValue().set(MessageConstants.MESSAGE_RECORD_NUM + userId, page.getTotal());
             return MessageRecordDto.builder().isAdd(true).addNumber(page.getTotal()).build();
         }
@@ -202,6 +202,10 @@ public class MessageMangerService extends ServiceImpl<MessageMapper, MessageEnti
         long addNumber = Math.abs(total - lastTimeTotal);
         if (addNumber > 0) {
             return MessageRecordDto.builder().isAdd(true).addNumber(addNumber).build();
+        }
+        return MessageRecordDto.builder().isAdd(false).addNumber(0L).build();*/
+        if (page.getTotal() > 0) {
+            return MessageRecordDto.builder().isAdd(true).addNumber(page.getTotal()).build();
         }
         return MessageRecordDto.builder().isAdd(false).addNumber(0L).build();
     }

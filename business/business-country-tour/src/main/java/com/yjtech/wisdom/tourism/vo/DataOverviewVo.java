@@ -1,6 +1,5 @@
 package com.yjtech.wisdom.tourism.vo;
 
-import com.yjtech.wisdom.tourism.common.utils.DateTimeUtil;
 import com.yjtech.wisdom.tourism.mybatis.entity.TimeBaseQuery;
 import lombok.AllArgsConstructor;
 import lombok.Data;

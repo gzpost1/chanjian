@@ -1,7 +1,7 @@
 package com.yjtech.wisdom.tourism.vo;
 
-import com.yjtech.wisdom.tourism.dto.OriginDistributedProvinceInsideDto;
-import com.yjtech.wisdom.tourism.dto.OriginDistributedProvinceOutsideDto;
+import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.districttour.OriginDistributedProvinceInsideDTO;
+import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.districttour.OriginDistributedProvinceOutsideDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -47,11 +47,11 @@ public class DistrictMockRuleVo implements Serializable {
     /**
      * 省外来源分布
      */
-    private List<OriginDistributedProvinceOutsideDto> provinceOutsideDistributed;
+    private List<OriginDistributedProvinceOutsideDTO> provinceOutsideDistributed;
 
     /**
      * 省内来源分布
      */
-    private List<OriginDistributedProvinceInsideDto> provinceInsideDistributed;
+    private List<OriginDistributedProvinceInsideDTO> provinceInsideDistributed;
 
 }

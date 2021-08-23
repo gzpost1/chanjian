@@ -9,6 +9,11 @@ package com.yjtech.wisdom.tourism.common.constant;
 public class DecisionSupportConstants {
     
     /**
+     * 事件风险等级字典key
+     */
+    public static final String RISK_TYPE = "risk_type";
+
+    /**
      * 全部景区接待数量
      */
     public static final String TOTAL_CHECK_NUM = "totalCheckNum";

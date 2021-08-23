@@ -3,6 +3,8 @@ package com.yjtech.wisdom.tourism.portal.controller.systemconfig.simulation;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.SimulationQueryDto;
 import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.complaint.SimulationTravelComplaintDTO;
+import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.decisionsupport.SimulationDecisionSupportDTO;
+import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.districttour.DistrictMockRuleDTO;
 import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.hotel.SimulationHotelDTO;
 import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.onetravel.SimulationOneTravelDTO;
 import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.praise.SimulationPraiseDto;
@@ -115,6 +117,32 @@ public class SimulationController {
      */
     @PostMapping("/saveOneTravel")
     public JsonResult saveOneTravel(@RequestBody SimulationOneTravelDTO dto) {
+        service.generateRandom(dto);
+        service.saveUpdated(dto);
+        return JsonResult.success();
+    }
+
+    /**
+     * 新增一游客结构
+     *
+     * @param
+     * @return
+     */
+    @PostMapping("/saveDistrictTour")
+    public JsonResult saveDistrictTour(@RequestBody DistrictMockRuleDTO dto) {
+        service.generateRandom(dto);
+        service.saveUpdated(dto);
+        return JsonResult.success();
+    }
+
+    /**
+     * 新增一决策辅助
+     *
+     * @param
+     * @return
+     */
+    @PostMapping("/saveDecisionSupport")
+    public JsonResult saveDecisionSupport(@RequestBody SimulationDecisionSupportDTO dto) {
         service.generateRandom(dto);
         service.saveUpdated(dto);
         return JsonResult.success();

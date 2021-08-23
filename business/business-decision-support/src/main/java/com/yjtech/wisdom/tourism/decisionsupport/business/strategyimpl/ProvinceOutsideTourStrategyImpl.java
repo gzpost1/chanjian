@@ -50,14 +50,14 @@ public class ProvinceOutsideTourStrategyImpl extends BaseStrategy {
         String tb = targetQueryService.queryProvinceScale(TargetQueryConstants.PROVINCE_SCALE_TB, TargetQueryConstants.PROVINCE_OUTSIDE_TYPE, isSimulation);
 
         // 图标数据：月客流趋势
-        result.setChartData(getProvinceCharData(DecisionSupportConstants.PROVINCE_OUTSIDE_TYPE));
+        result.setChartData(getProvinceCharData(DecisionSupportConstants.PROVINCE_OUTSIDE_TYPE, isSimulation));
 
         // 处理指标报警
         switch (configId) {
             // 省外游客_省外游客数量 （数值），由于比较数量是环比，则直接使用环比进行指标处理
             case DecisionSupportConstants.SWYK_SWYKSL :
                 result.setWarnNum(provinceOutsideNumber);
-                numberAlarmDeal(entity, result, hb);
+                numberAlarmDeal(entity, result, hb, isSimulation);
                 // 判断是否使用缺失话术
                 if (DecisionSupportConstants.MISS_CONCLUSION_TEXT_NUMBER_VALUE.equals(Integer.valueOf(provinceOutsideNumber))) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -67,7 +67,7 @@ public class ProvinceOutsideTourStrategyImpl extends BaseStrategy {
             // 省外游客_环比变化（较上月） （数值）
             case DecisionSupportConstants.SWYK_HBBH :
                 result.setWarnNum(hb);
-                numberAlarmDeal(entity, result, hb);
+                numberAlarmDeal(entity, result, hb, isSimulation);
                 // 判断是否使用缺失话术
                 if (DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE.equals(hb)) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -77,7 +77,7 @@ public class ProvinceOutsideTourStrategyImpl extends BaseStrategy {
             // 省外游客_同比变化（较去年同月） （数值）
             case DecisionSupportConstants.SWYK_TBBH :
                 result.setWarnNum(tb);
-                numberAlarmDeal(entity, result, tb);
+                numberAlarmDeal(entity, result, tb, isSimulation);
                 // 判断是否使用缺失话术
                 if (DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE.equals(tb)) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -87,13 +87,13 @@ public class ProvinceOutsideTourStrategyImpl extends BaseStrategy {
             // 省外游客_统计年月 （文本）
             case DecisionSupportConstants.SWYK_TJNY :
                 result.setWarnNum(currentLastMonthStr);
-                textAlarmDeal(entity, result, currentLastMonthStr);
+                textAlarmDeal(entity, result, currentLastMonthStr, isSimulation);
                 break;
 
             // 省外游客_平台简称 （文本）
             case DecisionSupportConstants.SWYK_PTJC :
                 result.setWarnNum(simpleName);
-                textAlarmDeal(entity, result, simpleName);
+                textAlarmDeal(entity, result, simpleName, isSimulation);
                 // 判断是否使用缺失话术
                 if (StringUtils.isEmpty(simpleName)) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);

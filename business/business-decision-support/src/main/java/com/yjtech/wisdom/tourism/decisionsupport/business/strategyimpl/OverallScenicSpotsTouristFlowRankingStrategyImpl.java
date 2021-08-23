@@ -103,13 +103,13 @@ public class OverallScenicSpotsTouristFlowRankingStrategyImpl extends BaseStrate
             // 景区客流排行 _统计年月 （文本）
             case DecisionSupportConstants.JQKLPH_TJNY :
                 result.setWarnNum(currentLastMonthStr);
-                textAlarmDeal(entity, result, currentLastMonthStr);
+                textAlarmDeal(entity, result, currentLastMonthStr, isSimulation);
                 break;
 
             // 景区客流排行 _游客流失最多景区名称 （文本）
             case DecisionSupportConstants.JQKLPH_YKLSZDJQMC :
                 result.setWarnNum(downMaxName);
-                textAlarmDeal(entity, result, downMaxName);
+                textAlarmDeal(entity, result, downMaxName, isSimulation);
                 // 判断是否使用缺失话术
                 if (StringUtils.isEmpty(downMaxName)) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -119,7 +119,7 @@ public class OverallScenicSpotsTouristFlowRankingStrategyImpl extends BaseStrate
             // 景区客流排行 _其他游客流失景区名称 （文本）
             case DecisionSupportConstants.JQKLPH_QTYKLSJQMC :
                 result.setWarnNum(otherDownName);
-                textAlarmDeal(entity, result, otherDownName);
+                textAlarmDeal(entity, result, otherDownName, isSimulation);
                 // 判断是否使用缺失话术
                 if (StringUtils.isEmpty(otherDownName)) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -129,7 +129,7 @@ public class OverallScenicSpotsTouristFlowRankingStrategyImpl extends BaseStrate
             // 景区客流排行 _游客流失最多景区接待量 （数值）
             case DecisionSupportConstants.JQKLPH_YKLSZDJQJDL :
                 result.setWarnNum(downMaxReception);
-                numberAlarmDeal(entity, result, hb);
+                numberAlarmDeal(entity, result, hb, isSimulation);
                 // 判断是否使用缺失话术
                 if (DecisionSupportConstants.MISS_CONCLUSION_TEXT_NUMBER_VALUE.equals(Integer.parseInt(downMaxReception))) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -139,7 +139,7 @@ public class OverallScenicSpotsTouristFlowRankingStrategyImpl extends BaseStrate
             // 景区客流排行 _环比变化（较上月） （数值）
             case DecisionSupportConstants.JQKLPH_HBBH :
                 result.setWarnNum(hb);
-                numberAlarmDeal(entity, result, hb);
+                numberAlarmDeal(entity, result, hb, isSimulation);
                 // 判断是否使用缺失话术
                 if (DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE.equals(hb)) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -149,7 +149,7 @@ public class OverallScenicSpotsTouristFlowRankingStrategyImpl extends BaseStrate
             // 景区客流排行 _同比变化（较去年同月） （数值）
             case DecisionSupportConstants.JQKLPH_TBBH :
                 result.setWarnNum(tb);
-                numberAlarmDeal(entity, result, tb);
+                numberAlarmDeal(entity, result, tb, isSimulation);
                 // 判断是否使用缺失话术
                 if (DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE.equals(tb)) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -176,7 +176,7 @@ public class OverallScenicSpotsTouristFlowRankingStrategyImpl extends BaseStrate
         result.setMonthHbScale(hb);
         return result;
     }
-    
+
     /**
      * 图表：景区客流月环比下降Top5
      *
