@@ -217,7 +217,7 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
                     appTemplate,
                     platformTemplate,
                     Arrays.asList(complaintObject),
-                    AssignUserInfo.class);
+                    DealUserInfo.class);
         }
 
         return result;
