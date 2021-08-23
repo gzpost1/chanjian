@@ -30,6 +30,7 @@ import com.yjtech.wisdom.tourism.message.sms.service.SmsUseService;
 import com.yjtech.wisdom.tourism.system.service.SysConfigService;
 import com.yjtech.wisdom.tourism.system.service.SysUserService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -113,9 +114,16 @@ public class MessageMangerService extends ServiceImpl<MessageMapper, MessageEnti
         Long[] touristComplaintsEventIds = touristComplaintsEventIdList.toArray(new Long[0]);
 
         // 应急事件信息 查询
-        List<MessageCallDto> emergencyEventList = messageCall[0].queryEvent(emergencyEventIds);
+        List<MessageCallDto> emergencyEventList = Lists.newArrayList();
         // 旅游投诉信息 查询
-        List<MessageCallDto> touristComplaintsEventList = messageCall[1].queryEvent(touristComplaintsEventIds);
+        List<MessageCallDto> touristComplaintsEventList = Lists.newArrayList();
+
+        if (!ArrayUtils.isEmpty(emergencyEventIds)) {
+            emergencyEventList = messageCall[0].queryEvent(emergencyEventIds);
+        }
+        if (!ArrayUtils.isEmpty(touristComplaintsEventIds)) {
+            touristComplaintsEventList = messageCall[1].queryEvent(touristComplaintsEventIds);
+        }
 
         Integer queryType = vo.getQueryType();
 
