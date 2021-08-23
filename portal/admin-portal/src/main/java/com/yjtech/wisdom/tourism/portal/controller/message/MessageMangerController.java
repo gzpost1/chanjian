@@ -45,6 +45,6 @@ public class MessageMangerController {
      */
     @GetMapping("queryNewMessageNum")
     public JsonResult<MessageRecordDto> queryNewMessageNum () {
-        return JsonResult.success(messageMangerService.queryNewMessageNum());
+        return JsonResult.success(messageMangerService.queryNewMessageNum(null, travelComplaintService));
     }
 }
