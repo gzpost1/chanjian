@@ -7,6 +7,7 @@ import com.yjtech.wisdom.tourism.common.constant.DecisionSupportConstants;
 import com.yjtech.wisdom.tourism.common.enums.DecisionSupportConfigEnum;
 import com.yjtech.wisdom.tourism.common.utils.DateTimeUtil;
 import com.yjtech.wisdom.tourism.common.utils.MathUtil;
+import com.yjtech.wisdom.tourism.decisionsupport.business.dto.RankingDataDto;
 import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionEntity;
 import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionWarnEntity;
 import com.yjtech.wisdom.tourism.decisionsupport.common.strategy.BaseStrategy;
@@ -175,19 +176,21 @@ public class OverallScenicSpotsTouristFlowRankingStrategyImpl extends BaseStrate
         result.setMonthHbScale(hb);
         return result;
     }
-
+    
     /**
      * 图表：景区客流月环比下降Top5
      *
-     * @param tourDownMax
+     * @param satisfactionDownMax
      * @return
      */
-    private List getCharData(List<RankingDto> tourDownMax) {
-        List<Map> list = Lists.newArrayList();
-        for (RankingDto v : tourDownMax) {
-            HashMap<String, String> map = Maps.newHashMap();
+    private List getCharData(List<RankingDto> satisfactionDownMax) {
+        List<RankingDataDto> list = Lists.newArrayList();
+        for (RankingDto v : satisfactionDownMax) {
             double scale = Math.abs(Double.parseDouble(v.getScale()));
-            map.put(v.getName(), String.valueOf(scale));
+            list.add(RankingDataDto.builder()
+                    .name(v.getName())
+                    .value(String.valueOf(scale))
+                    .build());
         }
         return list;
     }

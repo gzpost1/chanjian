@@ -11,6 +11,7 @@ import com.yjtech.wisdom.tourism.common.utils.DateTimeUtil;
 import com.yjtech.wisdom.tourism.common.utils.JsonUtils;
 import com.yjtech.wisdom.tourism.common.utils.MathUtil;
 import com.yjtech.wisdom.tourism.decisionsupport.business.dto.OneTravelNumberDto;
+import com.yjtech.wisdom.tourism.decisionsupport.business.dto.RankingDataDto;
 import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionEntity;
 import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionWarnEntity;
 import com.yjtech.wisdom.tourism.decisionsupport.common.strategy.BaseStrategy;
@@ -265,11 +266,13 @@ public class OverallHotelHomestaySatisfactionRankingStrategyImpl extends BaseStr
      * @return
      */
     private List getCharData(List<RankingDto> satisfactionDownMax) {
-        List<Map> list = Lists.newArrayList();
+        List<RankingDataDto> list = Lists.newArrayList();
         for (RankingDto v : satisfactionDownMax) {
-            HashMap<String, String> map = Maps.newHashMap();
             double scale = Math.abs(Double.parseDouble(v.getScale()));
-            map.put(v.getName(), String.valueOf(scale));
+            list.add(RankingDataDto.builder()
+                    .name(v.getName())
+                    .value(String.valueOf(scale))
+                    .build());
         }
         return list;
     }
