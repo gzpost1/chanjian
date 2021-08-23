@@ -28,17 +28,8 @@ public class OriginDistributedProvinceOutsideDto implements Serializable {
     private String areaName;
 
     /**
-     * 区域编码
-     */
-    private String areaCode;
-
-    /**
      * 比例 %
      */
     private double scale;
 
-    /**
-     * 省内来源分布
-     */
-    private List<OriginDistributedProvinceInsideDto> child;
 }

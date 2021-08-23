@@ -46,4 +46,9 @@ public class DistrictMockRuleDto implements Serializable {
      * 省外来源分布
      */
     private List<OriginDistributedProvinceOutsideDto> provinceOutsideDistributed;
+
+    /**
+     * 省内来源分布
+     */
+    private List<OriginDistributedProvinceInsideDto> provinceInsideDistributed;
 }

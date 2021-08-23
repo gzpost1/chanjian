@@ -14,6 +14,7 @@ import com.yjtech.wisdom.tourism.dto.*;
 import com.yjtech.wisdom.tourism.extension.Extension;
 import com.yjtech.wisdom.tourism.extension.ExtensionConstant;
 import com.yjtech.wisdom.tourism.service.point.DistrictExtPt;
+import com.yjtech.wisdom.tourism.system.service.PlatformService;
 import com.yjtech.wisdom.tourism.system.service.SysConfigService;
 import com.yjtech.wisdom.tourism.vo.DataOverviewVo;
 import com.yjtech.wisdom.tourism.vo.MonthPassengerFlowVo;
@@ -23,6 +24,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
@@ -30,6 +33,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 游客结构-调用区县大数据-模拟数据
@@ -40,17 +44,24 @@ import java.util.List;
 @Extension(bizId = ExtensionConstant.DISTRICT,
         useCase = DistrictExtensionConstant.DISTRICT,
         scenario = ExtensionConstant.SCENARIO_MOCK)
+@Component
 public class DistrictTourMockService implements DistrictExtPt, ApplicationListener<ContextRefreshedEvent> {
 
     @Autowired
     private SysConfigService sysConfigService;
+
+    @Autowired
+    private PlatformService platformService;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @Value("${tourist.configAreaCodeKey}")
     private String configAreaCodeKey;
 
     private static OriginDistributedProvinceOutsideDto province;
 
-    private static OriginDistributedProvinceInsideDto city;
+    private static List<OriginDistributedProvinceInsideDto> city;
 
     /**
      * 查询游客总数据-数据总览
@@ -134,15 +145,8 @@ public class DistrictTourMockService implements DistrictExtPt, ApplicationListen
         }
         // 全省
         else if(DistrictBigDataConstants.TOUR_SOURCE_PROVINCE.equals(vo.getType())) {
-            for (OriginDistributedProvinceOutsideDto provinceOutsideDto : provinceOutsideDistributed) {
-                if (!ObjectUtils.isEmpty(province)) {
-                    if (province.getAreaCode().equals(provinceOutsideDto.getAreaCode())) {
-                        List<OriginDistributedProvinceInsideDto> child = provinceOutsideDto.getChild();
-                        for (OriginDistributedProvinceInsideDto provinceInsideDto : child) {
-                            setList(vo, allTouristNum, record, provinceInsideDto.getScale(), provinceInsideDto.getAreaName());
-                        }
-                    }
-                }
+            for (OriginDistributedProvinceInsideDto provinceInsideDto : city) {
+                setList(vo, allTouristNum, record, provinceInsideDto.getScale(), provinceInsideDto.getAreaName());
             }
         }
 
@@ -207,7 +211,7 @@ public class DistrictTourMockService implements DistrictExtPt, ApplicationListen
                 }
                 // 其他月 全部客流
                 else {
-                    totalNumberMonth[i] = new BigDecimal(mockData.getMonthNumber() * (DistrictBigDataConstants.ONE_HUNDRED + RandomUtils.getRandomNumber(-20, 20)))
+                    totalNumberMonth[i] = new BigDecimal(mockData.getMonthNumber() * (DistrictBigDataConstants.ONE_HUNDRED + getRandom(null)))
                             .divide(new BigDecimal(DistrictBigDataConstants.ONE_HUNDRED), 0)
                             .intValue();
                 }
@@ -260,11 +264,11 @@ public class DistrictTourMockService implements DistrictExtPt, ApplicationListen
 
         // 省内游客
         if (DistrictBigDataConstants.PROVINCE_INSIDI.equals(vo.getStatisticsType())) {
-            scale = city.getScale();
+            scale = province.getScale();
         }
         // 省外游客
         else if (DistrictBigDataConstants.PROVINCE_OUTSIDE.equals(vo.getStatisticsType())) {
-            scale = DistrictBigDataConstants.ONE_HUNDRED - city.getScale();
+            scale = DistrictBigDataConstants.ONE_HUNDRED - province.getScale();
         }
 
         // 当前日期号数
@@ -299,7 +303,7 @@ public class DistrictTourMockService implements DistrictExtPt, ApplicationListen
                 else {
                     totalNumberDay[i] = new BigDecimal(totalMonth - mockData.getDayNumber())
                             .divide(new BigDecimal(currentDayNumber - 1), 0)
-                            .multiply(new BigDecimal(DistrictBigDataConstants.ONE_HUNDRED + RandomUtils.getRandomNumber(-20, 20)))
+                            .multiply(new BigDecimal(DistrictBigDataConstants.ONE_HUNDRED + getRandom(null)))
                             .divide(new BigDecimal(DistrictBigDataConstants.ONE_HUNDRED), 0)
                             .intValue();
                 }
@@ -370,7 +374,7 @@ public class DistrictTourMockService implements DistrictExtPt, ApplicationListen
     private DistrictMockDataDto createMockData(int currentDay, DistrictMockRuleDto districtMockRuleDto) {
 
         // 日游客量数据
-        int dayNumber = RandomUtils.getRandomNumber(districtMockRuleDto.getRandomStart(), districtMockRuleDto.getRandomEnd()) + districtMockRuleDto.getDayPassengerFlowValue();
+        int dayNumber = getRandom(districtMockRuleDto) + districtMockRuleDto.getDayPassengerFlowValue();
 
         // 月累计客流 = 日客流 * 当前日期号数 + 固定值
         int monthNumber = dayNumber * currentDay + districtMockRuleDto.getMonthPassengerFlowValue();
@@ -380,42 +384,61 @@ public class DistrictTourMockService implements DistrictExtPt, ApplicationListen
     }
 
     /**
+     * 获取随机数 - 先查缓存再返回
+     *
+     * @return
+     */
+    private int getRandom(DistrictMockRuleDto districtMockRuleDto) {
+        String currentDate = DateTimeUtil.getCurrentDate();
+        String key = DistrictBigDataConstants.MOCK_TOUR_SIGN + currentDate;
+        // 查询当日缓存随机数是否存在
+        Object randomObj = redisTemplate.opsForValue().get(key);
+        if (ObjectUtils.isEmpty(randomObj)) {
+            int randomNumber = getRandomNumber(districtMockRuleDto);
+            redisTemplate.opsForValue().set(key, randomNumber, 1, TimeUnit.DAYS);
+            randomObj = randomNumber;
+        }
+        return Integer.parseInt(randomObj.toString());
+    }
+
+    /**
+     * 刷新随机数
+     */
+    public void refreshRandom() {
+        DistrictMockRuleDto mockRule = getMockRule();
+        String currentDate = DateTimeUtil.getCurrentDate();
+        int randomNumber = getRandomNumber(mockRule);
+        String key = DistrictBigDataConstants.MOCK_TOUR_SIGN + currentDate;
+        redisTemplate.opsForValue().set(key, randomNumber, 1, TimeUnit.DAYS);
+    }
+
+    /**
+     * 获取随机数 -- 具体生成
+     *
+     * @param districtMockRuleDto
+     * @return
+     */
+    private int getRandomNumber(DistrictMockRuleDto districtMockRuleDto) {
+        int randomStart = -20;
+        int randomEnd = 20;
+        if (!ObjectUtils.isEmpty(districtMockRuleDto)) {
+            randomStart = districtMockRuleDto.getRandomStart();
+            randomEnd = districtMockRuleDto.getRandomEnd();
+        }
+        return RandomUtils.getRandomNumber(randomStart, randomEnd);
+    }
+
+    /**
      * 根据模拟规则  创建模拟数据
      *
      * @return
      */
-    private DistrictMockRuleDto getMockRule() {
+    public DistrictMockRuleDto getMockRule() {
         String configValue = sysConfigService.selectConfigByKey(MockDataConstant.DISTRICT_TOUR_MOCK_KEY);
         if (StringUtils.isEmpty(configValue)) {
             return null;
         }
         return JSONObject.parseObject(configValue, DistrictMockRuleDto.class);
-
-    }
-
-    /**
-     * 查找所属市
-     *
-     * @param areaCodeProvince
-     * @param areaCode
-     * @return
-     */
-    private OriginDistributedProvinceInsideDto findCityCode(OriginDistributedProvinceOutsideDto areaCodeProvince, String areaCode) {
-        String provinceSign = areaCode.substring(0, 2);
-        String provinceTempSign = areaCodeProvince.getAreaCode().substring(0, 2);
-        // 区划 前2位确定省份
-        if (!provinceSign.equals(provinceTempSign)) {
-            return null;
-        }
-        for (OriginDistributedProvinceInsideDto provinceInsideDto : areaCodeProvince.getChild()) {
-            // 区划 前4位确定归属市
-            String citySign = areaCode.substring(0, 4);
-            String cityTempSign = provinceInsideDto.getAreaCode().substring(0, 4);
-            if (citySign.equals(cityTempSign)) {
-                return provinceInsideDto;
-            }
-        }
-        return null;
     }
 
     /**
@@ -451,27 +474,18 @@ public class DistrictTourMockService implements DistrictExtPt, ApplicationListen
      */
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
-        // 区县数据编号 522 722 000000
-        String areaCode = sysConfigService.selectConfigByKey(configAreaCodeKey);
         DistrictMockRuleDto mockRule = getMockRule();
-
-        // 省外客流
         if (ObjectUtils.isEmpty(mockRule)) {
             return;
         }
+        city = mockRule.getProvinceInsideDistributed();
         List<OriginDistributedProvinceOutsideDto> provinceOutsideDistributed = mockRule.getProvinceOutsideDistributed();
+        String provinceName = com.yjtech.wisdom.tourism.common.utils.StringUtils.substringBefore(platformService.getPlatform().getAreaName(), "/");
         for (OriginDistributedProvinceOutsideDto provinceOutsideDto : provinceOutsideDistributed) {
-            OriginDistributedProvinceInsideDto targetCity = findCityCode(provinceOutsideDto, areaCode);
-
-            // 在循环内找到 所属省市，
-            if (!ObjectUtils.isEmpty(targetCity)) {
-                if (ObjectUtils.isEmpty(province)) {
-                    province = provinceOutsideDto;
-                }
-                if (ObjectUtils.isEmpty(city)) {
-                    city = targetCity;
-                }
+            if (provinceName.equals(provinceOutsideDto.getAreaName())) {
+                province = provinceOutsideDto;
             }
         }
     }
+
 }
