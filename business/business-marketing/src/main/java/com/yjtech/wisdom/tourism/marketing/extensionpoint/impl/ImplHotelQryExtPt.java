@@ -43,7 +43,7 @@ public class ImplHotelQryExtPt implements HotelQryExtPt {
      * @return
      */
     @Override
-    public MarketingEvaluateStatisticsDTO queryEvaluateStatisticsDetail(EvaluateQueryVO vo) {
+    public MarketingEvaluateStatisticsDTO queryEvaluateStatistics(EvaluateQueryVO vo) {
         return marketingEvaluateService.queryEvaluateStatistics(vo);
     }
 
@@ -55,17 +55,6 @@ public class ImplHotelQryExtPt implements HotelQryExtPt {
      */
     @Override
     public MarketingEvaluateStatisticsDTO queryEvaluateStatisticsIndex(EvaluateQueryVO vo) {
-        return marketingEvaluateService.queryEvaluateStatistics(vo);
-    }
-
-    /**
-     * 查询评价统计-酒店民宿大数据
-     *
-     * @param vo
-     * @return
-     */
-    @Override
-    public MarketingEvaluateStatisticsDTO queryEvaluateStatisticsBigData(EvaluateQueryVO vo) {
         return marketingEvaluateService.queryEvaluateStatistics(vo);
     }
 

@@ -39,13 +39,13 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
     private RedisCache redisCache;
 
     /**
-     * 查询评价统计-酒店民宿详情
+     * 查询评价统计-酒店民宿详情、酒店民宿大数据
      * SimulationTravelComplaintDTO simulationTravelComplaintDTO = redisCache.getCacheObject(Constants.SIMULATION_KEY + SimulationConstants.TRAVEL_COMPLAINT);
      * @param vo
      * @return
      */
     @Override
-    public MarketingEvaluateStatisticsDTO queryEvaluateStatisticsDetail(EvaluateQueryVO vo) {
+    public MarketingEvaluateStatisticsDTO queryEvaluateStatistics(EvaluateQueryVO vo) {
         SimulationHotelDTO simulationHotelDTO = redisCache.getCacheObject(Constants.SIMULATION_KEY + SimulationConstants.HOTEL);
 
         return new MarketingEvaluateStatisticsDTO(
@@ -62,17 +62,6 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
      */
     @Override
     public MarketingEvaluateStatisticsDTO queryEvaluateStatisticsIndex(EvaluateQueryVO vo) {
-        return null;
-    }
-
-    /**
-     * 查询评价统计-酒店民宿大数据
-     *
-     * @param vo
-     * @return
-     */
-    @Override
-    public MarketingEvaluateStatisticsDTO queryEvaluateStatisticsBigData(EvaluateQueryVO vo) {
         return null;
     }
 

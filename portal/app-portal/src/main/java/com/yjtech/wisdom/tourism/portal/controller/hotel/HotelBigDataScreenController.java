@@ -64,7 +64,7 @@ public class HotelBigDataScreenController {
 
         return JsonResult.success(extensionExecutor.execute(HotelQryExtPt.class,
                 buildBizScenario(HotelExtensionConstant.HOTEL_QUANTITY, vo.getIsSimulation()),
-                extension -> extension.queryEvaluateStatisticsBigData(vo)));
+                extension -> extension.queryEvaluateStatistics(vo)));
     }
 
     /**
