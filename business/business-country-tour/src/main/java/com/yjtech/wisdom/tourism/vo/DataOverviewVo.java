@@ -1,6 +1,7 @@
 package com.yjtech.wisdom.tourism.vo;
 
-import com.yjtech.wisdom.tourism.dto.vo.DateBaseVo;
+import com.yjtech.wisdom.tourism.common.utils.DateTimeUtil;
+import com.yjtech.wisdom.tourism.mybatis.entity.TimeBaseQuery;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,7 +17,7 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class DataOverviewVo extends DateBaseVo implements Serializable {
+public class DataOverviewVo extends TimeBaseQuery implements Serializable {
 
     private static final long serialVersionUID = 3568648722852543396L;
 
@@ -30,4 +31,18 @@ public class DataOverviewVo extends DateBaseVo implements Serializable {
      */
     private String adcode;
 
+    /**
+     * is_simulation 是否有模拟数据 1有 0无
+     */
+    private Integer isSimulation = 0;
+
+    /**
+     * 开始时间
+     */
+    private String beginDate;
+
+    /**
+     * 结束时间
+     */
+    private String endDate;
 }

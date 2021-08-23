@@ -1,7 +1,7 @@
 package com.yjtech.wisdom.tourism.message.admin.dto;
 
+import com.yjtech.wisdom.tourism.common.sms.MessageCallDto;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

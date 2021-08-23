@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 /**
- * 省外游客
+ * 省外游客 -pass
  *
  * @author renguangqian
  * @date 2021/8/5 20:10
@@ -25,13 +25,14 @@ public class ProvinceOutsideTourStrategyImpl extends BaseStrategy {
     @Autowired
     private TargetQueryService targetQueryService;
 
+
     /**
      * 对象赋值方法
      *
      * @return
      */
     @Override
-    public DecisionWarnEntity init(DecisionEntity entity) {
+    public DecisionWarnEntity init(DecisionEntity entity, Integer isSimulation) {
 
         DecisionWarnEntity result = JSONObject.parseObject(JSONObject.toJSONString(entity), DecisionWarnEntity.class);
 
@@ -42,11 +43,14 @@ public class ProvinceOutsideTourStrategyImpl extends BaseStrategy {
         // 平台简称
         String simpleName = super.getPlatformSimpleName();
         // 省外游客数量
-        String provinceOutsideNumber = targetQueryService.queryProvinceOutsideNumber(DecisionSupportConstants.PROVINCE_OUTSIDE_TYPE);
+        String provinceOutsideNumber = targetQueryService.queryProvinceNumber(DecisionSupportConstants.PROVINCE_OUTSIDE_TYPE, isSimulation).getProvinceOutsideTouristNum().toString();
         // 环比
-        String hb = targetQueryService.queryProvinceInsideScale(TargetQueryConstants.PROVINCE_SCALE_HB, TargetQueryConstants.PROVINCE_OUTSIDE_TYPE);
+        String hb = targetQueryService.queryProvinceScale(TargetQueryConstants.PROVINCE_SCALE_HB, TargetQueryConstants.PROVINCE_OUTSIDE_TYPE, isSimulation);
         // 同比
-        String tb = targetQueryService.queryProvinceInsideScale(TargetQueryConstants.PROVINCE_SCALE_TB, TargetQueryConstants.PROVINCE_OUTSIDE_TYPE);
+        String tb = targetQueryService.queryProvinceScale(TargetQueryConstants.PROVINCE_SCALE_TB, TargetQueryConstants.PROVINCE_OUTSIDE_TYPE, isSimulation);
+
+        // 图标数据：月客流趋势
+        result.setChartData(getProvinceCharData(DecisionSupportConstants.PROVINCE_OUTSIDE_TYPE));
 
         // 处理指标报警
         switch (configId) {
@@ -105,10 +109,10 @@ public class ProvinceOutsideTourStrategyImpl extends BaseStrategy {
         String conclusionText = entity.getConclusionText();
         if (!StringUtils.isEmpty(conclusionText)) {
             conclusionText = PlaceholderUtils.replace(conclusionText,
-                    DecisionSupportConfigEnum.HB.getKey(), hb + "%",
-                    DecisionSupportConfigEnum.TB.getKey(), tb + "%",
+                    DecisionSupportConfigEnum.HB.getKey(), getScale(hb),
+                    DecisionSupportConfigEnum.TB.getKey(), getScale(tb),
                     DecisionSupportConfigEnum.PROVINCE_OUTSIDE_TOUR_NUM.getKey(), provinceOutsideNumber,
-                    DecisionSupportConfigEnum.YEAR_MONTH_STATISTICAL.getKey(), currentLastMonthStr + "月",
+                    DecisionSupportConfigEnum.YEAR_MONTH_STATISTICAL.getKey(), currentLastMonthStr + DecisionSupportConstants.MONTH,
                     DecisionSupportConfigEnum.PLATFORM_SIMPLE_NAME.getKey(), simpleName
             );
             result.setConclusionText(conclusionText);
@@ -118,4 +122,6 @@ public class ProvinceOutsideTourStrategyImpl extends BaseStrategy {
         result.setMonthHbScale(hb);
         return result;
     }
+
+
 }

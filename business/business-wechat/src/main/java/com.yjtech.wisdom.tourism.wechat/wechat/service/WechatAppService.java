@@ -16,7 +16,7 @@ import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.common.exception.CustomException;
 import com.yjtech.wisdom.tourism.common.exception.ErrorCode;
 import com.yjtech.wisdom.tourism.common.utils.JsonUtil;
-import com.yjtech.wisdom.tourism.infrastructure.constant.EntityConstants;
+import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.common.utils.EnumUtil;
 import com.yjtech.wisdom.tourism.wechat.wechat.entity.CodeTemplate;
 import com.yjtech.wisdom.tourism.wechat.wechat.entity.WechatApp;

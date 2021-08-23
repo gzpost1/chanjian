@@ -1,6 +1,6 @@
 package com.yjtech.wisdom.tourism.hotel.dto;
 
-import com.yjtech.wisdom.tourism.infrastructure.constant.EntityConstants;
+import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.mybatis.entity.PageQuery;
 import lombok.*;
 

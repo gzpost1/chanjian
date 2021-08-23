@@ -23,59 +23,66 @@
     </sql>
 
     <select id="queryCheckNumByTime" resultType="java.lang.Integer">
-        select IFNULL(sum(check_num),0) check_num from tb_ticket_check
+        select IFNULL(sum(tc.check_num),0) check_num from tb_ticket_check tc
+        <include refid="scenic_table_join"/>
         <trim prefix="WHERE" prefixOverrides="AND |OR ">
             <include refid="condition_sql_where"/>
         </trim>
     </select>
 
-    <select id="queryCheckTrendByTime" parameterType="com.yjtech.wisdom.tourism.resource.scenic.query.ScenicScreenQuery"
-            resultType="com.yjtech.wisdom.tourism.resource.ticket.vo.SaleTrendVO">
+    <select id="queryPassengerFlowTop5" resultType="com.yjtech.wisdom.tourism.resource.scenic.entity.vo.ScenicBaseVo">
         SELECT
-            <if test="type == 1">
-                DATE_FORMAT( check_time, '%Y-%m' ) `time`,
-            </if>
-            <if test="type == 2">
-                DATE_FORMAT( check_time, '%Y-%m-%d' ) `time`,
-            </if>
-            sum(check_num) visitQuantity
+        tc.scenic_id id,
+        tc.scenic_name name,
+        sum(tc.check_num) `value`
         FROM
-            tb_ticket_check
+        tb_ticket_check tc
+        <include refid="scenic_table_join"/>
+        <trim prefix="WHERE" prefixOverrides="AND |OR ">
+            <include refid="condition_sql_where"/>
+        </trim>
+        GROUP BY tc.scenic_id
+        ORDER BY tc.check_num DESC
+    </select>
+
+    <select id="queryCheckTrendByTime" resultType="com.yjtech.wisdom.tourism.resource.ticket.vo.SaleTrendVO">
+        SELECT
+        <if test="params.type == 2">
+            DATE_FORMAT( tc.check_time, '%Y-%m-01' ) `time`,
+        </if>
+        <if test="params.type == 3">
+            DATE_FORMAT( tc.check_time, '%Y-%m-%d' ) `time`,
+        </if>
+        sum(tc.check_num) visitQuantity
+        FROM
+        tb_ticket_check tc
+        <include refid="scenic_table_join"/>
         <trim prefix="WHERE" prefixOverrides="AND |OR ">
             <include refid="condition_sql_where"/>
         </trim>
         GROUP BY
-            <if test="type == 1">
-                DATE_FORMAT( check_time, '%Y-%m' )
-            </if>
-            <if test="type == 2">
-                DATE_FORMAT( check_time, '%Y-%m-%d' )
-            </if>
-        ORDER BY check_time
+        <if test="params.type == 2">
+            DATE_FORMAT( tc.check_time, '%Y-%m' )
+        </if>
+        <if test="params.type == 3">
+            DATE_FORMAT( tc.check_time, '%Y-%m-%d' )
+        </if>
+        ORDER BY tc.check_time
     </select>
 
-    <select id="queryPassengerFlowTop5" parameterType="com.yjtech.wisdom.tourism.resource.scenic.query.ScenicPageQuery"
-            resultType="com.yjtech.wisdom.tourism.resource.scenic.entity.vo.ScenicBaseVo">
-        SELECT
-            scenic_name name,
-            sum( check_num ) `value`
-        FROM
-            tb_ticket_check
-        <trim prefix="WHERE" prefixOverrides="AND |OR ">
-            <include refid="condition_sql_where"/>
-        </trim>
-        GROUP BY scenic_name
-        ORDER BY check_num DESC
-    </select>
+    <sql id="scenic_table_join">
+        INNER JOIN  tb_scenic s on tc.scenic_id = s.id and s.status=1
+    </sql>
 
     <sql id="condition_sql_where">
-        <if test="beginTime != null and endTime != null">
-            and (check_time <![CDATA[ >= ]]> #{beginTime,jdbcType=TIMESTAMP} AND check_time <![CDATA[ < ]]> #{endTime,jdbcType=TIMESTAMP})
+        <if test="params.beginTime != null and params.endTime != null">
+            and (tc.check_time <![CDATA[ >= ]]> #{params.beginTime,jdbcType=TIMESTAMP} AND tc.check_time <![CDATA[ < ]]>
+            #{params.endTime,jdbcType=TIMESTAMP})
         </if>
-        <if test="scenicId != null and scenicId != null">
-            and scenic_id = ( SELECT id FROM tb_scenic WHERE id = #{scenicId,jdbcType=BIGINT} AND `status` = 1 )
+        <if test="params.scenicId != null and params.scenicId != null">
+            and tc.scenic_id = #{params.scenicId,jdbcType=BIGINT}
         </if>
-        and deleted = 0
+        and tc.deleted = 0
     </sql>
 
 </mapper>

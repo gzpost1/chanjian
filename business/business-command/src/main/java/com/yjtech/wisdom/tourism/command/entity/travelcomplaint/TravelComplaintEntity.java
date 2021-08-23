@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.yjtech.wisdom.tourism.command.vo.travelcomplaint.TravelComplaintCreateVO;
 import com.yjtech.wisdom.tourism.command.vo.travelcomplaint.TravelComplaintUpdateVO;
-import com.yjtech.wisdom.tourism.common.constant.Constants;
+import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.common.core.domain.StatusParam;
 import com.yjtech.wisdom.tourism.common.enums.TravelComplaintStatusEnum;
 import com.yjtech.wisdom.tourism.common.utils.IdWorker;
@@ -160,7 +160,7 @@ public class TravelComplaintEntity extends MyBaseEntity {
         setImage(vo.getImage());
 
         //默认启用
-        setEquipStatus(Constants.STATUS_NEGATIVE.byteValue());
+        setEquipStatus(EntityConstants.ENABLED);
         //默认待指派
         setStatus(TravelComplaintStatusEnum.TRAVEL_COMPLAINT_STATUS_NO_ASSIGN.getValue());
 

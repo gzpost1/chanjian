@@ -9,10 +9,11 @@ import com.google.common.collect.Lists;
 import com.tencent.xinge.push.app.PushAppResponse;
 import com.yjtech.wisdom.tourism.common.constant.MessageConstants;
 import com.yjtech.wisdom.tourism.common.exception.CustomException;
+import com.yjtech.wisdom.tourism.common.sms.MessageCall;
+import com.yjtech.wisdom.tourism.common.sms.MessageCallDto;
 import com.yjtech.wisdom.tourism.common.utils.ServletUtils;
 import com.yjtech.wisdom.tourism.framework.web.service.TokenService;
 import com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysUser;
-import com.yjtech.wisdom.tourism.message.admin.dto.MessageCallDto;
 import com.yjtech.wisdom.tourism.message.admin.dto.MessageDto;
 import com.yjtech.wisdom.tourism.message.admin.dto.MessageRecordDto;
 import com.yjtech.wisdom.tourism.message.admin.entity.MessageEntity;
@@ -24,9 +25,8 @@ import com.yjtech.wisdom.tourism.message.admin.vo.QueryMessageVo;
 import com.yjtech.wisdom.tourism.message.admin.vo.SendMessageVo;
 import com.yjtech.wisdom.tourism.message.app.bo.TpnsPushBO;
 import com.yjtech.wisdom.tourism.message.app.service.TpnsPushService;
-import com.yjtech.wisdom.tourism.message.common.MessageCall;
 import com.yjtech.wisdom.tourism.message.common.PageHelpUtil;
-import com.yjtech.wisdom.tourism.message.sms.service.SmsService;
+import com.yjtech.wisdom.tourism.message.sms.service.SmsUseService;
 import com.yjtech.wisdom.tourism.system.service.SysConfigService;
 import com.yjtech.wisdom.tourism.system.service.SysUserService;
 import lombok.extern.slf4j.Slf4j;
@@ -62,7 +62,7 @@ public class MessageMangerService extends ServiceImpl<MessageMapper, MessageEnti
     private SysUserService sysUserService;
 
     @Autowired
-    private SmsService smsService;
+    private SmsUseService smsService;
 
     @Autowired
     private MessageRecordMapper messageRecordMapper;
@@ -73,16 +73,13 @@ public class MessageMangerService extends ServiceImpl<MessageMapper, MessageEnti
     @Autowired
     private SysConfigService sysConfigService;
 
-    @Autowired
-    private MessageCall messageCall;
-
     @Value("${message.dictType.admin}")
     private String adminDictType;
 
     /**
      * 查询消息列表
      */
-    public IPage<MessageDto> queryPageMessage (QueryMessageVo vo, boolean isRecord) {
+    public IPage<MessageDto> queryPageMessage (QueryMessageVo vo, boolean isRecord, MessageCall... messageCall) {
 
         Long userId = tokenService.getLoginUser(ServletUtils.getRequest()).getUser().getUserId();
 
@@ -116,9 +113,9 @@ public class MessageMangerService extends ServiceImpl<MessageMapper, MessageEnti
         Long[] touristComplaintsEventIds = touristComplaintsEventIdList.toArray(new Long[0]);
 
         // 应急事件信息 查询
-        List<MessageCallDto> emergencyEventList = messageCall.queryEvent(emergencyEventIds);
+        List<MessageCallDto> emergencyEventList = messageCall[0].queryEvent(emergencyEventIds);
         // 旅游投诉信息 查询
-        List<MessageCallDto> touristComplaintsEventList = messageCall.queryEvent(touristComplaintsEventIds);
+        List<MessageCallDto> touristComplaintsEventList = messageCall[1].queryEvent(touristComplaintsEventIds);
 
         Integer queryType = vo.getQueryType();
 
@@ -254,6 +251,7 @@ public class MessageMangerService extends ServiceImpl<MessageMapper, MessageEnti
                             .eventDealPersonId(list)
                             .eventId(vo.getEventId())
                             .eventType(vo.getEventType())
+                            .title(vo.getPcTitle())
                             .build();
                     int records = baseMapper.insert(messageEntity);
 
@@ -312,7 +310,7 @@ public class MessageMangerService extends ServiceImpl<MessageMapper, MessageEnti
                         recordEntity.setSendObject(phoneNumber);
                         try {
                             if (!StringUtils.isEmpty(phoneNumber)) {
-                                smsService.smsSend(phoneNumber, vo.getEventType());
+                                smsService.smsSend(phoneNumber, vo.getEventType(), vo.getSmsContent());
                                 recordEntity.setSuccess((byte) 1);
                             }else {
                                 recordEntity.setSuccess((byte) 0);

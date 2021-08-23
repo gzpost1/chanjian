@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yjtech.wisdom.tourism.wechat.wechat.vo.CodeTemplateVO;
 import com.google.common.collect.Lists;
-import com.yjtech.wisdom.tourism.infrastructure.constant.EntityConstants;
+import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.wechat.wechat.entity.CodeTemplate;
 import com.yjtech.wisdom.tourism.wechat.wechat.mapper.CodeTemplateMapper;
 import org.springframework.beans.factory.annotation.Autowired;

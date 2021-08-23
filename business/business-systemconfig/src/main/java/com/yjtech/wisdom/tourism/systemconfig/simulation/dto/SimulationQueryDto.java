@@ -4,7 +4,6 @@ import lombok.Data;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -16,9 +15,10 @@ import javax.validation.constraints.NotNull;
 public class SimulationQueryDto {
     /**
      * 1票务 2停车场 3wifi 4一码游 5智慧厕所 6口碑 7事件
+     * 8景区 9酒店民宿 10旅游投诉 11游客结构 12决策辅助
      */
     @NotNull(message = "查询类型不能为空")
     @Min(value = 1)
-    @Max(value = 7)
+    @Max(value = 12)
     private Integer domainId;
 }

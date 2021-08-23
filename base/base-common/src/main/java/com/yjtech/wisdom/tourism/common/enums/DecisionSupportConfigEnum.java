@@ -113,6 +113,11 @@ public enum DecisionSupportConfigEnum {
     OVERALL_SCENIC_SPOT_POSITIVE_EVALUATIONS_NUMBER("整体景区好评数量", "${ALL_SCENIC_SPOT_POSITIVE_EVALUATIONS_NUMBER}"),
 
     /**
+     * 整体景区满意度
+     */
+    OVERALL_SCENIC_SPOT_SATISFACTION("整体景区满意度", "${OVERALL_SCENIC_SPOT_SATISFACTION}"),
+
+    /**
      * 满意度下降最多景区名称
      */
     SATISFACTION_MOST_DECLINE_SCENIC_SPOT_NAME("满意度下降最多景区名称", "${SATISFACTION_MOST_DECLINE_SCENIC_SPOT_NAME}"),
@@ -121,6 +126,11 @@ public enum DecisionSupportConfigEnum {
      * 满意度下降最多景区评价量
      */
     SATISFACTION_MOST_DECLINE_SCENIC_SPOT_EVALUATION("满意度下降最多景区评价量", "${SATISFACTION_MOST_DECLINE_SCENIC_SPOT_EVALUATION}"),
+
+    /**
+     * 满意度下降最多景区好评量
+     */
+    SATISFACTION_MOST_DECLINE_SCENIC_SPOT_GOOD_EVALUATION("满意度下降最多景区好评量", "${SATISFACTION_MOST_DECLINE_SCENIC_SPOT_GOOD_EVALUATION}"),
 
     /**
      * 满意度下降最多景区满意度
@@ -156,6 +166,11 @@ public enum DecisionSupportConfigEnum {
      * 满意度下降最多酒店民宿评价量
      */
     MOST_SATISFACTION_DECLINE_HOTEL_AND_HOMESTAY_EVALUATION("满意度下降最多酒店民宿评价量", "${MOST_SATISFACTION_DECLINE_HOTEL_AND_HOMESTAY_EVALUATION}"),
+
+    /**
+     * 满意度下降最多酒店民宿好评量
+     */
+    MOST_SATISFACTION_DECLINE_HOTEL_AND_HOMESTAY_GOOD_EVALUATION("满意度下降最多酒店民宿好评量", "${MOST_SATISFACTION_DECLINE_HOTEL_AND_HOMESTAY_GOOD_EVALUATION}"),
 
     /**
      * 满意度下降最多酒店民宿满意度

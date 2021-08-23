@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -46,7 +47,7 @@ public class TicketCheckEntity extends MyBaseEntity {
     /**
      * 检票时间
      */
-    private Date checkTime;
+    private LocalDateTime checkTime;
 
     /**
      * 闸机

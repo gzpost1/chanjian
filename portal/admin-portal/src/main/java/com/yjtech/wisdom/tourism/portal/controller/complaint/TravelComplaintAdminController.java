@@ -149,4 +149,25 @@ public class TravelComplaintAdminController {
         return JsonResult.success();
     }
 
+    /**
+     * 获取指派人员
+     *
+     * @return
+     */
+    @PostMapping("queryAssignUser")
+    public JsonResult queryAssignUser() {
+        return JsonResult.success(travelComplaintService.queryAssignUser());
+    }
+
+    /**
+     * 获取处理人员
+     *
+     * @param idParam
+     * @return
+     */
+    @PostMapping("queryDealUser")
+    public JsonResult queryDealUser(@RequestBody @Valid IdParam idParam) {
+        return JsonResult.success(travelComplaintService.queryDealUser(idParam.getId()));
+    }
+
 }

@@ -126,6 +126,23 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		</where>
 	</select>
 
+	<select id="selectUserListById" parameterType="long" resultMap="SysUserResult">
+		select u.user_id, u.dept_id, u.nick_name, u.user_name, u.email, u.avatar, u.phonenumber, u.password, u.sex, u.status, u.deleted, u.login_ip, u.login_date, u.create_user, u.create_time, u.remark, d.dept_name, d.leader,
+		r.role_name
+		from sys_user u
+		left join sys_dept d on u.dept_id = d.dept_id
+		left join sys_user_role ur on u.user_id = ur.user_id
+		left join sys_role r on r.role_id = ur.role_id
+		<where>
+			u.user_id in
+			<foreach collection="userIdList" item="item" index="index" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+			and
+			u.deleted = 0
+		</where>
+	</select>
+
 	<insert id="insertUser" parameterType="com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysUser" useGeneratedKeys="true" keyProperty="userId">
  		insert into sys_user(
  			<if test="userId != null and userId != 0">user_id,</if>

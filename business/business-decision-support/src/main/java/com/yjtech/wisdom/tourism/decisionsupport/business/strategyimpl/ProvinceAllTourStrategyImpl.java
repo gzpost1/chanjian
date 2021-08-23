@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 /**
- * 全部游客
+ * 全部游客 -pass
  *
  * @author renguangqian
  * @date 2021/8/9 9:56
@@ -32,7 +32,7 @@ public class ProvinceAllTourStrategyImpl extends BaseStrategy {
      * @return
      */
     @Override
-    public DecisionWarnEntity init(DecisionEntity entity) {
+    public DecisionWarnEntity init(DecisionEntity entity, Integer isSimulation) {
         DecisionWarnEntity result = JSONObject.parseObject(JSONObject.toJSONString(entity), DecisionWarnEntity.class);
 
         int configId = entity.getConfigId().intValue();
@@ -42,20 +42,40 @@ public class ProvinceAllTourStrategyImpl extends BaseStrategy {
         // 平台简称
         String simpleName = super.getPlatformSimpleName();
         // 全部游客数量
-        String provinceInsideNumber = targetQueryService.queryProvinceOutsideNumber(DecisionSupportConstants.PROVINCE_ALL_TYPE);
+        String provinceAllNumber = targetQueryService.queryProvinceNumber(DecisionSupportConstants.PROVINCE_ALL_TYPE, isSimulation).getAllTouristNum().toString();
         // 环比
-        String hb = targetQueryService.queryProvinceInsideScale(TargetQueryConstants.PROVINCE_SCALE_HB, DecisionSupportConstants.PROVINCE_ALL_TYPE);
+        String hb = targetQueryService.queryProvinceScale(TargetQueryConstants.PROVINCE_SCALE_HB, DecisionSupportConstants.PROVINCE_ALL_TYPE, isSimulation);
         // 同比
-        String tb = targetQueryService.queryProvinceInsideScale(TargetQueryConstants.PROVINCE_SCALE_TB, DecisionSupportConstants.PROVINCE_ALL_TYPE);
+        String tb = targetQueryService.queryProvinceScale(TargetQueryConstants.PROVINCE_SCALE_TB, DecisionSupportConstants.PROVINCE_ALL_TYPE, isSimulation);
+
+        // 图标数据：月客流趋势
+        result.setChartData(getProvinceCharData(DecisionSupportConstants.PROVINCE_ALL_TYPE));
 
         // 处理指标报警
         switch (configId) {
+
+            // 整体游客 _统计年月 （文本）
+            case DecisionSupportConstants.ZTYK_TJNY :
+                result.setWarnNum(currentLastMonthStr);
+                textAlarmDeal(entity, result, currentLastMonthStr);
+                break;
+
+            // 整体游客 _平台简称 （文本）
+            case DecisionSupportConstants.ZTYK_PTJC :
+                result.setWarnNum(simpleName);
+                textAlarmDeal(entity, result, simpleName);
+                // 判断是否使用缺失话术
+                if (StringUtils.isEmpty(simpleName)) {
+                    result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
+                }
+                break;
+
             // 整体游客 _整体游客数量 （数值）
             case DecisionSupportConstants.ZTYK_ZTYKSL :
-                result.setWarnNum(provinceInsideNumber);
+                result.setWarnNum(provinceAllNumber);
                 numberAlarmDeal(entity, result, hb);
                 // 判断是否使用缺失话术
-                if (DecisionSupportConstants.MISS_CONCLUSION_TEXT_NUMBER_VALUE.equals(Integer.valueOf(provinceInsideNumber))) {
+                if (DecisionSupportConstants.MISS_CONCLUSION_TEXT_NUMBER_VALUE.equals(Integer.valueOf(provinceAllNumber))) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
                 }
                 break;
@@ -80,22 +100,6 @@ public class ProvinceAllTourStrategyImpl extends BaseStrategy {
                 }
                 break;
 
-            // 整体游客 _统计年月 （文本）
-            case DecisionSupportConstants.ZTYK_TJNY :
-                result.setWarnNum(currentLastMonthStr);
-                textAlarmDeal(entity, result, currentLastMonthStr);
-                break;
-
-            // 整体游客 _平台简称 （文本）
-            case DecisionSupportConstants.ZTYK_PTJC :
-                result.setWarnNum(simpleName);
-                textAlarmDeal(entity, result, simpleName);
-                // 判断是否使用缺失话术
-                if (StringUtils.isEmpty(simpleName)) {
-                    result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
-                }
-                break;
-
             default:
                 break;
         }
@@ -104,10 +108,10 @@ public class ProvinceAllTourStrategyImpl extends BaseStrategy {
         String conclusionText = entity.getConclusionText();
         if (!StringUtils.isEmpty(conclusionText)) {
             conclusionText = PlaceholderUtils.replace(conclusionText,
-                    DecisionSupportConfigEnum.HB.getKey(), hb + "%",
-                    DecisionSupportConfigEnum.TB.getKey(), tb + "%",
-                    DecisionSupportConfigEnum.PROVINCE_ALL_TOUR_NUM.getKey(), provinceInsideNumber,
-                    DecisionSupportConfigEnum.YEAR_MONTH_STATISTICAL.getKey(), currentLastMonthStr + "月",
+                    DecisionSupportConfigEnum.HB.getKey(), getScale(hb),
+                    DecisionSupportConfigEnum.TB.getKey(), getScale(tb),
+                    DecisionSupportConfigEnum.PROVINCE_ALL_TOUR_NUM.getKey(), provinceAllNumber,
+                    DecisionSupportConfigEnum.YEAR_MONTH_STATISTICAL.getKey(), currentLastMonthStr + DecisionSupportConstants.MONTH,
                     DecisionSupportConfigEnum.PLATFORM_SIMPLE_NAME.getKey(), simpleName
             );
             result.setConclusionText(conclusionText);

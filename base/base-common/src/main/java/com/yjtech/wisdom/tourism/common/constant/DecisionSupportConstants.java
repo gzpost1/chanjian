@@ -7,6 +7,101 @@ package com.yjtech.wisdom.tourism.common.constant;
  * @date 2021/7/28 9:40
  */
 public class DecisionSupportConstants {
+    
+    /**
+     * 全部景区接待数量
+     */
+    public static final String TOTAL_CHECK_NUM = "totalCheckNum";
+
+    /**
+     * 启用
+     */
+    public static final Byte ENABLE = 1;
+    /**
+     * 月
+     */
+    public static final String MONTH = "月";
+    /**
+     * 百分号
+     */
+    public static final String PERCENT = "%";
+    /**
+     * 增加
+     */
+    public static final String ADD = "增加";
+    /**
+     * 降低
+     */
+    public static final String REDUCE = "降低";
+    /**
+     * null 字符串
+     */
+    public static final String NULL = "null";
+    /**
+     * 0 字符串
+     */
+    public static final String ZERO = "0";
+
+    /**
+     * 0
+     */
+    public static final Integer ZERO_NUMBER = 0;
+
+    /**
+     * 模拟数据
+     */
+    public static final Integer MOCK = 1;
+
+    /**
+     * 真实数据
+     */
+    public static final Integer IMPL = 0;
+
+    /**
+     * 应急事件-同比
+     */
+    public static final String YOY = "yoy";
+
+    /**
+     * 应急事件-环比
+     */
+    public static final String MOM = "mom";
+
+    /**
+     * 年数据key
+     */
+    public static final String THIS_YEAR = "thisYear";
+
+    /**
+     * 总数toTal
+     */
+    public static final String TOTAL_STR = "total";
+
+
+    /**
+     * 时间趋势类型（1-年 2-年月 3-年月日  4-年月日时）
+     */
+    public static final Byte YEAR = 1;
+    /**
+     * 时间趋势类型（1-年 2-年月 3-年月日  4-年月日时）
+     */
+    public static final Byte YEAR_MONTH = 2;
+    /**
+     * 时间趋势类型（1-年 2-年月 3-年月日  4-年月日时）
+     */
+    public static final Byte YEAR_MONTH_DAY = 3;
+    /**
+     * 时间趋势类型（1-年 2-年月 3-年月日  4-年月日时）
+     */
+    public static final Byte YEAR_MONTH_DAY_HOUR = 4;
+
+
+
+    /**
+     * 开始日期拼接字符串
+     */
+    public static final String DATA = "data";
+
 
     /**
      * 开始日期拼接字符串
@@ -17,6 +112,26 @@ public class DecisionSupportConstants {
      * 结束日期拼接字符串
      */
     public static final String END_TIME_STR = " 23:59:59";
+
+    /**
+     * 开始日期拼接字符串
+     */
+    public static final String START_DAY_STR = "-01 00:00:00";
+
+    /**
+     * 结束日期拼接字符串
+     */
+    public static final String END_DAY_STR = "-31 23:59:59";
+
+    /**
+     * 开始日期拼接字符串
+     */
+    public static final String START_DATE_STR = "-01-01 00:00:00";
+
+    /**
+     * 结束日期拼接字符串
+     */
+    public static final String END_DATE_STR = "-12-31 23:59:59";
 
 
 

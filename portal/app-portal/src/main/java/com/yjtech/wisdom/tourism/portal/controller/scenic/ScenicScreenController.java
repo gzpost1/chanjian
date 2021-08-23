@@ -7,11 +7,11 @@ import com.yjtech.wisdom.tourism.common.bean.BaseValueVO;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.common.exception.CustomException;
 import com.yjtech.wisdom.tourism.dto.MonthPassengerFlowDto;
+import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateListDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateStatisticsDTO;
 import com.yjtech.wisdom.tourism.mybatis.utils.AnalysisUtils;
 import com.yjtech.wisdom.tourism.resource.scenic.entity.vo.ScenicBaseVo;
 import com.yjtech.wisdom.tourism.resource.scenic.entity.vo.ScenicScreenVo;
-import com.yjtech.wisdom.tourism.resource.scenic.query.ScenicPageQuery;
 import com.yjtech.wisdom.tourism.resource.scenic.query.ScenicScreenQuery;
 import com.yjtech.wisdom.tourism.resource.scenic.service.ScenicService;
 import com.yjtech.wisdom.tourism.resource.video.entity.TbVideoEntity;
@@ -50,7 +50,7 @@ public class ScenicScreenController {
      * @return:
      */
     @PostMapping("/queryForPage")
-    public JsonResult<IPage<ScenicScreenVo>> queryScreenForPage(@RequestBody ScenicPageQuery query) {
+    public JsonResult<IPage<ScenicScreenVo>> queryScreenForPage(@RequestBody ScenicScreenQuery query) {
         return JsonResult.success(scenicService.queryScreenForPage(query));
     }
 
@@ -62,8 +62,30 @@ public class ScenicScreenController {
      * @return:
      */
     @PostMapping("/queryLevelDistribution")
-    public JsonResult<List<ScenicBaseVo>> queryLevelDistribution() {
+    public JsonResult<List<BaseVO>> queryLevelDistribution() {
         return JsonResult.success(scenicService.queryLevelDistribution());
+    }
+
+    /**
+     * 景区分布——评论列表
+     *
+     * @Param:
+     * @return:
+     */
+    @PostMapping("/queryCommentForPage")
+    public JsonResult<IPage<MarketingEvaluateListDTO>> queryCommentForPage(@RequestBody @Valid ScenicScreenQuery query) {
+        return JsonResult.success(scenicService.queryCommentForPage(query));
+    }
+
+    /**
+     * 查询评价热词排行
+     *
+     * @param query
+     * @return
+     */
+    @PostMapping("queryHotRank")
+    public JsonResult<List<BaseVO>> queryScenicHotRank(@RequestBody @Valid ScenicScreenQuery query){
+        return JsonResult.success(scenicService.queryScenicHotRank(query));
     }
 
     /**
@@ -84,7 +106,7 @@ public class ScenicScreenController {
      * @return:
      */
     @PostMapping("/queryTouristReception")
-    public JsonResult<List<ScenicBaseVo>> queryTouristReception(@RequestBody @Valid ScenicScreenQuery query) {
+    public JsonResult<List<BaseVO>> queryTouristReception(@RequestBody @Valid ScenicScreenQuery query) {
         if (isNull(query.getBeginTime()) || isNull(query.getEndTime())) {
             throw new CustomException("统计时间不能为空");
         }
@@ -98,7 +120,7 @@ public class ScenicScreenController {
      * @return:
      */
     @PostMapping("/queryVideoByScenicId")
-    public JsonResult<IPage<TbVideoEntity>> queryVideoByScenicId(@RequestBody ScenicPageQuery query) {
+    public JsonResult<IPage<TbVideoEntity>> queryVideoByScenicId(@RequestBody ScenicScreenQuery query) {
         if (isNull(query) || isNull(query.getScenicId())) {
             throw new CustomException("景区id不能为空");
         }
@@ -113,9 +135,6 @@ public class ScenicScreenController {
      */
     @PostMapping("/queryPassengerFlowTrend")
     public JsonResult<List<BaseValueVO>> queryPassengerFlow(@RequestBody @Valid ScenicScreenQuery query) {
-        if (query.getType() == 3 || query.getType() == 4) {
-            throw new CustomException("时间类型只能传1或者2");
-        }
         return JsonResult.success(AnalysisUtils.MultipleBuildAnalysis(
                 query,
                 scenicService.queryPassengerFlowTrend(query),
@@ -130,8 +149,11 @@ public class ScenicScreenController {
      * @return:
      */
     @PostMapping("/queryEvaluateTypeDistribution")
-    public JsonResult<List<BasePercentVO>> queryEvaluateTypeDistribution(@RequestBody @Valid ScenicScreenQuery vo) {
-        return JsonResult.success(scenicService.queryEvaluateTypeDistribution(vo));
+    public JsonResult<List<BasePercentVO>> queryEvaluateTypeDistribution(@RequestBody @Valid ScenicScreenQuery query) {
+        if (isNull(query.getBeginTime()) || isNull(query.getEndTime())) {
+            throw new CustomException("统计时间不能为空");
+        }
+        return JsonResult.success(scenicService.queryEvaluateTypeDistribution(query));
     }
 
     /**
@@ -141,8 +163,8 @@ public class ScenicScreenController {
      * @return:
      */
     @PostMapping("/queryScenicEvaluateStatistics")
-    public JsonResult<MarketingEvaluateStatisticsDTO> queryScenicEvaluateStatistics(@RequestBody @Valid ScenicScreenQuery vo) {
-        return JsonResult.success(scenicService.queryScenicEvaluateStatistics(vo));
+    public JsonResult<MarketingEvaluateStatisticsDTO> queryScenicEvaluateStatistics(@RequestBody @Valid ScenicScreenQuery query) {
+        return JsonResult.success(scenicService.queryScenicEvaluateStatistics(query));
     }
 
     /**
@@ -152,18 +174,18 @@ public class ScenicScreenController {
      * @return:
      */
     @PostMapping("/queryPassengerFlowTop5")
-    public JsonResult<IPage<ScenicBaseVo>> queryPassengerFlowTop5(@RequestBody @Valid ScenicPageQuery query) {
+    public JsonResult<IPage<ScenicBaseVo>> queryPassengerFlowTop5(@RequestBody @Valid ScenicScreenQuery query) {
         return JsonResult.success(scenicService.queryPassengerFlowTop5(query));
     }
 
     /**
-     * 景区大数据——评价排行
+     * 景区大数据——评价排行TOP5
      *
      * @Param: query
      * @return:
      */
     @PostMapping("/queryEvaluateTop5")
-    public JsonResult<IPage<BaseVO>> queryEvaluateTop5(@RequestBody @Valid ScenicPageQuery query) {
+    public JsonResult<IPage<BaseVO>> queryEvaluateTop5(@RequestBody @Valid ScenicScreenQuery query) {
         return JsonResult.success(scenicService.queryEvaluateTop5(query));
     }
 
@@ -174,7 +196,7 @@ public class ScenicScreenController {
      * @return:
      */
     @PostMapping("/querySatisfactionTop5")
-    public JsonResult<IPage<BaseVO>> querySatisfactionTop5(@RequestBody @Valid ScenicPageQuery query) {
+    public JsonResult<IPage<ScenicBaseVo>> querySatisfactionTop5(@RequestBody @Valid ScenicScreenQuery query) {
         return JsonResult.success(scenicService.querySatisfactionTop5(query));
     }
 
@@ -185,8 +207,12 @@ public class ScenicScreenController {
      * @return:
      */
     @PostMapping("/queryHeatTrend")
-    public JsonResult<List<MonthPassengerFlowDto>> queryHeatTrend(@RequestBody @Valid ScenicScreenQuery query) {
-        return JsonResult.success(scenicService.queryHeatTrend(query));
+    public JsonResult<List<BaseValueVO>> queryHeatTrend(@RequestBody @Valid ScenicScreenQuery query) {
+        return JsonResult.success(AnalysisUtils.MultipleBuildAnalysis(
+                query,
+                scenicService.queryHeatTrend(query),
+                true,
+                MonthPassengerFlowDto::getNumber, MonthPassengerFlowDto::getTbNumber, MonthPassengerFlowDto::getHbScale, MonthPassengerFlowDto::getTbScale));
     }
 
     /**
@@ -196,7 +222,11 @@ public class ScenicScreenController {
      * @return:
      */
     @PostMapping("/querySatisfactionTrend")
-    public JsonResult<List<MonthPassengerFlowDto>> querySatisfactionTrend(@RequestBody @Valid ScenicScreenQuery query) {
-        return JsonResult.success(scenicService.querySatisfactionTrend(query));
+    public JsonResult<List<BaseValueVO>> querySatisfactionTrend(@RequestBody @Valid ScenicScreenQuery query) {
+        return JsonResult.success(AnalysisUtils.MultipleBuildAnalysis(
+                query,
+                scenicService.querySatisfactionTrend(query),
+                true,
+                MonthPassengerFlowDto::getNumber, MonthPassengerFlowDto::getTbNumber, MonthPassengerFlowDto::getHbScale, MonthPassengerFlowDto::getTbScale));
     }
 }

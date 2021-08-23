@@ -1,5 +1,8 @@
 package com.yjtech.wisdom.tourism.vo;
 
+import com.alibaba.fastjson.annotation.JSONField;
+import com.yjtech.wisdom.tourism.common.utils.DateTimeUtil;
+import com.yjtech.wisdom.tourism.mybatis.entity.TimeBaseQuery;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,7 +21,7 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class VisitorVo extends VisitorPageVo implements Serializable {
+public class VisitorVo extends TimeBaseQuery implements Serializable {
 
     private static final long serialVersionUID = 5294322588561817208L;
 
@@ -34,10 +37,25 @@ public class VisitorVo extends VisitorPageVo implements Serializable {
     @NotBlank
     @Min(value = 31)
     @Max(value = 32)
-    private String type;
+    private String statisticsType;
 
     /**
      * top排名数,如果输入5就显示top5
      */
     private Integer limit;
+
+    /**
+     * is_simulation 是否有模拟数据 1有 0无
+     */
+    private Integer isSimulation = 0;
+
+    /**
+     * 开始时间
+     */
+    private String beginDate;
+
+    /**
+     * 结束时间
+     */
+    private String endDate;
 }

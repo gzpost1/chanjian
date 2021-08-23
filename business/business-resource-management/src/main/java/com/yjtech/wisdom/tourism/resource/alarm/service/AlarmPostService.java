@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.common.utils.AssertUtil;
 import com.yjtech.wisdom.tourism.common.utils.bean.BeanMapper;
-import com.yjtech.wisdom.tourism.infrastructure.constant.EntityConstants;
+import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.resource.alarm.dto.AlarmPostCreateDto;
 import com.yjtech.wisdom.tourism.resource.alarm.entity.AlarmPostEntity;
 import com.yjtech.wisdom.tourism.resource.alarm.mapper.AlarmPostMapper;

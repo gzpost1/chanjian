@@ -24,14 +24,14 @@ public enum  DistrictPathEnum {
     TOURISTS_SOURCE("/api/v1/tx/statisticsvisit", "游客来源"),
 
     /**
-     * 流趋势
+     * 客流趋势
      */
-    PASSENGER_FLOW("/api/v1/tx/getdaytrend", "月客流趋势"),
+    PASSENGER_FLOW("/api/v1/tx/getdaytrend", "客流趋势"),
 
     /**
-     * 根据时间范围获取省内或省外或全国的到访或出访数据
+     * 区域级联查询数据(全部字段)
      */
-    VISIT_NUMBER("/api/v1/tx/totalnum", "根据时间范围获取省内或省外或全国的到访或出访数据"),
+    AREA("/sys/area/queryArea", "区域级联查询数据(全部字段)"),
 
     ;
     /**

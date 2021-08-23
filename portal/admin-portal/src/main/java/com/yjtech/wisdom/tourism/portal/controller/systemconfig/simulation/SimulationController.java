@@ -1,8 +1,10 @@
 package com.yjtech.wisdom.tourism.portal.controller.systemconfig.simulation;
 
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
-import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.SimulationCommonDto;
 import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.SimulationQueryDto;
+import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.complaint.SimulationTravelComplaintDTO;
+import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.hotel.SimulationHotelDTO;
+import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.onetravel.SimulationOneTravelDTO;
 import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.praise.SimulationPraiseDto;
 import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.ticket.SimulationTicketDto;
 import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.wifi.SimulationWifiDto;
@@ -74,6 +76,45 @@ public class SimulationController {
      */
     @PostMapping("/saveTicket")
     public JsonResult saveTicket(@RequestBody SimulationTicketDto dto) {
+        service.generateRandom(dto);
+        service.saveUpdated(dto);
+        return JsonResult.success();
+    }
+
+    /**
+     * 新增旅游投诉
+     *
+     * @param
+     * @return
+     */
+    @PostMapping("/saveTravelComplaint")
+    public JsonResult saveTravelComplaint(@RequestBody SimulationTravelComplaintDTO dto) {
+        service.generateRandom(dto);
+        service.saveUpdated(dto);
+        return JsonResult.success();
+    }
+
+    /**
+     * 新增酒店民宿
+     *
+     * @param
+     * @return
+     */
+    @PostMapping("/saveHotel")
+    public JsonResult saveHotel(@RequestBody SimulationHotelDTO dto) {
+        service.generateRandom(dto);
+        service.saveUpdated(dto);
+        return JsonResult.success();
+    }
+
+    /**
+     * 新增一码游
+     *
+     * @param
+     * @return
+     */
+    @PostMapping("/saveOneTravel")
+    public JsonResult saveOneTravel(@RequestBody SimulationOneTravelDTO dto) {
         service.generateRandom(dto);
         service.saveUpdated(dto);
         return JsonResult.success();

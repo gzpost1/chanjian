@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * 数据总览
@@ -35,4 +36,15 @@ public class DataOverviewDto implements Serializable {
      * 省内游客人次
      */
     private Long provinceInsideTouristNum;
+
+    /**
+     * 省内游客占比
+     */
+    private BigDecimal provinceInsideRate;
+
+    /**
+     * 省外游客占比
+     */
+    private BigDecimal provinceOutsideRate;
+
 }

@@ -7,15 +7,23 @@ import java.util.Objects;
 /**
  * 模拟数据类型烦心
  * 1票务 2停车场 3wifi 4一码游 5智慧厕所 6口碑 7事件
+ * 8景区 9酒店民宿 10旅游投诉 11游客结构 12决策辅助
  */
 public enum SimulationEnum {
     TICKET(1,  SimulationConstants.TICKET, "票务"),
     DEPORT(2, SimulationConstants.DEPORT, "停车场"),
     WIFI(3, SimulationConstants.WIFI, "wifi"),
-    ONETRAVEL(4, SimulationConstants.ONETRAVEL, "一码游"),
+    ONE_TRAVEL(4, SimulationConstants.ONE_TRAVEL, "一码游"),
     TOILET(5,  SimulationConstants.TOILET, "智慧厕所"),
     PRAISE(6,  SimulationConstants.PRAISE, "口碑"),
-    EVENT(7, SimulationConstants.EVENT, "事件");
+    EVENT(7, SimulationConstants.EVENT, "事件"),
+    SCENIC(8, SimulationConstants.SCENIC, "景区"),
+    HOTEL(9, SimulationConstants.HOTEL, "酒店民宿"),
+    TRAVEL_COMPLAINT(10, SimulationConstants.TRAVEL_COMPLAINT, "旅游投诉"),
+    TOURIST(11, SimulationConstants.TOURIST, "游客结构"),
+    DECISION(12, SimulationConstants.EVENT, "决策辅助"),
+
+    ;
 
     SimulationEnum(Integer type, String name) {
         this.type = type;

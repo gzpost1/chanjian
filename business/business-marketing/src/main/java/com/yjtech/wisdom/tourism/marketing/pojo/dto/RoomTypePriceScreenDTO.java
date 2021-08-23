@@ -1,6 +1,8 @@
 package com.yjtech.wisdom.tourism.marketing.pojo.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -12,6 +14,8 @@ import java.math.BigDecimal;
  * @Date 2021/8/11 10:27
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class RoomTypePriceScreenDTO implements Serializable {
 
     private static final long serialVersionUID = 7639593304855404351L;

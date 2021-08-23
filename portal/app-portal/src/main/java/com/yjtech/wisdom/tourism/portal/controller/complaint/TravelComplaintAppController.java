@@ -10,6 +10,7 @@ import com.yjtech.wisdom.tourism.command.vo.travelcomplaint.TravelComplaintDealV
 import com.yjtech.wisdom.tourism.command.vo.travelcomplaint.TravelComplaintQueryVO;
 import com.yjtech.wisdom.tourism.command.vo.travelcomplaint.TravelComplaintUpdateVO;
 import com.yjtech.wisdom.tourism.common.constant.Constants;
+import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.common.core.domain.IdParam;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.common.enums.TravelComplaintStatusEnum;
@@ -131,7 +132,7 @@ public class TravelComplaintAppController {
         //默认创建者为当前用户
         vo.setCreateUser(user.getUserId());
         //默认配备状态为启用
-        vo.setEquipStatus(Constants.STATUS_NEGATIVE.byteValue());
+        vo.setEquipStatus(EntityConstants.ENABLED);
 
         TravelComplaintStatusStatisticsDTO dto = travelComplaintService.queryStatusStatistics(vo);
 

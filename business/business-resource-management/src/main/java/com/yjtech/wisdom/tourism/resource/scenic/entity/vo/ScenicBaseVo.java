@@ -12,6 +12,11 @@ import lombok.NoArgsConstructor;
 @Builder(toBuilder = true)
 public class ScenicBaseVo {
 
+    /**
+     * id
+     */
+    private Long id;
+
     /**名称*/
     private String name;
 

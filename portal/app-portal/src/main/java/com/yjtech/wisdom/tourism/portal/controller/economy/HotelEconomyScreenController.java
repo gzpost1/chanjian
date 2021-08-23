@@ -2,6 +2,7 @@ package com.yjtech.wisdom.tourism.portal.controller.economy;
 
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
 import com.yjtech.wisdom.tourism.common.constant.Constants;
+import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.hotel.dto.TbHotelInfoEntityParam;
 import com.yjtech.wisdom.tourism.hotel.entity.TbHotelInfoEntity;
@@ -46,7 +47,7 @@ public class HotelEconomyScreenController {
     @PostMapping("queryRoomPriceStatistics")
     public JsonResult<RoomTypePriceScreenDTO> queryRoomPriceStatistics(@RequestBody @Valid RoomScreenQueryVO vo) {
         //默认状态为启用
-        vo.setStatus(Constants.STATUS_NEGATIVE.byteValue());
+        vo.setStatus(EntityConstants.ENABLED);
         return JsonResult.success(marketingHotelRoomService.queryRoomPriceStatistics(vo));
     }
 
@@ -59,7 +60,7 @@ public class HotelEconomyScreenController {
     @PostMapping("queryRoomPriceAnalysis")
     public JsonResult<List<RoomPriceAnalysisDTO>> queryRoomPriceAnalysis(@RequestBody @Valid RoomScreenQueryVO vo) {
         //默认状态为启用
-        vo.setStatus(Constants.STATUS_NEGATIVE.byteValue());
+        vo.setStatus(EntityConstants.ENABLED);
         return JsonResult.success(marketingHotelRoomService.queryRoomPriceAnalysis(vo));
     }
 
@@ -72,7 +73,7 @@ public class HotelEconomyScreenController {
     @PostMapping("queryRoomTypePriceDistribution")
     public JsonResult<List<BaseVO>> queryRoomTypePriceDistribution(@RequestBody @Valid RoomScreenQueryVO vo) {
         //默认状态为启用
-        vo.setStatus(Constants.STATUS_NEGATIVE.byteValue());
+        vo.setStatus(EntityConstants.ENABLED);
         return JsonResult.success(marketingHotelRoomService.queryRoomTypePriceDistribution(vo));
     }
 
@@ -85,7 +86,7 @@ public class HotelEconomyScreenController {
     @PostMapping("queryRoomPriceRank")
     public JsonResult<List<BaseVO>> queryRoomPriceRank(@RequestBody @Valid RoomScreenQueryVO vo) {
         //默认状态为启用
-        vo.setStatus(Constants.STATUS_NEGATIVE.byteValue());
+        vo.setStatus(EntityConstants.ENABLED);
         return JsonResult.success(marketingHotelRoomService.queryRoomPriceRank(vo));
     }
 

@@ -6,10 +6,9 @@ import com.yjtech.wisdom.tourism.common.constant.DecisionSupportConstants;
 import com.yjtech.wisdom.tourism.common.enums.DecisionSupportConfigEnum;
 import com.yjtech.wisdom.tourism.common.utils.DateTimeUtil;
 import com.yjtech.wisdom.tourism.common.utils.JsonUtils;
-import com.yjtech.wisdom.tourism.decisionsupport.business.dto.OneTravelComplaintsNumberDto;
+import com.yjtech.wisdom.tourism.decisionsupport.business.dto.OneTravelNumberDto;
 import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionEntity;
 import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionWarnEntity;
-import com.yjtech.wisdom.tourism.decisionsupport.common.constant.TargetQueryConstants;
 import com.yjtech.wisdom.tourism.decisionsupport.common.strategy.BaseStrategy;
 import com.yjtech.wisdom.tourism.decisionsupport.common.util.PlaceholderUtils;
 import com.yjtech.wisdom.tourism.integration.pojo.vo.OneTravelQueryVO;
@@ -22,7 +21,7 @@ import org.springframework.util.StringUtils;
 import java.util.List;
 
 /**
- * 一码游投诉量
+ * 一码游投诉量 -pass
  *
  * @author renguangqian
  * @date 2021/8/9 10:15
@@ -41,7 +40,7 @@ public class OneTravelComplaintsNumberStrategyImpl extends BaseStrategy {
      * @return
      */
     @Override
-    public Object init(DecisionEntity entity) {
+    public DecisionWarnEntity init(DecisionEntity entity, Integer isSimulation) {
         DecisionWarnEntity result = JSONObject.parseObject(JSONObject.toJSONString(entity), DecisionWarnEntity.class);
 
         int configId = entity.getConfigId().intValue();
@@ -50,7 +49,9 @@ public class OneTravelComplaintsNumberStrategyImpl extends BaseStrategy {
         String currentLastMonthStr = super.getCurrentLastMonthStr();
 
         OneTravelQueryVO oneTravelQueryVO = new OneTravelQueryVO();
-        oneTravelQueryVO.setType((byte)2);
+        oneTravelQueryVO.setBeginTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentLastMonthStr() + DecisionSupportConstants.START_DAY_STR));
+        oneTravelQueryVO.setEndTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentLastMonthStr() + DecisionSupportConstants.END_DAY_STR));
+        oneTravelQueryVO.setType(DecisionSupportConstants.YEAR_MONTH_DAY);
         List<AnalysisBaseInfo> analysisBaseInfos = oneTravelApiService.queryComplaintAnalysis(oneTravelQueryVO);
 
         String currentLastMonthStr1 = DateTimeUtil.getCurrentLastMonthStr();
@@ -58,15 +59,15 @@ public class OneTravelComplaintsNumberStrategyImpl extends BaseStrategy {
         Integer total = 0;
 
         // 环比
-        String hb = "-";
+        String hb = DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE;
         // 同比
-        String tb = "-";
+        String tb = DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE;
 
         for (AnalysisBaseInfo item : analysisBaseInfos) {
-            List<OneTravelComplaintsNumberDto> oneTravelComplaintsNumberDtos = JSONObject.parseArray(
-                    JSONObject.toJSONString(JsonUtils.getValueByKey(JSONObject.toJSONString(item), "data")),
-                    OneTravelComplaintsNumberDto.class);
-            for (OneTravelComplaintsNumberDto v : oneTravelComplaintsNumberDtos) {
+            List<OneTravelNumberDto> oneTravelComplaintsNumberDtos = JSONObject.parseArray(
+                    JSONObject.toJSONString(JsonUtils.getValueByKey(JSONObject.toJSONString(item), DecisionSupportConstants.DATA)),
+                    OneTravelNumberDto.class);
+            for (OneTravelNumberDto v : oneTravelComplaintsNumberDtos) {
                 if (currentLastMonthStr1.equals(v.getTime())) {
                     if (!StringUtils.isEmpty(v.getHb())) {
                         hb = v.getHb();
@@ -80,6 +81,9 @@ public class OneTravelComplaintsNumberStrategyImpl extends BaseStrategy {
                 }
             }
         }
+
+        // 图表数据：投诉趋势
+        result.setChartData(analysisBaseInfos);
 
         // 处理指标报警
         switch (configId) {
@@ -128,10 +132,10 @@ public class OneTravelComplaintsNumberStrategyImpl extends BaseStrategy {
         String conclusionText = entity.getConclusionText();
         if (!StringUtils.isEmpty(conclusionText)) {
             conclusionText = PlaceholderUtils.replace(conclusionText,
-                    DecisionSupportConfigEnum.HB.getKey(), hb + "%",
-                    DecisionSupportConfigEnum.TB.getKey(), tb + "%",
+                    DecisionSupportConfigEnum.HB.getKey(), getScale(hb),
+                    DecisionSupportConfigEnum.TB.getKey(), getScale(tb),
                     DecisionSupportConfigEnum.ONE_TRAVEL_COMPLAINTS_NUMBER.getKey(), String.valueOf(total),
-                    DecisionSupportConfigEnum.YEAR_MONTH_STATISTICAL.getKey(), currentLastMonthStr + "月");
+                    DecisionSupportConfigEnum.YEAR_MONTH_STATISTICAL.getKey(), currentLastMonthStr + DecisionSupportConstants.MONTH);
             result.setConclusionText(conclusionText);
         }
 

@@ -2,6 +2,7 @@ package com.yjtech.wisdom.tourism.decisionsupport.business.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -47,7 +48,6 @@ public class DecisionSupportAdminService extends ServiceImpl<DecisionMapper, Dec
         try {
             baseMapper.insert(decisionEntity);
         } catch (Exception e) {
-            // todo 捕获新增重复主键异常
             throw new CustomException("该指标已设定记录");
         }
     }
@@ -68,6 +68,6 @@ public class DecisionSupportAdminService extends ServiceImpl<DecisionMapper, Dec
      */
     public void updateDecision (DecisionVo vo) {
         DecisionEntity decisionEntity = JSONObject.parseObject(JSONObject.toJSONString(vo), DecisionEntity.class);
-        baseMapper.updateById(decisionEntity);
+        baseMapper.update(decisionEntity, new LambdaUpdateWrapper<DecisionEntity>().eq(DecisionEntity::getTargetId, vo.getTargetId()));
     }
 }

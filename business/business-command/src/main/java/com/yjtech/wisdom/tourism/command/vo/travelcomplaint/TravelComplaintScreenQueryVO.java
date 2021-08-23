@@ -33,4 +33,9 @@ public class TravelComplaintScreenQueryVO extends TimeBaseQuery {
     @Range(min = 0, max = 1, message = "配备状态不合法")
     private Byte equipStatus;
 
+    /**
+     * is_simulation 是否有模拟数据 1有 0无
+     */
+    private Byte isSimulation = 0;
+
 }

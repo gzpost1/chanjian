@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.decisionsupport.business.dto.DecisionWarnWrapperDto;
 import com.yjtech.wisdom.tourism.decisionsupport.business.service.DecisionSupportScreenService;
+import com.yjtech.wisdom.tourism.decisionsupport.business.vo.AnalyzeDecisionWarnVo;
 import com.yjtech.wisdom.tourism.decisionsupport.business.vo.DecisionWarnPageVo;
 import com.yjtech.wisdom.tourism.decisionsupport.business.vo.DecisionWarnVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,9 +51,9 @@ public class DecisionSupportMangerController {
      *
      * @return
      */
-    @GetMapping("analyzeDecisionWarn")
-    public JsonResult<DecisionWarnWrapperDto> analyzeDecisionWarn () {
-        decisionSupportScreenService.analyzeDecisionWarn();
+    @PostMapping("analyzeDecisionWarn")
+    public JsonResult<DecisionWarnWrapperDto> analyzeDecisionWarn (@RequestBody @Validated AnalyzeDecisionWarnVo vo) {
+        decisionSupportScreenService.analyzeDecisionWarn(vo);
         return JsonResult.success();
     }
 }
