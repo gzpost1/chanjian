@@ -61,6 +61,11 @@ public class SimulationConfigService extends ServiceImpl<SimulationConfigMapper,
         //3  计算模拟数据并写入redis
         getFactory(dto.getDomainId()).generateMockRedisData(dto);
     }
+    public void refreshData(SimulationQueryDto query) {
+        //3  计算模拟数据并写入redis
+        getFactory(query.getDomainId()).generateMockRedisData((SimulationCommonDto)queryForDetail(query));
+    }
+
 
     /**
      * 根据domainid获取实现类
