@@ -8,6 +8,7 @@ import com.yjtech.wisdom.tourism.common.constant.DecisionSupportConstants;
 import com.yjtech.wisdom.tourism.common.constant.MockDataConstant;
 import com.yjtech.wisdom.tourism.common.enums.DecisionSupportConfigEnum;
 import com.yjtech.wisdom.tourism.common.utils.DateTimeUtil;
+import com.yjtech.wisdom.tourism.common.utils.JsonUtils;
 import com.yjtech.wisdom.tourism.decisionsupport.base.service.TargetQueryService;
 import com.yjtech.wisdom.tourism.decisionsupport.business.dto.ComprehensiveAlarmDataDto;
 import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionEntity;
@@ -333,6 +334,10 @@ public class ComprehensiveStrategyImpl extends BaseStrategy {
             simulationQueryDto.setDomainId(MockDataConstant.DECISION_SUPPORT_MOCK_DOMAIN_ID);
             String configValue = JSONObject.toJSONString(simulationConfigService.queryForDetail(simulationQueryDto));
             if (!StringUtils.isEmpty(configValue) && !DecisionSupportConstants.NULL.equals(configValue)) {
+                Object list = JsonUtils.getValueByKey(configValue, DecisionSupportConstants.LIST);
+                if (!ObjectUtils.isEmpty(list)) {
+                        configValue = JSONObject.toJSONString(list);
+                }
                 mockRuleData = JSONObject.parseArray(configValue, DecisionMockDTO.class);
             }
         }

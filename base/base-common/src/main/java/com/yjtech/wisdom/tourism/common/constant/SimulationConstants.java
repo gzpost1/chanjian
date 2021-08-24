@@ -16,4 +16,7 @@ public class SimulationConstants {
     public static final String TRAVEL_COMPLAINT = SIMULATION_NAME_PREFIX+ "travelComplaint";
     public static final String TOURIST = SIMULATION_NAME_PREFIX+ "tourist";
     public static final String DECISION = SIMULATION_NAME_PREFIX+ "decision";
+
+    //凌晨1点
+    public static final Integer HOUR = 1;
 }

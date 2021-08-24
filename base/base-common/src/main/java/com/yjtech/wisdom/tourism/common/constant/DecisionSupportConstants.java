@@ -9,6 +9,10 @@ package com.yjtech.wisdom.tourism.common.constant;
 public class DecisionSupportConstants {
     
     /**
+     * list
+     */
+    public static final String LIST = "list";
+    /**
      * 事件风险等级字典key
      */
     public static final String RISK_TYPE = "risk_type";

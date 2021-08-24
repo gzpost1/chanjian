@@ -1,16 +1,18 @@
 package com.yjtech.wisdom.tourism.portal.controller.scenic;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.common.core.domain.IdParam;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.common.core.domain.UpdateStatusParam;
 import com.yjtech.wisdom.tourism.common.exception.CustomException;
 import com.yjtech.wisdom.tourism.common.utils.bean.BeanMapper;
+import com.yjtech.wisdom.tourism.resource.scenic.entity.ScenicEntity;
 import com.yjtech.wisdom.tourism.resource.scenic.entity.dto.OpenTimeDto;
 import com.yjtech.wisdom.tourism.resource.scenic.entity.dto.ScenicCreateDto;
 import com.yjtech.wisdom.tourism.resource.scenic.entity.dto.ScenicUpdateDto;
-import com.yjtech.wisdom.tourism.resource.scenic.entity.ScenicEntity;
 import com.yjtech.wisdom.tourism.resource.scenic.query.ScenicScreenQuery;
 import com.yjtech.wisdom.tourism.resource.scenic.service.ScenicService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +58,11 @@ public class ScenicController {
      */
     @PostMapping("/queryForList")
     public JsonResult<List<ScenicEntity>> queryForPage() {
-        return JsonResult.success(scenicService.list());
+        LambdaQueryWrapper<ScenicEntity> queryWrapper = new QueryWrapper<ScenicEntity>().lambda()
+                .eq(ScenicEntity::getDeleted, EntityConstants.NOT_DELETED)
+                .eq(ScenicEntity::getStatus, EntityConstants.ENABLED);
+
+        return JsonResult.success(scenicService.list(queryWrapper));
     }
 
     /**
