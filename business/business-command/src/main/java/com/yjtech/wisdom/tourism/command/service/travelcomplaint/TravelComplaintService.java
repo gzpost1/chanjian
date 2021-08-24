@@ -101,7 +101,8 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
                     null,
                     platformTemplate,
                     null,
-                    AssignUserInfo.class);
+                    AssignUserInfo.class,
+                    entity.getStatus());
         }
 
         return result;
@@ -217,7 +218,8 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
                     appTemplate,
                     platformTemplate,
                     Arrays.asList(complaintObject),
-                    DealUserInfo.class);
+                    DealUserInfo.class,
+                    complaintEntity.getStatus());
         }
 
         return result;
@@ -440,9 +442,10 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
      * @param pcTitle
      * @param smsContent
      * @param tClass
+     * @param status
      * @param <T>
      */
-    private <T> void sendMessageNotice(String cacheKey, Long dataId, String title, String content, String pcTitle, List<String> smsContent, Class<T> tClass) {
+    private <T> void sendMessageNotice(String cacheKey, Long dataId, String title, String content, String pcTitle, List<String> smsContent, Class<T> tClass, Byte status) {
         //构建用户id列表
         List<Long> eventDealPersonIdArray = Lists.newArrayList();
         //构建发送类型
@@ -477,26 +480,29 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
                         sendFlag = true;
                     }
                 }
-                //获取App消息通知标识
-                Field appNoticeFlag = cacheInfo.getClass().getDeclaredField("appNoticeFlag");
-                if (null != appNoticeFlag) {
-                    appNoticeFlag.setAccessible(true);
-                    Boolean appFlag = (Boolean) appNoticeFlag.get(cacheInfo);
-                    if (null != appFlag && appFlag) {
-                        //设置发送类型
-                        sendType.add(MessagePlatformTypeEnum.MESSAGE_PLATFORM_TYPE_APP.getValue().intValue());
-                        sendFlag = true;
+
+                if(!TravelComplaintStatusEnum.TRAVEL_COMPLAINT_STATUS_NO_ASSIGN.getValue().equals(status)){
+                    //获取App消息通知标识
+                    Field appNoticeFlag = cacheInfo.getClass().getDeclaredField("appNoticeFlag");
+                    if (null != appNoticeFlag) {
+                        appNoticeFlag.setAccessible(true);
+                        Boolean appFlag = (Boolean) appNoticeFlag.get(cacheInfo);
+                        if (null != appFlag && appFlag) {
+                            //设置发送类型
+                            sendType.add(MessagePlatformTypeEnum.MESSAGE_PLATFORM_TYPE_APP.getValue().intValue());
+                            sendFlag = true;
+                        }
                     }
-                }
-                //获取短信通知标识
-                Field textMessageNoticeFlag = cacheInfo.getClass().getDeclaredField("textMessageNoticeFlag");
-                if (null != textMessageNoticeFlag) {
-                    textMessageNoticeFlag.setAccessible(true);
-                    Boolean textMessageFlag = (Boolean) textMessageNoticeFlag.get(cacheInfo);
-                    if (null != textMessageFlag && textMessageFlag) {
-                        //设置发送类型
-                        sendType.add(MessagePlatformTypeEnum.MESSAGE_PLATFORM_TYPE_SHORT_MESSAGE.getValue().intValue());
-                        sendFlag = true;
+                    //获取短信通知标识
+                    Field textMessageNoticeFlag = cacheInfo.getClass().getDeclaredField("textMessageNoticeFlag");
+                    if (null != textMessageNoticeFlag) {
+                        textMessageNoticeFlag.setAccessible(true);
+                        Boolean textMessageFlag = (Boolean) textMessageNoticeFlag.get(cacheInfo);
+                        if (null != textMessageFlag && textMessageFlag) {
+                            //设置发送类型
+                            sendType.add(MessagePlatformTypeEnum.MESSAGE_PLATFORM_TYPE_SHORT_MESSAGE.getValue().intValue());
+                            sendFlag = true;
+                        }
                     }
                 }
             }catch (Exception e){
