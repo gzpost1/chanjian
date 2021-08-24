@@ -212,7 +212,7 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
                     TemplateConstants.TEMPLATE_APP_TRAVEL_COMPLAINT_ASSIGN,
                     complaintObject);
             //发送消息
-            sendMessageNotice(CacheKeyContants.KEY_DEAL_TRAVEL_COMPLAINT,
+            sendMessageNotice(CacheKeyContants.KEY_DEAL_TRAVEL_COMPLAINT + complaintEntity.getId(),
                     complaintEntity.getId(),
                     appTemplate,
                     appTemplate,
@@ -455,7 +455,7 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
 
         //获取当前指派/处理人员信息
         Object cacheObject = redisCache.getCacheObject(cacheKey);
-        if (null == cacheObject) {
+        if (TravelComplaintStatusEnum.TRAVEL_COMPLAINT_STATUS_NO_ASSIGN.getValue().equals(status) && null == cacheObject) {
             //默认给超管用户发送消息
             eventDealPersonIdArray.add(messageMangerService.queryAdimnId());
             sendFlag = true;
