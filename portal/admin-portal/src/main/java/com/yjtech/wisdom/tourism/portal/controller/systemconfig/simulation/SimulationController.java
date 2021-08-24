@@ -43,6 +43,17 @@ public class SimulationController {
     }
 
     /**
+     * 刷新数据
+     * @param query
+     * @return
+     */
+    @PostMapping("/refreshData")
+    public JsonResult refreshData(@RequestBody @Valid SimulationQueryDto query) {
+        service.refreshData(query);
+        return JsonResult.ok();
+    }
+
+    /**
      * 新增口碑
      *
      * @param
@@ -89,7 +100,6 @@ public class SimulationController {
      */
     @PostMapping("/saveTravelComplaint")
     public JsonResult saveTravelComplaint(@RequestBody SimulationTravelComplaintDTO dto) {
-        service.generateRandom(dto);
         service.saveUpdated(dto);
         return JsonResult.success();
     }
@@ -102,7 +112,6 @@ public class SimulationController {
      */
     @PostMapping("/saveHotel")
     public JsonResult saveHotel(@RequestBody SimulationHotelDTO dto) {
-        service.generateRandom(dto);
         service.saveUpdated(dto);
         return JsonResult.success();
     }
@@ -115,7 +124,6 @@ public class SimulationController {
      */
     @PostMapping("/saveOneTravel")
     public JsonResult saveOneTravel(@RequestBody SimulationOneTravelDTO dto) {
-        service.generateRandom(dto);
         service.saveUpdated(dto);
         return JsonResult.success();
     }

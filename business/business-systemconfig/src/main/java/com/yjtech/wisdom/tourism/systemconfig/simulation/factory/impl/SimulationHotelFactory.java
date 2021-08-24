@@ -38,6 +38,9 @@ public class SimulationHotelFactory implements SimulationFactory<SimulationHotel
     @SneakyThrows
     @Override
     public void generateMockRedisData(SimulationHotelDTO obj) {
+        //随机数
+        int randomInt = (int) (-20 + Math.random() * (20 - (-20) + 1));
+        obj.setRandomNumber(String.valueOf(randomInt));
         //评分
         obj.setRate(obj.getInitRate().add(new BigDecimal(Integer.valueOf(obj.getRandomNumber())/10)));
         //日累计评价量（日评价初始数+随机数）

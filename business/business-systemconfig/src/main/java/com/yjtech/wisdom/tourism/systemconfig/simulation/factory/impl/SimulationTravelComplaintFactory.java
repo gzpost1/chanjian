@@ -3,10 +3,8 @@ package com.yjtech.wisdom.tourism.systemconfig.simulation.factory.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.yjtech.wisdom.tourism.common.constant.SimulationConstants;
 import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.complaint.SimulationTravelComplaintDTO;
-import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.praise.SimulationPraiseDto;
 import com.yjtech.wisdom.tourism.systemconfig.simulation.factory.SimulationFactory;
 import lombok.SneakyThrows;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -40,6 +38,9 @@ public class SimulationTravelComplaintFactory implements SimulationFactory<Simul
     @SneakyThrows
     @Override
     public void generateMockRedisData(SimulationTravelComplaintDTO obj) {
+        //随机数
+        int randomInt = (int) (-20 + Math.random() * (20 - (-20) + 1));
+        obj.setRandomNumber(String.valueOf(randomInt));
         //日投诉量（随机数/10+输入值）
         obj.setDayOfComplaint(new BigDecimal(obj.getRandomNumber()).divide(BigDecimal.TEN, 0, BigDecimal.ROUND_HALF_UP).add(obj.getDayOfComplaint()));
         //月累计投诉量（日投诉量*当前日期号数+输入值）

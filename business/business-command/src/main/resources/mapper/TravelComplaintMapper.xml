@@ -347,7 +347,11 @@
         WHEN status = 2 THEN '已处理'
         ELSE '-' END as eventStatusText,
         complaint_time as eventHappenDate,
-        '旅游投诉' as eventBusinessTypeText,
+        CASE
+        WHEN complaint_type = 0 THEN '其他'
+        WHEN complaint_type = 1 THEN '景区'
+        WHEN complaint_type = 2 THEN '酒店'
+        ELSE '-' END as eventBusinessTypeText,
         location as eventHappenAddress,
         contact_user as eventHappenPerson,
         create_time as createTime
