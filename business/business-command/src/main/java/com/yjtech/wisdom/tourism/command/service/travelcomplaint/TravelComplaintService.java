@@ -212,7 +212,7 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
                     TemplateConstants.TEMPLATE_APP_TRAVEL_COMPLAINT_ASSIGN,
                     complaintObject);
             //发送消息
-            sendMessageNotice(CacheKeyContants.KEY_ASSIGN_TRAVEL_COMPLAINT,
+            sendMessageNotice(CacheKeyContants.KEY_DEAL_TRAVEL_COMPLAINT,
                     complaintEntity.getId(),
                     appTemplate,
                     appTemplate,
