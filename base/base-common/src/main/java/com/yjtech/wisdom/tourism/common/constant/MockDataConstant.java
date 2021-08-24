@@ -21,5 +21,5 @@ public class MockDataConstant {
     /**
      * 决策辅助 domainId - 12
      */
-    public final static Integer DECISION_SUPPORT_MOCK_DOMAIN_ID = 11;
+    public final static Integer DECISION_SUPPORT_MOCK_DOMAIN_ID = 12;
 }

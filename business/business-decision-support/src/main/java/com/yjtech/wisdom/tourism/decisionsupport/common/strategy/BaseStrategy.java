@@ -50,24 +50,18 @@ public abstract class BaseStrategy implements ApplicationListener {
     /**
      * 风险等级缓存
      */
-    private static HashMap<String, Object> riskTypeMap;
+    protected static HashMap<String, Object> riskTypeMap;
 
     /**
      * 决策辅助-模拟规则
      */
-    private static List<DecisionMockDTO> mockRuleData;
+    protected static List<DecisionMockDTO> mockRuleData;
 
     @Autowired
     private TargetQueryService targetQueryService;
 
     @Autowired
     private DistrictTourImplService districtTourService;
-
-    @Autowired
-    private SysDictTypeService sysDictTypeService;
-
-    @Autowired
-    private SimulationConfigService simulationConfigService;
 
     /**
      * 初始化方法
@@ -347,29 +341,8 @@ public abstract class BaseStrategy implements ApplicationListener {
                 MonthPassengerFlowDto::getNumber, MonthPassengerFlowDto::getTbNumber, MonthPassengerFlowDto::getHbScale, MonthPassengerFlowDto::getTbScale);
     }
 
-    /**
-     * 缓存数据
-     *
-     * @param applicationEvent
-     */
     @Override
     public void onApplicationEvent(ApplicationEvent applicationEvent) {
-        // 缓存 风险等级字典
-        if (null == riskTypeMap) {
-            riskTypeMap = Maps.newHashMap();
-            List<SysDictData> sysDictData = sysDictTypeService.selectDictDataByType(DecisionSupportConstants.RISK_TYPE);
-            if (!CollectionUtils.isEmpty(sysDictData)) {
-                sysDictData.forEach(v -> riskTypeMap.put(v.getDictLabel(), v.getDictValue()));
-            }
-        }
-        // 缓存 决策辅助模拟配置数据
-        if (null == mockRuleData) {
-            SimulationQueryDto simulationQueryDto = new SimulationQueryDto();
-            simulationQueryDto.setDomainId(MockDataConstant.DECISION_SUPPORT_MOCK_DOMAIN_ID);
-            String configValue = String.valueOf(simulationConfigService.queryForDetail(simulationQueryDto));
-            if (!StringUtils.isEmpty(configValue) && !DecisionSupportConstants.NULL.equals(configValue)) {
-                mockRuleData = JSONObject.parseArray(configValue, DecisionMockDTO.class);
-            }
-        }
+
     }
 }

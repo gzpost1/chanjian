@@ -6,7 +6,7 @@ import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.decisionsupport.Sim
 import com.yjtech.wisdom.tourism.systemconfig.simulation.factory.SimulationFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 /**
  * 模拟数据
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
  * @author renguangqian
  * @date 2021/8/23 16:21
  */
-@Service
+@Component(SimulationConstants.DECISION)
 public class DecisionSupportMockService implements SimulationFactory<SimulationDecisionSupportDTO> {
 
     @Autowired

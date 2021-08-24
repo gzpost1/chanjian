@@ -3,7 +3,9 @@ package com.yjtech.wisdom.tourism.decisionsupport.business.strategyimpl;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.yjtech.wisdom.tourism.common.constant.DecisionSupportConstants;
+import com.yjtech.wisdom.tourism.common.constant.MockDataConstant;
 import com.yjtech.wisdom.tourism.common.enums.DecisionSupportConfigEnum;
 import com.yjtech.wisdom.tourism.common.utils.DateTimeUtil;
 import com.yjtech.wisdom.tourism.decisionsupport.base.service.TargetQueryService;
@@ -13,7 +15,13 @@ import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionWarnEnt
 import com.yjtech.wisdom.tourism.decisionsupport.business.mapper.DecisionWarnMapper;
 import com.yjtech.wisdom.tourism.decisionsupport.common.strategy.BaseStrategy;
 import com.yjtech.wisdom.tourism.decisionsupport.common.util.PlaceholderUtils;
+import com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysDictData;
+import com.yjtech.wisdom.tourism.system.service.SysDictTypeService;
+import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.SimulationQueryDto;
+import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.decisionsupport.DecisionMockDTO;
+import com.yjtech.wisdom.tourism.systemconfig.simulation.service.SimulationConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEvent;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
@@ -35,6 +43,13 @@ public class ComprehensiveStrategyImpl extends BaseStrategy {
 
     @Autowired
     private DecisionWarnMapper decisionWarnMapper;
+
+    @Autowired
+    private SysDictTypeService sysDictTypeService;
+
+    @Autowired
+    private SimulationConfigService simulationConfigService;
+
 
     /**
      * 综合概况
@@ -296,4 +311,31 @@ public class ComprehensiveStrategyImpl extends BaseStrategy {
         }
         return text;
     }
+
+    /**
+     * 缓存数据
+     *
+     * @param applicationEvent
+     */
+    @Override
+    public void onApplicationEvent(ApplicationEvent applicationEvent) {
+        // 缓存 风险等级字典
+        if (null == riskTypeMap) {
+            riskTypeMap = Maps.newHashMap();
+            List<SysDictData> sysDictData = sysDictTypeService.selectDictDataByType(DecisionSupportConstants.RISK_TYPE);
+            if (!CollectionUtils.isEmpty(sysDictData)) {
+                sysDictData.forEach(v -> riskTypeMap.put(v.getDictLabel(), v.getDictValue()));
+            }
+        }
+        // 缓存 决策辅助模拟配置数据
+        if (null == mockRuleData) {
+            SimulationQueryDto simulationQueryDto = new SimulationQueryDto();
+            simulationQueryDto.setDomainId(MockDataConstant.DECISION_SUPPORT_MOCK_DOMAIN_ID);
+            String configValue = JSONObject.toJSONString(simulationConfigService.queryForDetail(simulationQueryDto));
+            if (!StringUtils.isEmpty(configValue) && !DecisionSupportConstants.NULL.equals(configValue)) {
+                mockRuleData = JSONObject.parseArray(configValue, DecisionMockDTO.class);
+            }
+        }
+    }
+
 }

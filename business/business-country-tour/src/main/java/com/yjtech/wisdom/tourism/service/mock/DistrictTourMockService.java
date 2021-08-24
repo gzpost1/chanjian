@@ -54,7 +54,7 @@ import java.util.concurrent.TimeUnit;
 @Extension(bizId = ExtensionConstant.DISTRICT,
         useCase = DistrictExtensionConstant.DISTRICT,
         scenario = ExtensionConstant.SCENARIO_MOCK)
-@Component
+@Component(SimulationConstants.TOURIST)
 public class DistrictTourMockService implements SimulationFactory<DistrictMockRuleDTO>, DistrictExtPt, ApplicationListener<ContextRefreshedEvent> {
 
     @Autowired
@@ -446,7 +446,7 @@ public class DistrictTourMockService implements SimulationFactory<DistrictMockRu
     public DistrictMockRuleDTO getMockRule() {
         SimulationQueryDto simulationQueryDto = new SimulationQueryDto();
         simulationQueryDto.setDomainId(MockDataConstant.DISTRICT_TOUR_MOCK_DOMAIN_ID);
-        String configValue = String.valueOf(service.queryForDetail(simulationQueryDto));
+        String configValue = JSONObject.toJSONString(service.queryForDetail(simulationQueryDto));
         if (StringUtils.isEmpty(configValue) || DecisionSupportConstants.NULL.equals(configValue)) {
             return null;
         }
