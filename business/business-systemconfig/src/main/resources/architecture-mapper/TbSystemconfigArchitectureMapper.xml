@@ -29,7 +29,7 @@
   <select id="queryForPage"
           resultType="com.yjtech.wisdom.tourism.systemconfig.architecture.dto.SystemconfigArchitectureDto">
     select
-    a.*,b.name as page_name
+    a.*,b.name as page_name,b.img_url
     from
             tb_systemconfig_architecture a
     left join tb_systemconfig_menu b on a.page_id = b.id and b.deleted = 0

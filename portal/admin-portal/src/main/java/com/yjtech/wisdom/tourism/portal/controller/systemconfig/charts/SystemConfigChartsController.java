@@ -21,6 +21,7 @@ import com.yjtech.wisdom.tourism.systemconfig.chart.service.SystemconfigChartsPo
 import com.yjtech.wisdom.tourism.systemconfig.chart.service.SystemconfigChartsService;
 import com.yjtech.wisdom.tourism.systemconfig.chart.vo.SystemconfigChartsVo;
 import com.yjtech.wisdom.tourism.systemconfig.menu.service.SystemconfigMenuService;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -33,6 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * 后台管理-系统配置-图表库
@@ -90,6 +92,24 @@ public class SystemConfigChartsController {
         entity.setId(IdWorker.getInstance().nextId());
         entity.setDeleted((byte) 0);
         systemconfigChartsService.save(entity);
+
+        //初始化列表数据
+        if(StringUtils.isNotBlank(entity.getListType())){
+            SystemconfigChartsListQueryVo systemconfigChartsListQueryVo = new SystemconfigChartsListQueryVo();
+            systemconfigChartsListQueryVo.setChartId(entity.getId());
+            systemconfigChartsListQueryVo.setListType(entity.getListType());
+            List<SystemconfigChartsListVo> systemconfigChartsListVos = systemconfigChartsListService.queryChartsListsBYCharts(systemconfigChartsListQueryVo);
+            if(CollectionUtils.isNotEmpty(systemconfigChartsListVos)){
+                List<SystemconfigChartsListCreateDto> collect = systemconfigChartsListVos.stream().map(e -> {
+                    SystemconfigChartsListCreateDto systemconfigChartsListCreateDto = new SystemconfigChartsListCreateDto();
+                    systemconfigChartsListCreateDto.setChartId(entity.getId());
+                    systemconfigChartsListCreateDto.setIsShow(e.getIsShow());
+                    systemconfigChartsListCreateDto.setFiledKey(e.getFiledKey());
+                    return systemconfigChartsListCreateDto;
+                }).collect(Collectors.toList());
+                this.systemconfigChartsListService.saveOrUpdateListsPointsBYCharts(collect);
+            }
+        }
 
         return JsonResult.ok();
     }
