@@ -31,7 +31,17 @@ public enum IconSpotEnum {
     /**
      * 应急事件
      */
-    EVENT("应急事件", "6");
+    EVENT("应急事件", "6"),
+    /**
+     * 一码游投诉
+     */
+    ONE_TRAVEL_COMPLAINT("一码游投诉", "7"),
+    /**
+     * 旅游投诉
+     */
+    TRAVEL_COMPLAINT("旅游投诉", "8"),
+
+    ;
 
 
     @Getter
