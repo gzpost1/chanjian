@@ -1,6 +1,7 @@
 package com.yjtech.wisdom.tourism.vo;
 
-import com.yjtech.wisdom.tourism.dto.OriginDistributedProvinceOutsideDto;
+import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.districttour.OriginDistributedProvinceInsideDTO;
+import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.districttour.OriginDistributedProvinceOutsideDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,12 +27,12 @@ public class DistrictMockRuleVo implements Serializable {
     /**
      * 随机数-开始
      */
-    private int randomStart;
+    private int randomStart = -20;
 
     /**
      * 随机数-结束
      */
-    private int randomEnd;
+    private int randomEnd = 20;
 
     /**
      * 日客流量 固定值
@@ -46,6 +47,11 @@ public class DistrictMockRuleVo implements Serializable {
     /**
      * 省外来源分布
      */
-    private List<OriginDistributedProvinceOutsideDto> provinceOutsideDistributed;
+    private List<OriginDistributedProvinceOutsideDTO> provinceOutsideDistributed;
+
+    /**
+     * 省内来源分布
+     */
+    private List<OriginDistributedProvinceInsideDTO> provinceInsideDistributed;
 
 }

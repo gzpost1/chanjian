@@ -129,7 +129,6 @@ public class DistrictTourService {
         }
     }
 
-
     /**
      * 构建
      *
@@ -141,4 +140,6 @@ public class DistrictTourService {
         return BizScenario.valueOf(ExtensionConstant.DISTRICT, useCasePraiseType
                 , isSimulation == 0 ? ExtensionConstant.SCENARIO_IMPL : ExtensionConstant.SCENARIO_MOCK);
     }
+
+
 }

@@ -12,6 +12,10 @@ public class MessageConstants {
      * 查询类型_全部
      */
     public final static Integer QUERY_ALL = 0;
+    /**
+     * null
+     */
+    public final static String NULL = "null";
 
     /**
      * 查询类型_待指派、处理

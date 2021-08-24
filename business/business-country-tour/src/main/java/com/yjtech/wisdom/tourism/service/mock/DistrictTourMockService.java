@@ -4,17 +4,28 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
+import com.yjtech.wisdom.tourism.common.constant.DecisionSupportConstants;
 import com.yjtech.wisdom.tourism.common.constant.DistrictBigDataConstants;
 import com.yjtech.wisdom.tourism.common.constant.MockDataConstant;
+import com.yjtech.wisdom.tourism.common.constant.SimulationConstants;
 import com.yjtech.wisdom.tourism.common.utils.DateTimeUtil;
 import com.yjtech.wisdom.tourism.common.utils.MathUtil;
 import com.yjtech.wisdom.tourism.common.utils.RandomUtils;
 import com.yjtech.wisdom.tourism.constant.DistrictExtensionConstant;
-import com.yjtech.wisdom.tourism.dto.*;
+import com.yjtech.wisdom.tourism.dto.DataOverviewDto;
+import com.yjtech.wisdom.tourism.dto.DistrictMockDataDto;
+import com.yjtech.wisdom.tourism.dto.MonthPassengerFlowDto;
+import com.yjtech.wisdom.tourism.dto.VisitorDto;
 import com.yjtech.wisdom.tourism.extension.Extension;
 import com.yjtech.wisdom.tourism.extension.ExtensionConstant;
 import com.yjtech.wisdom.tourism.service.point.DistrictExtPt;
-import com.yjtech.wisdom.tourism.system.service.SysConfigService;
+import com.yjtech.wisdom.tourism.system.service.PlatformService;
+import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.SimulationQueryDto;
+import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.districttour.DistrictMockRuleDTO;
+import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.districttour.OriginDistributedProvinceInsideDTO;
+import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.districttour.OriginDistributedProvinceOutsideDTO;
+import com.yjtech.wisdom.tourism.systemconfig.simulation.factory.SimulationFactory;
+import com.yjtech.wisdom.tourism.systemconfig.simulation.service.SimulationConfigService;
 import com.yjtech.wisdom.tourism.vo.DataOverviewVo;
 import com.yjtech.wisdom.tourism.vo.MonthPassengerFlowVo;
 import com.yjtech.wisdom.tourism.vo.PassengerFlowVo;
@@ -23,6 +34,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
@@ -30,6 +43,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 游客结构-调用区县大数据-模拟数据
@@ -40,17 +54,24 @@ import java.util.List;
 @Extension(bizId = ExtensionConstant.DISTRICT,
         useCase = DistrictExtensionConstant.DISTRICT,
         scenario = ExtensionConstant.SCENARIO_MOCK)
-public class DistrictTourMockService implements DistrictExtPt, ApplicationListener<ContextRefreshedEvent> {
+@Component
+public class DistrictTourMockService implements SimulationFactory<DistrictMockRuleDTO>, DistrictExtPt, ApplicationListener<ContextRefreshedEvent> {
 
     @Autowired
-    private SysConfigService sysConfigService;
+    private PlatformService platformService;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
+
+    @Autowired
+    private SimulationConfigService service;
 
     @Value("${tourist.configAreaCodeKey}")
     private String configAreaCodeKey;
 
-    private static OriginDistributedProvinceOutsideDto province;
+    private static OriginDistributedProvinceOutsideDTO province;
 
-    private static OriginDistributedProvinceInsideDto city;
+    private static List<OriginDistributedProvinceInsideDTO> city;
 
     /**
      * 查询游客总数据-数据总览
@@ -64,7 +85,7 @@ public class DistrictTourMockService implements DistrictExtPt, ApplicationListen
         String endDate = vo.getEndDate();
 
         List<LocalDate> betweenDate = DateTimeUtil.getBetweenDate(DateTimeUtil.stringToLocalDate(beginDate), DateTimeUtil.stringToLocalDate(endDate));
-        DistrictMockRuleDto mockRule = getMockRule();
+        DistrictMockRuleDTO mockRule = getMockRule();
 
         // 游客总数
         long allTouristNum = 0L;
@@ -83,7 +104,7 @@ public class DistrictTourMockService implements DistrictExtPt, ApplicationListen
 
         // 计算省内人数
         if (!ObjectUtils.isEmpty(province)) {
-            double scale = province.getScale();
+            String scale = province.getValue();
             provinceInsideTouristNum = DistrictTourMockService.multiply(scale, allTouristNum);
         }
 
@@ -110,7 +131,7 @@ public class DistrictTourMockService implements DistrictExtPt, ApplicationListen
         String beginDate = vo.getBeginDate();
 
         List<LocalDate> betweenDate = DateTimeUtil.getBetweenDate(DateTimeUtil.stringToLocalDate(beginDate), DateTimeUtil.stringToLocalDate(endDate));
-        DistrictMockRuleDto mockRule = getMockRule();
+        DistrictMockRuleDTO mockRule = getMockRule();
 
         // 游客总数
         long allTouristNum = 0L;
@@ -125,24 +146,17 @@ public class DistrictTourMockService implements DistrictExtPt, ApplicationListen
             }
         }
 
-        List<OriginDistributedProvinceOutsideDto> provinceOutsideDistributed = mockRule.getProvinceOutsideDistributed();
+        List<OriginDistributedProvinceOutsideDTO> provinceOutsideDistributed = mockRule.getProvinceOutsideDistributed();
         // 全国
         if (DistrictBigDataConstants.TOUR_SOURCE_COUNTRY.equals(vo.getType())) {
-            for (OriginDistributedProvinceOutsideDto provinceOutsideDto : provinceOutsideDistributed) {
-                setList(vo, allTouristNum, record, provinceOutsideDto.getScale(), provinceOutsideDto.getAreaName());
+            for (OriginDistributedProvinceOutsideDTO provinceOutsideDto : provinceOutsideDistributed) {
+                setList(vo, allTouristNum, record, provinceOutsideDto.getValue(), provinceOutsideDto.getName());
             }
         }
         // 全省
         else if(DistrictBigDataConstants.TOUR_SOURCE_PROVINCE.equals(vo.getType())) {
-            for (OriginDistributedProvinceOutsideDto provinceOutsideDto : provinceOutsideDistributed) {
-                if (!ObjectUtils.isEmpty(province)) {
-                    if (province.getAreaCode().equals(provinceOutsideDto.getAreaCode())) {
-                        List<OriginDistributedProvinceInsideDto> child = provinceOutsideDto.getChild();
-                        for (OriginDistributedProvinceInsideDto provinceInsideDto : child) {
-                            setList(vo, allTouristNum, record, provinceInsideDto.getScale(), provinceInsideDto.getAreaName());
-                        }
-                    }
-                }
+            for (OriginDistributedProvinceInsideDTO provinceInsideDto : city) {
+                setList(vo, allTouristNum, record, provinceInsideDto.getValue(), provinceInsideDto.getName());
             }
         }
 
@@ -171,20 +185,20 @@ public class DistrictTourMockService implements DistrictExtPt, ApplicationListen
      */
     @Override
     public List<MonthPassengerFlowDto> queryYearPassengerFlow(PassengerFlowVo vo) {
-        double scale = 1d;
+        String scale = "1";
 
         // 省外游客
         if (DistrictBigDataConstants.PROVINCE_OUTSIDE.equals(vo.getStatisticsType())) {
-            scale = DistrictBigDataConstants.ONE_HUNDRED - province.getScale();
+            scale = String.valueOf(DistrictBigDataConstants.ONE_HUNDRED - Double.parseDouble(province.getValue()));
         }
         // 省内游客
         else if (DistrictBigDataConstants.PROVINCE_INSIDI.equals(vo.getStatisticsType())) {
-            scale = province.getScale();
+            scale = province.getValue();
         }
 
         // 获取当前月份
         int month = Integer.parseInt(DateTimeUtil.getCurrentMonthStr());
-        DistrictMockRuleDto mockRule = getMockRule();
+        DistrictMockRuleDTO mockRule = getMockRule();
 
         // 当月 全部客流
         int[] totalNumberMonth = new int[month + 1];
@@ -207,7 +221,7 @@ public class DistrictTourMockService implements DistrictExtPt, ApplicationListen
                 }
                 // 其他月 全部客流
                 else {
-                    totalNumberMonth[i] = new BigDecimal(mockData.getMonthNumber() * (DistrictBigDataConstants.ONE_HUNDRED + RandomUtils.getRandomNumber(-20, 20)))
+                    totalNumberMonth[i] = new BigDecimal(mockData.getMonthNumber() * (DistrictBigDataConstants.ONE_HUNDRED + getRandom(null)))
                             .divide(new BigDecimal(DistrictBigDataConstants.ONE_HUNDRED), 0)
                             .intValue();
                 }
@@ -256,20 +270,20 @@ public class DistrictTourMockService implements DistrictExtPt, ApplicationListen
      */
     @Override
     public List<MonthPassengerFlowDto> queryMonthPassengerFlow(MonthPassengerFlowVo vo) {
-        double scale = 1d;
+        String scale = "1";
 
         // 省内游客
         if (DistrictBigDataConstants.PROVINCE_INSIDI.equals(vo.getStatisticsType())) {
-            scale = city.getScale();
+            scale = province.getValue();
         }
         // 省外游客
         else if (DistrictBigDataConstants.PROVINCE_OUTSIDE.equals(vo.getStatisticsType())) {
-            scale = DistrictBigDataConstants.ONE_HUNDRED - city.getScale();
+            scale = String.valueOf(DistrictBigDataConstants.ONE_HUNDRED - Double.parseDouble(province.getValue()));
         }
 
         // 当前日期号数
         int currentDayNumber = DateTimeUtil.getCurrentDayNumber();
-        DistrictMockRuleDto mockRule = getMockRule();
+        DistrictMockRuleDTO mockRule = getMockRule();
 
         // 今年本月至今 全部客流
         int[] totalNumberDay = new int[currentDayNumber + 1];
@@ -299,7 +313,7 @@ public class DistrictTourMockService implements DistrictExtPt, ApplicationListen
                 else {
                     totalNumberDay[i] = new BigDecimal(totalMonth - mockData.getDayNumber())
                             .divide(new BigDecimal(currentDayNumber - 1), 0)
-                            .multiply(new BigDecimal(DistrictBigDataConstants.ONE_HUNDRED + RandomUtils.getRandomNumber(-20, 20)))
+                            .multiply(new BigDecimal(DistrictBigDataConstants.ONE_HUNDRED + getRandom(null)))
                             .divide(new BigDecimal(DistrictBigDataConstants.ONE_HUNDRED), 0)
                             .intValue();
                 }
@@ -345,7 +359,7 @@ public class DistrictTourMockService implements DistrictExtPt, ApplicationListen
      * @param total
      * @return
      */
-    private static long multiply(double scale, long total) {
+    private static long multiply(String scale, long total) {
         String realScale = DistrictTourMockService.getRealScaleDecimal(scale);
         return new BigDecimal(total).multiply(new BigDecimal(realScale)).longValue();
     }
@@ -356,7 +370,7 @@ public class DistrictTourMockService implements DistrictExtPt, ApplicationListen
      * @param scale
      * @return
      */
-    private static String getRealScaleDecimal(double scale) {
+    private static String getRealScaleDecimal(String scale) {
         return new BigDecimal(scale).divide(new BigDecimal(100), 4, BigDecimal.ROUND_HALF_UP).toString();
     }
 
@@ -367,10 +381,10 @@ public class DistrictTourMockService implements DistrictExtPt, ApplicationListen
      * @param districtMockRuleDto
      * @return
      */
-    private DistrictMockDataDto createMockData(int currentDay, DistrictMockRuleDto districtMockRuleDto) {
+    private DistrictMockDataDto createMockData(int currentDay, DistrictMockRuleDTO districtMockRuleDto) {
 
         // 日游客量数据
-        int dayNumber = RandomUtils.getRandomNumber(districtMockRuleDto.getRandomStart(), districtMockRuleDto.getRandomEnd()) + districtMockRuleDto.getDayPassengerFlowValue();
+        int dayNumber = getRandom(districtMockRuleDto) + districtMockRuleDto.getDayPassengerFlowValue();
 
         // 月累计客流 = 日客流 * 当前日期号数 + 固定值
         int monthNumber = dayNumber * currentDay + districtMockRuleDto.getMonthPassengerFlowValue();
@@ -380,42 +394,63 @@ public class DistrictTourMockService implements DistrictExtPt, ApplicationListen
     }
 
     /**
+     * 获取随机数 - 先查缓存再返回
+     *
+     * @return
+     */
+    private int getRandom(DistrictMockRuleDTO districtMockRuleDto) {
+        String currentDate = DateTimeUtil.getCurrentDate();
+        String key = DistrictBigDataConstants.MOCK_TOUR_SIGN + currentDate;
+        // 查询当日缓存随机数是否存在
+        Object randomObj = redisTemplate.opsForValue().get(key);
+        if (ObjectUtils.isEmpty(randomObj)) {
+            int randomNumber = getRandomNumber(districtMockRuleDto);
+            redisTemplate.opsForValue().set(key, randomNumber, 1, TimeUnit.DAYS);
+            randomObj = randomNumber;
+        }
+        return Integer.parseInt(randomObj.toString());
+    }
+
+    /**
+     * 刷新随机数
+     */
+    public void refreshRandom() {
+        DistrictMockRuleDTO mockRule = getMockRule();
+        String currentDate = DateTimeUtil.getCurrentDate();
+        int randomNumber = getRandomNumber(mockRule);
+        String key = DistrictBigDataConstants.MOCK_TOUR_SIGN + currentDate;
+        redisTemplate.opsForValue().set(key, randomNumber, 1, TimeUnit.DAYS);
+    }
+
+    /**
+     * 获取随机数 -- 具体生成
+     *
+     * @param districtMockRuleDto
+     * @return
+     */
+    private int getRandomNumber(DistrictMockRuleDTO districtMockRuleDto) {
+        int randomStart = -20;
+        int randomEnd = 20;
+        if (!ObjectUtils.isEmpty(districtMockRuleDto)) {
+            randomStart = districtMockRuleDto.getRandomStart();
+            randomEnd = districtMockRuleDto.getRandomEnd();
+        }
+        return RandomUtils.getRandomNumber(randomStart, randomEnd);
+    }
+
+    /**
      * 根据模拟规则  创建模拟数据
      *
      * @return
      */
-    private DistrictMockRuleDto getMockRule() {
-        String configValue = sysConfigService.selectConfigByKey(MockDataConstant.DISTRICT_TOUR_MOCK_KEY);
-        if (StringUtils.isEmpty(configValue)) {
+    public DistrictMockRuleDTO getMockRule() {
+        SimulationQueryDto simulationQueryDto = new SimulationQueryDto();
+        simulationQueryDto.setDomainId(MockDataConstant.DISTRICT_TOUR_MOCK_DOMAIN_ID);
+        String configValue = String.valueOf(service.queryForDetail(simulationQueryDto));
+        if (StringUtils.isEmpty(configValue) || DecisionSupportConstants.NULL.equals(configValue)) {
             return null;
         }
-        return JSONObject.parseObject(configValue, DistrictMockRuleDto.class);
-
-    }
-
-    /**
-     * 查找所属市
-     *
-     * @param areaCodeProvince
-     * @param areaCode
-     * @return
-     */
-    private OriginDistributedProvinceInsideDto findCityCode(OriginDistributedProvinceOutsideDto areaCodeProvince, String areaCode) {
-        String provinceSign = areaCode.substring(0, 2);
-        String provinceTempSign = areaCodeProvince.getAreaCode().substring(0, 2);
-        // 区划 前2位确定省份
-        if (!provinceSign.equals(provinceTempSign)) {
-            return null;
-        }
-        for (OriginDistributedProvinceInsideDto provinceInsideDto : areaCodeProvince.getChild()) {
-            // 区划 前4位确定归属市
-            String citySign = areaCode.substring(0, 4);
-            String cityTempSign = provinceInsideDto.getAreaCode().substring(0, 4);
-            if (citySign.equals(cityTempSign)) {
-                return provinceInsideDto;
-            }
-        }
-        return null;
+        return JSONObject.parseObject(configValue, DistrictMockRuleDTO.class);
     }
 
     /**
@@ -427,7 +462,7 @@ public class DistrictTourMockService implements DistrictExtPt, ApplicationListen
      * @param scale
      * @param areaName
      */
-    private void setList(VisitorVo vo, long allTouristNum, List<VisitorDto> record, double scale, String areaName) {
+    private void setList(VisitorVo vo, long allTouristNum, List<VisitorDto> record, String scale, String areaName) {
         // 存在配置比例 则进行计算
         if (!ObjectUtils.isEmpty(scale)) {
             String realScaleDecimal = DistrictTourMockService.getRealScaleDecimal(scale);
@@ -443,7 +478,6 @@ public class DistrictTourMockService implements DistrictExtPt, ApplicationListen
         }
     }
 
-
     /**
      * 容器初始化完毕后执行初始化数据
      *
@@ -451,27 +485,33 @@ public class DistrictTourMockService implements DistrictExtPt, ApplicationListen
      */
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
-        // 区县数据编号 522 722 000000
-        String areaCode = sysConfigService.selectConfigByKey(configAreaCodeKey);
-        DistrictMockRuleDto mockRule = getMockRule();
-
-        // 省外客流
+        DistrictMockRuleDTO mockRule = getMockRule();
         if (ObjectUtils.isEmpty(mockRule)) {
             return;
         }
-        List<OriginDistributedProvinceOutsideDto> provinceOutsideDistributed = mockRule.getProvinceOutsideDistributed();
-        for (OriginDistributedProvinceOutsideDto provinceOutsideDto : provinceOutsideDistributed) {
-            OriginDistributedProvinceInsideDto targetCity = findCityCode(provinceOutsideDto, areaCode);
-
-            // 在循环内找到 所属省市，
-            if (!ObjectUtils.isEmpty(targetCity)) {
-                if (ObjectUtils.isEmpty(province)) {
-                    province = provinceOutsideDto;
-                }
-                if (ObjectUtils.isEmpty(city)) {
-                    city = targetCity;
-                }
+        city = mockRule.getProvinceInsideDistributed();
+        List<OriginDistributedProvinceOutsideDTO> provinceOutsideDistributed = mockRule.getProvinceOutsideDistributed();
+        String provinceName = com.yjtech.wisdom.tourism.common.utils.StringUtils.substringBefore(platformService.getPlatform().getAreaName(), "/");
+        for (OriginDistributedProvinceOutsideDTO provinceOutsideDto : provinceOutsideDistributed) {
+            if (provinceName.equals(provinceOutsideDto.getName())) {
+                province = provinceOutsideDto;
             }
         }
     }
+
+    @Override
+    public Object parse(String json) {
+        return JSONObject.parseObject(json, DistrictMockRuleDTO.class);
+    }
+
+    @Override
+    public String toJSONBytes(DistrictMockRuleDTO obj) {
+        return JSONObject.toJSONString(obj);
+    }
+
+    @Override
+    public void generateMockRedisData(DistrictMockRuleDTO obj) {
+        redisTemplate.opsForValue().set(getCacheKey(SimulationConstants.TOURIST), obj);
+    }
+
 }

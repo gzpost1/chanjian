@@ -63,8 +63,8 @@ public class ComprehensiveStrategyImpl extends BaseStrategy {
             List<DecisionWarnEntity> LastMonthDecisionWarnEntity = decisionWarnMapper.selectList(
                     new LambdaQueryWrapper<DecisionWarnEntity>()
                             .between(DecisionWarnEntity::getCreateTime,
-                                    DateTimeUtil.getCurrentLastMonthFirstDayStr() + " 00:00:00",
-                                    DateTimeUtil.getCurrentLastMonthLastDayStr() + " 23:59:59"
+                                    DateTimeUtil.getCurrentLastMonthFirstDayStr() + DecisionSupportConstants.START_TIME_STR,
+                                    DateTimeUtil.getCurrentLastMonthLastDayStr() + DecisionSupportConstants.END_TIME_STR
                             )
             );
 

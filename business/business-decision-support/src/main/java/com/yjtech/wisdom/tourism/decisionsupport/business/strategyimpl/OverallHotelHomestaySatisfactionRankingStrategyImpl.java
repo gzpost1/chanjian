@@ -11,6 +11,7 @@ import com.yjtech.wisdom.tourism.common.utils.DateTimeUtil;
 import com.yjtech.wisdom.tourism.common.utils.JsonUtils;
 import com.yjtech.wisdom.tourism.common.utils.MathUtil;
 import com.yjtech.wisdom.tourism.decisionsupport.business.dto.OneTravelNumberDto;
+import com.yjtech.wisdom.tourism.decisionsupport.business.dto.RankingDataDto;
 import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionEntity;
 import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionWarnEntity;
 import com.yjtech.wisdom.tourism.decisionsupport.common.strategy.BaseStrategy;
@@ -27,9 +28,7 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.TreeMap;
 
 /**
@@ -64,6 +63,7 @@ public class OverallHotelHomestaySatisfactionRankingStrategyImpl extends BaseStr
         LocalDateTime yearEndDate = DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentYearStr() + DecisionSupportConstants.END_DATE_STR);
 
         EvaluateQueryVO vo = new EvaluateQueryVO();
+        vo.setIsSimulation(isSimulation.byteValue());
         vo.setBeginTime(yearBeginDate);
         vo.setEndTime(yearEndDate);
 
@@ -75,7 +75,7 @@ public class OverallHotelHomestaySatisfactionRankingStrategyImpl extends BaseStr
         String tb = DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE;
 
         // 满意度下降 最多 酒店民宿名称
-        List<RankingDto> satisfactionDownMax = getSatisfactionDownMax();
+        List<RankingDto> satisfactionDownMax = getSatisfactionDownMax(isSimulation);
 
         // 其他满意度下降酒店民宿名称 显示第2-5个；如果小于2个则不显示；多个以顿号“、”分割
         String otherDownName = setOtherDownName(satisfactionDownMax);
@@ -115,6 +115,7 @@ public class OverallHotelHomestaySatisfactionRankingStrategyImpl extends BaseStr
         LocalDateTime monthendLastDate = DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentLastLastMonthStr() + DecisionSupportConstants.END_DAY_STR);
 
         EvaluateQueryVO evaluateScreenQueryVO = new EvaluateQueryVO();
+        evaluateScreenQueryVO.setIsSimulation(isSimulation.byteValue());
         evaluateScreenQueryVO.setBeginTime(monthStartDate);
         evaluateScreenQueryVO.setEndTime(monthEndDate);
         evaluateScreenQueryVO.setPlaceId(maxDown.getId().toString());
@@ -158,13 +159,13 @@ public class OverallHotelHomestaySatisfactionRankingStrategyImpl extends BaseStr
             // 酒店民宿满意度排行 _统计年月 （文本）
             case DecisionSupportConstants.JDMSMYDPH_TJNY :
                 result.setWarnNum(currentLastMonthStr);
-                textAlarmDeal(entity, result, currentLastMonthStr);
+                textAlarmDeal(entity, result, currentLastMonthStr, isSimulation);
                 break;
 
             // 酒店民宿满意度排行 _其他满意度下降酒店民宿名称 （文本）
             case DecisionSupportConstants.JDMSMYDPH_QTMYDXJJDMSMC :
                 result.setWarnNum(otherDownName);
-                textAlarmDeal(entity, result, otherDownName);
+                textAlarmDeal(entity, result, otherDownName, isSimulation);
                 // 判断是否使用缺失话术
                 if (StringUtils.isEmpty(otherDownName)) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -174,7 +175,7 @@ public class OverallHotelHomestaySatisfactionRankingStrategyImpl extends BaseStr
             // 酒店民宿满意度排行 _满意度下降最多酒店民宿名称 （文本）
             case DecisionSupportConstants.JDMSMYDPH_MYDXJZDJDMSMC :
                 result.setWarnNum(downMaxName);
-                textAlarmDeal(entity, result, downMaxName);
+                textAlarmDeal(entity, result, downMaxName, isSimulation);
                 // 判断是否使用缺失话术
                 if (StringUtils.isEmpty(downMaxName)) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -185,7 +186,7 @@ public class OverallHotelHomestaySatisfactionRankingStrategyImpl extends BaseStr
             case DecisionSupportConstants.JDMSMYDPH_MYDXJZDJDMSPJL :
                 String scale = MathUtil.calPercent(new BigDecimal(maxDownEvaluateTotal - maxDownEvaluateTotalLastLastMonth), new BigDecimal(maxDownEvaluateTotal), 2).toString();
                 result.setWarnNum(maxDownEvaluateTotal.toString());
-                numberAlarmDeal(entity, result, scale);
+                numberAlarmDeal(entity, result, scale, isSimulation);
                 // 判断是否使用缺失话术
                 if (DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE.equals(maxDownEvaluateTotal)) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -196,7 +197,7 @@ public class OverallHotelHomestaySatisfactionRankingStrategyImpl extends BaseStr
             case DecisionSupportConstants.JDMSMYDPH_MYDXJZDJDMSHPL :
                 String goodScale = MathUtil.calPercent(new BigDecimal(maxDownGoodEvaluateTotal - maxDownGoodEvaluateTotalLastLastMonth), new BigDecimal(maxDownGoodEvaluateTotal), 2).toString();
                 result.setWarnNum(maxDownEvaluateTotal.toString());
-                numberAlarmDeal(entity, result, goodScale);
+                numberAlarmDeal(entity, result, goodScale, isSimulation);
                 // 判断是否使用缺失话术
                 if (DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE.equals(maxDownGoodEvaluateTotal)) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -207,7 +208,7 @@ public class OverallHotelHomestaySatisfactionRankingStrategyImpl extends BaseStr
             case DecisionSupportConstants.JDMSMYDPH_MYDXJZDJDMSMYD :
                 String satisfactionScale = MathUtil.calPercent(new BigDecimal(Double.parseDouble(maxDownSatisfaction) - Double.parseDouble(maxDownSatisfactionLastLastMonth)), new BigDecimal(maxDownSatisfaction), 2).toString();
                 result.setWarnNum(maxDownSatisfaction);
-                numberAlarmDeal(entity, result, satisfactionScale);
+                numberAlarmDeal(entity, result, satisfactionScale, isSimulation);
                 // 判断是否使用缺失话术
                 if (DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE.equals(maxDownSatisfaction)) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -217,7 +218,7 @@ public class OverallHotelHomestaySatisfactionRankingStrategyImpl extends BaseStr
             // 酒店民宿满意度排行 _环比变化（较上月） （数值）
             case DecisionSupportConstants.JDMSMYDPH_HBBH :
                 result.setWarnNum(hb);
-                numberAlarmDeal(entity, result, hb);
+                numberAlarmDeal(entity, result, hb, isSimulation);
                 // 判断是否使用缺失话术
                 if (DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE.equals(hb)) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -227,7 +228,7 @@ public class OverallHotelHomestaySatisfactionRankingStrategyImpl extends BaseStr
             // 酒店民宿满意度排行 _同比变化（较去年同月） （数值）
             case DecisionSupportConstants.JDMSMYDPH_TBBH :
                 result.setWarnNum(tb);
-                numberAlarmDeal(entity, result, tb);
+                numberAlarmDeal(entity, result, tb, isSimulation);
                 // 判断是否使用缺失话术
                 if (DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE.equals(tb)) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -265,11 +266,13 @@ public class OverallHotelHomestaySatisfactionRankingStrategyImpl extends BaseStr
      * @return
      */
     private List getCharData(List<RankingDto> satisfactionDownMax) {
-        List<Map> list = Lists.newArrayList();
+        List<RankingDataDto> list = Lists.newArrayList();
         for (RankingDto v : satisfactionDownMax) {
-            HashMap<String, String> map = Maps.newHashMap();
             double scale = Math.abs(Double.parseDouble(v.getScale()));
-            map.put(v.getName(), String.valueOf(scale));
+            list.add(RankingDataDto.builder()
+                    .name(v.getName())
+                    .value(String.valueOf(scale))
+                    .build());
         }
         return list;
     }
@@ -300,7 +303,7 @@ public class OverallHotelHomestaySatisfactionRankingStrategyImpl extends BaseStr
      *
      * @return
      */
-    private List<RankingDto> getSatisfactionDownMax() {
+    private List<RankingDto> getSatisfactionDownMax(Integer isSimulation) {
 
         // 当年 上月
         LocalDateTime startDate = DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentLastMonthStr() + DecisionSupportConstants.START_DAY_STR);
@@ -311,6 +314,7 @@ public class OverallHotelHomestaySatisfactionRankingStrategyImpl extends BaseStr
         LocalDateTime endLastDate = DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentLastLastMonthStr() + DecisionSupportConstants.END_DAY_STR);
 
         EvaluateQueryVO vo = new EvaluateQueryVO();
+        vo.setIsSimulation(isSimulation.byteValue());
 
         // 上月
         vo.setBeginTime(startDate);

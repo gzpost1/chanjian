@@ -1,24 +1,36 @@
 package com.yjtech.wisdom.tourism.decisionsupport.common.strategy;
 
 
+import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Maps;
 import com.yjtech.wisdom.tourism.common.bean.BaseValueVO;
 import com.yjtech.wisdom.tourism.common.constant.DecisionSupportConstants;
+import com.yjtech.wisdom.tourism.common.constant.MockDataConstant;
 import com.yjtech.wisdom.tourism.common.utils.DateTimeUtil;
 import com.yjtech.wisdom.tourism.common.utils.MathUtil;
 import com.yjtech.wisdom.tourism.decisionsupport.base.service.TargetQueryService;
 import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionEntity;
 import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionWarnEntity;
 import com.yjtech.wisdom.tourism.dto.MonthPassengerFlowDto;
+import com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysDictData;
 import com.yjtech.wisdom.tourism.mybatis.utils.AnalysisUtils;
 import com.yjtech.wisdom.tourism.service.impl.DistrictTourImplService;
-import com.yjtech.wisdom.tourism.vo.DataOverviewVo;
-import com.yjtech.wisdom.tourism.vo.MonthPassengerFlowVo;
+import com.yjtech.wisdom.tourism.system.service.SysDictTypeService;
+import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.SimulationQueryDto;
+import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.decisionsupport.DecisionMockDTO;
+import com.yjtech.wisdom.tourism.systemconfig.simulation.service.SimulationConfigService;
 import com.yjtech.wisdom.tourism.vo.PassengerFlowVo;
+import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,17 +41,33 @@ import java.util.stream.Collectors;
  * @date 2021/8/5 10:46
  */
 @Component
-public abstract class BaseStrategy {
+public abstract class BaseStrategy implements ApplicationListener {
 
     private static final int HUNDRED = 100;
 
     private static final String DEFAULT_STR = "-";
+
+    /**
+     * 风险等级缓存
+     */
+    private static HashMap<String, Object> riskTypeMap;
+
+    /**
+     * 决策辅助-模拟规则
+     */
+    private static List<DecisionMockDTO> mockRuleData;
 
     @Autowired
     private TargetQueryService targetQueryService;
 
     @Autowired
     private DistrictTourImplService districtTourService;
+
+    @Autowired
+    private SysDictTypeService sysDictTypeService;
+
+    @Autowired
+    private SimulationConfigService simulationConfigService;
 
     /**
      * 初始化方法
@@ -88,6 +116,32 @@ public abstract class BaseStrategy {
      * @param entity
      */
     protected void textAlarmDeal(DecisionEntity decisionInfo, DecisionWarnEntity entity, String queryResult) {
+        textAlarmDeal(decisionInfo, entity, queryResult, DecisionSupportConstants.IMPL);
+    }
+
+    /**
+     * 文本报警处理
+     *
+     * @param decisionInfo
+     * @param entity
+     */
+    protected void textAlarmDeal(DecisionEntity decisionInfo, DecisionWarnEntity entity, String queryResult, Integer isSimulation) {
+
+        // 模拟数据
+        if (DecisionSupportConstants.MOCK.equals(isSimulation) && !MapUtils.isEmpty(riskTypeMap)) {
+            if (!ObjectUtils.isEmpty(mockRuleData)) {
+                for (DecisionMockDTO data: mockRuleData) {
+                    riskTypeMap.forEach((k, v) -> {
+                        if (data.getValue().equals(v)) {
+                            entity.setAlarmType(Integer.parseInt(data.getValue()));
+                            entity.setAlarmTypeText(k);
+                        }
+                    });
+                }
+            }
+            return;
+        }
+
         // 文本
         if (DecisionSupportConstants.DECISION_WARN_TYPE_TEXT.equals(decisionInfo.getRiskType())
                 && !StringUtils.isEmpty(queryResult)) {
@@ -96,16 +150,19 @@ public abstract class BaseStrategy {
                 // 低风险
                 case DecisionSupportConstants.LOW_RISK_TYPE:
                     entity.setAlarmTypeText(DecisionSupportConstants.LOW_RISK_TYPE_TEXT);
+                    entity.setAlarmType(DecisionSupportConstants.LOW_RISK_TYPE);
                     break;
 
                 // 中风险
                 case DecisionSupportConstants.MEDIUM_RISK_TYPE:
-                    entity.setAlarmTypeText(DecisionSupportConstants.LOW_RISK_TYPE_TEXT);
+                    entity.setAlarmTypeText(DecisionSupportConstants.MEDIUM_RISK_TYPE_TEXT);
+                    entity.setAlarmType(DecisionSupportConstants.MEDIUM_RISK_TYPE);
                     break;
 
                 // 高风险
                 case DecisionSupportConstants.HIGH_RISK_TYPE:
-                    entity.setAlarmTypeText(DecisionSupportConstants.LOW_RISK_TYPE_TEXT);
+                    entity.setAlarmTypeText(DecisionSupportConstants.HIGH_RISK_TYPE_TEXT);
+                    entity.setAlarmType(DecisionSupportConstants.HIGH_RISK_TYPE);
                     break;
 
                 // 无风险
@@ -123,6 +180,32 @@ public abstract class BaseStrategy {
      * @param scale 百分比
      */
     protected void numberAlarmDeal(DecisionEntity decisionInfo, DecisionWarnEntity entity, String scale) {
+        numberAlarmDeal(decisionInfo, entity, scale, DecisionSupportConstants.IMPL);
+    }
+
+    /**
+     * 数值类报警处理
+     *
+     * @param decisionInfo
+     * @param entity
+     * @param scale 百分比
+     */
+    protected void numberAlarmDeal(DecisionEntity decisionInfo, DecisionWarnEntity entity, String scale, Integer isSimulation) {
+        // 模拟数据
+        if (DecisionSupportConstants.MOCK.equals(isSimulation) && !MapUtils.isEmpty(riskTypeMap)) {
+            if (!ObjectUtils.isEmpty(mockRuleData)) {
+                for (DecisionMockDTO data: mockRuleData) {
+                    riskTypeMap.forEach((k, v) -> {
+                        if (data.getValue().equals(v)) {
+                            entity.setAlarmType(Integer.parseInt(data.getValue()));
+                            entity.setAlarmTypeText(k);
+                        }
+                    });
+                }
+            }
+            return;
+        }
+
         if (DEFAULT_STR.equals(scale)) {
             return;
         }
@@ -241,12 +324,13 @@ public abstract class BaseStrategy {
      *
      * @return
      */
-    protected List<BaseValueVO> getProvinceCharData(String statisticsType) {
+    protected List<BaseValueVO> getProvinceCharData(String statisticsType, Integer isSimulation) {
         String beginDate = DateTimeUtil.getCurrentYearStr() + DecisionSupportConstants.START_DATE_STR;
         String endTime = DateTimeUtil.getCurrentYearStr() + DecisionSupportConstants.END_DATE_STR;
 
         // 请求参数构造
         PassengerFlowVo yearPassengerFlowVo = new PassengerFlowVo();
+        yearPassengerFlowVo.setIsSimulation(isSimulation);
         yearPassengerFlowVo.setStatisticsType(statisticsType);
         yearPassengerFlowVo.setBeginTime(DateTimeUtil.getLocalDateTime(beginDate));
         yearPassengerFlowVo.setEndTime(DateTimeUtil.getLocalDateTime(endTime));
@@ -261,5 +345,31 @@ public abstract class BaseStrategy {
                 yearPassengerFlowDtos,
                 true,
                 MonthPassengerFlowDto::getNumber, MonthPassengerFlowDto::getTbNumber, MonthPassengerFlowDto::getHbScale, MonthPassengerFlowDto::getTbScale);
+    }
+
+    /**
+     * 缓存数据
+     *
+     * @param applicationEvent
+     */
+    @Override
+    public void onApplicationEvent(ApplicationEvent applicationEvent) {
+        // 缓存 风险等级字典
+        if (null == riskTypeMap) {
+            riskTypeMap = Maps.newHashMap();
+            List<SysDictData> sysDictData = sysDictTypeService.selectDictDataByType(DecisionSupportConstants.RISK_TYPE);
+            if (!CollectionUtils.isEmpty(sysDictData)) {
+                sysDictData.forEach(v -> riskTypeMap.put(v.getDictLabel(), v.getDictValue()));
+            }
+        }
+        // 缓存 决策辅助模拟配置数据
+        if (null == mockRuleData) {
+            SimulationQueryDto simulationQueryDto = new SimulationQueryDto();
+            simulationQueryDto.setDomainId(MockDataConstant.DECISION_SUPPORT_MOCK_DOMAIN_ID);
+            String configValue = String.valueOf(simulationConfigService.queryForDetail(simulationQueryDto));
+            if (!StringUtils.isEmpty(configValue) && !DecisionSupportConstants.NULL.equals(configValue)) {
+                mockRuleData = JSONObject.parseArray(configValue, DecisionMockDTO.class);
+            }
+        }
     }
 }

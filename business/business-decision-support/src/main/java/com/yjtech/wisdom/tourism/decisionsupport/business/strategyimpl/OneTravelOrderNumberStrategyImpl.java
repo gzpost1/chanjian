@@ -90,13 +90,13 @@ public class OneTravelOrderNumberStrategyImpl extends BaseStrategy {
             // 订单量_统计年月 （文本）
             case DecisionSupportConstants.DDL_TJNY :
                 result.setWarnNum(currentLastMonthStr);
-                textAlarmDeal(entity, result, currentLastMonthStr);
+                textAlarmDeal(entity, result, currentLastMonthStr, isSimulation);
                 break;
 
             // 订单量_一码游订单数量 （数值）
             case DecisionSupportConstants.DDL_YMLDDSL :
                 result.setWarnNum(orderTotal);
-                numberAlarmDeal(entity, result, hb);
+                numberAlarmDeal(entity, result, hb, isSimulation);
                 // 判断是否使用缺失话术
                 if (DecisionSupportConstants.MISS_CONCLUSION_TEXT_NUMBER_VALUE.equals(Integer.parseInt(orderTotal))) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -106,7 +106,7 @@ public class OneTravelOrderNumberStrategyImpl extends BaseStrategy {
             // 订单量_环比变化（较上月） （数值）
             case DecisionSupportConstants.DDL_HBBH :
                 result.setWarnNum(hb);
-                numberAlarmDeal(entity, result, hb);
+                numberAlarmDeal(entity, result, hb, isSimulation);
                 // 判断是否使用缺失话术
                 if (DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE.equals(hb)) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -116,7 +116,7 @@ public class OneTravelOrderNumberStrategyImpl extends BaseStrategy {
             // 订单量_同比变化（较去年同月） （数值）
             case DecisionSupportConstants.DDL_TBBH :
                 result.setWarnNum(tb);
-                numberAlarmDeal(entity, result, tb);
+                numberAlarmDeal(entity, result, tb, isSimulation);
                 // 判断是否使用缺失话术
                 if (DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE.equals(tb)) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
