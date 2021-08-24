@@ -1,13 +1,8 @@
 package com.yjtech.wisdom.tourism.portal.controller.economy;
 
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
-import com.yjtech.wisdom.tourism.common.constant.Constants;
 import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
-import com.yjtech.wisdom.tourism.hotel.dto.TbHotelInfoEntityParam;
-import com.yjtech.wisdom.tourism.hotel.entity.TbHotelInfoEntity;
-import com.yjtech.wisdom.tourism.hotel.service.TbHotelInfoService;
-import com.yjtech.wisdom.tourism.infrastructure.core.controller.BaseCurdController;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.RoomPriceAnalysisDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.RoomTypePriceScreenDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.vo.RoomScreenQueryVO;
