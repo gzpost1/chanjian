@@ -21,7 +21,7 @@ public enum SimulationEnum {
     HOTEL(9, SimulationConstants.HOTEL, "酒店民宿"),
     TRAVEL_COMPLAINT(10, SimulationConstants.TRAVEL_COMPLAINT, "旅游投诉"),
     TOURIST(11, SimulationConstants.TOURIST, "游客结构"),
-    DECISION(12, SimulationConstants.EVENT, "决策辅助"),
+    DECISION(12, SimulationConstants.DECISION, "决策辅助"),
 
     ;
 

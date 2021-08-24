@@ -60,6 +60,16 @@ public class DecisionWarnItemDto implements Serializable {
     private Integer riskType;
 
     /**
+     * 报警类型-文本
+     */
+    private String alarmTypeText;
+
+    /**
+     * 报警类型
+     */
+    private Integer alarmType;
+
+    /**
      * 话术
      */
     private String conclusionText;

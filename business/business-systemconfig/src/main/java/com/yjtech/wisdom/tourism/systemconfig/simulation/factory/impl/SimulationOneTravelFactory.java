@@ -36,6 +36,9 @@ public class SimulationOneTravelFactory implements SimulationFactory<SimulationO
     @SneakyThrows
     @Override
     public void generateMockRedisData(SimulationOneTravelDTO obj) {
+        //随机数
+        int randomInt = (int) (-20 + Math.random() * (20 - (-20) + 1));
+        obj.setRandomNumber(String.valueOf(randomInt));
 
         redisTemplate.opsForValue().set(getCacheKey(SimulationConstants.ONE_TRAVEL), obj);
 

@@ -7,6 +7,7 @@ import com.yjtech.wisdom.tourism.common.constant.DecisionSupportConstants;
 import com.yjtech.wisdom.tourism.common.enums.DecisionSupportConfigEnum;
 import com.yjtech.wisdom.tourism.common.utils.DateTimeUtil;
 import com.yjtech.wisdom.tourism.common.utils.MathUtil;
+import com.yjtech.wisdom.tourism.decisionsupport.business.dto.RankingDataDto;
 import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionEntity;
 import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionWarnEntity;
 import com.yjtech.wisdom.tourism.decisionsupport.common.strategy.BaseStrategy;
@@ -102,13 +103,13 @@ public class OverallScenicSpotsTouristFlowRankingStrategyImpl extends BaseStrate
             // 景区客流排行 _统计年月 （文本）
             case DecisionSupportConstants.JQKLPH_TJNY :
                 result.setWarnNum(currentLastMonthStr);
-                textAlarmDeal(entity, result, currentLastMonthStr);
+                textAlarmDeal(entity, result, currentLastMonthStr, isSimulation);
                 break;
 
             // 景区客流排行 _游客流失最多景区名称 （文本）
             case DecisionSupportConstants.JQKLPH_YKLSZDJQMC :
                 result.setWarnNum(downMaxName);
-                textAlarmDeal(entity, result, downMaxName);
+                textAlarmDeal(entity, result, downMaxName, isSimulation);
                 // 判断是否使用缺失话术
                 if (StringUtils.isEmpty(downMaxName)) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -118,7 +119,7 @@ public class OverallScenicSpotsTouristFlowRankingStrategyImpl extends BaseStrate
             // 景区客流排行 _其他游客流失景区名称 （文本）
             case DecisionSupportConstants.JQKLPH_QTYKLSJQMC :
                 result.setWarnNum(otherDownName);
-                textAlarmDeal(entity, result, otherDownName);
+                textAlarmDeal(entity, result, otherDownName, isSimulation);
                 // 判断是否使用缺失话术
                 if (StringUtils.isEmpty(otherDownName)) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -128,7 +129,7 @@ public class OverallScenicSpotsTouristFlowRankingStrategyImpl extends BaseStrate
             // 景区客流排行 _游客流失最多景区接待量 （数值）
             case DecisionSupportConstants.JQKLPH_YKLSZDJQJDL :
                 result.setWarnNum(downMaxReception);
-                numberAlarmDeal(entity, result, hb);
+                numberAlarmDeal(entity, result, hb, isSimulation);
                 // 判断是否使用缺失话术
                 if (DecisionSupportConstants.MISS_CONCLUSION_TEXT_NUMBER_VALUE.equals(Integer.parseInt(downMaxReception))) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -138,7 +139,7 @@ public class OverallScenicSpotsTouristFlowRankingStrategyImpl extends BaseStrate
             // 景区客流排行 _环比变化（较上月） （数值）
             case DecisionSupportConstants.JQKLPH_HBBH :
                 result.setWarnNum(hb);
-                numberAlarmDeal(entity, result, hb);
+                numberAlarmDeal(entity, result, hb, isSimulation);
                 // 判断是否使用缺失话术
                 if (DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE.equals(hb)) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -148,7 +149,7 @@ public class OverallScenicSpotsTouristFlowRankingStrategyImpl extends BaseStrate
             // 景区客流排行 _同比变化（较去年同月） （数值）
             case DecisionSupportConstants.JQKLPH_TBBH :
                 result.setWarnNum(tb);
-                numberAlarmDeal(entity, result, tb);
+                numberAlarmDeal(entity, result, tb, isSimulation);
                 // 判断是否使用缺失话术
                 if (DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE.equals(tb)) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -179,15 +180,17 @@ public class OverallScenicSpotsTouristFlowRankingStrategyImpl extends BaseStrate
     /**
      * 图表：景区客流月环比下降Top5
      *
-     * @param tourDownMax
+     * @param satisfactionDownMax
      * @return
      */
-    private List getCharData(List<RankingDto> tourDownMax) {
-        List<Map> list = Lists.newArrayList();
-        for (RankingDto v : tourDownMax) {
-            HashMap<String, String> map = Maps.newHashMap();
+    private List getCharData(List<RankingDto> satisfactionDownMax) {
+        List<RankingDataDto> list = Lists.newArrayList();
+        for (RankingDto v : satisfactionDownMax) {
             double scale = Math.abs(Double.parseDouble(v.getScale()));
-            map.put(v.getName(), String.valueOf(scale));
+            list.add(RankingDataDto.builder()
+                    .name(v.getName())
+                    .value(String.valueOf(scale))
+                    .build());
         }
         return list;
     }

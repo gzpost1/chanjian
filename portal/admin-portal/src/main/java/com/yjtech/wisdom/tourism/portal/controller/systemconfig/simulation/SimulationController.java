@@ -3,9 +3,13 @@ package com.yjtech.wisdom.tourism.portal.controller.systemconfig.simulation;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.SimulationQueryDto;
 import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.complaint.SimulationTravelComplaintDTO;
+import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.decisionsupport.SimulationDecisionSupportDTO;
+import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.districttour.DistrictMockRuleDTO;
+import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.event.SimulationEventDto;
 import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.hotel.SimulationHotelDTO;
 import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.onetravel.SimulationOneTravelDTO;
 import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.praise.SimulationPraiseDto;
+import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.scenic.SimulationScenicDto;
 import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.ticket.SimulationTicketDto;
 import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.wifi.SimulationWifiDto;
 import com.yjtech.wisdom.tourism.systemconfig.simulation.service.SimulationConfigService;
@@ -40,6 +44,17 @@ public class SimulationController {
     @PostMapping("/queryForDetail")
     public JsonResult queryForDetail(@RequestBody @Valid SimulationQueryDto query) {
         return JsonResult.success(service.queryForDetail(query));
+    }
+
+    /**
+     * 刷新数据
+     * @param query
+     * @return
+     */
+    @PostMapping("/refreshData")
+    public JsonResult refreshData(@RequestBody @Valid SimulationQueryDto query) {
+        service.refreshData(query);
+        return JsonResult.ok();
     }
 
     /**
@@ -89,7 +104,6 @@ public class SimulationController {
      */
     @PostMapping("/saveTravelComplaint")
     public JsonResult saveTravelComplaint(@RequestBody SimulationTravelComplaintDTO dto) {
-        service.generateRandom(dto);
         service.saveUpdated(dto);
         return JsonResult.success();
     }
@@ -102,7 +116,6 @@ public class SimulationController {
      */
     @PostMapping("/saveHotel")
     public JsonResult saveHotel(@RequestBody SimulationHotelDTO dto) {
-        service.generateRandom(dto);
         service.saveUpdated(dto);
         return JsonResult.success();
     }
@@ -115,10 +128,59 @@ public class SimulationController {
      */
     @PostMapping("/saveOneTravel")
     public JsonResult saveOneTravel(@RequestBody SimulationOneTravelDTO dto) {
+        service.saveUpdated(dto);
+        return JsonResult.success();
+    }
+
+    /**
+     * 新增一游客结构
+     *
+     * @param
+     * @return
+     */
+    @PostMapping("/saveDistrictTour")
+    public JsonResult saveDistrictTour(@RequestBody DistrictMockRuleDTO dto) {
         service.generateRandom(dto);
         service.saveUpdated(dto);
         return JsonResult.success();
     }
 
+    /**
+     * 新增一决策辅助
+     *
+     * @param
+     * @return
+     */
+    @PostMapping("/saveDecisionSupport")
+    public JsonResult saveDecisionSupport(@RequestBody SimulationDecisionSupportDTO dto) {
+        service.generateRandom(dto);
+        service.saveUpdated(dto);
+        return JsonResult.success();
+    }
 
+    /**
+     * 新增事件
+     *
+     * @param
+     * @return
+     */
+    @PostMapping("/saveEvent")
+    public JsonResult saveEvent(@RequestBody @Valid SimulationEventDto dto) {
+        service.generateRandom(dto);
+        service.saveUpdated(dto);
+        return JsonResult.success();
+    }
+
+    /**
+     * 新增景区
+     *
+     * @param
+     * @return
+     */
+    @PostMapping("/saveScenic")
+    public JsonResult saveEvent(@RequestBody @Valid SimulationScenicDto dto) {
+        service.generateRandom(dto);
+        service.saveUpdated(dto);
+        return JsonResult.success();
+    }
 }

@@ -51,6 +51,7 @@ public class EmergencyEventStrategyImpl extends BaseStrategy {
         // 应急事件数量
         String total = DecisionSupportConstants.ZERO;
         EventSumaryQuery eventSumaryQuery = new EventSumaryQuery();
+        eventSumaryQuery.setIsSimulation(isSimulation);
         eventSumaryQuery.setBeginTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentLastMonthStr() + DecisionSupportConstants.START_DAY_STR));
         eventSumaryQuery.setEndTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentLastMonthStr() + DecisionSupportConstants.END_DAY_STR));
         List<BaseVO> totalList = emergencyEvenScreenService.queryEventQuantity(eventSumaryQuery);
@@ -94,13 +95,13 @@ public class EmergencyEventStrategyImpl extends BaseStrategy {
             // 应急事件统计_统计年月 （文本）
             case DecisionSupportConstants.YJSJTJ_TJNY :
                 result.setWarnNum(currentLastMonthStr);
-                textAlarmDeal(entity, result, currentLastMonthStr);
+                textAlarmDeal(entity, result, currentLastMonthStr, isSimulation);
                 break;
 
             // 应急事件统计_应急事件数量 （数值）
             case DecisionSupportConstants.YJSJTJ_YJSJSL :
                 result.setWarnNum(String.valueOf(total));
-                numberAlarmDeal(entity, result, hb);
+                numberAlarmDeal(entity, result, hb, isSimulation);
                 // 判断是否使用缺失话术
                 if (DecisionSupportConstants.MISS_CONCLUSION_TEXT_NUMBER_VALUE.equals(Integer.parseInt(total))) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -110,7 +111,7 @@ public class EmergencyEventStrategyImpl extends BaseStrategy {
             // 应急事件统计_环比变化（较上月） （数值）
             case DecisionSupportConstants.YJSJTJ_HBBH :
                 result.setWarnNum(hb);
-                numberAlarmDeal(entity, result, hb);
+                numberAlarmDeal(entity, result, hb, isSimulation);
                 // 判断是否使用缺失话术
                 if (DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE.equals(hb)) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -120,7 +121,7 @@ public class EmergencyEventStrategyImpl extends BaseStrategy {
             // 应急事件统计_同比变化（较去年同月） （数值）
             case DecisionSupportConstants.YJSJTJ_TBBH :
                 result.setWarnNum(tb);
-                numberAlarmDeal(entity, result, tb);
+                numberAlarmDeal(entity, result, tb, isSimulation);
                 // 判断是否使用缺失话术
                 if (DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE.equals(tb)) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);

@@ -1,4 +1,4 @@
-package com.yjtech.wisdom.tourism.dto;
+package com.yjtech.wisdom.tourism.systemconfig.simulation.dto.districttour;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * 来源分布
@@ -18,27 +17,18 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
-public class OriginDistributedProvinceOutsideDto implements Serializable {
+public class OriginDistributedProvinceOutsideDTO implements Serializable {
 
     private static final long serialVersionUID = 2206367471590836815L;
 
     /**
      * 区域名称
      */
-    private String areaName;
-
-    /**
-     * 区域编码
-     */
-    private String areaCode;
+    private String name;
 
     /**
      * 比例 %
      */
-    private double scale;
+    private String value;
 
-    /**
-     * 省内来源分布
-     */
-    private List<OriginDistributedProvinceInsideDto> child;
 }

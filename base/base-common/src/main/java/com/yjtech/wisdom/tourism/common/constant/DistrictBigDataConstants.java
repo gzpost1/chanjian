@@ -70,6 +70,11 @@ public class DistrictBigDataConstants {
     public final static String MOCK_TOUR_SOURCE_DESC = "游客结构_模拟数据";
 
     /**
+     * 游客来源-模拟数据-标识
+     */
+    public final static String MOCK_TOUR_SIGN = "mock_tour_sign_";
+
+    /**
      * 配置，非系统
      */
     public final static String CONFIG_TYPE_NOT_SYSTEM = "N";

@@ -109,13 +109,13 @@ public class OverallScenicSpotsSatisfactionStrategyImpl extends BaseStrategy {
             // 整体景区满意度 _统计年月 （文本）
             case DecisionSupportConstants.ZTJQMYD_TJNY :
                 result.setWarnNum(currentLastMonthStr);
-                textAlarmDeal(entity, result, currentLastMonthStr);
+                textAlarmDeal(entity, result, currentLastMonthStr, isSimulation);
                 break;
 
             // 整体景区满意度 _整体景区评价数量 （数值）
             case DecisionSupportConstants.ZTJQMYD_ZTJQPJSL :
                 result.setWarnNum(String.valueOf(lastMonthSatisfaction.getTotal()));
-                numberAlarmDeal(entity, result, evaluateHb);
+                numberAlarmDeal(entity, result, evaluateHb, isSimulation);
                 // 判断是否使用缺失话术
                 if (DecisionSupportConstants.MISS_CONCLUSION_TEXT_NUMBER_VALUE.equals(lastMonthSatisfaction.getTotal())) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -125,7 +125,7 @@ public class OverallScenicSpotsSatisfactionStrategyImpl extends BaseStrategy {
             // 整体景区满意度 _整体景区好评数量 （数值）
             case DecisionSupportConstants.ZTJQMYD_ZTJQHPSL :
                 result.setWarnNum(String.valueOf(lastMonthSatisfaction.getGoodTotal()));
-                numberAlarmDeal(entity, result, goodEvaluateHb);
+                numberAlarmDeal(entity, result, goodEvaluateHb, isSimulation);
                 // 判断是否使用缺失话术
                 if (DecisionSupportConstants.MISS_CONCLUSION_TEXT_NUMBER_VALUE.equals(lastMonthSatisfaction.getGoodTotal())) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -135,7 +135,7 @@ public class OverallScenicSpotsSatisfactionStrategyImpl extends BaseStrategy {
             // 整体景区满意度 _整体景区满意度 （数值）
             case DecisionSupportConstants.ZTJQMYD_ZTJQMYD :
                 result.setWarnNum(String.valueOf(lastMonthSatisfaction.getSatisfaction()));
-                numberAlarmDeal(entity, result, hb);
+                numberAlarmDeal(entity, result, hb, isSimulation);
                 // 判断是否使用缺失话术
                 if (DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE.equals(lastMonthSatisfaction.getSatisfaction())) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -145,7 +145,7 @@ public class OverallScenicSpotsSatisfactionStrategyImpl extends BaseStrategy {
             // 整体景区满意度 _环比变化（较上月） （数值）
             case DecisionSupportConstants.ZTJQMYD_HBBH :
                 result.setWarnNum(hb);
-                numberAlarmDeal(entity, result, hb);
+                numberAlarmDeal(entity, result, hb, isSimulation);
                 // 判断是否使用缺失话术
                 if (DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE.equals(hb)) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -155,7 +155,7 @@ public class OverallScenicSpotsSatisfactionStrategyImpl extends BaseStrategy {
             // 整体景区满意度 _同比变化（较去年同月） （数值）
             case DecisionSupportConstants.ZTJQMYD_TBBH :
                 result.setWarnNum(tb);
-                numberAlarmDeal(entity, result, tb);
+                numberAlarmDeal(entity, result, tb, isSimulation);
                 // 判断是否使用缺失话术
                 if (DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE.equals(tb)) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);

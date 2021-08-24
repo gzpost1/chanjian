@@ -60,13 +60,13 @@ public class OverallHotelHomestaySatisfactionStrategyImpl extends BaseStrategy {
         LocalDateTime endLastYearDate = DateTimeUtil.getLocalDateTime(DateTimeUtil.getLastYearLastMonthStr() + DecisionSupportConstants.END_DAY_STR);
 
         // 上月
-        StatisticsDto lastMonth = getSatisfaction(startDate, endDate);
+        StatisticsDto lastMonth = getSatisfaction(startDate, endDate, isSimulation);
 
         // 上上月
-        StatisticsDto lastLastMonth = getSatisfaction(starLastDate, endLastDate);
+        StatisticsDto lastLastMonth = getSatisfaction(starLastDate, endLastDate, isSimulation);
 
         // 去年同月
-        StatisticsDto lastYearLastMonth = getSatisfaction(startLastYearDate, endLastYearDate);
+        StatisticsDto lastYearLastMonth = getSatisfaction(startLastYearDate, endLastYearDate, isSimulation);
 
         // 评价 环比
         String evaluateHb = DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE;
@@ -99,7 +99,7 @@ public class OverallHotelHomestaySatisfactionStrategyImpl extends BaseStrategy {
         }
 
         // 图表数据：评价类型分布
-        result.setChartData(getCharData(startDate, endDate));
+        result.setChartData(getCharData(startDate, endDate, isSimulation));
 
         // 处理指标报警
         switch (configId) {
@@ -107,13 +107,13 @@ public class OverallHotelHomestaySatisfactionStrategyImpl extends BaseStrategy {
             // 整体酒店民宿满意度 _统计年月 （文本）
             case DecisionSupportConstants.ZTJDMSMYD_TJNY :
                 result.setWarnNum(currentLastMonthStr);
-                textAlarmDeal(entity, result, currentLastMonthStr);
+                textAlarmDeal(entity, result, currentLastMonthStr, isSimulation);
                 break;
 
             // 整体酒店民宿满意度 _整体酒店民宿评价数量 （数值）
             case DecisionSupportConstants.ZTJDMSMYD_ZTJDMSPJSL :
                 result.setWarnNum(String.valueOf(lastMonth.getTotal()));
-                numberAlarmDeal(entity, result, evaluateHb);
+                numberAlarmDeal(entity, result, evaluateHb, isSimulation);
                 // 判断是否使用缺失话术
                 if (DecisionSupportConstants.MISS_CONCLUSION_TEXT_NUMBER_VALUE.equals(lastMonth.getTotal())) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -123,7 +123,7 @@ public class OverallHotelHomestaySatisfactionStrategyImpl extends BaseStrategy {
             // 整体酒店民宿满意度 _整体酒店民宿好评数量 （数值）
             case DecisionSupportConstants.ZTJDMSMYD_ZTJDMSHPSL :
                 result.setWarnNum(String.valueOf(lastMonth.getGoodTotal()));
-                numberAlarmDeal(entity, result, goodEvaluateHb);
+                numberAlarmDeal(entity, result, goodEvaluateHb, isSimulation);
                 // 判断是否使用缺失话术
                 if (DecisionSupportConstants.MISS_CONCLUSION_TEXT_NUMBER_VALUE.equals(lastMonth.getGoodTotal())) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -133,7 +133,7 @@ public class OverallHotelHomestaySatisfactionStrategyImpl extends BaseStrategy {
             // 整体酒店民宿满意度 _整体酒店民宿满意度 （数值）
             case DecisionSupportConstants.ZTJDMSMYD_ZTJDMSMYD :
                 result.setWarnNum(lastMonth.getSatisfaction());
-                numberAlarmDeal(entity, result, hb);
+                numberAlarmDeal(entity, result, hb, isSimulation);
                 // 判断是否使用缺失话术
                 if (DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE.equals(lastMonth.getSatisfaction())) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -143,7 +143,7 @@ public class OverallHotelHomestaySatisfactionStrategyImpl extends BaseStrategy {
             // 整体酒店民宿满意度 _环比变化（较上月） （数值）
             case DecisionSupportConstants.ZTJDMSMYD_HBBH :
                 result.setWarnNum(hb);
-                numberAlarmDeal(entity, result, hb);
+                numberAlarmDeal(entity, result, hb, isSimulation);
                 // 判断是否使用缺失话术
                 if (DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE.equals(hb)) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -153,7 +153,7 @@ public class OverallHotelHomestaySatisfactionStrategyImpl extends BaseStrategy {
             // 整体酒店民宿满意度 _同比变化（较去年同月） （数值）
             case DecisionSupportConstants.ZTJDMSMYD_TBBH :
                 result.setWarnNum(tb);
-                numberAlarmDeal(entity, result, tb);
+                numberAlarmDeal(entity, result, tb, isSimulation);
                 // 判断是否使用缺失话术
                 if (DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE.equals(tb)) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -189,8 +189,9 @@ public class OverallHotelHomestaySatisfactionStrategyImpl extends BaseStrategy {
      * @param endDate
      * @return
      */
-    private List getCharData(LocalDateTime startDate, LocalDateTime endDate) {
+    private List getCharData(LocalDateTime startDate, LocalDateTime endDate, Integer isSimulation) {
         EvaluateQueryVO evaluateQueryVO = new EvaluateQueryVO();
+        evaluateQueryVO.setIsSimulation(isSimulation.byteValue());
         evaluateQueryVO.setBeginTime(startDate);
         evaluateQueryVO.setEndTime(endDate);
         evaluateQueryVO.setStatus(DecisionSupportConstants.ENABLE);
@@ -204,11 +205,12 @@ public class OverallHotelHomestaySatisfactionStrategyImpl extends BaseStrategy {
      * @param endDate
      * @return
      */
-    private StatisticsDto getSatisfaction (LocalDateTime startDate, LocalDateTime endDate) {
+    private StatisticsDto getSatisfaction (LocalDateTime startDate, LocalDateTime endDate, Integer isSimulation) {
 
         EvaluateQueryVO evaluateScreenQueryVO = new EvaluateQueryVO();
         evaluateScreenQueryVO.setBeginTime(startDate);
         evaluateScreenQueryVO.setEndTime(endDate);
+        evaluateScreenQueryVO.setIsSimulation(isSimulation.byteValue());
 
         // 上月
         MarketingEvaluateStatisticsDTO lastMonth = marketingEvaluateService.queryEvaluateStatistics(evaluateScreenQueryVO);

@@ -50,7 +50,7 @@ public class ProvinceInsideTourStrategyImpl extends BaseStrategy {
         String tb = targetQueryService.queryProvinceScale(TargetQueryConstants.PROVINCE_SCALE_TB, DecisionSupportConstants.PROVINCE_INSIDE_TYPE, isSimulation);
 
         // 图标数据：月客流趋势
-        result.setChartData(getProvinceCharData(DecisionSupportConstants.PROVINCE_INSIDE_TYPE));
+        result.setChartData(getProvinceCharData(DecisionSupportConstants.PROVINCE_INSIDE_TYPE, isSimulation));
 
         // 处理指标报警
         switch (configId) {
@@ -58,13 +58,13 @@ public class ProvinceInsideTourStrategyImpl extends BaseStrategy {
             // 省内游客 _统计年月 （文本）
             case DecisionSupportConstants.SNYK_TJNY :
                 result.setWarnNum(currentLastMonthStr);
-                textAlarmDeal(entity, result, currentLastMonthStr);
+                textAlarmDeal(entity, result, currentLastMonthStr, isSimulation);
                 break;
 
             // 省内游客 _平台简称 （文本）
             case DecisionSupportConstants.SNYK_PTJC :
                 result.setWarnNum(simpleName);
-                textAlarmDeal(entity, result, simpleName);
+                textAlarmDeal(entity, result, simpleName, isSimulation);
                 // 判断是否使用缺失话术
                 if (StringUtils.isEmpty(simpleName)) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -74,7 +74,7 @@ public class ProvinceInsideTourStrategyImpl extends BaseStrategy {
             // 省内游客 _省内游客数量 （数值）
             case DecisionSupportConstants.SNYK_SNYKSL :
                 result.setWarnNum(provinceInsideNumber);
-                numberAlarmDeal(entity, result, hb);
+                numberAlarmDeal(entity, result, hb, isSimulation);
                 // 判断是否使用缺失话术
                 if (DecisionSupportConstants.MISS_CONCLUSION_TEXT_NUMBER_VALUE.equals(Integer.valueOf(provinceInsideNumber))) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -84,7 +84,7 @@ public class ProvinceInsideTourStrategyImpl extends BaseStrategy {
             // 省内游客 _环比变化（较上月） （数值）
             case DecisionSupportConstants.SNYK_HBBH :
                 result.setWarnNum(hb);
-                numberAlarmDeal(entity, result, hb);
+                numberAlarmDeal(entity, result, hb, isSimulation);
                 // 判断是否使用缺失话术
                 if (DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE.equals(hb)) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -94,7 +94,7 @@ public class ProvinceInsideTourStrategyImpl extends BaseStrategy {
             // 省内游客 _同比变化（较去年同月） （数值）
             case DecisionSupportConstants.SNYK_TBBH :
                 result.setWarnNum(tb);
-                numberAlarmDeal(entity, result, tb);
+                numberAlarmDeal(entity, result, tb, isSimulation);
                 // 判断是否使用缺失话术
                 if (DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE.equals(tb)) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);

@@ -56,7 +56,9 @@ public class HighIncidenceEmergencyEventStrategyImpl extends BaseStrategy {
 
         // 应急事件数量
         String total = DecisionSupportConstants.ZERO;
-        List<BaseVO> totalList = emergencyEvenScreenService.queryEventQuantity(new EventSumaryQuery());
+        EventSumaryQuery eventSumaryQuery = new EventSumaryQuery();
+        eventSumaryQuery.setIsSimulation(isSimulation);
+        List<BaseVO> totalList = emergencyEvenScreenService.queryEventQuantity(eventSumaryQuery);
         for (BaseVO v : totalList) {
             if (DecisionSupportConstants.TOTAL_STR.equals(v.getName())) {
                 total = v.getValue();
@@ -75,18 +77,21 @@ public class HighIncidenceEmergencyEventStrategyImpl extends BaseStrategy {
 
         // 今年上月
         EventSumaryQuery lastMonth = new EventSumaryQuery();
+        lastMonth.setIsSimulation(isSimulation);
         lastMonth.setBeginTime(startDate);
         lastMonth.setEndTime(endDate);
         lastMonth.setType(DecisionSupportConstants.YEAR_MONTH);
 
         // 今年上上月
         EventSumaryQuery lastLastMonth = new EventSumaryQuery();
+        lastLastMonth.setIsSimulation(isSimulation);
         lastLastMonth.setBeginTime(starLastDate);
         lastLastMonth.setType(DecisionSupportConstants.YEAR_MONTH);
         lastLastMonth.setEndTime(endLastDate);
 
         // 去年上月
         EventSumaryQuery lastYearLastMonth = new EventSumaryQuery();
+        lastYearLastMonth.setIsSimulation(isSimulation);
         lastLastMonth.setType(DecisionSupportConstants.YEAR_MONTH);
         lastYearLastMonth.setBeginTime(startLastYearDate);
         lastYearLastMonth.setEndTime(endLastYearDate);
@@ -116,14 +121,14 @@ public class HighIncidenceEmergencyEventStrategyImpl extends BaseStrategy {
             // 高并发应急事件_统计年月 （文本）
             case DecisionSupportConstants.GBFYJSJ_TJNY :
                 result.setWarnNum(currentLastMonthStr);
-                textAlarmDeal(entity, result, currentLastMonthStr);
+                textAlarmDeal(entity, result, currentLastMonthStr, isSimulation);
                 break;
 
             // 高并发应急事件_高发事件类型 （文本）
             case DecisionSupportConstants.GBFYJSJ_GBFSJLX :
                 String typeName = maxEventType.getName();
                 result.setWarnNum(typeName);
-                textAlarmDeal(entity, result, typeName);
+                textAlarmDeal(entity, result, typeName, isSimulation);
                 // 判断是否使用缺失话术
                 if (StringUtils.isEmpty(typeName)) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -134,7 +139,7 @@ public class HighIncidenceEmergencyEventStrategyImpl extends BaseStrategy {
             case DecisionSupportConstants.GBFYJSJ_GBFSJDJ :
                 String levelName = maxEventLevel.getName();
                 result.setWarnNum(levelName);
-                textAlarmDeal(entity, result, levelName);
+                textAlarmDeal(entity, result, levelName, isSimulation);
                 // 判断是否使用缺失话术
                 if (StringUtils.isEmpty(levelName)) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -144,7 +149,7 @@ public class HighIncidenceEmergencyEventStrategyImpl extends BaseStrategy {
             // 高并发应急事件_应急事件数量 （数值）
             case DecisionSupportConstants.GBFYJSJ_YJSJSL :
                 result.setWarnNum(maxEventType.getValue());
-                numberAlarmDeal(entity, result, maxEventType.getHb());
+                numberAlarmDeal(entity, result, maxEventType.getHb(), isSimulation);
                 // 判断是否使用缺失话术
                 if (DecisionSupportConstants.MISS_CONCLUSION_TEXT_NUMBER_VALUE.equals(Integer.parseInt(total))) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -154,7 +159,7 @@ public class HighIncidenceEmergencyEventStrategyImpl extends BaseStrategy {
             // 高并发应急事件_高发事件类型环比变化（较上月） （数值）
             case DecisionSupportConstants.GBFYJSJ_GBFSJLXHBBH :
                 result.setWarnNum(maxEventType.getHb());
-                numberAlarmDeal(entity, result, maxEventType.getHb());
+                numberAlarmDeal(entity, result, maxEventType.getHb(), isSimulation);
                 // 判断是否使用缺失话术
                 if (DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE.equals(maxEventType.getHb())) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -164,7 +169,7 @@ public class HighIncidenceEmergencyEventStrategyImpl extends BaseStrategy {
             // 高并发应急事件_高发事件类型同比变化（较去年同月） （数值）
             case DecisionSupportConstants.GBFYJSJ_GBFSJLXTBBH :
                 result.setWarnNum(maxEventType.getTb());
-                numberAlarmDeal(entity, result, maxEventType.getTb());
+                numberAlarmDeal(entity, result, maxEventType.getTb(), isSimulation);
                 // 判断是否使用缺失话术
                 if (DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE.equals(maxEventType.getTb())) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -174,7 +179,7 @@ public class HighIncidenceEmergencyEventStrategyImpl extends BaseStrategy {
             // 高并发应急事件_高发事件等级环比变化（较上月） （数值）
             case DecisionSupportConstants.GBFYJSJ_GBFSJDJHBBH :
                 result.setWarnNum(maxEventLevel.getHb());
-                numberAlarmDeal(entity, result, maxEventLevel.getHb());
+                numberAlarmDeal(entity, result, maxEventLevel.getHb(), isSimulation);
                 // 判断是否使用缺失话术
                 if (DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE.equals(maxEventLevel.getHb())) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -184,7 +189,7 @@ public class HighIncidenceEmergencyEventStrategyImpl extends BaseStrategy {
             // 高并发应急事件_高发事件等级同比变化（较去年同月） （数值）
             case DecisionSupportConstants.GBFYJSJ_GBFSJDJTBBH :
                 result.setWarnNum(maxEventLevel.getTb());
-                numberAlarmDeal(entity, result, maxEventLevel.getTb());
+                numberAlarmDeal(entity, result, maxEventLevel.getTb(), isSimulation);
                 // 判断是否使用缺失话术
                 if (DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE.equals(maxEventLevel.getTb())) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);

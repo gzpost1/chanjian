@@ -6,6 +6,7 @@ import com.google.common.collect.Maps;
 import com.yjtech.wisdom.tourism.common.constant.DecisionSupportConstants;
 import com.yjtech.wisdom.tourism.common.enums.DecisionSupportConfigEnum;
 import com.yjtech.wisdom.tourism.common.utils.DateTimeUtil;
+import com.yjtech.wisdom.tourism.decisionsupport.business.dto.RankingDataDto;
 import com.yjtech.wisdom.tourism.decisionsupport.business.dto.ScaleDto;
 import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionEntity;
 import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionWarnEntity;
@@ -129,13 +130,13 @@ public class OverallScenicSpotsSatisfactionRankingStrategyImpl extends BaseStrat
             // 景区满意度排行 _统计年月 （文本）
             case DecisionSupportConstants.JQMYDPH_TJNY :
                 result.setWarnNum(currentLastMonthStr);
-                textAlarmDeal(entity, result, currentLastMonthStr);
+                textAlarmDeal(entity, result, currentLastMonthStr, isSimulation);
                 break;
 
             // 景区满意度排行 _满意度下降最多景区名称 （文本）
             case DecisionSupportConstants.JQMYDPH_MYDXJZDJQMC :
                 result.setWarnNum(downMaxName);
-                textAlarmDeal(entity, result, downMaxName);
+                textAlarmDeal(entity, result, downMaxName, isSimulation);
                 // 判断是否使用缺失话术
                 if (StringUtils.isEmpty(downMaxName)) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -145,7 +146,7 @@ public class OverallScenicSpotsSatisfactionRankingStrategyImpl extends BaseStrat
             // 景区满意度排行 _其他满意度下降景区名称 （文本）
             case DecisionSupportConstants.JQMYDPH_QTMYDXJJQMC :
                 result.setWarnNum(otherDownName);
-                textAlarmDeal(entity, result, otherDownName);
+                textAlarmDeal(entity, result, otherDownName, isSimulation);
                 // 判断是否使用缺失话术
                 if (StringUtils.isEmpty(otherDownName)) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -156,7 +157,7 @@ public class OverallScenicSpotsSatisfactionRankingStrategyImpl extends BaseStrat
             case DecisionSupportConstants.JQMYDPH_MYDXJZDJQPJL :
                 String scale = computeScale(downMaxEvaluation, downMaxEvaluation);
                 result.setWarnNum(String.valueOf(downMaxEvaluation));
-                numberAlarmDeal(entity, result, scale);
+                numberAlarmDeal(entity, result, scale, isSimulation);
                 // 判断是否使用缺失话术
                 if (DecisionSupportConstants.MISS_CONCLUSION_TEXT_NUMBER_VALUE.equals(downMaxEvaluation)) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -167,7 +168,7 @@ public class OverallScenicSpotsSatisfactionRankingStrategyImpl extends BaseStrat
             case DecisionSupportConstants.JQMYDPH_MYDXJZDJQHPL :
                 String goodScale = computeScale(downMaxGoodEvaluation, lastLastMonthDownMaxGoodEvaluation);
                 result.setWarnNum(String.valueOf(downMaxGoodEvaluation));
-                numberAlarmDeal(entity, result, goodScale);
+                numberAlarmDeal(entity, result, goodScale, isSimulation);
                 // 判断是否使用缺失话术
                 if (DecisionSupportConstants.MISS_CONCLUSION_TEXT_NUMBER_VALUE.equals(downMaxGoodEvaluation)) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -178,7 +179,7 @@ public class OverallScenicSpotsSatisfactionRankingStrategyImpl extends BaseStrat
             case DecisionSupportConstants.JQMYDPH_MYDXJZDJQMYD :
                 String satisfactionScale = computeScale(Double.parseDouble(lastDownMaxSatisfaction),  Double.parseDouble(lastLastMonthDownMaxSatisfaction));
                 result.setWarnNum(lastDownMaxSatisfaction);
-                numberAlarmDeal(entity, result, satisfactionScale);
+                numberAlarmDeal(entity, result, satisfactionScale, isSimulation);
                 // 判断是否使用缺失话术
                 if (DecisionSupportConstants.MISS_CONCLUSION_TEXT_NUMBER_VALUE.equals(lastDownMaxSatisfaction)) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -188,7 +189,7 @@ public class OverallScenicSpotsSatisfactionRankingStrategyImpl extends BaseStrat
             // 景区满意度排行 _环比变化（较上月） （数值）
             case DecisionSupportConstants.JQMYDPH_HBBH :
                 result.setWarnNum(hb);
-                numberAlarmDeal(entity, result, hb);
+                numberAlarmDeal(entity, result, hb, isSimulation);
                 // 判断是否使用缺失话术
                 if (DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE.equals(hb)) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -198,7 +199,7 @@ public class OverallScenicSpotsSatisfactionRankingStrategyImpl extends BaseStrat
             // 景区满意度排行 _同比变化（较去年同月） （数值）
             case DecisionSupportConstants.JQMYDPH_TBBH :
                 result.setWarnNum(tb);
-                numberAlarmDeal(entity, result, tb);
+                numberAlarmDeal(entity, result, tb, isSimulation);
                 // 判断是否使用缺失话术
                 if (DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE.equals(tb)) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -353,15 +354,17 @@ public class OverallScenicSpotsSatisfactionRankingStrategyImpl extends BaseStrat
     /**
      * 图表：景区客流月环比下降Top5
      *
-     * @param tourDownMax
+     * @param rankingDtos
      * @return
      */
-    private List getCharData(List<RankingDto> tourDownMax) {
-        List<Map> list = Lists.newArrayList();
-        for (RankingDto v : tourDownMax) {
-            HashMap<String, String> map = Maps.newHashMap();
+    private List getCharData(List<RankingDto> rankingDtos) {
+        List<RankingDataDto> list = Lists.newArrayList();
+        for (RankingDto v : rankingDtos) {
             double scale = Math.abs(Double.parseDouble(v.getScale()));
-            map.put(v.getName(), String.valueOf(scale));
+            list.add(RankingDataDto.builder()
+                    .name(v.getName())
+                    .value(String.valueOf(scale))
+                    .build());
         }
         return list;
     }

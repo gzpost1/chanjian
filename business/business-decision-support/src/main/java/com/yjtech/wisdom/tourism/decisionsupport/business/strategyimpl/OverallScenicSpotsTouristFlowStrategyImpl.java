@@ -82,13 +82,13 @@ public class OverallScenicSpotsTouristFlowStrategyImpl extends BaseStrategy {
             // 整体景区客流 _统计年月 （文本）
             case DecisionSupportConstants.ZTJQKL_TJNY :
                 result.setWarnNum(currentLastMonthStr);
-                textAlarmDeal(entity, result, currentLastMonthStr);
+                textAlarmDeal(entity, result, currentLastMonthStr, isSimulation);
                 break;
 
             // 整体景区客流 _平台简称 （文本）
             case DecisionSupportConstants.ZTJQKL_PTJC :
                 result.setWarnNum(platformSimpleName);
-                textAlarmDeal(entity, result, platformSimpleName);
+                textAlarmDeal(entity, result, platformSimpleName, isSimulation);
                 // 判断是否使用缺失话术
                 if (StringUtils.isEmpty(platformSimpleName)) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -98,7 +98,7 @@ public class OverallScenicSpotsTouristFlowStrategyImpl extends BaseStrategy {
             // 整体景区客流 _全部景区接待数量 （数值）
             case DecisionSupportConstants.ZTJQKL_QBJQJDSL :
                 result.setWarnNum(String.valueOf(total));
-                numberAlarmDeal(entity, result, hb);
+                numberAlarmDeal(entity, result, hb, isSimulation);
                 // 判断是否使用缺失话术
                 if (DecisionSupportConstants.MISS_CONCLUSION_TEXT_NUMBER_VALUE.equals(total)) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -108,7 +108,7 @@ public class OverallScenicSpotsTouristFlowStrategyImpl extends BaseStrategy {
             // 整体景区客流 _环比变化（较上月） （数值）
             case DecisionSupportConstants.ZTJQKL_HBBH :
                 result.setWarnNum(hb);
-                numberAlarmDeal(entity, result, hb);
+                numberAlarmDeal(entity, result, hb, isSimulation);
                 // 判断是否使用缺失话术
                 if (DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE.equals(hb)) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
@@ -118,7 +118,7 @@ public class OverallScenicSpotsTouristFlowStrategyImpl extends BaseStrategy {
             // 整体景区客流 _同比变化（较去年同月） （数值）
             case DecisionSupportConstants.ZTJQKL_TBBH :
                 result.setWarnNum(tb);
-                numberAlarmDeal(entity, result, tb);
+                numberAlarmDeal(entity, result, tb, isSimulation);
                 // 判断是否使用缺失话术
                 if (DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE.equals(tb)) {
                     result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
