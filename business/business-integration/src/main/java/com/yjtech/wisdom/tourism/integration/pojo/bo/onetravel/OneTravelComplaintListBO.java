@@ -106,4 +106,9 @@ public class OneTravelComplaintListBO implements Serializable {
      */
     private BigDecimal latitude;
 
+    /**
+     * 图标地址
+     */
+    private String iconUrl;
+
 }

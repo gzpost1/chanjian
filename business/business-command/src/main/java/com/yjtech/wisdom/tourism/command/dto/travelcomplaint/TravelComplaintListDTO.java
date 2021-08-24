@@ -73,4 +73,9 @@ public class TravelComplaintListDTO implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate complaintTime;
 
+    /**
+     * 图标地址
+     */
+    private String iconUrl;
+
 }

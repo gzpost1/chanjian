@@ -49,4 +49,9 @@ public class FxDistQueryVO extends TimeBaseQuery {
      */
     private Byte validStatus;
 
+    /**
+     * is_simulation 是否有模拟数据 1有 0无
+     */
+    private Byte isSimulation = 0;
+
 }
