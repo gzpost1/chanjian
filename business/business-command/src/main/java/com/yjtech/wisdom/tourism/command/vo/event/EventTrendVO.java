@@ -14,4 +14,5 @@ public class EventTrendVO extends BaseSaleTrendVO {
      * 数量
      */
     private Integer quantity;
+
 }
