@@ -363,11 +363,13 @@ public abstract class BaseStrategy implements ApplicationListener {
             }
         }
         // 缓存 决策辅助模拟配置数据
-        SimulationQueryDto simulationQueryDto = new SimulationQueryDto();
-        simulationQueryDto.setDomainId(MockDataConstant.DECISION_SUPPORT_MOCK_DOMAIN_ID);
-        String configValue = String.valueOf(simulationConfigService.queryForDetail(simulationQueryDto));
-        if (!StringUtils.isEmpty(configValue) && !DecisionSupportConstants.NULL.equals(configValue)) {
-            mockRuleData = JSONObject.parseArray(configValue, DecisionMockDTO.class);
+        if (null == mockRuleData) {
+            SimulationQueryDto simulationQueryDto = new SimulationQueryDto();
+            simulationQueryDto.setDomainId(MockDataConstant.DECISION_SUPPORT_MOCK_DOMAIN_ID);
+            String configValue = String.valueOf(simulationConfigService.queryForDetail(simulationQueryDto));
+            if (!StringUtils.isEmpty(configValue) && !DecisionSupportConstants.NULL.equals(configValue)) {
+                mockRuleData = JSONObject.parseArray(configValue, DecisionMockDTO.class);
+            }
         }
     }
 }
