@@ -16,7 +16,6 @@ import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateStatisticsD
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.RoomPriceAnalysisDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateQueryVO;
 import com.yjtech.wisdom.tourism.marketing.pojo.vo.RoomScreenQueryVO;
-import com.yjtech.wisdom.tourism.marketing.service.MarketingEvaluateService;
 import com.yjtech.wisdom.tourism.marketing.service.MarketingHotelRoomService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,8 +40,6 @@ import java.util.Objects;
 @RequestMapping("/hotel/bigData/screen/")
 public class HotelBigDataScreenController {
 
-    @Autowired
-    private MarketingEvaluateService marketingEvaluateService;
     @Autowired
     private MarketingHotelRoomService marketingHotelRoomService;
     @Resource

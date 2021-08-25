@@ -5,11 +5,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
 import com.yjtech.wisdom.tourism.common.utils.bean.BeanMapper;
 import com.yjtech.wisdom.tourism.hotel.dto.HotelScreenDetailDTO;
+import com.yjtech.wisdom.tourism.hotel.dto.HotelSelectInfoDTO;
 import com.yjtech.wisdom.tourism.hotel.entity.TbHotelInfoEntity;
 import com.yjtech.wisdom.tourism.hotel.mapper.TbHotelInfoMapper;
 import com.yjtech.wisdom.tourism.hotel.vo.HotelScreenQueryVO;
 import com.yjtech.wisdom.tourism.hotel.vo.StaticNumVo;
 import com.yjtech.wisdom.tourism.mybatis.base.BaseMybatisServiceImpl;
+import com.yjtech.wisdom.tourism.mybatis.entity.PageQuery;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -93,6 +95,17 @@ public class TbHotelInfoService extends BaseMybatisServiceImpl<TbHotelInfoMapper
             return null;
         }
         return baseMapper.queryNameById(id);
+    }
+
+    /**
+     * 查询酒店下拉选信息
+     * @param params
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public IPage<HotelSelectInfoDTO> queryHotelSelectInfo(PageQuery params) {
+        Page<HotelSelectInfoDTO> page = new Page<>(params.getPageNo(), params.getPageSize());
+        return baseMapper.queryHotelSelectInfo(page);
     }
 
 }
