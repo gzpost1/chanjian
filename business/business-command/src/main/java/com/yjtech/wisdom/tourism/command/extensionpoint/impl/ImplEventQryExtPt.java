@@ -9,13 +9,17 @@ import com.yjtech.wisdom.tourism.command.service.event.EventService;
 import com.yjtech.wisdom.tourism.command.vo.event.EventTrendVO;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
 import com.yjtech.wisdom.tourism.common.bean.BaseValueVO;
-import com.yjtech.wisdom.tourism.mybatis.utils.AnalysisUtils;
 import com.yjtech.wisdom.tourism.common.utils.MathUtil;
 import com.yjtech.wisdom.tourism.extension.Extension;
 import com.yjtech.wisdom.tourism.extension.ExtensionConstant;
+import com.yjtech.wisdom.tourism.mybatis.utils.AnalysisUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.TemporalAdjusters;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -45,6 +49,11 @@ public class ImplEventQryExtPt implements EventQryExtPt {
     @Override
     public List<BaseValueVO> querySaleTrend(EventSumaryQuery query) {
 
+        //当年开始时间
+        query.setBeginTime((LocalDateTime.of(LocalDate.now(), LocalTime.MIN).with(TemporalAdjusters.firstDayOfYear())));
+        //当年结束时间
+         query.setEndTime(LocalDateTime.of(LocalDate.now(), LocalTime.MAX).with(TemporalAdjusters.lastDayOfYear()));
+        query.setType((byte)2);
         //今年
         LinkedList<Object> thisYear = new LinkedList<>(AnalysisUtils.supplementTime(query, eventService.getBaseMapper().queryTrend(query), true, EventTrendVO::getQuantity));
         //去年

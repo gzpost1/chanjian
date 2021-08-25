@@ -29,8 +29,10 @@ import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -61,7 +63,7 @@ public class MockEventQryExtPt implements EventQryExtPt {
         ArrayList<BaseVO> result = Lists.newArrayList();
         SimulationEventDto dto = redisCache.getCacheObject(Constants.SIMULATION_KEY + SimulationConstants.EVENT);
         //日累计事件量 = 初始事件量+随机数/10
-        BigDecimal randomForCache1 = getRandomForCache(SimulationConstants.EVENT, "day" + 1);
+        BigDecimal randomForCache1 = getRandomForCache(SimulationConstants.EVENT, "daily_event");
         BigDecimal dayQuantity = dto.getInitialQuantity().add(randomForCache1.divide(new BigDecimal("10")));
         //应急事件=日累计事件量*筛选时段天数。
         BigDecimal timeInterval = getTimeInterval(query);
@@ -77,6 +79,12 @@ public class MockEventQryExtPt implements EventQryExtPt {
 
     @Override
     public List<BaseValueVO> querySaleTrend(EventSumaryQuery query) {
+        //当年开始时间
+        query.setBeginTime((LocalDateTime.of(LocalDate.now(), LocalTime.MIN).with(TemporalAdjusters.firstDayOfYear())));
+        //当年结束时间
+        query.setEndTime(LocalDateTime.of(LocalDate.now(), LocalTime.MAX).with(TemporalAdjusters.lastDayOfYear()));
+        query.setType((byte)2);
+
         List<EventTrendVO> trendVOS = Lists.newArrayList();
         LocalDateTime beginTime = query.getBeginTime();
         LocalDateTime endTime = query.getEndTime();
@@ -85,7 +93,7 @@ public class MockEventQryExtPt implements EventQryExtPt {
         SimulationEventDto dto = redisCache.getCacheObject(Constants.SIMULATION_KEY + SimulationConstants.EVENT);
 
         //日累计事件量 = 初始事件量+随机数/10
-        BigDecimal randomForCache1 = getRandomForCache(SimulationConstants.EVENT, "day" + 1);
+        BigDecimal randomForCache1 = getRandomForCache(SimulationConstants.EVENT, "daily_event");
         BigDecimal dayQuantity = dto.getInitialQuantity().add(randomForCache1.divide(new BigDecimal("10")));
 
         //月累计事件量 = 日累计事件量*当前日期号数+月累计事件量加数
@@ -99,7 +107,7 @@ public class MockEventQryExtPt implements EventQryExtPt {
 
         //月事件分布-其他月 = 月累计事件量*（100+随机数）/100
         while (beginTime.isBefore(endTime) && !Objects.equals(now.getMonthValue(),beginTime.getMonthValue())){
-            BigDecimal randomForCache = getRandomForCache(SimulationConstants.EVENT, "month" + beginTime.getMonthValue());
+            BigDecimal randomForCache = getRandomForCache(SimulationConstants.EVENT, "month_event:" + beginTime.getMonthValue());
             BigDecimal quantity = monthlyQuantity.multiply(randomForCache.add(new BigDecimal("100"))).divide(new BigDecimal("100"));
 
             EventTrendVO eventTrendVO2 = new EventTrendVO();
@@ -176,7 +184,7 @@ public class MockEventQryExtPt implements EventQryExtPt {
         SimulationEventDto dto = redisCache.getCacheObject(Constants.SIMULATION_KEY + SimulationConstants.EVENT);
 
         //日累计事件量 = 初始事件量+随机数/10
-        BigDecimal randomForCache1 = getRandomForCache(SimulationConstants.EVENT, "day" + 1);
+        BigDecimal randomForCache1 = getRandomForCache(SimulationConstants.EVENT, "daily_event");
         BigDecimal dayQuantity = dto.getInitialQuantity().add(randomForCache1.divide(new BigDecimal("10")));
         //应急事件=日累计事件量*筛选时段天数。
         BigDecimal timeInterval = getTimeInterval(query);
@@ -202,7 +210,7 @@ public class MockEventQryExtPt implements EventQryExtPt {
         SimulationEventDto dto = redisCache.getCacheObject(Constants.SIMULATION_KEY + SimulationConstants.EVENT);
 
         //日累计事件量 = 初始事件量+随机数/10
-        BigDecimal randomForCache1 = getRandomForCache(SimulationConstants.EVENT, "day" + 1);
+        BigDecimal randomForCache1 = getRandomForCache(SimulationConstants.EVENT, "daily_event");
         BigDecimal dayQuantity = dto.getInitialQuantity().add(randomForCache1.divide(new BigDecimal("10")));
         //应急事件=日累计事件量*筛选时段天数。
         BigDecimal timeInterval = getTimeInterval(query);

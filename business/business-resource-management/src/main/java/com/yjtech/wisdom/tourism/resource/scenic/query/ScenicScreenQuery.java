@@ -30,4 +30,9 @@ public class ScenicScreenQuery extends TimeBaseQuery {
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private LocalDateTime endTime;
+
+    /**
+     * is_simulation 是否有模拟数据 1有 0无
+     */
+    private Integer isSimulation = 0;
 }
