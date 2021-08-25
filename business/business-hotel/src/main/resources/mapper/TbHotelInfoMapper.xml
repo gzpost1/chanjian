@@ -217,6 +217,19 @@
         </where>
     </select>
 
+    <!-- 查询酒店下拉选信息 -->
+    <select id="queryHotelSelectInfo" resultType="com.yjtech.wisdom.tourism.hotel.dto.HotelSelectInfoDTO">
+        select
+        id as id,
+        name as name
+        from
+        tb_hotel_info
+        <where>
+            deleted = 0 and
+            status = 1
+        </where>
+    </select>
+
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         id,

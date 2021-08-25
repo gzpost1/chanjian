@@ -2,7 +2,6 @@ package com.yjtech.wisdom.tourism.integration.service;
 
 import cn.hutool.http.HttpRequest;
 import com.alibaba.fastjson.JSONObject;
-import com.yjtech.wisdom.tourism.common.exception.ErrorCode;
 import com.yjtech.wisdom.tourism.common.path.DistrictPathEnum;
 import com.yjtech.wisdom.tourism.common.utils.DateUtils;
 import com.yjtech.wisdom.tourism.common.utils.JsonUtils;
@@ -76,6 +75,8 @@ public class DistrictBigDataService {
         log.info("【{}】-请求返回：{}", desc, result);
         return result;
     }
+
+
 
     /**
      * 区县大数据获取token

@@ -84,6 +84,9 @@ public class OverallHotelHomestaySatisfactionRankingStrategyImpl extends BaseStr
             result.setMonthHbScale(DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE);
             result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
             result.setWarnNum(DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE);
+            result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
+            result.setConclusionText(null);
+            result.setChartData(Lists.newArrayList());
             return result;
         }
         RankingDto maxDown = satisfactionDownMax.get(0);

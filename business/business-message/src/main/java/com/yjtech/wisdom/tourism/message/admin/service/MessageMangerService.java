@@ -130,9 +130,9 @@ public class MessageMangerService extends ServiceImpl<MessageMapper, MessageEnti
         // 组合数据  每个事件类型不同，应该使用业务模块的事件状态进行判断
         for (MessageDto item : messageDtoList) {
             // 应急事件 数据分类放入结果集
-            setEventInfo(record, emergencyEventList, queryType, item, MessageConstants.EVENT_STATUS_COMPLETE);
+            setEventInfo(record, emergencyEventList, queryType, item);
             // 旅游投诉事件 数据分类放入结果集
-            setEventInfo(record, touristComplaintsEventList, queryType, item, MessageConstants.EVENT_STATUS_COMPLETE);
+            setEventInfo(record, touristComplaintsEventList, queryType, item);
         }
 
         // 进行自主分页
@@ -152,14 +152,17 @@ public class MessageMangerService extends ServiceImpl<MessageMapper, MessageEnti
      * @param emergencyEventList 各业务模块通过事件id查询到的返回结果集
      * @param queryType 查询类型
      * @param item 数据源
-     * @param eventStatusComplete 事件完成状态
      */
     private void setEventInfo(List<MessageDto> record,
                               List<MessageCallDto> emergencyEventList,
                               Integer queryType,
-                              MessageDto item,
-                              Integer eventStatusComplete)
+                              MessageDto item
+                              )
     {
+        // 待处理数据
+        List<MessageDto> pending = Lists.newArrayList();
+        // 已处理数据
+        List<MessageDto> deal = Lists.newArrayList();
         for (MessageCallDto emergencyItem : emergencyEventList) {
             if (item.getEventId().equals(emergencyItem.getEventId())) {
                 // 构造数据
@@ -171,13 +174,19 @@ public class MessageMangerService extends ServiceImpl<MessageMapper, MessageEnti
                 // 查待指派、处理
                 if (MessageConstants.QUERY_DEAL.equals(queryType)
                         // 非已处理状态相当于 待指派、处理状态
-                        && !eventStatusComplete.equals(emergencyItem.getEventStatus())) {
-                    record.add(messageDto);
-                    continue;
+                        && !MessageConstants.EVENT_STATUS_COMPLETE.equals(emergencyItem.getEventStatus())) {
+                    pending.add(messageDto);
                 }
-                // 所有数据
-                record.add(messageDto);
+                // 已处理数据
+                else if (MessageConstants.EVENT_STATUS_COMPLETE.equals(emergencyItem.getEventStatus())) {
+                    deal.add(messageDto);
+                }
             }
+        }
+        record.addAll(pending);
+        // 查全部消息
+        if (MessageConstants.QUERY_ALL.equals(queryType)) {
+            record.addAll(deal);
         }
     }
 

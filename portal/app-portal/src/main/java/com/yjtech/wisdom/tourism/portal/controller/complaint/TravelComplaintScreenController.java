@@ -18,6 +18,8 @@ import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.extension.BizScenario;
 import com.yjtech.wisdom.tourism.extension.ExtensionConstant;
 import com.yjtech.wisdom.tourism.extension.ExtensionExecutor;
+import com.yjtech.wisdom.tourism.system.domain.IconSpotEnum;
+import com.yjtech.wisdom.tourism.system.service.IconService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -42,6 +44,8 @@ public class TravelComplaintScreenController {
     private TravelComplaintService travelComplaintService;
     @Resource
     private ExtensionExecutor extensionExecutor;
+    @Autowired
+    private IconService iconService;
 
 
     /**
@@ -121,6 +125,11 @@ public class TravelComplaintScreenController {
         TravelComplaintQueryVO query = BeanUtil.copyProperties(vo, TravelComplaintQueryVO.class);
 
         IPage<TravelComplaintListDTO> page = travelComplaintService.queryForPage(query);
+        //通过配置缓存设置iconUrl
+        for (TravelComplaintListDTO travelComplaintListDTO : page.getRecords()){
+            travelComplaintListDTO.setIconUrl(iconService.queryIconUrl(IconSpotEnum.TRAVEL_COMPLAINT, travelComplaintListDTO.getStatus().toString()));
+        }
+
         return JsonResult.success(page);
     }
 

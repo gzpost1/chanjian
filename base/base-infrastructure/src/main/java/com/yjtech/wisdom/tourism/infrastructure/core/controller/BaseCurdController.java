@@ -9,7 +9,6 @@ import com.yjtech.wisdom.tourism.common.enums.BeanValidationGroup;
 import com.yjtech.wisdom.tourism.common.utils.bean.BeanMapper;
 import com.yjtech.wisdom.tourism.mybatis.base.BaseService;
 import com.yjtech.wisdom.tourism.mybatis.entity.PageQuery;
-import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
