@@ -8,6 +8,8 @@ import com.yjtech.wisdom.tourism.common.enums.AnalysisDateTypeEnum;
 import com.yjtech.wisdom.tourism.integration.pojo.bo.onetravel.OneTravelComplaintListBO;
 import com.yjtech.wisdom.tourism.integration.pojo.vo.OneTravelQueryVO;
 import com.yjtech.wisdom.tourism.integration.service.OneTravelApiService;
+import com.yjtech.wisdom.tourism.system.domain.IconSpotEnum;
+import com.yjtech.wisdom.tourism.system.service.IconService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,6 +31,8 @@ public class OneTravelComplaintScreenController {
 
     @Autowired
     private OneTravelApiService oneTravelApiService;
+    @Autowired
+    private IconService iconService;
 
     /**
      * 查询投诉总量
@@ -47,7 +51,12 @@ public class OneTravelComplaintScreenController {
      */
     @PostMapping("queryComplaintForPage")
     public JsonResult<IPage<OneTravelComplaintListBO>> queryComplaintForPage(@RequestBody @Valid OneTravelQueryVO vo) {
-        return JsonResult.success(oneTravelApiService.queryComplaintForPage(vo));
+        IPage<OneTravelComplaintListBO> page = oneTravelApiService.queryComplaintForPage(vo);
+        //通过配置缓存设置iconUrl
+        for (OneTravelComplaintListBO oneTravelComplaintListBO : page.getRecords()){
+            oneTravelComplaintListBO.setIconUrl(iconService.queryIconUrl(IconSpotEnum.ONE_TRAVEL_COMPLAINT, oneTravelComplaintListBO.getComplaintStatus()));
+        }
+        return JsonResult.success(page);
     }
 
     /**
