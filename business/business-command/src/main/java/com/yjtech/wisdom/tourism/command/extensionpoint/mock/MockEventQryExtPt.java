@@ -29,8 +29,10 @@ import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -77,6 +79,12 @@ public class MockEventQryExtPt implements EventQryExtPt {
 
     @Override
     public List<BaseValueVO> querySaleTrend(EventSumaryQuery query) {
+        //当年开始时间
+        query.setBeginTime((LocalDateTime.of(LocalDate.now(), LocalTime.MIN).with(TemporalAdjusters.firstDayOfYear())));
+        //当年结束时间
+        query.setEndTime(LocalDateTime.of(LocalDate.now(), LocalTime.MAX).with(TemporalAdjusters.lastDayOfYear()));
+        query.setType((byte)2);
+
         List<EventTrendVO> trendVOS = Lists.newArrayList();
         LocalDateTime beginTime = query.getBeginTime();
         LocalDateTime endTime = query.getEndTime();
