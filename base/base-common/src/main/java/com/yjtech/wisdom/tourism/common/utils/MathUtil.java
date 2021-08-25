@@ -67,7 +67,7 @@ public final class MathUtil {
      * @return 两个参数的商(BigDecimal)的百分比(乘以100保留一位小数)
      */
     public static BigDecimal calPercent(BigDecimal v1, BigDecimal v2) {
-        return calPercent(v1, v2, DEF_DIV_PERCENT_SCALE).multiply(BIG_DECIMAL_100);
+        return calPercent(v1, v2, DEF_DIV_PERCENT_SCALE);
     }
 
 }
