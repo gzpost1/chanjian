@@ -48,6 +48,11 @@ public final class ExtensionConstant {
      */
     public static final String ONE_TRAVEL = "oneTravel";
 
+    /**
+     * 景区
+     */
+    public static final String SCENIC = "scenic";
+
     /*  业务---end */
 
     /*  用例常量参考(TicketExtensionConstant) */

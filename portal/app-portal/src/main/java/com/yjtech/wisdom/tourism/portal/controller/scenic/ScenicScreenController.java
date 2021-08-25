@@ -6,12 +6,15 @@ import com.yjtech.wisdom.tourism.common.bean.BaseVO;
 import com.yjtech.wisdom.tourism.common.bean.BaseValueVO;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.common.exception.CustomException;
-import com.yjtech.wisdom.tourism.dto.MonthPassengerFlowDto;
+import com.yjtech.wisdom.tourism.extension.BizScenario;
+import com.yjtech.wisdom.tourism.extension.ExtensionConstant;
+import com.yjtech.wisdom.tourism.extension.ExtensionExecutor;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateListDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateStatisticsDTO;
-import com.yjtech.wisdom.tourism.mybatis.utils.AnalysisUtils;
 import com.yjtech.wisdom.tourism.resource.scenic.entity.vo.ScenicBaseVo;
 import com.yjtech.wisdom.tourism.resource.scenic.entity.vo.ScenicScreenVo;
+import com.yjtech.wisdom.tourism.resource.scenic.extensionpoint.ScenicExtensionConstant;
+import com.yjtech.wisdom.tourism.resource.scenic.extensionpoint.ScenicQryExtPt;
 import com.yjtech.wisdom.tourism.resource.scenic.query.ScenicScreenQuery;
 import com.yjtech.wisdom.tourism.resource.scenic.service.ScenicService;
 import com.yjtech.wisdom.tourism.resource.video.entity.TbVideoEntity;
@@ -22,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -42,7 +46,8 @@ public class ScenicScreenController {
     private ScenicService scenicService;
     @Autowired
     private TbVideoService videoService;
-
+    @Resource
+    private ExtensionExecutor extensionExecutor;
     /**
      * 景区分布——分页查询
      *
@@ -85,7 +90,10 @@ public class ScenicScreenController {
      */
     @PostMapping("queryHotRank")
     public JsonResult<List<BaseVO>> queryScenicHotRank(@RequestBody @Valid ScenicScreenQuery query){
-        return JsonResult.success(scenicService.queryScenicHotRank(query));
+        List<BaseVO> execute = extensionExecutor.execute(ScenicQryExtPt.class,
+                buildBizScenario(ScenicExtensionConstant.SCENIC_QUANTITY, query.getIsSimulation()),
+                extension -> extension.queryScenicHotRank(query));
+        return JsonResult.success(execute);
     }
 
     /**
@@ -110,7 +118,10 @@ public class ScenicScreenController {
         if (isNull(query.getBeginTime()) || isNull(query.getEndTime())) {
             throw new CustomException("统计时间不能为空");
         }
-        return JsonResult.success(scenicService.queryTouristReception(query));
+        List<BaseVO> execute = extensionExecutor.execute(ScenicQryExtPt.class,
+                buildBizScenario(ScenicExtensionConstant.SCENIC_QUANTITY, query.getIsSimulation()),
+                extension -> extension.queryTouristReception(query));
+        return JsonResult.success(execute);
     }
 
     /**
@@ -135,11 +146,10 @@ public class ScenicScreenController {
      */
     @PostMapping("/queryPassengerFlowTrend")
     public JsonResult<List<BaseValueVO>> queryPassengerFlow(@RequestBody @Valid ScenicScreenQuery query) {
-        return JsonResult.success(AnalysisUtils.MultipleBuildAnalysis(
-                query,
-                scenicService.queryPassengerFlowTrend(query),
-                true,
-                MonthPassengerFlowDto::getNumber, MonthPassengerFlowDto::getTbNumber, MonthPassengerFlowDto::getHbScale, MonthPassengerFlowDto::getTbScale));
+        List<BaseValueVO> execute = extensionExecutor.execute(ScenicQryExtPt.class,
+                buildBizScenario(ScenicExtensionConstant.SCENIC_QUANTITY, query.getIsSimulation()),
+                extension -> extension.queryPassengerFlow(query));
+        return JsonResult.success(execute);
     }
 
     /**
@@ -153,7 +163,10 @@ public class ScenicScreenController {
         if (isNull(query.getBeginTime()) || isNull(query.getEndTime())) {
             throw new CustomException("统计时间不能为空");
         }
-        return JsonResult.success(scenicService.queryEvaluateTypeDistribution(query));
+        List<BasePercentVO> execute = extensionExecutor.execute(ScenicQryExtPt.class,
+                buildBizScenario(ScenicExtensionConstant.SCENIC_QUANTITY, query.getIsSimulation()),
+                extension -> extension.queryEvaluateTypeDistribution(query));
+        return JsonResult.success(execute);
     }
 
     /**
@@ -164,7 +177,10 @@ public class ScenicScreenController {
      */
     @PostMapping("/queryScenicEvaluateStatistics")
     public JsonResult<MarketingEvaluateStatisticsDTO> queryScenicEvaluateStatistics(@RequestBody @Valid ScenicScreenQuery query) {
-        return JsonResult.success(scenicService.queryScenicEvaluateStatistics(query));
+        MarketingEvaluateStatisticsDTO execute = extensionExecutor.execute(ScenicQryExtPt.class,
+                buildBizScenario(ScenicExtensionConstant.SCENIC_QUANTITY, query.getIsSimulation()),
+                extension -> extension.queryScenicEvaluateStatistics(query));
+        return JsonResult.success(execute);
     }
 
     /**
@@ -208,11 +224,10 @@ public class ScenicScreenController {
      */
     @PostMapping("/queryHeatTrend")
     public JsonResult<List<BaseValueVO>> queryHeatTrend(@RequestBody @Valid ScenicScreenQuery query) {
-        return JsonResult.success(AnalysisUtils.MultipleBuildAnalysis(
-                query,
-                scenicService.queryHeatTrend(query),
-                true,
-                MonthPassengerFlowDto::getNumber, MonthPassengerFlowDto::getTbNumber, MonthPassengerFlowDto::getHbScale, MonthPassengerFlowDto::getTbScale));
+        List<BaseValueVO> execute = extensionExecutor.execute(ScenicQryExtPt.class,
+                buildBizScenario(ScenicExtensionConstant.SCENIC_QUANTITY, query.getIsSimulation()),
+                extension -> extension.queryHeatTrend(query));
+        return JsonResult.success(execute);
     }
 
     /**
@@ -223,10 +238,14 @@ public class ScenicScreenController {
      */
     @PostMapping("/querySatisfactionTrend")
     public JsonResult<List<BaseValueVO>> querySatisfactionTrend(@RequestBody @Valid ScenicScreenQuery query) {
-        return JsonResult.success(AnalysisUtils.MultipleBuildAnalysis(
-                query,
-                scenicService.querySatisfactionTrend(query),
-                true,
-                MonthPassengerFlowDto::getNumber, MonthPassengerFlowDto::getTbNumber, MonthPassengerFlowDto::getHbScale, MonthPassengerFlowDto::getTbScale));
+        List<BaseValueVO> execute = extensionExecutor.execute(ScenicQryExtPt.class,
+                buildBizScenario(ScenicExtensionConstant.SCENIC_QUANTITY, query.getIsSimulation()),
+                extension -> extension.querySatisfactionTrend(query));
+        return JsonResult.success(execute);
+    }
+
+    private BizScenario buildBizScenario(String useCasePraiseType, Integer isSimulation) {
+        return BizScenario.valueOf(ExtensionConstant.SCENIC, useCasePraiseType
+                , isSimulation == 0 ? ExtensionConstant.SCENARIO_IMPL : ExtensionConstant.SCENARIO_MOCK);
     }
 }
