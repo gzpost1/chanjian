@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.hotel.dto.HotelScreenDetailDTO;
+import com.yjtech.wisdom.tourism.hotel.dto.HotelSelectInfoDTO;
 import com.yjtech.wisdom.tourism.hotel.service.TbHotelInfoService;
 import com.yjtech.wisdom.tourism.hotel.vo.HotelScreenQueryVO;
+import com.yjtech.wisdom.tourism.mybatis.entity.PageQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -59,6 +61,16 @@ public class HotelScreenController {
     @PostMapping("queryHotelStarDistribution")
     public JsonResult<List<BasePercentVO>> queryHotelStarDistribution(@RequestBody @Valid HotelScreenQueryVO vo) {
         return JsonResult.success(tbHotelInfoService.queryHotelStarDistribution(vo));
+    }
+
+    /**
+     * 查询酒店下拉选信息
+     * @param params
+     * @return
+     */
+    @PostMapping("/queryHotelSelectInfo")
+    public JsonResult<IPage<HotelSelectInfoDTO>> queryHotelSelectInfo(@RequestBody @Valid PageQuery params) {
+        return JsonResult.success(tbHotelInfoService.queryHotelSelectInfo(params));
     }
 
 }
