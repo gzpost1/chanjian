@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -93,7 +94,7 @@ public class DecisionSupportScreenService extends ServiceImpl<DecisionWarnMapper
                     .ne(DecisionWarnEntity::getTargetId, DecisionSupportTargetConstants.ZHGK))
             .convert(v -> {
                 // 设置缺失话术
-                if (DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT.equals(v.getIsUseMissConclusionText())) {
+                if (DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT.equals(v.getIsUseMissConclusionText()) && StringUtils.isEmpty(v.getConclusionText())) {
                     v.setConclusionText(missConclusionText);
                 }
                 return JSONObject.parseObject(JSONObject.toJSONString(v), DecisionWarnItemDto.class);
@@ -108,7 +109,7 @@ public class DecisionSupportScreenService extends ServiceImpl<DecisionWarnMapper
                     .between(DecisionWarnMockEntity::getCreateTime, currentLastMonthFirstDayStr, currentLastMonthLastDayStr))
             .convert(v -> {
                 // 设置缺失话术
-                if (DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT.equals(v.getIsUseMissConclusionText())) {
+                if (DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT.equals(v.getIsUseMissConclusionText()) && StringUtils.isEmpty(v.getConclusionText())) {
                     v.setConclusionText(missConclusionText);
                 }
                 return JSONObject.parseObject(JSONObject.toJSONString(v), DecisionWarnItemDto.class);

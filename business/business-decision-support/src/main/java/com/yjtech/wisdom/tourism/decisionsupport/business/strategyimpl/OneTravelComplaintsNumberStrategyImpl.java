@@ -49,6 +49,7 @@ public class OneTravelComplaintsNumberStrategyImpl extends BaseStrategy {
         String currentLastMonthStr = super.getCurrentLastMonthStr();
 
         OneTravelQueryVO oneTravelQueryVO = new OneTravelQueryVO();
+        oneTravelQueryVO.setIsSimulation(isSimulation.byteValue());
         oneTravelQueryVO.setBeginTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentLastMonthStr() + DecisionSupportConstants.START_DAY_STR));
         oneTravelQueryVO.setEndTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentLastMonthStr() + DecisionSupportConstants.END_DAY_STR));
         oneTravelQueryVO.setType(DecisionSupportConstants.YEAR_MONTH_DAY);
