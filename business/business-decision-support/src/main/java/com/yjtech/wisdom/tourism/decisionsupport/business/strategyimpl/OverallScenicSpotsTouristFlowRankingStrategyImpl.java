@@ -6,7 +6,6 @@ import com.google.common.collect.Maps;
 import com.yjtech.wisdom.tourism.common.constant.DecisionSupportConstants;
 import com.yjtech.wisdom.tourism.common.enums.DecisionSupportConfigEnum;
 import com.yjtech.wisdom.tourism.common.utils.DateTimeUtil;
-import com.yjtech.wisdom.tourism.common.utils.MathUtil;
 import com.yjtech.wisdom.tourism.decisionsupport.business.dto.RankingDataDto;
 import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionEntity;
 import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionWarnEntity;
@@ -22,11 +21,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.TreeMap;
 
 /**
@@ -58,7 +54,7 @@ public class OverallScenicSpotsTouristFlowRankingStrategyImpl extends BaseStrate
         String currentLastMonthStr = super.getCurrentLastMonthStr();
 
         // 游客排行
-        List<RankingDto> tourDownMax = getSatisfactionDownMax();
+        List<RankingDto> tourDownMax = getSatisfactionDownMax(isSimulation);
 
         // 游客流失最多景区名称
         String downMaxName = "";
@@ -77,6 +73,7 @@ public class OverallScenicSpotsTouristFlowRankingStrategyImpl extends BaseStrate
 
         // 客流趋势
         ScenicScreenQuery query = new ScenicScreenQuery();
+        query.setIsSimulation(isSimulation);
         query.setBeginTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentYearStr() + DecisionSupportConstants.START_DATE_STR));
         query.setEndTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentYearStr() + DecisionSupportConstants.END_DATE_STR));
         query.setType(DecisionSupportConstants.YEAR_MONTH);
@@ -200,7 +197,7 @@ public class OverallScenicSpotsTouristFlowRankingStrategyImpl extends BaseStrate
      *
      * @return
      */
-    private List<RankingDto> getSatisfactionDownMax() {
+    private List<RankingDto> getSatisfactionDownMax(Integer isSimulation) {
 
         // 当年 上月
         LocalDateTime startDate = DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentLastMonthStr() + DecisionSupportConstants.START_DAY_STR);
@@ -211,6 +208,7 @@ public class OverallScenicSpotsTouristFlowRankingStrategyImpl extends BaseStrate
         LocalDateTime endLastDate = DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentLastLastMonthStr() + DecisionSupportConstants.END_DAY_STR);
 
         ScenicScreenQuery vo = new ScenicScreenQuery();
+        vo.setIsSimulation(isSimulation);
         vo.setBeginTime(startDate);
         vo.setEndTime(endDate);
         vo.setPageSize(500L);

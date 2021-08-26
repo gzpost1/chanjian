@@ -24,9 +24,7 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.TreeMap;
 
 /**
@@ -58,7 +56,7 @@ public class OverallScenicSpotsSatisfactionRankingStrategyImpl extends BaseStrat
         String currentLastMonthStr = super.getCurrentLastMonthStr();
 
         // 满意度下降最多
-        List<RankingDto> satisfactionDownMax = getSatisfactionDownMax();
+        List<RankingDto> satisfactionDownMax = getSatisfactionDownMax(isSimulation);
 
         // 满意度下降最多景区名称
         String downMaxName = "";
@@ -106,6 +104,7 @@ public class OverallScenicSpotsSatisfactionRankingStrategyImpl extends BaseStrat
         LocalDateTime endLastDate = DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentLastLastMonthStr() + DecisionSupportConstants.END_DAY_STR);
 
         ScenicScreenQuery vo = new ScenicScreenQuery();
+        vo.setIsSimulation(isSimulation);
         vo.setBeginTime(startDate);
         vo.setEndTime(endDate);
         // 1：景区
@@ -246,9 +245,10 @@ public class OverallScenicSpotsSatisfactionRankingStrategyImpl extends BaseStrat
      * @param endDate
      * @return
      */
-    private List<ScenicBaseVo> getSatisfaction (LocalDateTime startDate, LocalDateTime endDate) {
+    private List<ScenicBaseVo> getSatisfaction (LocalDateTime startDate, LocalDateTime endDate, Integer isSimulation) {
         // 整体景区评价数量、好评数量、整体景区满意度
         ScenicScreenQuery vo = new ScenicScreenQuery();
+        vo.setIsSimulation(isSimulation);
         vo.setBeginTime(startDate);
         vo.setEndTime(endDate);
         // 1：景点
@@ -261,7 +261,7 @@ public class OverallScenicSpotsSatisfactionRankingStrategyImpl extends BaseStrat
      *
      * @return
      */
-    private List<RankingDto> getSatisfactionDownMax() {
+    private List<RankingDto> getSatisfactionDownMax(Integer isSimulation) {
 
         // 当年 上月
         LocalDateTime startDate = DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentLastMonthStr() + DecisionSupportConstants.START_DAY_STR);
@@ -276,11 +276,11 @@ public class OverallScenicSpotsSatisfactionRankingStrategyImpl extends BaseStrat
         LocalDateTime endLastYearDate = DateTimeUtil.getLocalDateTime(DateTimeUtil.getLastYearLastMonthStr() + DecisionSupportConstants.END_DAY_STR);
 
         // 上月 满意度 排行
-        List<ScenicBaseVo> lastMonthRankings = getSatisfaction(startDate, endDate);
+        List<ScenicBaseVo> lastMonthRankings = getSatisfaction(startDate, endDate, isSimulation);
         // 上上月 满意度 排行
-        List<ScenicBaseVo> lastLastMonthRankings = getSatisfaction(starLastDate, endLastDate);
+        List<ScenicBaseVo> lastLastMonthRankings = getSatisfaction(starLastDate, endLastDate, isSimulation);
         //去年同月 满意度 排行
-        List<ScenicBaseVo> lastYearLastMonthRankings = getSatisfaction(startLastYearDate, endLastYearDate);
+        List<ScenicBaseVo> lastYearLastMonthRankings = getSatisfaction(startLastYearDate, endLastYearDate, isSimulation);
 
         TreeMap<Double, ScaleDto> map = Maps.newTreeMap();
 

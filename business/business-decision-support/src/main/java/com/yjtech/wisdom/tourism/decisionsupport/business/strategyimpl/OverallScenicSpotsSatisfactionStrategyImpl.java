@@ -1,20 +1,14 @@
 package com.yjtech.wisdom.tourism.decisionsupport.business.strategyimpl;
 
 import com.alibaba.fastjson.JSONObject;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.yjtech.wisdom.tourism.common.constant.DecisionSupportConstants;
-import com.yjtech.wisdom.tourism.common.constant.DecisionSupportTargetConstants;
 import com.yjtech.wisdom.tourism.common.enums.DecisionSupportConfigEnum;
 import com.yjtech.wisdom.tourism.common.utils.DateTimeUtil;
-import com.yjtech.wisdom.tourism.common.utils.MathUtil;
 import com.yjtech.wisdom.tourism.decisionsupport.business.dto.StatisticsDto;
 import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionEntity;
 import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionWarnEntity;
 import com.yjtech.wisdom.tourism.decisionsupport.common.strategy.BaseStrategy;
 import com.yjtech.wisdom.tourism.decisionsupport.common.util.PlaceholderUtils;
-import com.yjtech.wisdom.tourism.dto.MonthPassengerFlowDto;
-import com.yjtech.wisdom.tourism.dto.RankingDto;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateStatisticsDTO;
 import com.yjtech.wisdom.tourism.resource.scenic.query.ScenicScreenQuery;
 import com.yjtech.wisdom.tourism.resource.scenic.service.ScenicService;
@@ -25,9 +19,7 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 整体景区满意度 - pass
@@ -71,13 +63,13 @@ public class OverallScenicSpotsSatisfactionStrategyImpl extends BaseStrategy {
         LocalDateTime endLastYearDate = DateTimeUtil.getLocalDateTime(DateTimeUtil.getLastYearLastMonthStr() + DecisionSupportConstants.END_DAY_STR);
 
         // 上月
-        StatisticsDto lastMonthSatisfaction = getSatisfaction(startDate, endDate);
+        StatisticsDto lastMonthSatisfaction = getSatisfaction(startDate, endDate, isSimulation);
 
         // 上上月
-        StatisticsDto lastLastMonthSatisfaction = getSatisfaction(starLastDate, endLastDate);
+        StatisticsDto lastLastMonthSatisfaction = getSatisfaction(starLastDate, endLastDate, isSimulation);
 
        // 去年同月
-        StatisticsDto lastYearLastMonthSatisfaction = getSatisfaction(startLastYearDate, endLastYearDate);
+        StatisticsDto lastYearLastMonthSatisfaction = getSatisfaction(startLastYearDate, endLastYearDate, isSimulation);
 
         // 满意度 同比、环比
         String hb = "-";
@@ -101,7 +93,7 @@ public class OverallScenicSpotsSatisfactionStrategyImpl extends BaseStrategy {
         }
 
         // 图标数据：景区评价分布
-        result.setChartData(getCharData(startDate, endDate));
+        result.setChartData(getCharData(startDate, endDate, isSimulation));
 
         // 处理指标报警
         switch (configId) {
@@ -190,8 +182,9 @@ public class OverallScenicSpotsSatisfactionStrategyImpl extends BaseStrategy {
      * @param startDate
      * @return
      */
-    private List getCharData(LocalDateTime startDate, LocalDateTime endDate) {
+    private List getCharData(LocalDateTime startDate, LocalDateTime endDate, Integer isSimulation) {
         ScenicScreenQuery vo = new ScenicScreenQuery();
+        vo.setIsSimulation(isSimulation);
         vo.setBeginTime(startDate);
         vo.setEndTime(endDate);
         // 1：景区
@@ -206,8 +199,8 @@ public class OverallScenicSpotsSatisfactionStrategyImpl extends BaseStrategy {
      * @param endDate
      * @return
      */
-    private StatisticsDto getSatisfaction (LocalDateTime startDate, LocalDateTime endDate) {
-       return getSatisfaction(startDate, endDate, null);
+    private StatisticsDto getSatisfaction (LocalDateTime startDate, LocalDateTime endDate, Integer isSimulation) {
+       return getSatisfaction(startDate, endDate, null, isSimulation);
     }
 
     /**
@@ -218,9 +211,10 @@ public class OverallScenicSpotsSatisfactionStrategyImpl extends BaseStrategy {
      * @param type
      * @return
      */
-    private StatisticsDto getSatisfaction (LocalDateTime startDate, LocalDateTime endDate, Byte type) {
+    private StatisticsDto getSatisfaction (LocalDateTime startDate, LocalDateTime endDate, Byte type, Integer isSimulation) {
         // 整体景区评价数量、好评数量、整体景区满意度
         ScenicScreenQuery vo = new ScenicScreenQuery();
+        vo.setIsSimulation(isSimulation);
         vo.setBeginTime(startDate);
         vo.setEndTime(endDate);
         // 1:景点
