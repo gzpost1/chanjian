@@ -16,6 +16,8 @@ import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
 import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.common.constant.EventContants;
+import com.yjtech.wisdom.tourism.common.sms.MessageCall;
+import com.yjtech.wisdom.tourism.common.sms.MessageCallDto;
 import com.yjtech.wisdom.tourism.common.utils.AssertUtil;
 import com.yjtech.wisdom.tourism.common.utils.MathUtil;
 import com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysDictData;
@@ -41,7 +43,7 @@ import java.util.stream.Collectors;
  * @since 2021-07-19
  */
 @Service
-public class EventService extends ServiceImpl<EventMapper, EventEntity> {
+public class EventService extends ServiceImpl<EventMapper, EventEntity> implements MessageCall {
 
 
     public List<BaseVO> queryEventQuantity(EventSumaryQuery query){
@@ -276,5 +278,26 @@ public class EventService extends ServiceImpl<EventMapper, EventEntity> {
                     vo.setEventStatusName(DictUtils.getDictLabel(EventContants.EVENT_STATUS, String.valueOf(vo.getEventStatus())));
                     vo.setStatusName(Objects.equals(EntityConstants.ENABLED, vo.getStatus()) ? "启用" : "停用");
                 });
+    }
+
+    @Override
+    public List<MessageCallDto> queryEvent(Long[] ids) {
+        List<MessageCallDto> messageCallDtos = this.getBaseMapper().queryEvent(ids);
+        if(CollectionUtils.isEmpty(messageCallDtos)){
+            return messageCallDtos;
+        }
+        Set<Long> userIds = messageCallDtos.stream().filter(vo -> Objects.nonNull(vo.getEventHappenPerson())).map(vo -> Long.valueOf(vo.getEventHappenPerson())).collect(Collectors.toSet());
+        if (CollectionUtils.isEmpty(userIds)) {
+            return messageCallDtos;
+        }
+        Map<Long, SysUser> longSysUserMap = this.getBaseMapper().queryUserById(userIds);
+        if (MapUtils.isNotEmpty(longSysUserMap)) {
+            messageCallDtos.stream().map(vo -> {
+                SysUser sysUser = longSysUserMap.get(Long.valueOf(vo.getEventHappenPerson()));
+                vo.setEventHappenPerson(Objects.isNull(sysUser) ? null : sysUser.getNickName());
+                return vo;
+            }).collect(Collectors.toList());
+        }
+        return messageCallDtos;
     }
 }

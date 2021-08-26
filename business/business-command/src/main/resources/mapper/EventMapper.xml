@@ -187,4 +187,41 @@
         GROUP BY
         event_level
     </select>
+
+    <!-- 通过事件id，查询事件信息 -->
+    <select id="queryEvent" resultType="com.yjtech.wisdom.tourism.common.sms.MessageCallDto"
+            parameterType="long">
+        select
+        id as eventId,
+        name as event_name,
+        CASE
+            WHEN status = 0 THEN 0
+            WHEN status = 1 THEN 1
+            WHEN status = 2 THEN 1
+            WHEN status = 3 THEN 2
+            ELSE null END as event_status,
+        CASE
+            WHEN status = 0 THEN '待指派'
+            WHEN status = 1 THEN '待处理'
+            WHEN status = 2 THEN '待处理'
+            WHEN status = 3 THEN '已处理'
+            ELSE '-' END as event_status_text,
+        event_date as eventHappenDate,
+        '应急事件' as eventBusinessTypeText,
+        address as eventHappenAddress,
+        create_user as eventHappenPerson,
+        create_time as createTime
+        from
+        tb_event complaint
+        <where>
+            <if test="null != ids and ids.length > 0">
+                id in
+                <foreach collection="ids" item="item" index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+                and
+            </if>
+            deleted = 0
+        </where>
+    </select>
 </mapper>

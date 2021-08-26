@@ -10,6 +10,7 @@ import com.yjtech.wisdom.tourism.command.vo.event.EventListVO;
 import com.yjtech.wisdom.tourism.command.vo.event.EventTrendVO;
 import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
+import com.yjtech.wisdom.tourism.common.sms.MessageCallDto;
 import com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysUser;
 import com.yjtech.wisdom.tourism.mybatis.extension.MyBaseMapper;
 import org.apache.ibatis.annotations.MapKey;
@@ -48,4 +49,11 @@ public interface EventMapper extends MyBaseMapper<EventEntity> {
     List<BasePercentVO> queryEventType(@Param("params") EventSumaryQuery query);
 
     List<BaseVO> queryEventLevel(@Param("params") EventSumaryQuery query);
+
+    /**
+     * 通过事件id，查询事件信息
+     * @param ids
+     * @return
+     */
+    List<MessageCallDto> queryEvent(@Param("ids") Long[] ids);
 }
