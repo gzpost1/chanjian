@@ -46,7 +46,7 @@ public class SimulationTravelComplaintFactory implements SimulationFactory<Simul
         //月累计投诉量（日投诉量*当前日期号数+输入值）
         obj.setMonthOfComplaintTotal(obj.getDayOfComplaint().multiply(new BigDecimal(LocalDate.now().getDayOfMonth())).add(obj.getMonthOfComplaintTotal()).setScale(0,BigDecimal.ROUND_HALF_UP));
 
-        redisTemplate.opsForValue().set(getCacheKey(SimulationConstants.PRAISE), obj);
+        redisTemplate.opsForValue().set(getCacheKey(SimulationConstants.TRAVEL_COMPLAINT), obj);
 
     }
 

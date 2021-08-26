@@ -316,6 +316,7 @@ public class MessageMangerService extends ServiceImpl<MessageMapper, MessageEnti
                         else {
                             recordEntity.setSuccess((byte) 0);
                         }
+                        recordEntity.setId(null);
                         messageRecordMapper.insert(recordEntity);
                     }
                     break;
@@ -340,6 +341,7 @@ public class MessageMangerService extends ServiceImpl<MessageMapper, MessageEnti
                             recordEntity.setSuccess((byte) 0);
                             throw e;
                         }finally {
+                            recordEntity.setId(null);
                             messageRecordMapper.insert(recordEntity);
                         }
                     }

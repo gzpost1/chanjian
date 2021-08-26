@@ -247,7 +247,9 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
                 .set(TravelComplaintEntity::getAcceptTime, vo.getAcceptTime())
                 .set(TravelComplaintEntity::getAcceptResult, vo.getAcceptResult())
                 //默认已处理
-                .set(TravelComplaintEntity::getStatus, TravelComplaintStatusEnum.TRAVEL_COMPLAINT_STATUS_DEAL_FINISHED.getValue());
+                .set(TravelComplaintEntity::getStatus, TravelComplaintStatusEnum.TRAVEL_COMPLAINT_STATUS_DEAL_FINISHED.getValue())
+                .eq(TravelComplaintEntity::getId, complaintEntity.getId())
+                ;
 
         int result = baseMapper.update(complaintEntity, updateWrapper);
 
