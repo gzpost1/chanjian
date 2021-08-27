@@ -17,7 +17,8 @@
         <result property="openEndTime" column="open_end_time" jdbcType="TIME"/>
         <result property="phone" column="phone" jdbcType="VARCHAR"/>
         <result property="cover" column="cover" jdbcType="VARCHAR"/>
-        <result property="images" column="images" jdbcType="VARCHAR" typeHandler="com.yjtech.wisdom.tourism.mybatis.typehandler.JsonTypeHandler"/>
+        <result property="images" column="images" jdbcType="VARCHAR"
+                typeHandler="com.yjtech.wisdom.tourism.mybatis.typehandler.JsonTypeHandler"/>
         <result property="description" column="description" jdbcType="VARCHAR"/>
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
@@ -51,5 +52,46 @@
             where deleted = 0
               and status = 1
         ) b
+    </select>
+    <select id="listExtra" resultType="com.yjtech.wisdom.tourism.entity.TbCountryTour"
+            parameterType="com.yjtech.wisdom.tourism.entity.TbCountryTour">
+        SELECT a.*,b.dict_label as type_name FROM tb_country_tour a left join (select dict_label, dict_value from
+        sys_dict_data where
+        dict_type = 'village_type' and status = 0) b on
+        a.type = b.dict_value
+        <where>
+            <choose>
+                <when test="params != null">
+                    <if test="params != null">
+                        <if test="params.id != null">id=#{params.id}</if>
+                        <if test="params.name != null and params.name != ''">AND name LIKE
+                            CONCAT('%',#{params.name},'%')
+                        </if>
+                        <if test="params.type != null and params.type != ''">AND type=#{params.type}</if>
+                        <if test="params.address != null">AND address=#{params.address}</if>
+                        <if test="params.longitude != null">AND longitude=#{params.longitude}</if>
+                        <if test="params.latitude != null">AND latitude=#{params.latitude}</if>
+                        <if test="params.openStartMonth != null">AND open_start_month=#{params.openStartMonth}</if>
+                        <if test="params.openEndMonth != null">AND open_end_month=#{params.openEndMonth}</if>
+                        <if test="params.openStartTime != null">AND open_start_time=#{params.openStartTime}</if>
+                        <if test="params.openEndTime != null">AND open_end_time=#{params.openEndTime}</if>
+                        <if test="params.phone != null">AND phone=#{params.phone}</if>
+                        <if test="params.cover != null">AND cover=#{params.cover}</if>
+                        <if test="params.images != null">AND
+                            images=#{params.images,typeHandler=com.yjtech.wisdom.tourism.mybatis.typehandler.JsonTypeHandler}
+                        </if>
+                        <if test="params.description != null">AND description=#{params.description}</if>
+                        <if test="params.createTime != null">AND create_time=#{params.createTime}</if>
+                        <if test="params.updateTime != null">AND update_time=#{params.updateTime}</if>
+                        <if test="params.createUser != null">AND create_user=#{params.createUser}</if>
+                        <if test="params.updateUser != null">AND update_user=#{params.updateUser}</if>
+                        <if test="params.status != null">AND status=#{params.status}</if>
+                    </if>
+                    AND deleted=0
+
+                </when>
+                <otherwise>deleted=0</otherwise>
+            </choose>
+        </where>
     </select>
 </mapper>
