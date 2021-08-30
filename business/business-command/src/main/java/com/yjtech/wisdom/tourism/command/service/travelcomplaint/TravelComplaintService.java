@@ -157,6 +157,7 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
     @Transactional(readOnly = true)
     public TravelComplaintDTO queryById(Long id) {
         TravelComplaintEntity complaintEntity = baseMapper.queryEntityById(id);
+        Assert.notNull(complaintEntity, "旅游投诉信息不存在");
 
         TravelComplaintDTO dto = new TravelComplaintDTO();
         BeanUtils.copyProperties(complaintEntity, dto);
