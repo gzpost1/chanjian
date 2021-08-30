@@ -49,6 +49,12 @@ public class TbCountryTour implements Serializable {
     private String type;
 
     /**
+     * 类型名称
+     */
+    @TableField(exist = false)
+    private String typeName;
+
+    /**
      * 所在位置
      */
     private String address;
@@ -82,6 +88,12 @@ public class TbCountryTour implements Serializable {
      * 开放结束时间
      */
     private Date openEndTime;
+
+    /**
+     * 开放时间
+     */
+    @TableField(exist = false)
+    private String openTimeStr;
 
     /**
      * 联系电话

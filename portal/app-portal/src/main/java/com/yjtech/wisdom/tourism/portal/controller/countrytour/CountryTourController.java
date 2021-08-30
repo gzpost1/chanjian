@@ -37,7 +37,7 @@ public class CountryTourController {
      */
     @PostMapping("page")
     public JsonResult<Page<TbCountryTour>> page(@RequestBody @Validated CountryTourQuery query) {
-        return JsonResult.success(countryTourService.page(query));
+        return JsonResult.success(countryTourService.pageForScreen(query));
     }
 
     /**
