@@ -48,6 +48,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.yjtech.wisdom.tourism.common.utils.StringUtils.isNotNull;
 import static com.yjtech.wisdom.tourism.common.utils.StringUtils.isNull;
 
 @Service
@@ -306,25 +307,37 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
         //查询当前时间满意度数据.
         queryVO.setBeginTime(trendDto.getCurBeginDate());
         queryVO.setEndTime(trendDto.getCurEndDate());
-        Map<String, String> curMap = querySatisfaction(queryVO);
+        Map<String, BasePercentVO> curMap = querySatisfaction(queryVO);
         //查询同比时间满意度数据.
         queryVO.setBeginTime(trendDto.getTbBeginDate());
         queryVO.setEndTime(trendDto.getTbEndDate());
-        Map<String, String> tbMap = querySatisfaction(queryVO);
+        Map<String, BasePercentVO> tbMap = querySatisfaction(queryVO);
         //查询环比时间满意度数据.
         queryVO.setBeginTime(trendDto.getHbBeginDate());
         queryVO.setEndTime(trendDto.getHbEndDate());
-        Map<String, String> hbMap = querySatisfaction(queryVO);
+        Map<String, BasePercentVO> hbMap = querySatisfaction(queryVO);
         int curNum, tbNum, hbNum;
+        BigDecimal curRate, tbRate, hbRate;
         for (String date : trendDto.getAbscissa()) {
-            curNum = StringUtils.isNotBlank(curMap.get(date)) ? Integer.parseInt(curMap.get(date)) : 0;
+            //当前月满意数
+            curNum = isNotNull(curMap.get(date)) ? Integer.parseInt(curMap.get(date).getValue()) : 0;
+            //当前月满意度
+            curRate = isNotNull(curMap.get(date)) ? BigDecimal.valueOf(curMap.get(date).getRate()) : BigDecimal.valueOf(0);
+            //把当前日期设置成同比日期
             String tbDate = dateToDateFormat(date, "year");
-            tbNum = StringUtils.isNotBlank(tbMap.get(tbDate)) ? Integer.parseInt(tbMap.get(tbDate)) : 0;
+            //同步月满意数
+            tbNum = isNotNull(tbMap.get(tbDate)) ? Integer.parseInt(tbMap.get(tbDate).getValue()) : 0;
+            //同步月满意度
+            tbRate = isNotNull(tbMap.get(tbDate)) ? BigDecimal.valueOf(tbMap.get(tbDate).getRate()) : BigDecimal.valueOf(0);
+            //把当前日期设置成环比日期
             String hbDate = dateToDateFormat(date, "month");
-            hbNum = StringUtils.isNotBlank(hbMap.get(hbDate)) ? Integer.parseInt(hbMap.get(hbDate)) : 0;
-            String tbRate = tbNum == 0 ? "-" : String.valueOf(MathUtil.calPercent(new BigDecimal(curNum - tbNum), new BigDecimal(tbNum), 3).doubleValue());
-            String hbRate = hbNum == 0 ? "-" : String.valueOf(MathUtil.calPercent(new BigDecimal(curNum - hbNum), new BigDecimal(hbNum), 3).doubleValue());
-            resultList.add(MonthPassengerFlowDto.builder().date(date.substring(0, 7)).number(curNum).tbNumber(tbNum).tbScale(tbRate).hbScale(hbRate).build());
+            //同步月满意度
+            hbRate = isNotNull(hbMap.get(hbDate)) ? BigDecimal.valueOf(hbMap.get(hbDate).getRate()) : BigDecimal.valueOf(0);
+            //较去年变化
+            String tbRateNew = tbRate.compareTo(BigDecimal.ZERO) == 0 ? "-" : String.valueOf(MathUtil.calPercent((curRate.subtract(tbRate)), tbRate, 3).doubleValue());
+            //较上月变化
+            String hbRateNew = hbRate.compareTo(BigDecimal.ZERO) == 0 ? "-" : String.valueOf(MathUtil.calPercent((curRate.subtract(hbRate)), hbRate, 3).doubleValue());
+            resultList.add(MonthPassengerFlowDto.builder().date(date.substring(0, 7)).number(curNum).tbNumber(tbNum).tbScale(tbRateNew).hbScale(hbRateNew).build());
         }
         if (CollectionUtils.isNotEmpty(resultList)) {
             resultList.forEach(item -> item.setTime(item.getDate()));
@@ -379,9 +392,9 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
     /**
      * 查询满意度数据
      */
-    private Map<String, String> querySatisfaction(EvaluateQueryVO query) {
-        List<BaseVO> curBaseVOS = evaluateService.querySatisfactionTrend(query);
-        return curBaseVOS.stream().collect(Collectors.toMap(BaseVO::getName, BaseVO::getValue));
+    private Map<String, BasePercentVO> querySatisfaction(EvaluateQueryVO query) {
+        List<BasePercentVO> curBaseVOS = evaluateService.querySatisfactionTrend(query);
+        return curBaseVOS.stream().collect(Collectors.toMap(BasePercentVO::getName, e -> e));
     }
 
     public void evaluation(ScenicTrendDto dto, Integer type) {
