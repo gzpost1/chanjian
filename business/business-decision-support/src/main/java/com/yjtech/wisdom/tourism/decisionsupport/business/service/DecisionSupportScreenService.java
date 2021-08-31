@@ -293,77 +293,137 @@ public class DecisionSupportScreenService extends ServiceImpl<DecisionWarnMapper
         switch (targetId) {
             // 省外游客
             case DecisionSupportTargetConstants.SWYK :
-                result = DecisionExecute.get(DecisionStrategyEnum.PROVINCE_OUTSIDE_TOUR, entity, isSimulation);
+                try {
+                    result = DecisionExecute.get(DecisionStrategyEnum.PROVINCE_OUTSIDE_TOUR, entity, isSimulation);
+                }catch (Exception e){
+                    result = getExceptionData(entity);
+                }
                 break;
 
             // 省内游客
             case DecisionSupportTargetConstants.SNYK :
-                result = DecisionExecute.get(DecisionStrategyEnum.PROVINCE_INSIDE_TOUR, entity, isSimulation);
+                try {
+                    result = DecisionExecute.get(DecisionStrategyEnum.PROVINCE_INSIDE_TOUR, entity, isSimulation);
+                }catch (Exception e){
+                    result = getExceptionData(entity);
+                }
                 break;
 
             // 整体游客
             case DecisionSupportTargetConstants.ZTYK :
-                result = DecisionExecute.get(DecisionStrategyEnum.PROVINCE_ALL_TOUR, entity, isSimulation);
+                try {
+                    result = DecisionExecute.get(DecisionStrategyEnum.PROVINCE_ALL_TOUR, entity, isSimulation);
+                }catch (Exception e){
+                    result = getExceptionData(entity);
+                }
                 break;
 
             // 整体景区客流
             case DecisionSupportTargetConstants.ZTJQKL :
-                result = DecisionExecute.get(DecisionStrategyEnum.OVERALL_SCENIC_SPOTS_TOURIST_FLOW, entity, isSimulation);
+                try {
+                    result = DecisionExecute.get(DecisionStrategyEnum.OVERALL_SCENIC_SPOTS_TOURIST_FLOW, entity, isSimulation);
+                }catch (Exception e){
+                    result = getExceptionData(entity);
+                }
                 break;
 
             // 景区客流排行
             case DecisionSupportTargetConstants.JQKLPH :
-                result = DecisionExecute.get(DecisionStrategyEnum.OVERALL_SCENIC_SPOTS_TOURIST_FLOW_RANKING, entity, isSimulation);
+                try {
+                    result = DecisionExecute.get(DecisionStrategyEnum.OVERALL_SCENIC_SPOTS_TOURIST_FLOW_RANKING, entity, isSimulation);
+                }catch (Exception e){
+                    result = getExceptionData(entity);
+                }
                 break;
 
             // 整体景区满意度
             case DecisionSupportTargetConstants.ZTJQMYD :
-                result = DecisionExecute.get(DecisionStrategyEnum.OVERALL_SCENIC_SPOTS_SATISFACTION, entity, isSimulation);
+                try {
+                    result = DecisionExecute.get(DecisionStrategyEnum.OVERALL_SCENIC_SPOTS_SATISFACTION, entity, isSimulation);
+                }catch (Exception e){
+                    result = getExceptionData(entity);
+                }
                 break;
 
             // 景区满意度排行
             case DecisionSupportTargetConstants.JQMYDPH :
-                result = DecisionExecute.get(DecisionStrategyEnum.OVERALL_SCENIC_SPOTS_SATISFACTION_RANKING, entity, isSimulation);
+                try {
+                    result = DecisionExecute.get(DecisionStrategyEnum.OVERALL_SCENIC_SPOTS_SATISFACTION_RANKING, entity, isSimulation);
+                }catch (Exception e){
+                    result = getExceptionData(entity);
+                }
                 break;
 
             // 整体酒店民宿满意度
             case DecisionSupportTargetConstants.ZTJDMSMYD :
-                result = DecisionExecute.get(DecisionStrategyEnum.OVERALL_HOTEL_HOMESTAY_SATISFACTION, entity, isSimulation);
+                try {
+                    result = DecisionExecute.get(DecisionStrategyEnum.OVERALL_HOTEL_HOMESTAY_SATISFACTION, entity, isSimulation);
+                }catch (Exception e){
+                    result = getExceptionData(entity);
+                }
                 break;
 
             // 酒店民宿满意度排行
             case DecisionSupportTargetConstants.JDMSMYDPH :
-                result = DecisionExecute.get(DecisionStrategyEnum.OVERALL_HOTEL_HOMESTAY_SATISFACTION_RANKING, entity, isSimulation);
+                try {
+                    result = DecisionExecute.get(DecisionStrategyEnum.OVERALL_HOTEL_HOMESTAY_SATISFACTION_RANKING, entity, isSimulation);
+                }catch (Exception e){
+                    result = getExceptionData(entity);
+                }
                 break;
 
             // 投诉量
             case DecisionSupportTargetConstants.TSL :
-                result = DecisionExecute.get(DecisionStrategyEnum.ONE_TRAVEL_COMPLAINTS_NUMBER, entity, isSimulation);
+                try {
+                    result = DecisionExecute.get(DecisionStrategyEnum.ONE_TRAVEL_COMPLAINTS_NUMBER, entity, isSimulation);
+                }catch (Exception e){
+                    result = getExceptionData(entity);
+                }
                 break;
 
             // 订单量
             case DecisionSupportTargetConstants.DDL :
-                result = DecisionExecute.get(DecisionStrategyEnum.ONE_TRAVEL_ORDER_NUMBER, entity, isSimulation);
+                try {
+                    result = DecisionExecute.get(DecisionStrategyEnum.ONE_TRAVEL_ORDER_NUMBER, entity, isSimulation);
+                }catch (Exception e){
+                    result = getExceptionData(entity);
+                }
                 break;
 
             // 交易额
             case DecisionSupportTargetConstants.JYE :
-                result = DecisionExecute.get(DecisionStrategyEnum.ONE_TRAVEL_TRANSACTIONS_NUMBER, entity, isSimulation);
+                try {
+                    result = DecisionExecute.get(DecisionStrategyEnum.ONE_TRAVEL_TRANSACTIONS_NUMBER, entity, isSimulation);
+                }catch (Exception e){
+                    result = getExceptionData(entity);
+                }
                 break;
 
             // 旅游投诉
             case DecisionSupportTargetConstants.LYTS :
-                result = DecisionExecute.get(DecisionStrategyEnum.TOURIST_COMPLAINTS, entity, isSimulation);
+                try {
+                    result = DecisionExecute.get(DecisionStrategyEnum.TOURIST_COMPLAINTS, entity, isSimulation);
+                }catch (Exception e){
+                    result = getExceptionData(entity);
+                }
                 break;
 
             // 应急事件统计
             case DecisionSupportTargetConstants.YJSJTJ :
-                result = DecisionExecute.get(DecisionStrategyEnum.EMERGENCY_EVENT, entity, isSimulation);
+                try {
+                    result = DecisionExecute.get(DecisionStrategyEnum.EMERGENCY_EVENT, entity, isSimulation);
+                }catch (Exception e){
+                    result = getExceptionData(entity);
+                }
                 break;
 
             // 高发应急事件
             case DecisionSupportTargetConstants.GBFYJSJ :
-                result = DecisionExecute.get(DecisionStrategyEnum.HIGH_INCIDENCE_EMERGENCY_EVENT, entity, isSimulation);
+                try {
+                    result = DecisionExecute.get(DecisionStrategyEnum.HIGH_INCIDENCE_EMERGENCY_EVENT, entity, isSimulation);
+                }catch (Exception e){
+                    result = getExceptionData(entity);
+                }
                 break;
 
             default:
@@ -374,6 +434,24 @@ public class DecisionSupportScreenService extends ServiceImpl<DecisionWarnMapper
             // 通用属性设置
             result.setWarnName(entity.getConfigName());
         }
+        return result;
+    }
+
+    /**
+     * 如果线程出现异常，则设置默认返回结果，以保证程序正常
+     *
+     * @param entity
+     * @return
+     */
+    private DecisionWarnEntity getExceptionData(DecisionEntity entity) {
+        DecisionWarnEntity result;
+        result = JSONObject.parseObject(JSONObject.toJSONString(entity), DecisionWarnEntity.class);
+        result.setMonthHbScale(DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE);
+        result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
+        result.setWarnNum(DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE);
+        result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
+        result.setConclusionText(null);
+        result.setChartData(Lists.newArrayList());
         return result;
     }
 
