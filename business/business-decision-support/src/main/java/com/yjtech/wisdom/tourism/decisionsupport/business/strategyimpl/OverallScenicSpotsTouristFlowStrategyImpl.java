@@ -54,6 +54,7 @@ public class OverallScenicSpotsTouristFlowStrategyImpl extends BaseStrategy {
 
         // 客流趋势
         ScenicScreenQuery query = new ScenicScreenQuery();
+        query.setIsSimulation(isSimulation);
         query.setBeginTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentYearStr() + DecisionSupportConstants.START_DATE_STR));
         query.setEndTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentYearStr() + DecisionSupportConstants.END_DATE_STR));
         query.setType(DecisionSupportConstants.YEAR_MONTH);

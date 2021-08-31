@@ -133,6 +133,7 @@
         <where>
             <include refid="base_screen_query_condition"/>
         </where>
+        GROUP BY hotelRoom.hotel_id
         ORDER BY value DESC
     </select>
 

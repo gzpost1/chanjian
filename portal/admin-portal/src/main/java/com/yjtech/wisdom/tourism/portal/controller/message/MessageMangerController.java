@@ -1,6 +1,7 @@
 package com.yjtech.wisdom.tourism.portal.controller.message;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.yjtech.wisdom.tourism.command.service.event.EventService;
 import com.yjtech.wisdom.tourism.command.service.travelcomplaint.TravelComplaintService;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.message.admin.dto.MessageDto;
@@ -27,6 +28,9 @@ public class MessageMangerController {
     @Autowired
     private TravelComplaintService travelComplaintService;
 
+    @Autowired
+    private EventService eventService;
+
     /**
      * 查询消息列表
      *
@@ -35,7 +39,7 @@ public class MessageMangerController {
      */
     @PostMapping("queryPageMessage")
     public JsonResult<IPage<MessageDto>> queryPageMessage (@RequestBody @Validated QueryMessageVo vo) {
-        return JsonResult.success(messageMangerService.queryPageMessage(vo, true, null, travelComplaintService));
+        return JsonResult.success(messageMangerService.queryPageMessage(vo, true, eventService, travelComplaintService));
     }
 
     /**
@@ -45,6 +49,6 @@ public class MessageMangerController {
      */
     @GetMapping("queryNewMessageNum")
     public JsonResult<MessageRecordDto> queryNewMessageNum () {
-        return JsonResult.success(messageMangerService.queryNewMessageNum(null, travelComplaintService));
+        return JsonResult.success(messageMangerService.queryNewMessageNum(eventService, travelComplaintService));
     }
 }

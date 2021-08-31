@@ -157,6 +157,7 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
     @Transactional(readOnly = true)
     public TravelComplaintDTO queryById(Long id) {
         TravelComplaintEntity complaintEntity = baseMapper.queryEntityById(id);
+        Assert.notNull(complaintEntity, "旅游投诉信息不存在");
 
         TravelComplaintDTO dto = new TravelComplaintDTO();
         BeanUtils.copyProperties(complaintEntity, dto);
@@ -247,7 +248,9 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
                 .set(TravelComplaintEntity::getAcceptTime, vo.getAcceptTime())
                 .set(TravelComplaintEntity::getAcceptResult, vo.getAcceptResult())
                 //默认已处理
-                .set(TravelComplaintEntity::getStatus, TravelComplaintStatusEnum.TRAVEL_COMPLAINT_STATUS_DEAL_FINISHED.getValue());
+                .set(TravelComplaintEntity::getStatus, TravelComplaintStatusEnum.TRAVEL_COMPLAINT_STATUS_DEAL_FINISHED.getValue())
+                .eq(TravelComplaintEntity::getId, complaintEntity.getId())
+                ;
 
         int result = baseMapper.update(complaintEntity, updateWrapper);
 

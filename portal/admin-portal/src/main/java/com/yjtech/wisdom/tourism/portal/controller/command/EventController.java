@@ -119,62 +119,7 @@ public class EventController {
     @PreAuthorize("@ss.hasPermi('direct:event:appoint')")
     @PostMapping("/appoint")
     public JsonResult appoint(@RequestBody @Valid EventAppointDto dto) {
-        //判断是否在指派人员中
-        Boolean isAppoint = eventAppointService.queryUserAppoint();
-        //判断是否有按钮权限
-        boolean admin = SecurityUtils.isAdmin(SecurityUtils.getUserId());
-        AssertUtil.isFalse(!isAppoint && !admin,"请在配置指派人员中配置或者使用管理员账号");
-        EventEntity eventEntity;
-        synchronized(this) {
-            eventEntity = eventService.getById(dto.getId());
-            AssertUtil.isFalse(Objects.isNull(eventEntity), "该事件不存在");
-            AssertUtil.isFalse(!Objects.equals(eventEntity.getEventStatus(), EventContants.UNASSIGNED), "该事件已指派");
-            EventEntity entity = BeanMapper.map(dto, EventEntity.class);
-            entity.setEventStatus(EventContants.UNTREATED);
-            eventService.updateById(entity);
-        }
-        //TODO 发送消息
-    /**
-     * 异步调用消息接口
-     *
-     *  避免相互依赖 只能将方法放在controller
-     */
-            AsyncManager.me().execute(
-                    new TimerTask() {
-                        @Override
-                        public void run() {
-                            ChangeMessageStatusVo vo = ChangeMessageStatusVo.builder()
-                                    .eventId(eventEntity.getId())
-                                    .eventStatus(MessageConstants.EVENT_STATUS_DEAL)
-                                    .build();
-                            messageMangerService.changeMessageStatus(vo.getEventId());
-                            List<EventAppointEntity> list = eventAppointService.list();
-
-                            //如没有指定指派人员 默认给超级管理员发信息
-                            Long[] eventDealPersonIdArray;
-                            Integer[] sendType;
-                            if(CollectionUtils.isNotEmpty(list)){
-                                //数据只有一条
-                                List<String> appointPersonnel = list.get(0).getAppointPersonnel();
-                                eventDealPersonIdArray = appointPersonnel.stream().map(p -> Long.valueOf(p)).collect(Collectors.toList()).toArray(new Long[appointPersonnel.size()]);
-                                List<String> notice = list.get(0).getNotice();
-                                sendType = notice.stream().map(p -> Integer.valueOf(p)).collect(Collectors.toList()).toArray(new Integer[notice.size()]);
-                            }else{
-                                eventDealPersonIdArray = new Long[]{1L};
-                                sendType = new Integer[]{0};
-                            }
-
-                            SendMessageVo messageVo = SendMessageVo.builder()
-                                    .sendType(sendType)
-                                    .eventId(eventEntity.getId())
-                                    .title(MessageConstants.event_message)
-                                    .content(String.format(MessageConstants.event_content, eventEntity.getName()))
-                                    .eventDealPersonIdArray(eventDealPersonIdArray)
-                                    .build();
-                            messageMangerService.sendMessage(messageVo);
-                        }
-                    }
-            );
+        eventService.appoint(dto);
         return JsonResult.ok();
     }
 

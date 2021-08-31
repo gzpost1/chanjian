@@ -144,7 +144,7 @@ public class EmergencyEvenScreenController {
      * @return
      */
     @PostMapping("/queryTrend")
-    public JsonResult<List<BaseValueVO>> querySaleTrend(@RequestBody @Valid EventSumaryQuery query){
+    public JsonResult<List<BaseValueVO>> querySaleTrend(@RequestBody  EventSumaryQuery query){
         return JsonResult.success(emergencyEvenScreenService.querySaleTrend(query));
     }
 

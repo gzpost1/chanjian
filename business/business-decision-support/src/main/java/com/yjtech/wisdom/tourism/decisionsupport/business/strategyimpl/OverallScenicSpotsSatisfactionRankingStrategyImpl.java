@@ -24,9 +24,7 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.TreeMap;
 
 /**
@@ -58,7 +56,7 @@ public class OverallScenicSpotsSatisfactionRankingStrategyImpl extends BaseStrat
         String currentLastMonthStr = super.getCurrentLastMonthStr();
 
         // 满意度下降最多
-        List<RankingDto> satisfactionDownMax = getSatisfactionDownMax();
+        List<RankingDto> satisfactionDownMax = getSatisfactionDownMax(isSimulation);
 
         // 满意度下降最多景区名称
         String downMaxName = "";
@@ -84,43 +82,52 @@ public class OverallScenicSpotsSatisfactionRankingStrategyImpl extends BaseStrat
         String lastLastMonthDownMaxSatisfaction = "-";
 
         // 获取数据
-        if (!CollectionUtils.isEmpty(satisfactionDownMax)) {
-            RankingDto rankingDto = satisfactionDownMax.get(0);
-            downMaxName = rankingDto.getName();
-
-            // 当年 上月
-            LocalDateTime startDate = DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentLastMonthStr() + DecisionSupportConstants.START_DAY_STR);
-            LocalDateTime endDate = DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentLastMonthStr() + DecisionSupportConstants.END_DAY_STR);
-
-            // 当年 上上月
-            LocalDateTime starLastDate = DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentLastLastMonthStr() + DecisionSupportConstants.START_DAY_STR);
-            LocalDateTime endLastDate = DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentLastLastMonthStr() + DecisionSupportConstants.END_DAY_STR);
-
-            ScenicScreenQuery vo = new ScenicScreenQuery();
-            vo.setBeginTime(startDate);
-            vo.setEndTime(endDate);
-            // 1：景区
-            vo.setDataType((byte)1);
-            vo.setScenicId(rankingDto.getId());
-            MarketingEvaluateStatisticsDTO evaluateStatisticsDTO = scenicService.queryScenicEvaluateStatistics(vo);
-
-            downMaxEvaluation = evaluateStatisticsDTO.getEvaluateTotal();
-            downMaxSatisfaction = evaluateStatisticsDTO.getSatisfaction().toString();
-            lastDownMaxSatisfaction = rankingDto.getLastYearLastMonthSatisfaction();
-            downMaxGoodEvaluation = new BigDecimal(downMaxEvaluation).multiply(new BigDecimal(downMaxSatisfaction)).divide(new BigDecimal(100), 0).intValue();
-            otherDownName = setOtherDownName(satisfactionDownMax);
-            tb = rankingDto.getTb();
-            hb = rankingDto.getScale();
-
-            // 上上月
-            vo.setBeginTime(starLastDate);
-            vo.setEndTime(endLastDate);
-            MarketingEvaluateStatisticsDTO lastLastMonthEvaluateStatisticsDTO = scenicService.queryScenicEvaluateStatistics(vo);
-            lastLastMonthDownMaxEvaluation = lastLastMonthEvaluateStatisticsDTO.getEvaluateTotal();
-            lastLastMonthDownMaxSatisfaction = lastLastMonthEvaluateStatisticsDTO.getSatisfaction().toString();
-            lastLastMonthDownMaxGoodEvaluation = new BigDecimal(lastLastMonthDownMaxEvaluation).multiply(new BigDecimal(lastLastMonthDownMaxSatisfaction)).divide(new BigDecimal(100), 0).intValue();
-            rankingDto.getScale();
+        if (CollectionUtils.isEmpty(satisfactionDownMax)) {
+            result.setMonthHbScale(DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE);
+            result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
+            result.setWarnNum(DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE);
+            result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
+            result.setConclusionText(null);
+            result.setChartData(Lists.newArrayList());
+            return result;
         }
+
+        RankingDto rankingDto = satisfactionDownMax.get(0);
+        downMaxName = rankingDto.getName();
+
+        // 当年 上月
+        LocalDateTime startDate = DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentLastMonthStr() + DecisionSupportConstants.START_DAY_STR);
+        LocalDateTime endDate = DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentLastMonthStr() + DecisionSupportConstants.END_DAY_STR);
+
+        // 当年 上上月
+        LocalDateTime starLastDate = DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentLastLastMonthStr() + DecisionSupportConstants.START_DAY_STR);
+        LocalDateTime endLastDate = DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentLastLastMonthStr() + DecisionSupportConstants.END_DAY_STR);
+
+        ScenicScreenQuery vo = new ScenicScreenQuery();
+        vo.setIsSimulation(isSimulation);
+        vo.setBeginTime(startDate);
+        vo.setEndTime(endDate);
+        // 1：景区
+        vo.setDataType((byte)1);
+        vo.setScenicId(rankingDto.getId());
+        MarketingEvaluateStatisticsDTO evaluateStatisticsDTO = scenicService.queryScenicEvaluateStatistics(vo);
+
+        downMaxEvaluation = evaluateStatisticsDTO.getEvaluateTotal();
+        downMaxSatisfaction = evaluateStatisticsDTO.getSatisfaction().toString();
+        lastDownMaxSatisfaction = rankingDto.getLastYearLastMonthSatisfaction();
+        downMaxGoodEvaluation = new BigDecimal(downMaxEvaluation).multiply(new BigDecimal(downMaxSatisfaction)).divide(new BigDecimal(100), 0).intValue();
+        otherDownName = setOtherDownName(satisfactionDownMax);
+        tb = rankingDto.getTb();
+        hb = rankingDto.getScale();
+
+        // 上上月
+        vo.setBeginTime(starLastDate);
+        vo.setEndTime(endLastDate);
+        MarketingEvaluateStatisticsDTO lastLastMonthEvaluateStatisticsDTO = scenicService.queryScenicEvaluateStatistics(vo);
+        lastLastMonthDownMaxEvaluation = lastLastMonthEvaluateStatisticsDTO.getEvaluateTotal();
+        lastLastMonthDownMaxSatisfaction = lastLastMonthEvaluateStatisticsDTO.getSatisfaction().toString();
+        lastLastMonthDownMaxGoodEvaluation = new BigDecimal(lastLastMonthDownMaxEvaluation).multiply(new BigDecimal(lastLastMonthDownMaxSatisfaction)).divide(new BigDecimal(100), 0).intValue();
+        rankingDto.getScale();
 
         // 景区满意度月环比下降Top5
         result.setChartData(getCharData(satisfactionDownMax));
@@ -238,9 +245,10 @@ public class OverallScenicSpotsSatisfactionRankingStrategyImpl extends BaseStrat
      * @param endDate
      * @return
      */
-    private List<ScenicBaseVo> getSatisfaction (LocalDateTime startDate, LocalDateTime endDate) {
+    private List<ScenicBaseVo> getSatisfaction (LocalDateTime startDate, LocalDateTime endDate, Integer isSimulation) {
         // 整体景区评价数量、好评数量、整体景区满意度
         ScenicScreenQuery vo = new ScenicScreenQuery();
+        vo.setIsSimulation(isSimulation);
         vo.setBeginTime(startDate);
         vo.setEndTime(endDate);
         // 1：景点
@@ -253,7 +261,7 @@ public class OverallScenicSpotsSatisfactionRankingStrategyImpl extends BaseStrat
      *
      * @return
      */
-    private List<RankingDto> getSatisfactionDownMax() {
+    private List<RankingDto> getSatisfactionDownMax(Integer isSimulation) {
 
         // 当年 上月
         LocalDateTime startDate = DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentLastMonthStr() + DecisionSupportConstants.START_DAY_STR);
@@ -268,11 +276,11 @@ public class OverallScenicSpotsSatisfactionRankingStrategyImpl extends BaseStrat
         LocalDateTime endLastYearDate = DateTimeUtil.getLocalDateTime(DateTimeUtil.getLastYearLastMonthStr() + DecisionSupportConstants.END_DAY_STR);
 
         // 上月 满意度 排行
-        List<ScenicBaseVo> lastMonthRankings = getSatisfaction(startDate, endDate);
+        List<ScenicBaseVo> lastMonthRankings = getSatisfaction(startDate, endDate, isSimulation);
         // 上上月 满意度 排行
-        List<ScenicBaseVo> lastLastMonthRankings = getSatisfaction(starLastDate, endLastDate);
+        List<ScenicBaseVo> lastLastMonthRankings = getSatisfaction(starLastDate, endLastDate, isSimulation);
         //去年同月 满意度 排行
-        List<ScenicBaseVo> lastYearLastMonthRankings = getSatisfaction(startLastYearDate, endLastYearDate);
+        List<ScenicBaseVo> lastYearLastMonthRankings = getSatisfaction(startLastYearDate, endLastYearDate, isSimulation);
 
         TreeMap<Double, ScaleDto> map = Maps.newTreeMap();
 

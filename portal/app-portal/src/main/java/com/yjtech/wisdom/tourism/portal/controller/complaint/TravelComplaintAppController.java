@@ -9,7 +9,6 @@ import com.yjtech.wisdom.tourism.command.vo.travelcomplaint.TravelComplaintCreat
 import com.yjtech.wisdom.tourism.command.vo.travelcomplaint.TravelComplaintDealVO;
 import com.yjtech.wisdom.tourism.command.vo.travelcomplaint.TravelComplaintQueryVO;
 import com.yjtech.wisdom.tourism.command.vo.travelcomplaint.TravelComplaintUpdateVO;
-import com.yjtech.wisdom.tourism.common.constant.Constants;
 import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.common.core.domain.IdParam;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;

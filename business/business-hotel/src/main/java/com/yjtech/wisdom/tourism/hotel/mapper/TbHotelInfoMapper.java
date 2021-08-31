@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
 import com.yjtech.wisdom.tourism.hotel.dto.HotelScreenDetailDTO;
+import com.yjtech.wisdom.tourism.hotel.dto.HotelSelectInfoDTO;
 import com.yjtech.wisdom.tourism.hotel.entity.TbHotelInfoEntity;
 import com.yjtech.wisdom.tourism.hotel.vo.HotelScreenQueryVO;
 import com.yjtech.wisdom.tourism.hotel.vo.StaticNumVo;
@@ -52,4 +53,11 @@ public interface TbHotelInfoMapper extends BaseMybatisMapper<TbHotelInfoEntity> 
      * @return
      */
     String queryNameById(@Param("id") Long id);
+
+    /**
+     * 查询酒店下拉选信息
+     * @param page
+     * @return
+     */
+    IPage<HotelSelectInfoDTO> queryHotelSelectInfo(Page page);
 }

@@ -15,6 +15,7 @@ import com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateQueryVO;
 import com.yjtech.wisdom.tourism.marketing.service.MarketingEvaluateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
@@ -214,12 +215,22 @@ public class OverallHotelHomestaySatisfactionStrategyImpl extends BaseStrategy {
 
         // 上月
         MarketingEvaluateStatisticsDTO lastMonth = marketingEvaluateService.queryEvaluateStatistics(evaluateScreenQueryVO);
+
         // 评价数量
         Integer evaluateTotal = lastMonth.getEvaluateTotal();
         // 满意度
-        double satisfaction = lastMonth.getSatisfaction().doubleValue();
+        Double satisfaction = lastMonth.getSatisfaction().doubleValue();
+
         // 好评数量 = 评价数量 * 满意度/100
-        Integer goodEvaluateTotal = new BigDecimal(evaluateTotal).multiply(new BigDecimal(satisfaction)).divide(new BigDecimal(100), 0).intValue();
+        Integer goodEvaluateTotal = 0;
+        if (ObjectUtils.isEmpty(satisfaction)) {
+            satisfaction = 0d;
+        }
+        if (ObjectUtils.isEmpty(evaluateTotal)) {
+            evaluateTotal = 0;
+        }else {
+            goodEvaluateTotal = new BigDecimal(evaluateTotal).multiply(new BigDecimal(satisfaction)).divide(new BigDecimal(100), 0).intValue();
+        }
 
         return StatisticsDto.builder().total(evaluateTotal).goodTotal(goodEvaluateTotal).satisfaction(String.valueOf(satisfaction)).build();
     }

@@ -384,7 +384,7 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
         return curBaseVOS.stream().collect(Collectors.toMap(BaseVO::getName, BaseVO::getValue));
     }
 
-    private void evaluation(ScenicTrendDto dto, Integer type) {
+    public void evaluation(ScenicTrendDto dto, Integer type) {
         List<String> abscissa = Lists.newArrayList();
         int monthNum = LocalDate.now().getMonthValue();
         int dayNum = LocalDate.now().getDayOfMonth();
@@ -420,7 +420,7 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
      * @Param: date日期、dateType类型、num减数、pattern格式
      * @return:
      */
-    private String dateToDateFormat(String date, String dateType) {
+    public String dateToDateFormat(String date, String dateType) {
         String dateStr = "";
         if (StringUtils.isNotBlank(date)) {
             switch (dateType) {
@@ -439,7 +439,7 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
     }
 
     //ScenicScreenQuery转EvaluateQueryVO
-    private EvaluateQueryVO queryToEvaluateQueryVO(ScenicScreenQuery query) {
+    public EvaluateQueryVO queryToEvaluateQueryVO(ScenicScreenQuery query) {
         EvaluateQueryVO queryVO = new EvaluateQueryVO();
         queryVO.setBeginTime(query.getBeginTime());
         queryVO.setEndTime(query.getEndTime());
