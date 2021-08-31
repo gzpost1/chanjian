@@ -186,6 +186,7 @@ public class MessageMangerService extends ServiceImpl<MessageMapper, MessageEnti
         record.addAll(pending);
         // 查全部消息
         if (MessageConstants.QUERY_ALL.equals(queryType)) {
+            record.addAll(pending);
             record.addAll(deal);
         }
     }
