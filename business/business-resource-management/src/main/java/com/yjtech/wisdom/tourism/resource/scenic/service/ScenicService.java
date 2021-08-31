@@ -62,7 +62,8 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
     private MarketingEvaluateService evaluateService;
 
     public IPage<ScenicEntity> queryForPage(ScenicScreenQuery query) {
-        LambdaQueryWrapper wrapper = getCommonWrapper(query.getName()).orderByDesc(ScenicEntity::getCreateTime);
+        LambdaQueryWrapper wrapper = getCommonWrapper(query.getName(), query.getStatus())
+                .orderByDesc(ScenicEntity::getCreateTime);
         return page(new Page<>(query.getPageNo(), query.getPageSize()), wrapper);
     }
 
@@ -70,7 +71,8 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
      * 景区分布——分页查询
      */
     public IPage queryScreenForPage(ScenicScreenQuery query) {
-        LambdaQueryWrapper wrapper = getCommonWrapper(query.getName()).orderByDesc(ScenicEntity::getLevel);
+        LambdaQueryWrapper wrapper = getCommonWrapper(query.getName(), EntityConstants.ENABLED)
+                .orderByDesc(ScenicEntity::getLevel);
         IPage page = page(new Page<>(query.getPageNo(), query.getPageSize()), wrapper)
                 .convert(item -> BeanMapper.copyBean(item, ScenicScreenVo.class));
         List<ScenicScreenVo> records = page.getRecords();
@@ -90,7 +92,7 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
      * 景区分布——景区等级分布
      */
     public List<BaseVO> queryLevelDistribution() {
-        LambdaQueryWrapper<ScenicEntity> wrapper = getCommonWrapper(null);
+        LambdaQueryWrapper<ScenicEntity> wrapper = getCommonWrapper(null, EntityConstants.ENABLED);
         List<ScenicEntity> list = list(wrapper);
         List<BaseVO> vos = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(list)) {
@@ -481,9 +483,9 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
     }
 
     //公共分页lambda
-    private LambdaQueryWrapper<ScenicEntity> getCommonWrapper(String name) {
+    private LambdaQueryWrapper<ScenicEntity> getCommonWrapper(String name,Byte status) {
         return new LambdaQueryWrapper<ScenicEntity>()
                 .like(StringUtils.isNotBlank(name), ScenicEntity::getName, name)
-                .eq(ScenicEntity::getStatus, EntityConstants.ENABLED);
+                .eq(isNotNull(status), ScenicEntity::getStatus, status);
     }
 }
