@@ -171,24 +171,21 @@ public class MessageMangerService extends ServiceImpl<MessageMapper, MessageEnti
                 messageDto.setEventType(item.getEventType());
                 messageDto.setEventDealPersonId(item.getEventDealPersonId());
 
-                // 查待指派、处理
-                if (MessageConstants.QUERY_DEAL.equals(queryType)
-                        // 非已处理状态相当于 待指派、处理状态
-                        && !MessageConstants.EVENT_STATUS_COMPLETE.equals(emergencyItem.getEventStatus())) {
-                    pending.add(messageDto);
-                }
                 // 已处理数据
-                else if (MessageConstants.EVENT_STATUS_COMPLETE.equals(emergencyItem.getEventStatus())) {
+                if (MessageConstants.EVENT_STATUS_COMPLETE.equals(emergencyItem.getEventStatus())) {
                     deal.add(messageDto);
+                }
+                // 查待指派、处理
+                else {
+                    pending.add(messageDto);
                 }
             }
         }
-        record.addAll(pending);
         // 查全部消息
-        if (MessageConstants.QUERY_ALL.equals(queryType)) {
-            record.addAll(pending);
+        if (MessageConstants.QUERY_DEAL.equals(queryType)) {
             record.addAll(deal);
         }
+        record.addAll(pending);
     }
 
     /**
