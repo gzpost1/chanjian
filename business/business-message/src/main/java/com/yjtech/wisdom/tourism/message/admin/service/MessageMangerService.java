@@ -186,6 +186,7 @@ public class MessageMangerService extends ServiceImpl<MessageMapper, MessageEnti
         record.addAll(pending);
         // 查全部消息
         if (MessageConstants.QUERY_ALL.equals(queryType)) {
+            record.addAll(pending);
             record.addAll(deal);
         }
     }
@@ -197,7 +198,7 @@ public class MessageMangerService extends ServiceImpl<MessageMapper, MessageEnti
      */
     public MessageRecordDto queryNewMessageNum (MessageCall... messageCall) {
         // 获取消息记录总数
-        IPage<MessageDto> page = queryPageMessage(QueryMessageVo.builder().queryType(MessageConstants.MESSAGE_LIST_ALL).build(), false, messageCall);
+        IPage<MessageDto> page = queryPageMessage(QueryMessageVo.builder().queryType(MessageConstants.MESSAGE_LIST_PENDING).build(), false, messageCall);
 
         /*Long userId = tokenService.getLoginUser(ServletUtils.getRequest()).getUser().getUserId();
         String tokenStr = String.valueOf(redisTemplate.opsForValue().get(MessageConstants.MESSAGE_RECORD_NUM + userId));

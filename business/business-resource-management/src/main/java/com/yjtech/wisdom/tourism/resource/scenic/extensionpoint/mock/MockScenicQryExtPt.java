@@ -50,7 +50,7 @@ import java.util.stream.Collectors;
 import static com.yjtech.wisdom.tourism.common.utils.StringUtils.isNull;
 
 /**
- * 事务模拟数据扩展点
+ * 景区模拟数据扩展点
  *
  * @author xulei
  * @create 2021-07-14 14:56
@@ -71,7 +71,7 @@ public class MockScenicQryExtPt implements ScenicQryExtPt {
         SimulationScenicDto dto = redisCache.getCacheObject(Constants.SIMULATION_KEY + SimulationConstants.SCENIC);
         LocalDateTime now = LocalDateTime.now();
         //小时客流量 = 小时初始客流量+随机数
-        BigDecimal randomForCache1 = getRandomForCache(SimulationConstants.SCENIC, "hourly_quantity");
+        BigDecimal randomForCache1 = getRandomForCache(SimulationConstants.SCENIC, String.valueOf(query.getScenicId()),"hourly_quantity");
         BigDecimal hourlyQuantity = dto.getInitialHourlyQuantity().add(randomForCache1);
 
         //日累计客流量 = 小时客流量*当前时刻数+输入值
@@ -104,7 +104,7 @@ public class MockScenicQryExtPt implements ScenicQryExtPt {
     public MarketingEvaluateStatisticsDTO queryScenicEvaluateStatistics(ScenicScreenQuery query) {
         SimulationScenicDto dto = redisCache.getCacheObject(Constants.SIMULATION_KEY + SimulationConstants.SCENIC);
         //日累计评价量 = 日评价初始数+随机数
-        BigDecimal randomForCache1 = getRandomForCache(SimulationConstants.SCENIC, "daily_evaluate");
+        BigDecimal randomForCache1 = getRandomForCache(SimulationConstants.SCENIC, String.valueOf(query.getScenicId()),"daily_evaluate");
         BigDecimal dailyEvaluate = dto.getInitialDailyEvaluate().add(randomForCache1);
         //收获评价=日累计评价量*筛选时段天数。
         BigDecimal evaluate = dailyEvaluate.multiply(getTimeInterval(query));
@@ -112,7 +112,7 @@ public class MockScenicQryExtPt implements ScenicQryExtPt {
         //评价类型分布-好评 = 好评占比初始值+随机数/5+随机数/100
         //满意度=评价类型分布-好评。
         DateTimeFormatter dateTimeFormatter1 = DateTimeFormatter.ofPattern("yyyy-MM");
-        BigDecimal good_evaluate = getRandomForCache(SimulationConstants.SCENIC, "good_evaluate:");
+        BigDecimal good_evaluate = getRandomForCache(SimulationConstants.SCENIC, String.valueOf(query.getScenicId()),"good_evaluate:");
         BigDecimal satisfaction = dto.getInitialPraiseRate().add(good_evaluate.divide(new BigDecimal(5))).add(good_evaluate.divide(new BigDecimal(100)));
 
         //评分=评分
@@ -129,13 +129,13 @@ public class MockScenicQryExtPt implements ScenicQryExtPt {
         SimulationScenicDto dto = redisCache.getCacheObject(Constants.SIMULATION_KEY + SimulationConstants.SCENIC);
         //评价类型分布-好评	好评占比初始值+随机数/5+随机数/100
         // 好评占比=评价类型分布-好评
-        BigDecimal good_evaluate = getRandomForCache(SimulationConstants.SCENIC, "good_evaluate");
+        BigDecimal good_evaluate = getRandomForCache(SimulationConstants.SCENIC, String.valueOf(query.getScenicId()),"good_evaluate");
         BigDecimal satisfaction = dto.getInitialPraiseRate().add(good_evaluate.divide(new BigDecimal(5))).add(good_evaluate.divide(new BigDecimal(100)));
         result.add(BasePercentVO.builder().name("好评").rate(satisfaction.doubleValue()).build());
 
         //评价类型分布-中评 =（100-好评占比）/2+随机数
         // 中评占比=评价类型分布-中评
-        BigDecimal normal_evaluate = getRandomForCache(SimulationConstants.SCENIC, "normal_evaluate");
+        BigDecimal normal_evaluate = getRandomForCache(SimulationConstants.SCENIC, String.valueOf(query.getScenicId()),"normal_evaluate");
         BigDecimal normal = (new BigDecimal(100).subtract(satisfaction)).divide(new BigDecimal(2)).add(normal_evaluate);
         result.add(BasePercentVO.builder().name("中评").rate(normal.doubleValue()).build());
 
@@ -314,21 +314,21 @@ public class MockScenicQryExtPt implements ScenicQryExtPt {
     /**
      * 从缓存中获得随机数  若不存在则更新缓存
      *
-     * @param key 一般是各个业务domain
-     * @param day 表明是哪天一个的随机数 1 今天 2 明天  以此类推
+     * @param domain 一般是各个业务domain
+     * @param day 表明是哪天一个的随机数
      * @return
      */
-    public BigDecimal getRandomForCache(String key, String day) {
+    public BigDecimal getRandomForCache(String domain, String scenic,String day) {
         RedisCache redisCache = SpringUtils.getBean(RedisCache.class);
-        Integer cache = (Integer) redisCache.getCacheObject(getMyCacheKey(key, day));
+        Integer cache = (Integer) redisCache.getCacheObject(getMyCacheKey(domain,scenic, day));
         //双重校验锁 避免多线程时 缓存不一致
         if (Objects.isNull(cache)) {
             synchronized (this) {
-                cache = (Integer) redisCache.getCacheObject(getMyCacheKey(key, day));
+                cache = (Integer) redisCache.getCacheObject(getMyCacheKey(domain,scenic, day));
                 if (Objects.isNull(cache)) {
                     //随机数
                     cache = (int) (-20 + Math.random() * (20 - (-20) + 1));
-                    redisCache.setCacheObject(getMyCacheKey(key, day), cache, getTimeOut().intValue(), TimeUnit.MINUTES);
+                    redisCache.setCacheObject(getMyCacheKey(domain,scenic, day), cache, getTimeOut().intValue(), TimeUnit.MINUTES);
                 }
             }
         }
@@ -338,12 +338,10 @@ public class MockScenicQryExtPt implements ScenicQryExtPt {
     /**
      * 获得 随机数的key
      *
-     * @param configKey
-     * @param day
      * @return
      */
-    public String getMyCacheKey(String configKey, String day) {
-        return Constants.SYS_DICT_KEY + configKey + ":" + day;
+    public String getMyCacheKey(String domain, String scenic,String day) {
+        return Constants.SIMULATION_KEY + domain + ":"+scenic+":" + day;
     }
 
     /**
@@ -379,7 +377,7 @@ public class MockScenicQryExtPt implements ScenicQryExtPt {
         DateTimeFormatter dateTimeFormatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
         //小时客流量 = 小时初始客流量+随机数
-        BigDecimal randomForCache1 = getRandomForCache(SimulationConstants.SCENIC, "hourly_quantity");
+        BigDecimal randomForCache1 = getRandomForCache(SimulationConstants.SCENIC,String.valueOf(query.getScenicId()), "hourly_quantity");
         BigDecimal hourlyQuantity = dto.getInitialHourlyQuantity().add(randomForCache1);
 
         //日累计客流量 = 小时客流量*当前时刻数+输入值
@@ -400,7 +398,7 @@ public class MockScenicQryExtPt implements ScenicQryExtPt {
                         saleTrendVO.setVisitQuantity(monQuantity.intValue());
                     }else {
                         //月客流分布-除本月外其他月份 = 月累计客流量*（100+随机数）/100
-                        BigDecimal randomForCache2 = getRandomForCache(SimulationConstants.SCENIC, "mon_visit_quantity:"+beginTime.format(dateTimeFormatter1));
+                        BigDecimal randomForCache2 = getRandomForCache(SimulationConstants.SCENIC, String.valueOf(query.getScenicId()),"mon_visit_quantity:"+beginTime.format(dateTimeFormatter1));
                         BigDecimal otherMon = monQuantity.multiply(new BigDecimal(100).add(randomForCache2)).divide(new BigDecimal(100));
                         saleTrendVO.setVisitQuantity(otherMon.intValue());
                     }
@@ -418,7 +416,7 @@ public class MockScenicQryExtPt implements ScenicQryExtPt {
                         saleTrendVO.setVisitQuantity(dailylyQuantity.intValue());
                     }else {
                         //本月客流趋势-其他日期 =（月累计客流量-日累计客流量）/（系统当前日期号数-1）*（100+随机数）/100
-                        BigDecimal randomForCache2 = getRandomForCache(SimulationConstants.SCENIC, "mon_visit_quantity:"+beginTime.getMonthValue()+"-"+ beginTime.getDayOfMonth());
+                        BigDecimal randomForCache2 = getRandomForCache(SimulationConstants.SCENIC, String.valueOf(query.getScenicId()),"mon_visit_quantity:"+beginTime.getMonthValue()+"-"+ beginTime.getDayOfMonth());
                         BigDecimal otherDay = (monQuantity.subtract(dailylyQuantity)).divide(new BigDecimal(dayOfMonth - 1)).multiply(new BigDecimal(100).add(randomForCache2)).divide(new BigDecimal(100));
                         saleTrendVO.setVisitQuantity(otherDay.intValue());
                     }
@@ -437,7 +435,7 @@ public class MockScenicQryExtPt implements ScenicQryExtPt {
         int monthValue = now.getMonthValue();
         SimulationScenicDto dto = redisCache.getCacheObject(Constants.SIMULATION_KEY + SimulationConstants.SCENIC);
         //日累计评价量 = 日评价初始数+随机数
-        BigDecimal randomForCache1 = getRandomForCache(SimulationConstants.SCENIC, "daily_evaluate");
+        BigDecimal randomForCache1 = getRandomForCache(SimulationConstants.SCENIC, String.valueOf(query.getPlaceId()),"daily_evaluate");
         BigDecimal dailyEvaluate = dto.getInitialDailyEvaluate().add(randomForCache1);
 
         //月累计评价量 = 日累计评价量*当前日期号数+输入值
@@ -458,7 +456,7 @@ public class MockScenicQryExtPt implements ScenicQryExtPt {
             }else {
                 //其他月=月评价分布-其他月
                 //月评价分布-其他月 = 月累计评价量*（100+随机数）/100
-                BigDecimal randomForCache2 = getRandomForCache(SimulationConstants.SCENIC, "mon_evaluate:"+beginTime.format(dateTimeFormatter1));
+                BigDecimal randomForCache2 = getRandomForCache(SimulationConstants.SCENIC, String.valueOf(query.getPlaceId()),"mon_evaluate:"+beginTime.format(dateTimeFormatter1));
                 BigDecimal otherMon = monEvaluate.multiply(new BigDecimal(100).add(randomForCache2)).divide(new BigDecimal(100));
                 vo.setValue(String.valueOf(otherMon.intValue()));
             }
@@ -485,7 +483,7 @@ public class MockScenicQryExtPt implements ScenicQryExtPt {
             BaseVO vo = new BaseVO();
             //评价类型分布-好评	好评占比初始值+随机数/5+随机数/100
             // 好评占比=评价类型分布-好评
-            BigDecimal good_evaluate = getRandomForCache(SimulationConstants.SCENIC, "good_evaluate:" + beginTime.format(dateTimeFormatter1));
+            BigDecimal good_evaluate = getRandomForCache(SimulationConstants.SCENIC, String.valueOf(query.getPlaceId()),"good_evaluate:" + beginTime.format(dateTimeFormatter1));
             BigDecimal satisfaction = dto.getInitialPraiseRate().add(good_evaluate.divide(new BigDecimal(5))).add(good_evaluate.divide(new BigDecimal(100)));
             vo.setValue(String.valueOf(satisfaction.intValue()));
             vo.setName(beginTime.format(dateTimeFormatter1) + "-01");

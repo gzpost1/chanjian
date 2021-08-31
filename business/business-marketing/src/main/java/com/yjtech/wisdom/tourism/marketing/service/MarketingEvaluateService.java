@@ -241,7 +241,7 @@ public class MarketingEvaluateService extends ServiceImpl<MarketingEvaluateMappe
      * @param query
      * @return
      */
-    public List<BaseVO> querySatisfactionTrend(EvaluateQueryVO query) {
+    public List<BasePercentVO> querySatisfactionTrend(EvaluateQueryVO query) {
         return baseMapper.querySatisfactionTrend(query);
     }
 

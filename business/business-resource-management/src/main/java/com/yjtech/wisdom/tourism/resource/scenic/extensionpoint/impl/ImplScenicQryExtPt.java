@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 
 /**
- * 事务模拟数据扩展点
+ * 景区模拟数据扩展点
  * @author xulei
  * @create 2021-07-14 14:56
  */

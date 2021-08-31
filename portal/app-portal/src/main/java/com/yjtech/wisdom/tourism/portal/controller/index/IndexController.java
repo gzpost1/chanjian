@@ -28,6 +28,8 @@ import com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateQueryVO;
 import com.yjtech.wisdom.tourism.marketing.pojo.vo.RoomScreenQueryVO;
 import com.yjtech.wisdom.tourism.marketing.service.MarketingEvaluateService;
 import com.yjtech.wisdom.tourism.mybatis.entity.IndexQueryVO;
+import com.yjtech.wisdom.tourism.resource.scenic.extensionpoint.IndexScenicQryExtPt;
+import com.yjtech.wisdom.tourism.resource.scenic.extensionpoint.ScenicExtensionConstant;
 import com.yjtech.wisdom.tourism.resource.scenic.service.ScenicService;
 import com.yjtech.wisdom.tourism.resource.ticket.query.TicketSummaryQuery;
 import com.yjtech.wisdom.tourism.resource.ticket.service.TicketHourSummaryService;
@@ -61,13 +63,13 @@ public class IndexController {
     @Autowired
     private TbVideoService tbVideoService;
     @Autowired
+    private FxDistApiService fxDistApiService;
+    @Autowired
     private ScenicService scenicService;
     @Autowired
     private TicketHourSummaryService ticketHourSummaryService;
     @Autowired
     private MarketingEvaluateService marketingEvaluateService;
-    @Autowired
-    private FxDistApiService fxDistApiService;
     @Autowired
     private OneTravelApiService oneTravelApiService;
     @Autowired
@@ -90,18 +92,14 @@ public class IndexController {
         LocalDateTime now = LocalDateTime.now();
         ticketSummaryQuery.setBeginTime(now);
         ticketSummaryQuery.setBeginTime(now);
-        Long todayScenicReception = ticketHourSummaryService.queryVisitStatistics(ticketSummaryQuery);
-
-        //获取景区承载量
-        Long scenicBearCapacity = scenicService.queryScenicBearCapacity();
-        //计算承载度
-        BigDecimal bearCapacityPercent = null == scenicBearCapacity || 0 == scenicBearCapacity ? BigDecimal.ZERO :
-                new BigDecimal(todayScenicReception).divide(new BigDecimal(scenicBearCapacity),3,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
+        TodayRealTimeStatisticsDTO dto = extensionExecutor.execute(IndexScenicQryExtPt.class,
+                buildScenicBizScenario(ScenicExtensionConstant.INDEX_SCENIC_QUANTITY, vo.getIsSimulation()),
+                extension -> extension.queryVisitStatistics(ticketSummaryQuery));
 
         //一码游访问次数
         OneTravelVisitStatisticsBO visitStatistics = oneTravelApiService.queryVisitStatistics();
-
-        return JsonResult.success(new TodayRealTimeStatisticsDTO(todayScenicReception, bearCapacityPercent, visitStatistics.getTodayActiveUser()));
+        dto.setOneTravelVisit(visitStatistics.getTodayActiveUser());
+        return JsonResult.success(dto);
     }
 
     /**
@@ -112,14 +110,10 @@ public class IndexController {
      */
     @PostMapping("scenicBuilding")
     public JsonResult<ScenicBuildingDTO> scenicBuilding(@RequestBody @Valid IndexQueryVO vo) {
-        //获取景区评论统计
-        MarketingEvaluateStatisticsDTO evaluateStatistics = marketingEvaluateService.queryScenicEvaluateStatistics(buildEvaluateCondition(vo));
-
-        //根据票务统计获取接待人数
-        //构建票务查询条件
-        TicketSummaryQuery ticketSummaryQuery = BeanUtils.copyBean(vo, TicketSummaryQuery.class);
-
-        return JsonResult.success(new ScenicBuildingDTO(ticketHourSummaryService.queryVisitStatistics(ticketSummaryQuery), evaluateStatistics.getEvaluateTotal(), evaluateStatistics.getSatisfaction()));
+        ScenicBuildingDTO dto = extensionExecutor.execute(IndexScenicQryExtPt.class,
+                buildScenicBizScenario(ScenicExtensionConstant.INDEX_SCENIC_QUANTITY, vo.getIsSimulation()),
+                extension -> extension.scenicBuilding(vo));
+        return JsonResult.success(dto);
     }
 
     /**
@@ -253,6 +247,17 @@ public class IndexController {
      */
     private BizScenario buildHotelBizScenario(String useCasePraiseType, Byte isSimulation) {
         return BizScenario.valueOf(ExtensionConstant.HOTEL, useCasePraiseType
+                , isSimulation == 0 ? ExtensionConstant.SCENARIO_IMPL : ExtensionConstant.SCENARIO_MOCK);
+    }
+
+    /**
+     * 构建景区业务扩展点
+     * @param useCasePraiseType
+     * @param isSimulation
+     * @return
+     */
+    private BizScenario buildScenicBizScenario(String useCasePraiseType, Byte isSimulation) {
+        return BizScenario.valueOf(ExtensionConstant.SCENIC, useCasePraiseType
                 , isSimulation == 0 ? ExtensionConstant.SCENARIO_IMPL : ExtensionConstant.SCENARIO_MOCK);
     }
 
