@@ -71,6 +71,11 @@ public class MessageConstants {
      */
     public final static int MESSAGE_LIST_ALL = 0;
 
+     /**
+     * 消息列表查询类型_待指派/待处理信息
+     */
+    public final static int MESSAGE_LIST_PENDING = 1;
+
 
 
 }
