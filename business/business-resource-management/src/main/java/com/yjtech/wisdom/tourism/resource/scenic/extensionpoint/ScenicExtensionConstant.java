@@ -9,8 +9,13 @@ package com.yjtech.wisdom.tourism.resource.scenic.extensionpoint;
 public final class ScenicExtensionConstant {
     /*  用例---start */
     /**
-     * 应急事件统计
+     * 景区统计
      */
     public static final String SCENIC_QUANTITY = "scenic";
+
+    /**
+     * 综合总览景区统计
+     */
+    public static final String INDEX_SCENIC_QUANTITY = "index_scenic";
     /*  用例---end */
 }
