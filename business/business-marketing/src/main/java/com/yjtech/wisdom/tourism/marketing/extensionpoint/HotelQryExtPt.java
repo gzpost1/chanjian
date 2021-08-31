@@ -31,6 +31,14 @@ public interface HotelQryExtPt extends ExtensionPointI {
     MarketingEvaluateStatisticsDTO queryEvaluateStatistics(EvaluateQueryVO vo);
 
     /**
+     * 查询评价统计-酒店民宿大数据
+     *
+     * @param vo
+     * @return
+     */
+    MarketingEvaluateStatisticsDTO queryEvaluateStatisticsBigData(EvaluateQueryVO vo);
+
+    /**
      * 查询评价统计-综合总览
      *
      * @param vo
@@ -39,7 +47,7 @@ public interface HotelQryExtPt extends ExtensionPointI {
     MarketingEvaluateStatisticsDTO queryEvaluateStatisticsIndex(EvaluateQueryVO vo);
 
     /**
-     * 查询评价类型分布
+     * 查询评价类型分布-酒店民宿详情
      *
      * @param vo
      * @return
@@ -47,7 +55,15 @@ public interface HotelQryExtPt extends ExtensionPointI {
     List<BasePercentVO> queryEvaluateTypeDistribution(EvaluateQueryVO vo);
 
     /**
-     * 查询评价热词排行
+     * 查询评价类型分布-酒店民宿大数据
+     *
+     * @param vo
+     * @return
+     */
+    List<BasePercentVO> queryEvaluateTypeDistributionBigData(EvaluateQueryVO vo);
+
+    /**
+     * 查询评价热词排行-酒店民宿详情
      *
      * @param vo
      * @return
@@ -55,18 +71,33 @@ public interface HotelQryExtPt extends ExtensionPointI {
     List<BaseVO> queryEvaluateHotRank(EvaluateQueryVO vo);
 
     /**
-     * 查询房型价格统计
+     * 查询评价热词排行-酒店民宿大数据
+     *
+     * @param vo
+     * @return
+     */
+    List<BaseVO> queryEvaluateHotRankBigData(EvaluateQueryVO vo);
+
+    /**
+     * 查询房型价格统计-酒店民宿详情
      * @param vo
      * @return
      */
     RoomTypePriceScreenDTO queryRoomPriceStatistics(RoomScreenQueryVO vo);
 
     /**
-     * 查询房型价格趋势
+     * 查询房型价格趋势-酒店民宿详情
      * @param vo
      * @return
      */
     List<RoomPriceAnalysisDTO> queryRoomPriceAnalysis(RoomScreenQueryVO vo);
+
+    /**
+     * 查询房型价格趋势-酒店民宿大数据
+     * @param vo
+     * @return
+     */
+    List<RoomPriceAnalysisDTO> queryRoomPriceAnalysisBigData(RoomScreenQueryVO vo);
 
     /**
      * 查询酒店评价排行
@@ -84,30 +115,15 @@ public interface HotelQryExtPt extends ExtensionPointI {
     IPage<EvaluateSatisfactionRankDTO> queryEvaluateSatisfactionRank(EvaluateQueryVO vo);
 
     /**
-     * 查询景区评价排行
-     *
-     * @return
-     */
-    IPage<BaseVO> queryEvaluateTop5(EvaluateQueryVO query);
-
-    /**
-     * 查询景区满意度排行
-     *
-     * @return
-     */
-    IPage<EvaluateSatisfactionRankDTO> querySatisfactionTop5(EvaluateQueryVO query);
-
-
-    /**
      * 查询评价量趋势、同比、环比
-     *
+     * @param vo
      * @return
      */
     List<AnalysisBaseInfo> queryEvaluateAnalysis(EvaluateQueryVO vo);
 
     /**
      * 查询评价满意度趋势、同比、环比
-     *
+     * @param vo
      * @return
      */
     List<AnalysisBaseInfo> queryEvaluateSatisfactionAnalysis(EvaluateQueryVO vo);

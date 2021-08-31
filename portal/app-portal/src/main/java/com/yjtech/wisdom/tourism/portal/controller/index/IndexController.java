@@ -27,7 +27,6 @@ import com.yjtech.wisdom.tourism.marketing.pojo.dto.RoomTypePriceScreenDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateQueryVO;
 import com.yjtech.wisdom.tourism.marketing.pojo.vo.RoomScreenQueryVO;
 import com.yjtech.wisdom.tourism.marketing.service.MarketingEvaluateService;
-import com.yjtech.wisdom.tourism.marketing.service.MarketingHotelRoomService;
 import com.yjtech.wisdom.tourism.mybatis.entity.IndexQueryVO;
 import com.yjtech.wisdom.tourism.resource.scenic.service.ScenicService;
 import com.yjtech.wisdom.tourism.resource.ticket.query.TicketSummaryQuery;
@@ -67,8 +66,6 @@ public class IndexController {
     private TicketHourSummaryService ticketHourSummaryService;
     @Autowired
     private MarketingEvaluateService marketingEvaluateService;
-    @Autowired
-    private MarketingHotelRoomService marketingHotelRoomService;
     @Autowired
     private FxDistApiService fxDistApiService;
     @Autowired
