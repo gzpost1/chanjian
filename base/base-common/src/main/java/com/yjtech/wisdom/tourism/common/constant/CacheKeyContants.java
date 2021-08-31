@@ -20,6 +20,11 @@ public class CacheKeyContants {
      */
     public static final String KEY_DEAL_TRAVEL_COMPLAINT = "deal:travelComplaint:";
 
+    /**
+     * 酒店模拟数据 key前缀
+     */
+    public static final String HOTEL_SIMULATION_PREFIX = "hotel_simulation:";
+
     /** ********** 中测 第三方信息缓存 key ********** */
     /**
      * 中测 token

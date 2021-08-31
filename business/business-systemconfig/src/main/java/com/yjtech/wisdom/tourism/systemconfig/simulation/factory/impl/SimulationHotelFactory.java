@@ -1,6 +1,7 @@
 package com.yjtech.wisdom.tourism.systemconfig.simulation.factory.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.yjtech.wisdom.tourism.common.constant.CacheKeyContants;
 import com.yjtech.wisdom.tourism.common.constant.SimulationConstants;
 import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.hotel.SimulationHotelDTO;
 import com.yjtech.wisdom.tourism.systemconfig.simulation.factory.SimulationFactory;
@@ -58,6 +59,8 @@ public class SimulationHotelFactory implements SimulationFactory<SimulationHotel
 
         redisTemplate.opsForValue().set(getCacheKey(SimulationConstants.HOTEL), obj);
 
+        //移除酒店模拟数据缓存
+        redisTemplate.delete(CacheKeyContants.HOTEL_SIMULATION_PREFIX);
     }
 
 }

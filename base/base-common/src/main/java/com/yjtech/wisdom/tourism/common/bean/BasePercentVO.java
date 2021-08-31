@@ -22,4 +22,10 @@ public class BasePercentVO extends BaseVO{
      * 占比
      */
     private Double rate;
+
+
+    public BasePercentVO(String name, String value, Double rate) {
+        super(name, value);
+        this.rate = rate;
+    }
 }

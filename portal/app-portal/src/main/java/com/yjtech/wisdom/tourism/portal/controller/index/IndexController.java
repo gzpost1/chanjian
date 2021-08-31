@@ -26,10 +26,13 @@ import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateStatisticsD
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.RoomTypePriceScreenDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateQueryVO;
 import com.yjtech.wisdom.tourism.marketing.pojo.vo.RoomScreenQueryVO;
+import com.yjtech.wisdom.tourism.marketing.service.MarketingEvaluateService;
 import com.yjtech.wisdom.tourism.mybatis.entity.IndexQueryVO;
 import com.yjtech.wisdom.tourism.resource.scenic.extensionpoint.IndexScenicQryExtPt;
 import com.yjtech.wisdom.tourism.resource.scenic.extensionpoint.ScenicExtensionConstant;
+import com.yjtech.wisdom.tourism.resource.scenic.service.ScenicService;
 import com.yjtech.wisdom.tourism.resource.ticket.query.TicketSummaryQuery;
+import com.yjtech.wisdom.tourism.resource.ticket.service.TicketHourSummaryService;
 import com.yjtech.wisdom.tourism.resource.video.dto.ScreenVideoListDTO;
 import com.yjtech.wisdom.tourism.resource.video.service.TbVideoService;
 import com.yjtech.wisdom.tourism.resource.video.vo.ScreenVideoQueryVO;
@@ -61,6 +64,12 @@ public class IndexController {
     private TbVideoService tbVideoService;
     @Autowired
     private FxDistApiService fxDistApiService;
+    @Autowired
+    private ScenicService scenicService;
+    @Autowired
+    private TicketHourSummaryService ticketHourSummaryService;
+    @Autowired
+    private MarketingEvaluateService marketingEvaluateService;
     @Autowired
     private OneTravelApiService oneTravelApiService;
     @Autowired
