@@ -116,6 +116,10 @@ public class DecisionSupportScreenService extends ServiceImpl<DecisionWarnMapper
             });
         }
 
+        if (null == result) {
+            result = new Page<>();
+        }
+
         // 构造数据
         decisionWarnWrapperDto.setList(result.getRecords());
         ArrayList<DecisionWarnWrapperDto> pageDataList = Lists.newArrayList();

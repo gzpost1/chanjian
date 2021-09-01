@@ -39,8 +39,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.time.LocalDate;
@@ -154,9 +152,9 @@ public class EventService extends ServiceImpl<EventMapper, EventEntity> implemen
                         EventAppointEntity eventAppointEntity = eventAppointService.getOne(null);
                         // 未配置指派人员  未勾选消息  都发送给超级
                         if (Objects.isNull(eventAppointEntity)) {
-                            eventDealPersonIdArray.add(messageMangerService.queryAdimnId());
+                            eventDealPersonIdArray.add(messageMangerService.queryAdminId());
                         } else if (CollectionUtils.isEmpty(eventAppointEntity.getAppointPersonnel()) || CollectionUtils.isEmpty(eventAppointEntity.getNotice())) {
-                            eventDealPersonIdArray.add(messageMangerService.queryAdimnId());
+                            eventDealPersonIdArray.add(messageMangerService.queryAdminId());
                         } else {
                             List<String> appointPersonnel = eventAppointEntity.getAppointPersonnel();
                             eventDealPersonIdArray.addAll(appointPersonnel.stream().map(vo -> Long.valueOf(vo)).collect(Collectors.toList()));

@@ -196,48 +196,10 @@ public class MessageMangerService extends ServiceImpl<MessageMapper, MessageEnti
     public MessageRecordDto queryNewMessageNum (MessageCall... messageCall) {
         // 获取消息记录总数
         IPage<MessageDto> page = queryPageMessage(QueryMessageVo.builder().queryType(MessageConstants.MESSAGE_LIST_PENDING).build(), false, messageCall);
-
-        /*Long userId = tokenService.getLoginUser(ServletUtils.getRequest()).getUser().getUserId();
-        String tokenStr = String.valueOf(redisTemplate.opsForValue().get(MessageConstants.MESSAGE_RECORD_NUM + userId));
-        if (com.yjtech.wisdom.tourism.common.utils.StringUtils.isEmpty(tokenStr) || MessageConstants.NULL.equals(tokenStr)) {
-            redisTemplate.opsForValue().set(MessageConstants.MESSAGE_RECORD_NUM + userId, page.getTotal());
-            return MessageRecordDto.builder().isAdd(true).addNumber(page.getTotal()).build();
-        }
-        Long lastTimeTotal = Long.parseLong(tokenStr);
-
-        long total = page.getTotal();
-        long addNumber = Math.abs(total - lastTimeTotal);
-        if (addNumber > 0) {
-            return MessageRecordDto.builder().isAdd(true).addNumber(addNumber).build();
-        }
-        return MessageRecordDto.builder().isAdd(false).addNumber(0L).build();*/
         if (page.getTotal() > 0) {
             return MessageRecordDto.builder().isAdd(true).addNumber(page.getTotal()).build();
         }
         return MessageRecordDto.builder().isAdd(false).addNumber(0L).build();
-    }
-
-
-    /**
-     * 事件完成时调用此接口 根据事件id --- 废弃 todo
-     */
-    public void changeMessageStatus (Long eventId) {
-        if (null == eventId) {
-            throw new CustomException("事件ID不能为空");
-        }
-        List<MessageEntity> messageEntities = baseMapper.selectList(
-                new LambdaQueryWrapper<MessageEntity>()
-                .eq(MessageEntity::getEventId, eventId)
-                .orderByDesc(MessageEntity::getCreateTime)
-        );
-        if (CollectionUtils.isEmpty(messageEntities)) {
-            throw new CustomException("消息中心不存在该事件!");
-        }
-        // 最新的一条
-        MessageEntity entity = messageEntities.get(0);
-        entity.setId(null);
-        //entity.setEventStatus(MessageConstants.EVENT_STATUS_COMPLETE);
-        baseMapper.insert(entity);
     }
 
     /**
@@ -351,37 +313,13 @@ public class MessageMangerService extends ServiceImpl<MessageMapper, MessageEnti
         }
     }
 
-    /**
-     * 初始化事件-消息通知  -- 废弃 todo
-     *
-     * @param vo
-     */
-    public void initMessage (InitMessageVo vo) {
-        // 查询 该事件的消息是否存在
-        Integer count = baseMapper.selectCount(new LambdaQueryWrapper<MessageEntity>().eq(MessageEntity::getEventId, vo.getEventId()));
-        if (count > 0) {
-            throw new CustomException("初始化失败，该事件绑定的消息已存在！");
-        }
-        MessageEntity messageEntity = JSONObject.parseObject(JSONObject.toJSONString(vo), MessageEntity.class);
-        baseMapper.insert(messageEntity);
-    }
-
-    /**
-     * 根据事件id 修改当前消息内容 -- 废弃 todo
-     *
-     * @param vo
-     */
-    public void updataMessage (InitMessageVo vo) {
-        MessageEntity messageEntity = JSONObject.parseObject(JSONObject.toJSONString(vo), MessageEntity.class);
-        baseMapper.update(messageEntity, new UpdateWrapper<MessageEntity>().eq("eventId", vo.getEventId()));
-    }
 
     /**
      * 查询当前配置管理员id
      *
      * @return
      */
-    public Long queryAdimnId () {
+    public Long queryAdminId() {
         String adminId = sysConfigService.selectConfigByKey(adminDictType);
         return Long.parseLong(adminId);
     }
