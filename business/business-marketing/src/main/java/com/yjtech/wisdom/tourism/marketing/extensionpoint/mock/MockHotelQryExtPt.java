@@ -3,6 +3,7 @@ package com.yjtech.wisdom.tourism.marketing.extensionpoint.mock;
 import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.yjtech.wisdom.tourism.common.bean.AnalysisBaseInfo;
@@ -103,6 +104,7 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
 
     /**
      * 查询评价类型分布-酒店民宿大数据
+     *
      * @param vo
      * @return
      */
@@ -124,6 +126,7 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
 
     /**
      * 查询评价热词排行-酒店民宿大数据
+     *
      * @param vo
      * @return
      */
@@ -156,6 +159,7 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
 
     /**
      * 查询房型价格趋势-酒店民宿大数据
+     *
      * @param vo
      * @return
      */
@@ -172,7 +176,22 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
      */
     @Override
     public IPage<BaseVO> queryEvaluateRank(EvaluateQueryVO vo) {
-        return null;
+        HotelSimulationDataDTO dto = calculateAndQuery(vo.getBeginTime(), vo.getEndTime());
+        //获取分页数据总数量
+        Integer rankTotal = dto.getRankTotal();
+        //获取分页信息
+        Map<Integer, List<BaseVO>> evaluateRankBigData = dto.getEvaluateRankBigData();
+        //构建分页信息
+        IPage<BaseVO> page = new Page<>(vo.getPageNo(), vo.getPageSize(), rankTotal);
+        if(null != evaluateRankBigData){
+            //当前pageSize=5时，默认获取top5
+            if(Constants.NumberConstants.NUMBER_FIVE.equals(vo.getPageSize().intValue())){
+                page.setRecords(evaluateRankBigData.get(-1));
+            }else if (Constants.NumberConstants.NUMBER_TEN.equals(vo.getPageSize().intValue())){
+                page.setRecords(evaluateRankBigData.get(vo.getPageNo().intValue()));
+            }
+        }
+        return page;
     }
 
     /**
@@ -183,7 +202,22 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
      */
     @Override
     public IPage<EvaluateSatisfactionRankDTO> queryEvaluateSatisfactionRank(EvaluateQueryVO vo) {
-        return null;
+        HotelSimulationDataDTO dto = calculateAndQuery(vo.getBeginTime(), vo.getEndTime());
+        //获取分页数据总数量
+        Integer rankTotal = dto.getRankTotal();
+        //获取分页信息
+        Map<Integer, List<EvaluateSatisfactionRankDTO>> satisfactionRankBigData = dto.getSatisfactionRankBigData();
+        //构建分页信息
+        IPage<EvaluateSatisfactionRankDTO> page = new Page<>(vo.getPageNo(), vo.getPageSize(), rankTotal);
+        if(null != satisfactionRankBigData){
+            //当前pageSize=5时，默认获取top5
+            if(Constants.NumberConstants.NUMBER_FIVE.equals(vo.getPageSize().intValue())){
+                page.setRecords(satisfactionRankBigData.get(-1));
+            }else if (Constants.NumberConstants.NUMBER_TEN.equals(vo.getPageSize().intValue())){
+                page.setRecords(satisfactionRankBigData.get(vo.getPageNo().intValue()));
+            }
+        }
+        return page;
     }
 
     /**
@@ -258,7 +292,7 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
         //酒店评价排行总计
         List<BaseVO> evaluateRankAll = Lists.newArrayList();
         //酒店满意度排行总计
-        List<BaseVO> satisfactionRankAll = Lists.newArrayList();
+        List<EvaluateSatisfactionRankDTO> satisfactionRankAll = Lists.newArrayList();
 
         //获取当前时间
         String endDate = DateUtil.today();
@@ -274,7 +308,7 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
                 evaluateTotalAll += evaluateTotal;
                 //满意度/好评率
                 BigDecimal goodRatePercent = simulationHotelDTO.getInitGoodRatePercent().add(new BigDecimal(randomInt / 5)).add(new BigDecimal(randomInt / 100)).setScale(1, BigDecimal.ROUND_HALF_UP);
-                satisfactionRankAll.add(new BaseVO(hotelInfo.getName(), goodRatePercent.toString()));
+                satisfactionRankAll.add(new EvaluateSatisfactionRankDTO(hotelInfo.getName(), goodRatePercent.toString(), hotelId));
                 goodRatePercentAll = goodRatePercentAll.add(goodRatePercent);
                 //评分
                 BigDecimal rate = simulationHotelDTO.getInitRate().add(new BigDecimal(randomInt / 10));
@@ -337,10 +371,11 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
                 new BasePercentVO("中评", null, mediumRatePercentAll.divide(new BigDecimal(hotelCount), 1, BigDecimal.ROUND_HALF_UP).doubleValue()),
                 new BasePercentVO("差评", null, badRatePercentAll.divide(new BigDecimal(hotelCount)).doubleValue()));
 
-        //todo
         //所有分页按照每10条一页进行处理
         //查询酒店评价排行-酒店民宿大数据
-        Map<Integer, List<BaseVO>> evaluateRankBigData = Maps.newHashMap();
+        Map<Integer, List<BaseVO>> evaluateRankBigData = handleRankPage(evaluateRankAll);
+        //查询酒店满意度排行-酒店民宿大数据
+        Map<Integer, List<EvaluateSatisfactionRankDTO>> satisfactionRankBigData = handleRankPage(satisfactionRankAll);
 
         //去重合计 查询评价热词排行-酒店民宿大数据
         List<BaseVO> hotRankBigData = Lists.newArrayList();
@@ -360,7 +395,7 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
         });
 
         //查询评价量趋势、同比、环比-酒店民宿大数据
-        List<AnalysisBaseInfo> evaluateAnalysisBigData = calculateAnalysis(endDate, new BigDecimal(evaluateTotalAll*(Integer.valueOf(endDate.substring(8,9)))).add(simulationHotelDTO.getMonthOfEvaluateTotal()), null);
+        List<AnalysisBaseInfo> evaluateAnalysisBigData = calculateAnalysis(endDate, new BigDecimal(evaluateTotalAll * (Integer.valueOf(endDate.substring(8, 9)))).add(simulationHotelDTO.getMonthOfEvaluateTotal()), null);
 
         //查询评价满意度趋势、同比、环比-酒店民宿大数据
         List<AnalysisBaseInfo> satisfactionAnalysisBigData = calculateAnalysis(endDate, null, simulationHotelDTO.getGoodRatePercent());
@@ -370,7 +405,7 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
 
 
         HotelSimulationDataDTO dto = new HotelSimulationDataDTO(statisticsDetail, typeDistributionDetail, hotRankDetail, roomPriceStatisticsDetail, roomPriceAnalysisDetail,
-                statisticsIndex, statisticsBigData, typeDistributionBigData, hotelCount, evaluateRankBigData, null,
+                statisticsIndex, statisticsBigData, typeDistributionBigData, hotelCount, evaluateRankBigData, satisfactionRankBigData,
                 hotRankBigData, evaluateAnalysisBigData, satisfactionAnalysisBigData, roomPriceAnalysisBigData);
 
         //获取缓存数据
@@ -411,12 +446,13 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
 
     /**
      * 计算信息趋势，同比、环比
+     *
      * @param currentDate
      * @param monthOfEvaluateTotal
      * @param goodRatePercent
      * @return
      */
-    private List<AnalysisBaseInfo> calculateAnalysis(String currentDate, BigDecimal monthOfEvaluateTotal, BigDecimal goodRatePercent){
+    private List<AnalysisBaseInfo> calculateAnalysis(String currentDate, BigDecimal monthOfEvaluateTotal, BigDecimal goodRatePercent) {
         //获取当前月份
         String currentMonth = currentDate.substring(0, 7);
 
@@ -432,7 +468,7 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
         BigDecimal lastMonthValue = BigDecimal.ZERO;
 
         //校验月趋势信息，为无结果的查询设置默认值
-        for(String monthMark : monthMarkList){
+        for (String monthMark : monthMarkList) {
             //随机值
             int randomInt = (int) (-20 + Math.random() * (20 - (-20) + 1));
             //设置去年信息
@@ -445,7 +481,7 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
              * 1.月累计评价量
              * 2.评价类型分布-好评
              */
-            if(currentMonth.equals(monthMark)){
+            if (currentMonth.equals(monthMark)) {
                 currentYearByMonth = new AnalysisMonthChartInfo().build(monthMark,
                         null == monthOfEvaluateTotal ? goodRatePercent : monthOfEvaluateTotal,
                         lastYearByMonth.getCount(), lastMonthValue);
@@ -478,5 +514,54 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
         );
     }
 
+    /**
+     * 处理排行信息分页
+     *
+     * @date 2021/8/31 21:53
+     * @author horadirm
+     */
+    private <T extends BaseVO> Map<Integer, List<T>> handleRankPage(List<T> rankInfo) {
+        //构建排行分页信息
+        Map<Integer, List<T>> rankPageInfo = Maps.newHashMap();
+        if (null != rankInfo && !rankInfo.isEmpty()) {
+            //排序
+            rankInfo.sort(new Comparator<BaseVO>() {
+                @Override
+                public int compare(BaseVO o1, BaseVO o2) {
+                    if (o1.getValue().compareTo(o2.getValue()) > 0) {
+                        return -1;
+                    }
+                    return o1.getValue().compareTo(o2.getValue());
+                }
+            });
+
+            //排行信息长度
+            int size = rankInfo.size();
+
+            //如果排行信息列表长度小于等于5，则直接获取
+            if (Constants.NumberConstants.NUMBER_FIVE >= size) {
+                rankPageInfo.put(-1, rankInfo);
+                rankPageInfo.put(1, rankInfo);
+                return rankPageInfo;
+            }
+            //如果排行信息列表长度小于等于10，则直接获取
+            if (Constants.NumberConstants.NUMBER_TEN >= size) {
+                rankPageInfo.put(-1, rankInfo.subList(0, 5));
+                rankPageInfo.put(1, rankInfo);
+                return rankPageInfo;
+            }
+            //获取top5
+            rankPageInfo.put(-1, rankInfo.subList(0, 5));
+            //获取峰值
+            int limit = new BigDecimal(size).divide(BigDecimal.TEN, 0, BigDecimal.ROUND_UP).intValue();
+            for (int i = 0; i < limit; i++) {
+                int fromIndex = i * 10;
+                int toIndex = (i + 1) * 10;
+                rankPageInfo.put(i + 1, rankInfo.subList(fromIndex, toIndex >= size ? size : toIndex));
+            }
+        }
+
+        return rankPageInfo;
+    }
 
 }
