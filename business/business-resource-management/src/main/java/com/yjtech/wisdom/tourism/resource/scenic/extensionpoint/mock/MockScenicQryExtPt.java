@@ -394,13 +394,14 @@ public class MockScenicQryExtPt implements ScenicQryExtPt {
 
             result.add(ScenicBaseVo.builder().id(entity.getId()).name(entity.getName()).value(String.valueOf(total)).build());
         }
-        result = result.stream().sorted(Comparator.comparing(ScenicBaseVo::getValue).reversed()).limit(query.getPageSize()).collect(Collectors.toList());
+        result = result.stream().sorted(Comparator.comparing(ScenicBaseVo::getValue).reversed()).collect(Collectors.toList());
+        List<List<ScenicBaseVo>> partition = Lists.partition(result, query.getPageSize().intValue());
         Page<ScenicBaseVo> page = new Page<>();
-        page.setRecords(result);
+        page.setRecords(partition.get(query.getPageNo().intValue() -1));
         page.setTotal(result.size());
-        page.setSize(result.size());
-        page.setCurrent(1);
-        page.setPages(1);
+        page.setSize(query.getPageSize());
+        page.setCurrent(query.getPageNo());
+        page.setPages(partition.size());
         return page;
     }
 
@@ -421,13 +422,14 @@ public class MockScenicQryExtPt implements ScenicQryExtPt {
             evaluate = evaluate.add(dailyEvaluate.multiply(timeInterval));
             result.add(BaseVO.builder().name(entity.getName()).value(String.valueOf(evaluate)).build());
         }
-        result = result.stream().sorted(Comparator.comparing(BaseVO::getValue).reversed()).limit(query.getPageSize()).collect(Collectors.toList());
+        result = result.stream().sorted(Comparator.comparing(BaseVO::getValue).reversed()).collect(Collectors.toList());
+        List<List<BaseVO>> partition = Lists.partition(result, query.getPageSize().intValue());
         Page<BaseVO> page = new Page<>();
-        page.setRecords(result);
+        page.setRecords(partition.get(query.getPageNo().intValue() -1));
         page.setTotal(result.size());
-        page.setSize(result.size());
-        page.setCurrent(1);
-        page.setPages(1);
+        page.setSize(query.getPageSize());
+        page.setCurrent(query.getPageNo());
+        page.setPages(partition.size());
         return page;
     }
 
@@ -445,13 +447,14 @@ public class MockScenicQryExtPt implements ScenicQryExtPt {
             BigDecimal satisfaction = dto.getInitialPraiseRate().add(good_evaluate.divide(new BigDecimal(5))).add(good_evaluate.divide(new BigDecimal(100)));
             result.add(ScenicBaseVo.builder().id(entity.getId()).name(entity.getName()).value(String.valueOf(satisfaction)).build());
         }
-        result = result.stream().sorted(Comparator.comparing(ScenicBaseVo::getValue).reversed()).limit(query.getPageSize()).collect(Collectors.toList());
+        result = result.stream().sorted(Comparator.comparing(ScenicBaseVo::getValue).reversed()).collect(Collectors.toList());
+        List<List<ScenicBaseVo>> partition = Lists.partition(result, query.getPageSize().intValue());
         Page<ScenicBaseVo> page = new Page<>();
-        page.setRecords(result);
+        page.setRecords(partition.get(query.getPageNo().intValue() -1));
         page.setTotal(result.size());
-        page.setSize(result.size());
-        page.setCurrent(1);
-        page.setPages(1);
+        page.setSize(query.getPageSize());
+        page.setCurrent(query.getPageNo());
+        page.setPages(partition.size());
         return page;
     }
 
