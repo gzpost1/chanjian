@@ -32,6 +32,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -183,11 +184,11 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
         Map<Integer, List<BaseVO>> evaluateRankBigData = dto.getEvaluateRankBigData();
         //构建分页信息
         IPage<BaseVO> page = new Page<>(vo.getPageNo(), vo.getPageSize(), rankTotal);
-        if(null != evaluateRankBigData){
+        if (null != evaluateRankBigData) {
             //当前pageSize=5时，默认获取top5
-            if(Constants.NumberConstants.NUMBER_FIVE.equals(vo.getPageSize().intValue())){
+            if (Constants.NumberConstants.NUMBER_FIVE.equals(vo.getPageSize().intValue())) {
                 page.setRecords(evaluateRankBigData.get(-1));
-            }else if (Constants.NumberConstants.NUMBER_TEN.equals(vo.getPageSize().intValue())){
+            } else if (Constants.NumberConstants.NUMBER_TEN.equals(vo.getPageSize().intValue())) {
                 page.setRecords(evaluateRankBigData.get(vo.getPageNo().intValue()));
             }
         }
@@ -209,11 +210,11 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
         Map<Integer, List<EvaluateSatisfactionRankDTO>> satisfactionRankBigData = dto.getSatisfactionRankBigData();
         //构建分页信息
         IPage<EvaluateSatisfactionRankDTO> page = new Page<>(vo.getPageNo(), vo.getPageSize(), rankTotal);
-        if(null != satisfactionRankBigData){
+        if (null != satisfactionRankBigData) {
             //当前pageSize=5时，默认获取top5
-            if(Constants.NumberConstants.NUMBER_FIVE.equals(vo.getPageSize().intValue())){
+            if (Constants.NumberConstants.NUMBER_FIVE.equals(vo.getPageSize().intValue())) {
                 page.setRecords(satisfactionRankBigData.get(-1));
-            }else if (Constants.NumberConstants.NUMBER_TEN.equals(vo.getPageSize().intValue())){
+            } else if (Constants.NumberConstants.NUMBER_TEN.equals(vo.getPageSize().intValue())) {
                 page.setRecords(satisfactionRankBigData.get(vo.getPageNo().intValue()));
             }
         }
@@ -250,7 +251,7 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
      */
     private HotelSimulationDataDTO calculateAndQuery(LocalDateTime beginTime, LocalDateTime endTime) {
         //获取缓存数据
-        HotelSimulationDataDTO cacheInfo = redisCache.getCacheObject(CacheKeyContants.HOTEL_SIMULATION_PREFIX);
+        HotelSimulationDataDTO cacheInfo = redisCache.getCacheObject(CacheKeyContants.HOTEL_SIMULATION_PREFIX + beginTime + endTime);
         if (null != cacheInfo) {
             return cacheInfo;
         }
@@ -409,7 +410,7 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
                 hotRankBigData, evaluateAnalysisBigData, satisfactionAnalysisBigData, roomPriceAnalysisBigData);
 
         //获取缓存数据
-        redisCache.setCacheObject(CacheKeyContants.HOTEL_SIMULATION_PREFIX, HotelSimulationDataDTO.class);
+        redisCache.setCacheObject(CacheKeyContants.HOTEL_SIMULATION_PREFIX + beginTime + endTime, dto, (int) DateUtils.getCacheExpire(), TimeUnit.MINUTES);
 
         return dto;
     }

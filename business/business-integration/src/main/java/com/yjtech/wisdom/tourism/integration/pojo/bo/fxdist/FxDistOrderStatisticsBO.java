@@ -1,6 +1,8 @@
 package com.yjtech.wisdom.tourism.integration.pojo.bo.fxdist;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -12,6 +14,8 @@ import java.math.BigDecimal;
  * @Date 2021/7/28 15:06
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class FxDistOrderStatisticsBO implements Serializable {
 
     private static final long serialVersionUID = 7682571328124528789L;

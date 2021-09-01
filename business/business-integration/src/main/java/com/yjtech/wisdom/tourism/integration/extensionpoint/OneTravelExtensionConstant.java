@@ -11,6 +11,6 @@ public final class OneTravelExtensionConstant {
     /**
      * 酒店统计
      */
-    public static final String HOTEL_QUANTITY = "one_travel";
+    public static final String ONE_TRAVEL_QUANTITY = "one_travel";
     /*  用例---end */
 }

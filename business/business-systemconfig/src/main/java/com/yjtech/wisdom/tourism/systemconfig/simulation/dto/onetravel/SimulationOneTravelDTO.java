@@ -1,5 +1,6 @@
 package com.yjtech.wisdom.tourism.systemconfig.simulation.dto.onetravel;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
 import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.SimulationCommonDto;
 import lombok.Data;
@@ -32,6 +33,18 @@ public class SimulationOneTravelDTO extends SimulationCommonDto {
     private Integer dayOfTotalVisit;
 
     /**
+     * 日累计访问数-结果
+     */
+    @JsonIgnore
+    private Integer dayOfTotalVisitResult;
+
+    /**
+     * 昨日访问数
+     */
+    @JsonIgnore
+    private Integer yesterdayVisit;
+
+    /**
      * 昨日访问数-系数
      */
     private BigDecimal yesterdayVisitCoefficient;
@@ -40,6 +53,12 @@ public class SimulationOneTravelDTO extends SimulationCommonDto {
      * 昨日访问数-增加数
      */
     private Integer yesterdayVisitAdditions;
+
+    /**
+     * 昨日活跃用户
+     */
+    @JsonIgnore
+    private Integer yesterdayActive;
 
     /**
      * 昨日活跃用户数-系数
@@ -52,6 +71,12 @@ public class SimulationOneTravelDTO extends SimulationCommonDto {
     private Integer yesterdayActiveAdditions;
 
     /**
+     * 使用总人数
+     */
+    @JsonIgnore
+    private Integer userTotal;
+
+    /**
      * 使用总人数-系数
      */
     private BigDecimal userTotalCoefficient;
@@ -60,6 +85,12 @@ public class SimulationOneTravelDTO extends SimulationCommonDto {
      * 使用总人数-增加数
      */
     private Integer userTotalAdditions;
+
+    /**
+     * 总访问数
+     */
+    @JsonIgnore
+    private Integer visitTotal;
 
     /**
      * 总访问数-系数
@@ -130,5 +161,10 @@ public class SimulationOneTravelDTO extends SimulationCommonDto {
      * 投诉类型分布
      */
     private List<BasePercentVO> complaintTypeDistribution;
+
+    /**
+     * 投诉状态分布
+     */
+    private List<BasePercentVO> complaintStatusDistribution;
 
 }

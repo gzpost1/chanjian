@@ -60,7 +60,7 @@ public class SimulationHotelFactory implements SimulationFactory<SimulationHotel
         redisTemplate.opsForValue().set(getCacheKey(SimulationConstants.HOTEL), obj);
 
         //移除酒店模拟数据缓存
-        redisTemplate.delete(CacheKeyContants.HOTEL_SIMULATION_PREFIX);
+        redisTemplate.delete(redisTemplate.keys(CacheKeyContants.HOTEL_SIMULATION_PREFIX + "*"));
     }
 
 }

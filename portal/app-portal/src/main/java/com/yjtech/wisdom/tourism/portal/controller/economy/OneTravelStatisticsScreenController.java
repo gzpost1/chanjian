@@ -2,21 +2,24 @@ package com.yjtech.wisdom.tourism.portal.controller.economy;
 
 import com.yjtech.wisdom.tourism.common.bean.AnalysisBaseInfo;
 import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
+import com.yjtech.wisdom.tourism.common.bean.SimulationBaseVO;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
+import com.yjtech.wisdom.tourism.extension.BizScenario;
+import com.yjtech.wisdom.tourism.extension.ExtensionConstant;
+import com.yjtech.wisdom.tourism.extension.ExtensionExecutor;
+import com.yjtech.wisdom.tourism.integration.extensionpoint.OneTravelExtensionConstant;
+import com.yjtech.wisdom.tourism.integration.extensionpoint.OneTravelQryExtPt;
 import com.yjtech.wisdom.tourism.integration.pojo.bo.OperationDataInfo;
 import com.yjtech.wisdom.tourism.integration.pojo.bo.fxdist.FxDistOrderStatisticsBO;
 import com.yjtech.wisdom.tourism.integration.pojo.bo.onetravel.OneTravelAreaVisitStatisticsBO;
 import com.yjtech.wisdom.tourism.integration.pojo.bo.onetravel.OneTravelVisitStatisticsBO;
 import com.yjtech.wisdom.tourism.integration.pojo.vo.FxDistQueryVO;
-import com.yjtech.wisdom.tourism.integration.service.FxDistApiService;
-import com.yjtech.wisdom.tourism.integration.service.OneTravelApiService;
-import com.yjtech.wisdom.tourism.integration.service.SmartTravelApiService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -30,12 +33,8 @@ import java.util.List;
 @RequestMapping("/oneTravelStatistics/screen/")
 public class OneTravelStatisticsScreenController {
 
-    @Autowired
-    private OneTravelApiService oneTravelApiService;
-    @Autowired
-    private FxDistApiService fxDistApiService;
-    @Autowired
-    private SmartTravelApiService smartTravelApiService;
+    @Resource
+    private ExtensionExecutor extensionExecutor;
 
 
     /**
@@ -43,8 +42,10 @@ public class OneTravelStatisticsScreenController {
      * @return
      */
     @PostMapping("queryUserNationDistribution")
-    public JsonResult<List<OneTravelAreaVisitStatisticsBO>> queryUserNationDistribution() {
-        return JsonResult.success(oneTravelApiService.queryProvinceVisitStatistics());
+    public JsonResult<List<OneTravelAreaVisitStatisticsBO>> queryUserNationDistribution(@RequestBody @Valid SimulationBaseVO vo) {
+        return JsonResult.success(extensionExecutor.execute(OneTravelQryExtPt.class,
+                buildOneTravelBizScenario(OneTravelExtensionConstant.ONE_TRAVEL_QUANTITY, vo.getIsSimulation()),
+                OneTravelQryExtPt::queryUserNationDistribution));
     }
 
     /**
@@ -52,8 +53,10 @@ public class OneTravelStatisticsScreenController {
      * @return
      */
     @PostMapping("queryVisitStatistics")
-    public JsonResult<OneTravelVisitStatisticsBO> queryVisitStatistics() {
-        return JsonResult.success(oneTravelApiService.queryVisitStatistics());
+    public JsonResult<OneTravelVisitStatisticsBO> queryVisitStatistics(@RequestBody @Valid SimulationBaseVO vo) {
+        return JsonResult.success(extensionExecutor.execute(OneTravelQryExtPt.class,
+                buildOneTravelBizScenario(OneTravelExtensionConstant.ONE_TRAVEL_QUANTITY, vo.getIsSimulation()),
+                OneTravelQryExtPt::queryVisitStatistics));
     }
 
     /**
@@ -62,7 +65,9 @@ public class OneTravelStatisticsScreenController {
      */
     @PostMapping("queryOrderStatistics")
     public JsonResult<FxDistOrderStatisticsBO> queryOrderStatistics(@RequestBody @Valid FxDistQueryVO vo) {
-        return JsonResult.success(fxDistApiService.queryOrderStatistics(vo));
+        return JsonResult.success(extensionExecutor.execute(OneTravelQryExtPt.class,
+                buildOneTravelBizScenario(OneTravelExtensionConstant.ONE_TRAVEL_QUANTITY, vo.getIsSimulation()),
+                extension -> extension.queryOneTravelTradeStatistics(vo)));
     }
 
     /**
@@ -70,8 +75,10 @@ public class OneTravelStatisticsScreenController {
      * @return
      */
     @PostMapping("queryUserAgeDistribution")
-    public JsonResult<List<BasePercentVO>> queryUserAgeDistribution() {
-        return JsonResult.success(oneTravelApiService.queryUserAgeDistribution());
+    public JsonResult<List<BasePercentVO>> queryUserAgeDistribution(@RequestBody @Valid SimulationBaseVO vo) {
+        return JsonResult.success(extensionExecutor.execute(OneTravelQryExtPt.class,
+                buildOneTravelBizScenario(OneTravelExtensionConstant.ONE_TRAVEL_QUANTITY, vo.getIsSimulation()),
+                OneTravelQryExtPt::queryUserAgeDistribution));
     }
 
     /**
@@ -79,15 +86,10 @@ public class OneTravelStatisticsScreenController {
      * @return
      */
     @PostMapping("queryOperationStatistics")
-    public JsonResult<OperationDataInfo> queryOperationStatistics() {
-        //获取入驻景点
-        Integer scenicCount = smartTravelApiService.queryScenicCountByArea(null);
-        //获取入驻商户（店铺数）
-        Integer storeCount = fxDistApiService.queryStoreCountByArea(null);
-        //获取商品总量
-        Integer productCount = fxDistApiService.queryProductCountByArea(null);
-
-        return JsonResult.success(new OperationDataInfo(scenicCount, storeCount, productCount));
+    public JsonResult<OperationDataInfo> queryOperationStatistics(@RequestBody @Valid SimulationBaseVO vo) {
+        return JsonResult.success(extensionExecutor.execute(OneTravelQryExtPt.class,
+                buildOneTravelBizScenario(OneTravelExtensionConstant.ONE_TRAVEL_QUANTITY, vo.getIsSimulation()),
+                OneTravelQryExtPt::queryOperationStatistics));
     }
 
     /**
@@ -96,7 +98,9 @@ public class OneTravelStatisticsScreenController {
      */
     @PostMapping("queryOrderFromProductTypeDistribution")
     public JsonResult<List<BasePercentVO>> queryOrderFromProductTypeDistribution(@RequestBody @Valid FxDistQueryVO vo) {
-        return JsonResult.success(fxDistApiService.queryOrderFromProductTypeDistribution(vo));
+        return JsonResult.success(extensionExecutor.execute(OneTravelQryExtPt.class,
+                buildOneTravelBizScenario(OneTravelExtensionConstant.ONE_TRAVEL_QUANTITY, vo.getIsSimulation()),
+                extension -> extension.queryOrderFromProductTypeDistribution(vo)));
     }
 
     /**
@@ -105,7 +109,9 @@ public class OneTravelStatisticsScreenController {
      */
     @PostMapping("queryOrderSumFromProductTypeDistribution")
     public JsonResult<List<BasePercentVO>> queryOrderSumFromProductTypeDistribution(@RequestBody @Valid FxDistQueryVO vo) {
-        return JsonResult.success(fxDistApiService.queryOrderSumFromProductTypeDistribution(vo));
+        return JsonResult.success(extensionExecutor.execute(OneTravelQryExtPt.class,
+                buildOneTravelBizScenario(OneTravelExtensionConstant.ONE_TRAVEL_QUANTITY, vo.getIsSimulation()),
+                extension -> extension.queryOrderSumFromProductTypeDistribution(vo)));
     }
 
     /**
@@ -114,7 +120,9 @@ public class OneTravelStatisticsScreenController {
      */
     @PostMapping("queryOrderAnalysis")
     public JsonResult<List<AnalysisBaseInfo>> queryOrderAnalysis(@RequestBody @Valid FxDistQueryVO vo) {
-        return JsonResult.success(fxDistApiService.queryOrderAnalysis(vo));
+        return JsonResult.success(extensionExecutor.execute(OneTravelQryExtPt.class,
+                buildOneTravelBizScenario(OneTravelExtensionConstant.ONE_TRAVEL_QUANTITY, vo.getIsSimulation()),
+                extension -> extension.queryOrderAnalysis(vo)));
     }
 
     /**
@@ -123,7 +131,21 @@ public class OneTravelStatisticsScreenController {
      */
     @PostMapping("queryOrderSumAnalysis")
     public JsonResult<List<AnalysisBaseInfo>> queryOrderSumAnalysis(@RequestBody @Valid FxDistQueryVO vo) {
-        return JsonResult.success(fxDistApiService.queryOrderSumAnalysis(vo));
+        return JsonResult.success(extensionExecutor.execute(OneTravelQryExtPt.class,
+                buildOneTravelBizScenario(OneTravelExtensionConstant.ONE_TRAVEL_QUANTITY, vo.getIsSimulation()),
+                extension -> extension.queryOrderSumAnalysis(vo)));
+    }
+
+
+    /**
+     * 构建一码游业务扩展点
+     * @param useCasePraiseType
+     * @param isSimulation
+     * @return
+     */
+    private BizScenario buildOneTravelBizScenario(String useCasePraiseType, Byte isSimulation) {
+        return BizScenario.valueOf(ExtensionConstant.ONE_TRAVEL, useCasePraiseType
+                , isSimulation == 0 ? ExtensionConstant.SCENARIO_IMPL : ExtensionConstant.SCENARIO_MOCK);
     }
 
 }

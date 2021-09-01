@@ -43,6 +43,18 @@
         GROUP BY name
     </select>
 
+    <!-- 查询用户年龄分布名称 -->
+    <select id="queryUserAgeDistributionName" resultType="String">
+        select
+        name
+        from
+        tb_wx_age_distribution
+        <where>
+            deleted = 0
+        </where>
+        GROUP BY name
+    </select>
+
     <select id="queryCityVisitStatistics"
             resultType="com.yjtech.wisdom.tourism.integration.pojo.bo.onetravel.OneTravelAreaVisitStatisticsBO">
         SELECT

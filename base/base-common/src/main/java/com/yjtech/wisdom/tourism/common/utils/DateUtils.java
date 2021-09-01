@@ -8,6 +8,9 @@ import org.apache.commons.lang3.time.DateFormatUtils;
 import java.lang.management.ManagementFactory;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -222,14 +225,29 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 
     /**
      * 获取当前年每日列表
+     *
      * @return
      */
-    public static List<String> getEveryDayOfCurrentYear(){
+    public static List<String> getEveryDayOfCurrentYear() {
         return DateUtils.getRangeToList(
                 DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD, DateUtil.beginOfYear(new Date())),
                 DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD, DateUtil.offsetDay(new Date(), -1)),
                 DateUtils.YYYY_MM_DD,
                 Calendar.DAY_OF_YEAR);
     }
+
+    /**
+     * 获取缓存过期时间
+     * 默认每天00:30刷新
+     *
+     * @date 2021/9/1 18:00
+     * @author horadirm
+     */
+    public static long getCacheExpire() {
+        LocalDate beginTime = LocalDate.now();
+        LocalDateTime endTime = beginTime.atStartOfDay().plusDays(1).plusMinutes(30);
+        return Duration.between(beginTime, endTime).toMinutes();
+    }
+
 
 }

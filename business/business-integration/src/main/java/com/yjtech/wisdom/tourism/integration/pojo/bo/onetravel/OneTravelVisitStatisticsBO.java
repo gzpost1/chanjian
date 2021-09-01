@@ -1,6 +1,8 @@
 package com.yjtech.wisdom.tourism.integration.pojo.bo.onetravel;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -12,6 +14,8 @@ import java.math.BigDecimal;
  * @Date 2021/5/24 19:35
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class OneTravelVisitStatisticsBO implements Serializable {
 
      private static final long serialVersionUID = 5054947769241665433L;
