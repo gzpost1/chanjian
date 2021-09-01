@@ -191,7 +191,10 @@ public class ScenicScreenController {
      */
     @PostMapping("/queryPassengerFlowTop5")
     public JsonResult<IPage<ScenicBaseVo>> queryPassengerFlowTop5(@RequestBody @Valid ScenicScreenQuery query) {
-        return JsonResult.success(scenicService.queryPassengerFlowTop5(query));
+        IPage<ScenicBaseVo> page = extensionExecutor.execute(ScenicQryExtPt.class,
+                buildBizScenario(ScenicExtensionConstant.SCENIC_QUANTITY, query.getIsSimulation()),
+                extension -> extension.queryPassengerFlowTop5(query));
+        return JsonResult.success(page);
     }
 
     /**
@@ -202,7 +205,10 @@ public class ScenicScreenController {
      */
     @PostMapping("/queryEvaluateTop5")
     public JsonResult<IPage<BaseVO>> queryEvaluateTop5(@RequestBody @Valid ScenicScreenQuery query) {
-        return JsonResult.success(scenicService.queryEvaluateTop5(query));
+        IPage<BaseVO> page = extensionExecutor.execute(ScenicQryExtPt.class,
+                buildBizScenario(ScenicExtensionConstant.SCENIC_QUANTITY, query.getIsSimulation()),
+                extension -> extension.queryEvaluateTop5(query));
+        return JsonResult.success(page);
     }
 
     /**
@@ -213,7 +219,10 @@ public class ScenicScreenController {
      */
     @PostMapping("/querySatisfactionTop5")
     public JsonResult<IPage<ScenicBaseVo>> querySatisfactionTop5(@RequestBody @Valid ScenicScreenQuery query) {
-        return JsonResult.success(scenicService.querySatisfactionTop5(query));
+        IPage<ScenicBaseVo> page = extensionExecutor.execute(ScenicQryExtPt.class,
+                buildBizScenario(ScenicExtensionConstant.SCENIC_QUANTITY, query.getIsSimulation()),
+                extension -> extension.querySatisfactionTop5(query));
+        return JsonResult.success(page);
     }
 
     /**

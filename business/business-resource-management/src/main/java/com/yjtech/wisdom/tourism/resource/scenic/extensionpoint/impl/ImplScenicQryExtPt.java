@@ -1,5 +1,6 @@
 package com.yjtech.wisdom.tourism.resource.scenic.extensionpoint.impl;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
 import com.yjtech.wisdom.tourism.common.bean.BaseValueVO;
@@ -8,6 +9,7 @@ import com.yjtech.wisdom.tourism.extension.Extension;
 import com.yjtech.wisdom.tourism.extension.ExtensionConstant;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateStatisticsDTO;
 import com.yjtech.wisdom.tourism.mybatis.utils.AnalysisUtils;
+import com.yjtech.wisdom.tourism.resource.scenic.entity.vo.ScenicBaseVo;
 import com.yjtech.wisdom.tourism.resource.scenic.extensionpoint.ScenicExtensionConstant;
 import com.yjtech.wisdom.tourism.resource.scenic.extensionpoint.ScenicQryExtPt;
 import com.yjtech.wisdom.tourism.resource.scenic.query.ScenicScreenQuery;
@@ -74,5 +76,20 @@ public class ImplScenicQryExtPt implements ScenicQryExtPt {
     @Override
     public List<BaseVO> queryScenicHotRank(ScenicScreenQuery query) {
         return scenicService.queryScenicHotRank(query);
+    }
+
+    @Override
+    public IPage<ScenicBaseVo> queryPassengerFlowTop5(ScenicScreenQuery query) {
+        return scenicService.queryPassengerFlowTop5(query);
+    }
+
+    @Override
+    public IPage<BaseVO> queryEvaluateTop5(ScenicScreenQuery query) {
+        return scenicService.queryEvaluateTop5(query);
+    }
+
+    @Override
+    public IPage<ScenicBaseVo> querySatisfactionTop5(ScenicScreenQuery query) {
+        return scenicService.querySatisfactionTop5(query);
     }
 }
