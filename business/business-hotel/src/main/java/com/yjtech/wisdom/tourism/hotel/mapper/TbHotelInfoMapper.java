@@ -60,4 +60,11 @@ public interface TbHotelInfoMapper extends BaseMybatisMapper<TbHotelInfoEntity> 
      * @return
      */
     IPage<HotelSelectInfoDTO> queryHotelSelectInfo(Page page);
+
+    /**
+     * 查询酒店id列表
+     * @return
+     */
+    List<HotelSelectInfoDTO> queryHotelInfoList();
+
 }

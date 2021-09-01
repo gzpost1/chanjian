@@ -544,13 +544,14 @@
     </select>
 
     <!--景区分布-满意度趋势-->
-    <select id="querySatisfactionTrend" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO">
+    <select id="querySatisfactionTrend" resultType="com.yjtech.wisdom.tourism.common.bean.BasePercentVO">
         SELECT
         DATE_FORMAT(evaluate_new.evaluate_time,'%Y-%m-01') name,
-        SUM(CASE WHEN evaluate_new.evaluate_type = 0 THEN 1 ELSE 0 END) `value`
+        IFNULL(SUM(CASE WHEN evaluate_new.evaluate_type = 2 THEN 1  ELSE 0 END),0) `value` ,
+        IFNULL(ROUND(SUM(CASE WHEN evaluate_new.evaluate_type = 2 THEN 1 ELSE 0 END)/COUNT(evaluate_new.id),1),0) as rate
         from
         (select
-        evaluate.evaluate_time,evaluate.evaluate_type
+        evaluate.id,evaluate.evaluate_time,evaluate.evaluate_type
         from
         tb_marketing_evaluate evaluate
         <include refid="scenic_table_join"/>

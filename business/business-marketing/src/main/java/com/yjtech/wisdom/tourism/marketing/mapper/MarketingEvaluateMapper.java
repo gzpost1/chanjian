@@ -167,7 +167,7 @@ public interface MarketingEvaluateMapper extends BaseMapper<MarketingEvaluateEnt
      * @param query
      * @return
      */
-    List<BaseVO> querySatisfactionTrend(@Param("params") EvaluateQueryVO query);
+    List<BasePercentVO> querySatisfactionTrend(@Param("params") EvaluateQueryVO query);
 
     /**
      * 景区分布——热词

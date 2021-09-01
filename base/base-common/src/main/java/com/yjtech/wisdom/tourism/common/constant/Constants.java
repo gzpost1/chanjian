@@ -167,6 +167,10 @@ public class Constants {
          */
         public static final Integer NUMBER_FOUR = 4;
         /**
+         * 数字5
+         */
+        public static final Integer NUMBER_FIVE = 5;
+        /**
          * 数字6
          */
         public static final Integer NUMBER_SIX = 6;
