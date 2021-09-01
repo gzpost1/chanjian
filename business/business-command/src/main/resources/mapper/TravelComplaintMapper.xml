@@ -162,7 +162,7 @@
                     equip_status = #{params.equipStatus} and
                 </if>
                 <if test="params.acceptUserId != null">
-                    accept_user_id = #{params.acceptUserId} and
+                    assign_accept_user_id LIKE CONCAT('%',#{params.acceptUserId},'%') and
                 </if>
             </if>
             status = 1 and

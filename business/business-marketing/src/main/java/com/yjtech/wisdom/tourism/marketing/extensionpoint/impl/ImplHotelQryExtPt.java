@@ -48,6 +48,17 @@ public class ImplHotelQryExtPt implements HotelQryExtPt {
     }
 
     /**
+     * 查询评价统计-酒店民宿大数据
+     *
+     * @param vo
+     * @return
+     */
+    @Override
+    public MarketingEvaluateStatisticsDTO queryEvaluateStatisticsBigData(EvaluateQueryVO vo) {
+        return marketingEvaluateService.queryEvaluateStatistics(vo);
+    }
+
+    /**
      * 查询评价统计-综合总览
      *
      * @param vo
@@ -59,7 +70,7 @@ public class ImplHotelQryExtPt implements HotelQryExtPt {
     }
 
     /**
-     * 查询评价类型分布
+     * 查询评价类型分布-酒店民宿详情
      *
      * @param vo
      * @return
@@ -70,7 +81,17 @@ public class ImplHotelQryExtPt implements HotelQryExtPt {
     }
 
     /**
-     * 查询评价热词排行
+     * 查询评价类型分布-酒店民宿大数据
+     * @param vo
+     * @return
+     */
+    @Override
+    public List<BasePercentVO> queryEvaluateTypeDistributionBigData(EvaluateQueryVO vo) {
+        return marketingEvaluateService.queryEvaluateTypeDistribution(vo);
+    }
+
+    /**
+     * 查询评价热词排行-酒店民宿详情
      *
      * @param vo
      * @return
@@ -81,7 +102,17 @@ public class ImplHotelQryExtPt implements HotelQryExtPt {
     }
 
     /**
-     * 查询房型价格统计
+     * 查询评价热词排行-酒店民宿大数据
+     * @param vo
+     * @return
+     */
+    @Override
+    public List<BaseVO> queryEvaluateHotRankBigData(EvaluateQueryVO vo) {
+        return marketingEvaluateService.queryEvaluateHotRank(vo);
+    }
+
+    /**
+     * 查询房型价格统计-酒店民宿详情
      *
      * @param vo
      * @return
@@ -92,13 +123,23 @@ public class ImplHotelQryExtPt implements HotelQryExtPt {
     }
 
     /**
-     * 查询房型价格趋势
+     * 查询房型价格趋势-酒店民宿详情
      *
      * @param vo
      * @return
      */
     @Override
     public List<RoomPriceAnalysisDTO> queryRoomPriceAnalysis(RoomScreenQueryVO vo) {
+        return marketingHotelRoomService.queryRoomPriceAnalysis(vo);
+    }
+
+    /**
+     * 查询房型价格趋势-酒店民宿大数据
+     * @param vo
+     * @return
+     */
+    @Override
+    public List<RoomPriceAnalysisDTO> queryRoomPriceAnalysisBigData(RoomScreenQueryVO vo) {
         return marketingHotelRoomService.queryRoomPriceAnalysis(vo);
     }
 
@@ -122,28 +163,6 @@ public class ImplHotelQryExtPt implements HotelQryExtPt {
     @Override
     public IPage<EvaluateSatisfactionRankDTO> queryEvaluateSatisfactionRank(EvaluateQueryVO vo) {
         return marketingEvaluateService.queryEvaluateSatisfactionRank(vo);
-    }
-
-    /**
-     * 查询景区评价排行
-     *
-     * @param query
-     * @return
-     */
-    @Override
-    public IPage<BaseVO> queryEvaluateTop5(EvaluateQueryVO query) {
-        return marketingEvaluateService.queryEvaluateTop5(query);
-    }
-
-    /**
-     * 查询景区满意度排行
-     *
-     * @param query
-     * @return
-     */
-    @Override
-    public IPage<EvaluateSatisfactionRankDTO> querySatisfactionTop5(EvaluateQueryVO query) {
-        return marketingEvaluateService.querySatisfactionTop5(query);
     }
 
     /**

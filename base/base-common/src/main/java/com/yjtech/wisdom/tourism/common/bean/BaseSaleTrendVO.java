@@ -1,6 +1,8 @@
 package com.yjtech.wisdom.tourism.common.bean;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
@@ -9,8 +11,11 @@ import java.io.Serializable;
  * @create 2021-07-03 14:41
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class BaseSaleTrendVO implements Serializable {
 
+    private static final long serialVersionUID = 2484715694762877039L;
 
     /**
      * 日期

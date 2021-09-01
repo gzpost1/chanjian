@@ -460,7 +460,7 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
         Object cacheObject = redisCache.getCacheObject(cacheKey);
         if (TravelComplaintStatusEnum.TRAVEL_COMPLAINT_STATUS_NO_ASSIGN.getValue().equals(status) && null == cacheObject) {
             //默认给超管用户发送消息
-            eventDealPersonIdArray.add(messageMangerService.queryAdimnId());
+            eventDealPersonIdArray.add(messageMangerService.queryAdminId());
             sendFlag = true;
         } else {
             try {

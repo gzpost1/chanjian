@@ -108,4 +108,13 @@ public class TbHotelInfoService extends BaseMybatisServiceImpl<TbHotelInfoMapper
         return baseMapper.queryHotelSelectInfo(page);
     }
 
+    /**
+     * 查询酒店id列表
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public List<HotelSelectInfoDTO> queryHotelInfoList() {
+        return baseMapper.queryHotelInfoList();
+    }
+
 }

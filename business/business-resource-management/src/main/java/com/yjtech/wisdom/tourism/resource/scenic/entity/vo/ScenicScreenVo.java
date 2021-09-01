@@ -1,5 +1,6 @@
 package com.yjtech.wisdom.tourism.resource.scenic.entity.vo;
 
+import com.yjtech.wisdom.tourism.common.utils.StringUtils;
 import com.yjtech.wisdom.tourism.weather.vo.WeatherInfoVO;
 import lombok.Data;
 
@@ -74,6 +75,9 @@ public class ScenicScreenVo {
      */
     private String openEndTime;
 
+    /**开放时间*/
+    private String openTime;
+
     /**
      * 景区承载量
      */
@@ -139,5 +143,20 @@ public class ScenicScreenVo {
             comfort = (this.enterNum / this.bearCapacity) >= this.comfortWarnRate.intValue() ? "拥挤" : "舒适";
         }
         return comfort;
+    }
+
+    public String getOpenTime() {
+        StringBuilder openTime = new StringBuilder();
+        if(StringUtils.isNotBlank(this.openStartDate) && StringUtils.isNotBlank(this.openEndDate)){
+            if(this.openStartDate.equals("1") && this.openEndDate.equals("12")){
+                openTime.append("全年 ");
+            }else {
+                openTime.append(this.openStartDate + "月~" + this.openEndDate + "月 ");
+            }
+        }
+        if(StringUtils.isNotBlank(this.openStartTime) && StringUtils.isNotBlank(this.openEndTime)){
+            openTime.append(this.openStartTime + "-" + this.openEndTime);
+        }
+        return openTime.toString();
     }
 }
