@@ -1,15 +1,14 @@
 package com.yjtech.wisdom.tourism.resource.scenic.extensionpoint;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
 import com.yjtech.wisdom.tourism.common.bean.BaseValueVO;
-import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.extension.ExtensionPointI;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateStatisticsDTO;
+import com.yjtech.wisdom.tourism.resource.scenic.entity.vo.ScenicBaseVo;
 import com.yjtech.wisdom.tourism.resource.scenic.query.ScenicScreenQuery;
-import org.springframework.web.bind.annotation.RequestBody;
 
-import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -54,5 +53,26 @@ public interface ScenicQryExtPt extends ExtensionPointI {
      * @param query
      * @return
      */
-    public List<BaseVO> queryScenicHotRank(ScenicScreenQuery query);
+     List<BaseVO> queryScenicHotRank(ScenicScreenQuery query);
+
+    /**
+     * 景区大数据——客流排行
+     *
+     * @Param: query
+     */
+    IPage<ScenicBaseVo> queryPassengerFlowTop5(ScenicScreenQuery query);
+
+    /**
+     * 景区大数据——评价排行TOP5
+     *
+     * @Param: query
+     */
+    IPage<BaseVO> queryEvaluateTop5(ScenicScreenQuery query);
+
+    /**
+     * 景区大数据——满意度排行
+     *
+     * @Param: query
+     */
+    IPage<ScenicBaseVo> querySatisfactionTop5(ScenicScreenQuery query);
 }
