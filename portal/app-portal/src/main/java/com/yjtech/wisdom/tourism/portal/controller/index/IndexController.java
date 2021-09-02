@@ -14,11 +14,11 @@ import com.yjtech.wisdom.tourism.dto.DataOverviewDto;
 import com.yjtech.wisdom.tourism.extension.BizScenario;
 import com.yjtech.wisdom.tourism.extension.ExtensionConstant;
 import com.yjtech.wisdom.tourism.extension.ExtensionExecutor;
+import com.yjtech.wisdom.tourism.integration.extensionpoint.OneTravelExtensionConstant;
+import com.yjtech.wisdom.tourism.integration.extensionpoint.OneTravelQryExtPt;
 import com.yjtech.wisdom.tourism.integration.pojo.bo.fxdist.FxDistOrderStatisticsBO;
-import com.yjtech.wisdom.tourism.integration.pojo.bo.onetravel.OneTravelVisitStatisticsBO;
 import com.yjtech.wisdom.tourism.integration.pojo.vo.FxDistQueryVO;
 import com.yjtech.wisdom.tourism.integration.pojo.vo.OneTravelQueryVO;
-import com.yjtech.wisdom.tourism.integration.service.FxDistApiService;
 import com.yjtech.wisdom.tourism.integration.service.OneTravelApiService;
 import com.yjtech.wisdom.tourism.marketing.extensionpoint.HotelExtensionConstant;
 import com.yjtech.wisdom.tourism.marketing.extensionpoint.HotelQryExtPt;
@@ -26,13 +26,10 @@ import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateStatisticsD
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.RoomTypePriceScreenDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateQueryVO;
 import com.yjtech.wisdom.tourism.marketing.pojo.vo.RoomScreenQueryVO;
-import com.yjtech.wisdom.tourism.marketing.service.MarketingEvaluateService;
 import com.yjtech.wisdom.tourism.mybatis.entity.IndexQueryVO;
 import com.yjtech.wisdom.tourism.resource.scenic.extensionpoint.IndexScenicQryExtPt;
 import com.yjtech.wisdom.tourism.resource.scenic.extensionpoint.ScenicExtensionConstant;
-import com.yjtech.wisdom.tourism.resource.scenic.service.ScenicService;
 import com.yjtech.wisdom.tourism.resource.ticket.query.TicketSummaryQuery;
-import com.yjtech.wisdom.tourism.resource.ticket.service.TicketHourSummaryService;
 import com.yjtech.wisdom.tourism.resource.video.dto.ScreenVideoListDTO;
 import com.yjtech.wisdom.tourism.resource.video.service.TbVideoService;
 import com.yjtech.wisdom.tourism.resource.video.vo.ScreenVideoQueryVO;
@@ -63,14 +60,6 @@ public class IndexController {
     @Autowired
     private TbVideoService tbVideoService;
     @Autowired
-    private FxDistApiService fxDistApiService;
-    @Autowired
-    private ScenicService scenicService;
-    @Autowired
-    private TicketHourSummaryService ticketHourSummaryService;
-    @Autowired
-    private MarketingEvaluateService marketingEvaluateService;
-    @Autowired
     private OneTravelApiService oneTravelApiService;
     @Autowired
     private DistrictTourService districtTourService;
@@ -97,8 +86,10 @@ public class IndexController {
                 extension -> extension.queryVisitStatistics(ticketSummaryQuery));
 
         //一码游访问次数
-        OneTravelVisitStatisticsBO visitStatistics = oneTravelApiService.queryVisitStatistics();
-        dto.setOneTravelVisit(visitStatistics.getTodayActiveUser());
+        dto.setOneTravelVisit(extensionExecutor.execute(OneTravelQryExtPt.class,
+                buildOneTravelBizScenario(OneTravelExtensionConstant.ONE_TRAVEL_QUANTITY, vo.getIsSimulation()),
+                extension -> new BigDecimal(extension.queryOneTravelVisitIndex(vo))));
+
         return JsonResult.success(dto);
     }
 
@@ -168,7 +159,9 @@ public class IndexController {
     public JsonResult<FxDistOrderStatisticsBO> oneTravelTrade(@RequestBody @Valid IndexQueryVO vo) {
         //构建一码游订单查询条件
         FxDistQueryVO fxDistQueryVO = BeanUtils.copyBean(vo, FxDistQueryVO.class);
-        return JsonResult.success(fxDistApiService.queryOrderStatistics(fxDistQueryVO));
+        return JsonResult.success(extensionExecutor.execute(OneTravelQryExtPt.class,
+                buildOneTravelBizScenario(OneTravelExtensionConstant.ONE_TRAVEL_QUANTITY, vo.getIsSimulation()),
+                extension -> extension.queryOneTravelTradeIndex(fxDistQueryVO)));
     }
 
     /**
@@ -258,6 +251,17 @@ public class IndexController {
      */
     private BizScenario buildScenicBizScenario(String useCasePraiseType, Byte isSimulation) {
         return BizScenario.valueOf(ExtensionConstant.SCENIC, useCasePraiseType
+                , isSimulation == 0 ? ExtensionConstant.SCENARIO_IMPL : ExtensionConstant.SCENARIO_MOCK);
+    }
+
+    /**
+     * 构建一码游业务扩展点
+     * @param useCasePraiseType
+     * @param isSimulation
+     * @return
+     */
+    private BizScenario buildOneTravelBizScenario(String useCasePraiseType, Byte isSimulation) {
+        return BizScenario.valueOf(ExtensionConstant.ONE_TRAVEL, useCasePraiseType
                 , isSimulation == 0 ? ExtensionConstant.SCENARIO_IMPL : ExtensionConstant.SCENARIO_MOCK);
     }
 

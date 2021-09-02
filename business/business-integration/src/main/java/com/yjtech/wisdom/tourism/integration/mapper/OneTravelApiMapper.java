@@ -89,6 +89,12 @@ public interface OneTravelApiMapper {
     List<BasePercentVO> queryUserAgeDistribution();
 
     /**
+     * 查询用户年龄分布名称
+     * @return
+     */
+    List<String> queryUserAgeDistributionName();
+
+    /**
      * 查询一码游投诉今年搜索月趋势
      * @param params
      * @return

@@ -342,6 +342,11 @@
         WHEN complaint_type = 1 THEN (select name from tb_scenic <where> id = complaint.object_id </where>)
         WHEN complaint_type = 2 THEN (select name from tb_hotel_info <where> id = complaint.object_id </where>)
         ELSE '其他' END as eventName,
+        CASE
+        WHEN complaint_type = 0 THEN complaint_object
+        WHEN complaint_type = 1 THEN (select name from tb_scenic <where> id = complaint.object_id </where>)
+        WHEN complaint_type = 2 THEN (select name from tb_hotel_info <where> id = complaint.object_id </where>)
+        ELSE '其他' END as eventHappenPerson,
         status as eventStatus,
         CASE
         WHEN status = 0 THEN '待指派'

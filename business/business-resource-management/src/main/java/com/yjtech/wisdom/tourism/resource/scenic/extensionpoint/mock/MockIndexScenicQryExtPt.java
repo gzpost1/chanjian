@@ -1,5 +1,6 @@
 package com.yjtech.wisdom.tourism.resource.scenic.extensionpoint.mock;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.yjtech.wisdom.tourism.common.bean.index.ScenicBuildingDTO;
 import com.yjtech.wisdom.tourism.common.bean.index.TodayRealTimeStatisticsDTO;
 import com.yjtech.wisdom.tourism.common.constant.Constants;
@@ -13,6 +14,7 @@ import com.yjtech.wisdom.tourism.redis.RedisCache;
 import com.yjtech.wisdom.tourism.resource.scenic.entity.ScenicEntity;
 import com.yjtech.wisdom.tourism.resource.scenic.extensionpoint.IndexScenicQryExtPt;
 import com.yjtech.wisdom.tourism.resource.scenic.extensionpoint.ScenicExtensionConstant;
+import com.yjtech.wisdom.tourism.resource.scenic.query.ScenicScreenQuery;
 import com.yjtech.wisdom.tourism.resource.scenic.service.ScenicService;
 import com.yjtech.wisdom.tourism.resource.ticket.query.TicketSummaryQuery;
 import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.scenic.SimulationScenicDto;
@@ -52,7 +54,7 @@ public class MockIndexScenicQryExtPt implements IndexScenicQryExtPt {
         BigDecimal bearCapacity = new BigDecimal(0);
         LocalDateTime now = LocalDateTime.now();
         int hour = now.getHour();
-        List<ScenicEntity> list = scenicService.list();
+        List<ScenicEntity> list = queryScenicList(null);
         for(ScenicEntity entity : list){
 
             //小时客流量 = 小时初始客流量+随机数
@@ -81,7 +83,7 @@ public class MockIndexScenicQryExtPt implements IndexScenicQryExtPt {
         BigDecimal tourist = new BigDecimal(0);
         BigDecimal evaluate = new BigDecimal(0);
 
-        List<ScenicEntity> list = scenicService.list();
+        List<ScenicEntity> list = queryScenicList(null);
         for(ScenicEntity entity : list){
 
             //小时客流量 = 小时初始客流量+随机数
@@ -151,5 +153,13 @@ public class MockIndexScenicQryExtPt implements IndexScenicQryExtPt {
         //第二天凌晨1点
         LocalDateTime endTime = LocalDate.now().atStartOfDay().plusDays(1).plusHours(SimulationConstants.HOUR);
         return Duration.between(LocalDateTime.now(), endTime).toMinutes();
+    }
+
+    private List<ScenicEntity> queryScenicList(Long scenicId){
+        LambdaQueryWrapper<ScenicEntity> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Objects.nonNull(scenicId), ScenicEntity::getId, scenicId);
+        queryWrapper.eq( ScenicEntity::getStatus, 1);
+        List<ScenicEntity> list = scenicService.list(queryWrapper);
+        return list;
     }
 }

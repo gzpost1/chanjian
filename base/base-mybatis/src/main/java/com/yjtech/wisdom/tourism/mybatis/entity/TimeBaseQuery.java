@@ -2,6 +2,7 @@ package com.yjtech.wisdom.tourism.mybatis.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.yjtech.wisdom.tourism.common.enums.AnalysisDateTypeEnum;
 import lombok.Data;
 import org.hibernate.validator.constraints.Range;
 
@@ -60,5 +61,10 @@ public class TimeBaseQuery extends AreaBaseVO implements Serializable {
      * 所属时
      */
     private Integer hour;
+
+    public String getSqlDateFormat() {
+        AnalysisDateTypeEnum analysisDateTypeEnum = AnalysisDateTypeEnum.getItemByValue(this.type);
+        return analysisDateTypeEnum.getSqlDateFormat();
+    }
 
 }

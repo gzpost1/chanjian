@@ -6,15 +6,14 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yjtech.wisdom.tourism.common.bean.AnalysisBaseInfo;
 import com.yjtech.wisdom.tourism.common.bean.AnalysisMonthChartInfo;
 import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
-import com.yjtech.wisdom.tourism.mybatis.entity.AreaBaseVO;
-import com.yjtech.wisdom.tourism.mybatis.utils.AnalysisUtils;
-import com.yjtech.wisdom.tourism.common.utils.DateUtils;
 import com.yjtech.wisdom.tourism.integration.mapper.OneTravelApiMapper;
 import com.yjtech.wisdom.tourism.integration.pojo.bo.onetravel.OneTravelAreaVisitStatisticsBO;
 import com.yjtech.wisdom.tourism.integration.pojo.bo.onetravel.OneTravelComplaintListBO;
 import com.yjtech.wisdom.tourism.integration.pojo.bo.onetravel.OneTravelMagicVisitPvBO;
 import com.yjtech.wisdom.tourism.integration.pojo.bo.onetravel.OneTravelVisitStatisticsBO;
 import com.yjtech.wisdom.tourism.integration.pojo.vo.OneTravelQueryVO;
+import com.yjtech.wisdom.tourism.mybatis.entity.AreaBaseVO;
+import com.yjtech.wisdom.tourism.mybatis.utils.AnalysisUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -124,6 +123,15 @@ public class OneTravelApiService {
     @Transactional(readOnly = true)
     public List<BasePercentVO> queryUserAgeDistribution(){
         return oneTravelApiMapper.queryUserAgeDistribution();
+    }
+
+    /**
+     * 查询用户年龄分布名称
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public List<String> queryUserAgeDistributionName(){
+        return oneTravelApiMapper.queryUserAgeDistributionName();
     }
 
     /**

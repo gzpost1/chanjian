@@ -1,6 +1,7 @@
 package com.yjtech.wisdom.tourism.systemconfig.simulation.factory.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.yjtech.wisdom.tourism.common.constant.CacheKeyContants;
 import com.yjtech.wisdom.tourism.common.constant.SimulationConstants;
 import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.complaint.SimulationTravelComplaintDTO;
 import com.yjtech.wisdom.tourism.systemconfig.simulation.factory.SimulationFactory;
@@ -47,6 +48,9 @@ public class SimulationTravelComplaintFactory implements SimulationFactory<Simul
         obj.setMonthOfComplaintTotal(obj.getDayOfComplaint().multiply(new BigDecimal(LocalDate.now().getDayOfMonth())).add(obj.getMonthOfComplaintTotal()).setScale(0,BigDecimal.ROUND_HALF_UP));
 
         redisTemplate.opsForValue().set(getCacheKey(SimulationConstants.TRAVEL_COMPLAINT), obj);
+
+        //删除旅游投诉模拟数据结果缓存key
+        redisTemplate.delete(redisTemplate.keys(CacheKeyContants.TRAVEL_COMPLAINT_SIMULATION_PREFIX + "*"));
 
     }
 

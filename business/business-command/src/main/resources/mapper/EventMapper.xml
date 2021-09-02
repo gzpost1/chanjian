@@ -18,7 +18,7 @@
         <if test="params.beginTime != null and params.endTime != null">
             and event_date >= #{params.beginTime} and event_date <![CDATA[<=]]> #{params.endTime}
         </if>
-        and deleted = 0
+        and deleted = 0 and status = 1
     </sql>
 
     <!-- 通用查询映射结果 -->
@@ -125,7 +125,7 @@
             <if test="params.beginTime != null and params.endTime != null">
                 and event_date >= #{params.beginTime} and event_date <![CDATA[<]]> #{params.endTime}
             </if>
-            and deleted = 0
+            and deleted = 0 and status  = 1
         </where>
     </select>
 
@@ -156,7 +156,7 @@
             <if test="params.eventStatus != null and params.eventStatus != ''">
                 and event_status = #{params.eventStatus}
             </if>
-            and deleted = 0
+            and deleted = 0 and status  = 1
         </where>
     </select>
 

@@ -2,6 +2,7 @@ package com.yjtech.wisdom.tourism.command.extensionpoint.mock;
 
 import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateUtil;
+import com.yjtech.wisdom.tourism.command.dto.travelcomplaint.TravelComplaintSimulationDTO;
 import com.yjtech.wisdom.tourism.command.extensionpoint.TravelComplaintExtensionConstant;
 import com.yjtech.wisdom.tourism.command.extensionpoint.TravelComplaintQryExtPt;
 import com.yjtech.wisdom.tourism.command.vo.travelcomplaint.TravelComplaintScreenQueryVO;
@@ -9,6 +10,7 @@ import com.yjtech.wisdom.tourism.common.bean.AnalysisBaseInfo;
 import com.yjtech.wisdom.tourism.common.bean.AnalysisMonthChartInfo;
 import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
+import com.yjtech.wisdom.tourism.common.constant.CacheKeyContants;
 import com.yjtech.wisdom.tourism.common.constant.Constants;
 import com.yjtech.wisdom.tourism.common.constant.SimulationConstants;
 import com.yjtech.wisdom.tourism.common.enums.TravelComplaintTypeEnum;
@@ -20,8 +22,13 @@ import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.complaint.Simulatio
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 旅游投诉 模拟数据 扩展
@@ -45,7 +52,7 @@ public class MockTravelComplaintQryExtPt implements TravelComplaintQryExtPt {
      */
     @Override
     public Integer queryTravelComplaintTotalToIndex(TravelComplaintScreenQueryVO vo) {
-        return queryTotal(vo);
+        return calculateAndQuery(vo.getComplaintType(), vo.getBeginTime(), vo.getEndTime()).getTravelComplaintTotalToIndex();
     }
 
     /**
@@ -55,7 +62,7 @@ public class MockTravelComplaintQryExtPt implements TravelComplaintQryExtPt {
      */
     @Override
     public Integer queryTravelComplaintTotal(TravelComplaintScreenQueryVO vo) {
-        return queryTotal(vo);
+        return calculateAndQuery(vo.getComplaintType(), vo.getBeginTime(), vo.getEndTime()).getTravelComplaintTotal();
     }
 
     /**
@@ -65,8 +72,7 @@ public class MockTravelComplaintQryExtPt implements TravelComplaintQryExtPt {
      */
     @Override
     public List<BasePercentVO> queryComplaintTypeDistribution(TravelComplaintScreenQueryVO vo) {
-        SimulationTravelComplaintDTO simulationTravelComplaintDTO = redisCache.getCacheObject(Constants.SIMULATION_KEY + SimulationConstants.TRAVEL_COMPLAINT);
-        return simulationTravelComplaintDTO.getComplaintTypeDistribution();
+        return calculateAndQuery(vo.getComplaintType(), vo.getBeginTime(), vo.getEndTime()).getComplaintTypeDistribution();
     }
 
     /**
@@ -76,8 +82,7 @@ public class MockTravelComplaintQryExtPt implements TravelComplaintQryExtPt {
      */
     @Override
     public List<BasePercentVO> queryComplaintStatusDistribution(TravelComplaintScreenQueryVO vo) {
-        SimulationTravelComplaintDTO simulationTravelComplaintDTO = redisCache.getCacheObject(Constants.SIMULATION_KEY + SimulationConstants.TRAVEL_COMPLAINT);
-        return simulationTravelComplaintDTO.getComplaintStatusDistribution();
+        return calculateAndQuery(vo.getComplaintType(), vo.getBeginTime(), vo.getEndTime()).getComplaintStatusDistribution();
     }
 
     /**
@@ -87,16 +92,7 @@ public class MockTravelComplaintQryExtPt implements TravelComplaintQryExtPt {
      */
     @Override
     public List<BaseVO> queryComplaintTopByType(TravelComplaintScreenQueryVO vo) {
-        SimulationTravelComplaintDTO simulationTravelComplaintDTO = redisCache.getCacheObject(Constants.SIMULATION_KEY + SimulationConstants.TRAVEL_COMPLAINT);
-
-        //获取景区Top排行
-        if(TravelComplaintTypeEnum.TRAVEL_COMPLAINT_TYPE_SCENIC.getValue().equals(vo.getComplaintType())){
-            return simulationTravelComplaintDTO.getScenicComplaintRank();
-        }else if(TravelComplaintTypeEnum.TRAVEL_COMPLAINT_TYPE_HOTEL.getValue().equals(vo.getComplaintType())){
-            return simulationTravelComplaintDTO.getHotelComplaintRank();
-        }
-
-        return Collections.emptyList();
+        return calculateAndQuery(vo.getComplaintType(), vo.getBeginTime(), vo.getEndTime()).getComplaintTopByType();
     }
 
     /**
@@ -106,10 +102,89 @@ public class MockTravelComplaintQryExtPt implements TravelComplaintQryExtPt {
      */
     @Override
     public List<AnalysisBaseInfo> queryComplaintAnalysis(TravelComplaintScreenQueryVO vo) {
+        return calculateAndQuery(vo.getComplaintType(), vo.getBeginTime(), vo.getEndTime()).getComplaintAnalysis();
+    }
+
+    /**
+     * 查询统计
+     * @param vo
+     * @return
+     */
+    private Integer queryTotal(TravelComplaintScreenQueryVO vo){
+        return calculateAndQuery(vo.getComplaintType(), vo.getBeginTime(), vo.getEndTime()).getQueryTotal();
+    }
+
+
+    /**
+     * 计算并查询模拟数据
+     * @param complaintType
+     * @param beginTime
+     * @param endTime
+     * @return
+     */
+    public TravelComplaintSimulationDTO calculateAndQuery(Byte complaintType, LocalDateTime beginTime, LocalDateTime endTime){
+        //获取缓存数据
+        TravelComplaintSimulationDTO cacheInfo = redisCache.getCacheObject(CacheKeyContants.TRAVEL_COMPLAINT_SIMULATION_PREFIX + beginTime + endTime);
+        if (null != cacheInfo) {
+            return cacheInfo;
+        }
+
+        //获取当前时间
+        LocalDateTime now = LocalDateTime.now();
+
+        //获取初始化模板数据
         SimulationTravelComplaintDTO simulationTravelComplaintDTO = redisCache.getCacheObject(Constants.SIMULATION_KEY + SimulationConstants.TRAVEL_COMPLAINT);
 
+        //查询综合总览-旅游投诉总量
+        Integer travelComplaintTotalToIndex = null == beginTime || null == endTime ?
+                simulationTravelComplaintDTO.getDayOfComplaint().intValue() :
+                simulationTravelComplaintDTO.getDayOfComplaint().multiply(new BigDecimal(beginTime.until(endTime, ChronoUnit.DAYS))).setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
+
+        //查询旅游投诉总量
+        Integer travelComplaintTotal = travelComplaintTotalToIndex;
+
+        //查询旅游投诉类型分布
+        List<BasePercentVO> complaintTypeDistribution = simulationTravelComplaintDTO.getComplaintTypeDistribution();
+
+        //查询旅游投诉状态分布
+        List<BasePercentVO> complaintStatusDistribution = simulationTravelComplaintDTO.getComplaintStatusDistribution();
+
+        //查询旅游投诉类型Top排行
+        List<BaseVO> complaintTopByType;
+        if(TravelComplaintTypeEnum.TRAVEL_COMPLAINT_TYPE_SCENIC.getValue().equals(complaintType)){
+            complaintTopByType =  simulationTravelComplaintDTO.getScenicComplaintRank();
+        }else if(TravelComplaintTypeEnum.TRAVEL_COMPLAINT_TYPE_HOTEL.getValue().equals(complaintType)){
+            complaintTopByType =  simulationTravelComplaintDTO.getHotelComplaintRank();
+        }else {
+            complaintTopByType = Collections.emptyList();
+        }
+
+        //查询旅游投诉趋势、同比、环比
+        List<AnalysisBaseInfo> complaintAnalysis = calculateAnalysis(now.toLocalDate().toString(), simulationTravelComplaintDTO.getMonthOfComplaintTotal());
+
+        //查询统计
+        Integer queryTotal = travelComplaintTotalToIndex;
+
+        TravelComplaintSimulationDTO dto = new TravelComplaintSimulationDTO(travelComplaintTotalToIndex, travelComplaintTotal, complaintTypeDistribution,
+                complaintStatusDistribution, complaintTopByType, complaintAnalysis, queryTotal);
+
+        //获取缓存数据
+        redisCache.setCacheObject(CacheKeyContants.TRAVEL_COMPLAINT_SIMULATION_PREFIX + beginTime + endTime, dto, (int) DateUtils.getCacheExpire(), TimeUnit.MINUTES);
+
+        return dto;
+    }
+
+
+    /**
+     * 计算信息趋势，同比、环比
+     *
+     * @param currentDate
+     * @param monthOfTotal
+     * @return
+     */
+    private List<AnalysisBaseInfo> calculateAnalysis(String currentDate, BigDecimal monthOfTotal) {
         //获取当前月份
-        String currentMonth = DateUtils.parseDateToStr(DateUtils.YYYY_MM, new Date());
+        String currentMonth = currentDate.substring(0, 7);
 
         //初始化当年月份信息
         List<String> monthMarkList = DateUtils.getEveryMonthOfCurrentYear();
@@ -133,11 +208,11 @@ public class MockTravelComplaintQryExtPt implements TravelComplaintQryExtPt {
             AnalysisMonthChartInfo currentYearByMonth;
             //匹配当前月，直接使用：月累计投诉量
             if(currentMonth.equals(monthMark)){
-                currentYearByMonth = new AnalysisMonthChartInfo().build(monthMark, simulationTravelComplaintDTO.getMonthOfComplaintTotal(), lastYearByMonth.getCount(), lastMonthValue);
+                currentYearByMonth = new AnalysisMonthChartInfo().build(monthMark, monthOfTotal, lastYearByMonth.getCount(), lastMonthValue);
             }
             //匹配非当前月，则进行计算：月累计投诉量*（100+随机数）/100
             else {
-                BigDecimal count = simulationTravelComplaintDTO.getMonthOfComplaintTotal().multiply(new BigDecimal(100 + randomInt)).divide(new BigDecimal(100), 1, BigDecimal.ROUND_HALF_UP);
+                BigDecimal count = monthOfTotal.multiply(new BigDecimal(100 + randomInt)).divide(new BigDecimal(100), 1, BigDecimal.ROUND_HALF_UP);
                 currentYearByMonth = new AnalysisMonthChartInfo().build(monthMark, count, lastYearByMonth.getCount(), lastMonthValue);
             }
 
@@ -156,18 +231,4 @@ public class MockTravelComplaintQryExtPt implements TravelComplaintQryExtPt {
                 new AnalysisBaseInfo(lastData.get(0).getTime().substring(0, 4), lastData)
         );
     }
-
-    /**
-     * 查询统计
-     * @param vo
-     * @return
-     */
-    private Integer queryTotal(TravelComplaintScreenQueryVO vo){
-        SimulationTravelComplaintDTO simulationTravelComplaintDTO = redisCache.getCacheObject(Constants.SIMULATION_KEY + SimulationConstants.TRAVEL_COMPLAINT);
-        //获取查询时间间隔
-        return null == vo.getBeginTime() || null == vo.getEndTime() ?
-                simulationTravelComplaintDTO.getDayOfComplaint().intValue() :
-                simulationTravelComplaintDTO.getDayOfComplaint().multiply(new BigDecimal(vo.getBeginTime().until(vo.getEndTime(), ChronoUnit.DAYS))).setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
-    }
-
 }
