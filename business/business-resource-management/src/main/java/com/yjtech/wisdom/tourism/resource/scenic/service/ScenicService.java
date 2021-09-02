@@ -98,7 +98,7 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
         if (CollectionUtils.isNotEmpty(list)) {
             List<SysDictData> dictCache = DictUtils.getDictCache("scenic_level");
             Map<String, SysDictData> sysDictMap = dictCache.stream().collect(Collectors.toMap(SysDictData::getDictValue, e -> e));
-            Map<String, List<ScenicEntity>> map = list.stream().collect(Collectors.groupingBy(ScenicEntity::getLevel));
+            Map<String, List<ScenicEntity>> map = list.stream().filter(item -> StringUtils.isNotBlank(item.getLevel())).collect(Collectors.groupingBy(ScenicEntity::getLevel));
             for (Map.Entry<String, List<ScenicEntity>> next : map.entrySet()) {
                 SysDictData dictData = sysDictMap.get(next.getKey());
                 vos.add(BaseVO.builder()
