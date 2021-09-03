@@ -192,14 +192,15 @@ public class IndexController {
         DataOverviewVo dataOverviewVo = new DataOverviewVo();
         dataOverviewVo.setBeginDate(vo.getBeginTime().toLocalDate().toString());
         dataOverviewVo.setEndDate(vo.getEndTime().toLocalDate().toString());
+        dataOverviewVo.setIsSimulation(vo.getIsSimulation().intValue());
 
         DataOverviewDto dto = districtTourService.queryDataOverview(dataOverviewVo);
         //计算省内游客占比
         dto.setProvinceInsideRate(null == dto.getAllTouristNum() || 0 == dto.getAllTouristNum() ?
-                BigDecimal.ZERO :  new BigDecimal(dto.getProvinceInsideTouristNum()).divide(new BigDecimal(dto.getAllTouristNum()),3,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)));
+                BigDecimal.ZERO :  new BigDecimal(dto.getProvinceInsideTouristNum()).divide(new BigDecimal(dto.getAllTouristNum()),1,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)));
         //计算省外游客占比
         dto.setProvinceOutsideRate(null == dto.getAllTouristNum() || 0 == dto.getAllTouristNum() ?
-                BigDecimal.ZERO :  new BigDecimal(dto.getProvinceOutsideTouristNum()).divide(new BigDecimal(dto.getAllTouristNum()),3,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)));
+                BigDecimal.ZERO :  new BigDecimal(dto.getProvinceOutsideTouristNum()).divide(new BigDecimal(dto.getAllTouristNum()),1,BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)));
 
         return JsonResult.success(dto);
     }
