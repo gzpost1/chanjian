@@ -216,6 +216,8 @@ public class MockTravelComplaintQryExtPt implements TravelComplaintQryExtPt {
                 currentYearByMonth = new AnalysisMonthChartInfo().build(monthMark, count, lastYearByMonth.getCount(), lastMonthValue);
             }
 
+            lastMonthValue = currentYearByMonth.getCount();
+
             //同步同比、环比
             lastYearByMonth.setSame(currentYearByMonth.getSame());
             lastYearByMonth.setSequential(currentYearByMonth.getSequential());

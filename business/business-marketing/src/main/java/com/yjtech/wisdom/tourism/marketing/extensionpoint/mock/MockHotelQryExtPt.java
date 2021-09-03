@@ -507,6 +507,8 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
             lastYearByMonth.setSame(currentYearByMonth.getSame());
             lastYearByMonth.setSequential(currentYearByMonth.getSequential());
 
+            lastMonthValue = currentYearByMonth.getCount();
+
             currentData.add(currentYearByMonth);
             lastData.add(lastYearByMonth);
         }
