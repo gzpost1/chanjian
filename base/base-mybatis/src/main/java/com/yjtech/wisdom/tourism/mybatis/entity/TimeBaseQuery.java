@@ -63,6 +63,9 @@ public class TimeBaseQuery extends AreaBaseVO implements Serializable {
     private Integer hour;
 
     public String getSqlDateFormat() {
+        if(null == this.type){
+            return null;
+        }
         AnalysisDateTypeEnum analysisDateTypeEnum = AnalysisDateTypeEnum.getItemByValue(this.type);
         return analysisDateTypeEnum.getSqlDateFormat();
     }
