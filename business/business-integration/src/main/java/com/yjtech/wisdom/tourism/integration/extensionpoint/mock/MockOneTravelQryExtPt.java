@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -124,7 +125,8 @@ public class MockOneTravelQryExtPt implements OneTravelQryExtPt {
      */
     @Override
     public List<OneTravelAreaVisitStatisticsBO> queryUserNationDistribution() {
-        return calculateAndQuery(LocalDateTime.now(), LocalDateTime.now()).getUserNationDistribution();
+        LocalDateTime now = LocalDateTime.now();
+        return calculateAndQuery(now.with(TemporalAdjusters.firstDayOfMonth()), now).getUserNationDistribution();
     }
 
     /**
@@ -134,7 +136,8 @@ public class MockOneTravelQryExtPt implements OneTravelQryExtPt {
      */
     @Override
     public OneTravelVisitStatisticsBO queryVisitStatistics() {
-        return calculateAndQuery(LocalDateTime.now(), LocalDateTime.now()).getVisitStatistics();
+        LocalDateTime now = LocalDateTime.now();
+        return calculateAndQuery(now.with(TemporalAdjusters.firstDayOfMonth()), now).getVisitStatistics();
     }
 
     /**
@@ -155,7 +158,8 @@ public class MockOneTravelQryExtPt implements OneTravelQryExtPt {
      */
     @Override
     public List<BasePercentVO> queryUserAgeDistribution() {
-        return calculateAndQuery(LocalDateTime.now(), LocalDateTime.now()).getUserAgeDistribution();
+        LocalDateTime now = LocalDateTime.now();
+        return calculateAndQuery(now.with(TemporalAdjusters.firstDayOfMonth()), now).getUserAgeDistribution();
     }
 
     /**
@@ -165,7 +169,8 @@ public class MockOneTravelQryExtPt implements OneTravelQryExtPt {
      */
     @Override
     public OperationDataInfo queryOperationStatistics() {
-        return calculateAndQuery(LocalDateTime.now(), LocalDateTime.now()).getOperationStatistics();
+        LocalDateTime now = LocalDateTime.now();
+        return calculateAndQuery(now.with(TemporalAdjusters.firstDayOfMonth()), now).getOperationStatistics();
     }
 
     /**
@@ -198,7 +203,8 @@ public class MockOneTravelQryExtPt implements OneTravelQryExtPt {
      */
     @Override
     public List<AnalysisBaseInfo> queryOrderAnalysis(FxDistQueryVO vo) {
-        return calculateAndQuery(vo.getBeginTime(), vo.getEndTime()).getOrderAnalysis();
+        LocalDateTime now = LocalDateTime.now();
+        return calculateAndQuery(now.with(TemporalAdjusters.firstDayOfMonth()), now).getOrderAnalysis();
     }
 
     /**
@@ -260,7 +266,7 @@ public class MockOneTravelQryExtPt implements OneTravelQryExtPt {
             //获取使用总人数
             Integer userTotal = simulationOneTravelDTO.getUserTotal();
             for (BasePercentVO province : provinceList) {
-                userNationDistribution.add(new OneTravelAreaVisitStatisticsBO().toBuilder().name(province.getName()).value(new BigDecimal(userTotal * province.getRate()).setScale(0, BigDecimal.ROUND_HALF_UP).longValue()).build());
+                userNationDistribution.add(new OneTravelAreaVisitStatisticsBO().toBuilder().name(province.getName()).value(new BigDecimal(userTotal * Double.valueOf(province.getValue())).setScale(0, BigDecimal.ROUND_HALF_UP).longValue()).build());
             }
         }
 
@@ -321,7 +327,7 @@ public class MockOneTravelQryExtPt implements OneTravelQryExtPt {
         //获取缓存数据
         redisCache.setCacheObject(CacheKeyContants.ONE_TRAVEL_SIMULATION_PREFIX + beginTime + endTime, dto, (int) DateUtils.getCacheExpire(), TimeUnit.MINUTES);
 
-        return null;
+        return dto;
     }
 
 
@@ -381,6 +387,8 @@ public class MockOneTravelQryExtPt implements OneTravelQryExtPt {
 
             currentData.add(currentYearByMonth);
             lastData.add(lastYearByMonth);
+
+            lastMonthValue = currentYearByMonth.getCount();
         }
 
         return Arrays.asList(

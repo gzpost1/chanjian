@@ -79,7 +79,7 @@ public class HotelBigDataScreenController {
 
         return JsonResult.success(extensionExecutor.execute(HotelQryExtPt.class,
                 buildBizScenario(HotelExtensionConstant.HOTEL_QUANTITY, vo.getIsSimulation()),
-                extension -> extension.queryEvaluateTypeDistribution(vo)));
+                extension -> extension.queryEvaluateTypeDistributionBigData(vo)));
     }
 
     /**
@@ -97,7 +97,7 @@ public class HotelBigDataScreenController {
 
         return JsonResult.success(extensionExecutor.execute(HotelQryExtPt.class,
                 buildBizScenario(HotelExtensionConstant.HOTEL_QUANTITY, vo.getIsSimulation()),
-                extension -> extension.queryEvaluateHotRank(vo)));
+                extension -> extension.queryEvaluateHotRankBigData(vo)));
     }
 
     /**
@@ -146,7 +146,9 @@ public class HotelBigDataScreenController {
     public JsonResult<List<RoomPriceAnalysisDTO>> queryRoomPriceAnalysis(@RequestBody @Valid RoomScreenQueryVO vo) {
         //设置默认酒店状态-启用
         vo.setStatus(EntityConstants.ENABLED);
-        return JsonResult.success(marketingHotelRoomService.queryRoomPriceAnalysis(vo));
+        return JsonResult.success(extensionExecutor.execute(HotelQryExtPt.class,
+                buildBizScenario(HotelExtensionConstant.HOTEL_QUANTITY, vo.getIsSimulation()),
+                extension -> extension.queryRoomPriceAnalysisBigData(vo)));
     }
 
     /**

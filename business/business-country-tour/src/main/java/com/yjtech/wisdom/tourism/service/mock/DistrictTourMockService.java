@@ -81,9 +81,15 @@ public class DistrictTourMockService implements SimulationFactory<DistrictMockRu
      */
     @Override
     public DataOverviewDto queryDataOverview(DataOverviewVo vo) {
+
+        if (StringUtils.isEmpty(vo.getBeginDate())) {
+            vo.setBeginDate(DateTimeUtil.localDateTimeToString(vo.getBeginTime(), "yyyy-MM-dd"));
+        }
+        if (StringUtils.isEmpty(vo.getEndDate())) {
+            vo.setEndDate(DateTimeUtil.localDateTimeToString(vo.getEndTime(), "yyyy-MM-dd"));
+        }
         String beginDate = vo.getBeginDate();
         String endDate = vo.getEndDate();
-
         List<LocalDate> betweenDate = DateTimeUtil.getBetweenDate(DateTimeUtil.stringToLocalDate(beginDate), DateTimeUtil.stringToLocalDate(endDate));
         DistrictMockRuleDTO mockRule = getMockRule();
 

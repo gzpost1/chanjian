@@ -43,11 +43,6 @@ public class SimulationEventDto extends SimulationCommonDto {
     @NotNull(message = "月累计事件量加数不能为空")
     private BigDecimal monthlyAddend;
 
-    /**
-     * 年累计事件量加数
-     */
-    @NotNull(message = "年累计事件量加数不能为空")
-    private BigDecimal yearlyAddend;
 
     /**
      * 事件类型分布
