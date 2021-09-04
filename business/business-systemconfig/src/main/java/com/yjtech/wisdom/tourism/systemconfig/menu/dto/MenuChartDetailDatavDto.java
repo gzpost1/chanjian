@@ -83,6 +83,12 @@ public class MenuChartDetailDatavDto {
     private String pointImgUrl;
 
     /**
+     * 是否启用模拟数据(0:否,1:是)
+     */
+    private Byte isSimulation;
+
+
+    /**
      * 表格类型，展示那些字段
      */
     private List<SystemconfigChartsListDatavDto> listDatas = new ArrayList<>();
