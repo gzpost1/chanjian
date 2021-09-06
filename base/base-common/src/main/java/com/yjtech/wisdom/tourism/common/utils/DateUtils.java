@@ -9,7 +9,6 @@ import java.lang.management.ManagementFactory;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -244,10 +243,9 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
      * @author horadirm
      */
     public static long getCacheExpire() {
-        LocalDate beginTime = LocalDate.now();
-        LocalDateTime endTime = beginTime.atStartOfDay().plusDays(1).plusMinutes(30);
+        LocalDateTime beginTime = LocalDateTime.now();
+        LocalDateTime endTime = beginTime.toLocalDate().atStartOfDay().plusDays(1).plusMinutes(30);
         return Duration.between(beginTime, endTime).toMinutes();
     }
-
 
 }

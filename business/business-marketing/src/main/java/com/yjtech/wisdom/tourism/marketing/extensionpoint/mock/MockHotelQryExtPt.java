@@ -435,9 +435,13 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
             int randomInt = (int) (-20 + Math.random() * (20 - (-20) + 1));
             roomPriceAnalysisDetail.add(new RoomPriceAnalysisDTO(dayMark,
                     averagePrice.multiply(new BigDecimal(100 + randomInt)).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP),
+                    null == roomTypePriceMap.get("大床房") ? BigDecimal.ZERO :
                     new BigDecimal(Integer.valueOf(roomTypePriceMap.get("大床房")) + randomInt).multiply(new BigDecimal(100 + randomInt)).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP),
+                    null == roomTypePriceMap.get("双床房") ? BigDecimal.ZERO :
                     new BigDecimal(Integer.valueOf(roomTypePriceMap.get("双床房")) + randomInt).multiply(new BigDecimal(100 + randomInt)).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP),
+                    null == roomTypePriceMap.get("亲子/家庭房") ? BigDecimal.ZERO :
                     new BigDecimal(Integer.valueOf(roomTypePriceMap.get("亲子/家庭房")) + randomInt).multiply(new BigDecimal(100 + randomInt)).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP),
+                    null == roomTypePriceMap.get("套房") ? BigDecimal.ZERO :
                     new BigDecimal(Integer.valueOf(roomTypePriceMap.get("套房")) + randomInt).multiply(new BigDecimal(100 + randomInt)).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP)
             ));
         }
@@ -502,6 +506,8 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
             //同步同比、环比
             lastYearByMonth.setSame(currentYearByMonth.getSame());
             lastYearByMonth.setSequential(currentYearByMonth.getSequential());
+
+            lastMonthValue = currentYearByMonth.getCount();
 
             currentData.add(currentYearByMonth);
             lastData.add(lastYearByMonth);
