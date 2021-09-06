@@ -285,6 +285,7 @@ public class TbSystemconfigArchitectureService extends ServiceImpl<TbSystemconfi
                         if (chart.getId().equals(chartDatum.getChartId())) {
                             chart.setPointDatas(chartDatum.getPointDatas());
                             chart.setName(chartDatum.getName());
+                            chart.setIsSimulation(nowPage.getIsSimulation());
                         }
                     }
                     //设置列表
