@@ -49,6 +49,11 @@ public class SystemconfigMenuDatavlDto {
     private Byte isShowReturn;
 
     /**
+     * 是否启用模拟数据(0:否,1:是)
+     */
+    private Byte isSimulation;
+
+    /**
      * chart_data 图表数据
      */
     private List<MenuChartDetailDatavDto> chartData;
