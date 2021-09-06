@@ -2,7 +2,6 @@ package com.yjtech.wisdom.tourism.message.admin.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
@@ -20,7 +19,6 @@ import com.yjtech.wisdom.tourism.message.admin.entity.MessageEntity;
 import com.yjtech.wisdom.tourism.message.admin.entity.MessageRecordEntity;
 import com.yjtech.wisdom.tourism.message.admin.mapper.MessageMapper;
 import com.yjtech.wisdom.tourism.message.admin.mapper.MessageRecordMapper;
-import com.yjtech.wisdom.tourism.message.admin.vo.InitMessageVo;
 import com.yjtech.wisdom.tourism.message.admin.vo.QueryMessageVo;
 import com.yjtech.wisdom.tourism.message.admin.vo.SendMessageVo;
 import com.yjtech.wisdom.tourism.message.app.bo.TpnsPushBO;
@@ -35,7 +33,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -170,6 +167,7 @@ public class MessageMangerService extends ServiceImpl<MessageMapper, MessageEnti
                 messageDto.setId(item.getId());
                 messageDto.setEventType(item.getEventType());
                 messageDto.setEventDealPersonId(item.getEventDealPersonId());
+                messageDto.setCreateTime(item.getCreateTime());
 
                 // 已处理数据
                 if (MessageConstants.EVENT_STATUS_COMPLETE.equals(emergencyItem.getEventStatus())) {
