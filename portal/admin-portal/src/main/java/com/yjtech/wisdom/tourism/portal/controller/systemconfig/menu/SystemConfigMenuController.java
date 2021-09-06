@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
 import com.yjtech.wisdom.tourism.common.core.domain.IdParam;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
+import com.yjtech.wisdom.tourism.common.core.domain.UpdateStatusParam;
 import com.yjtech.wisdom.tourism.common.exception.ErrorCode;
 import com.yjtech.wisdom.tourism.common.utils.IdWorker;
 import com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysDictData;
@@ -186,5 +187,17 @@ public class SystemConfigMenuController {
     @PostMapping("/queryPageList")
     public JsonResult<List<BaseVO>> queryForDetail() {
         return JsonResult.success(systemconfigMenuService.queryPageList());
+    }
+
+    /**
+     * 更新模拟数据状态
+     *
+     * @param updateStatusParam
+     * @return
+     */
+    @PostMapping("/updateSimulationStatus")
+    public JsonResult updateSimulationStatus(@RequestBody @Valid UpdateStatusParam updateStatusParam) {
+        systemconfigMenuService.updateSimulationStatus(updateStatusParam);
+        return JsonResult.ok();
     }
 }

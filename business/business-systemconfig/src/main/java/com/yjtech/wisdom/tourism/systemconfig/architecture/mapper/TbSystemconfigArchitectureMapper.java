@@ -14,7 +14,7 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 public interface TbSystemconfigArchitectureMapper extends BaseMapper<TbSystemconfigArchitectureEntity> {
-    IPage<SystemconfigArchitectureDto> queryForPage(Page page, @Param("params")SystemconfigArchitecturePageQuery query);
+    IPage<SystemconfigArchitectureDto> queryForPage(Page page, @Param("params") SystemconfigArchitecturePageQuery query);
 
     Integer queryChildsByParent(Long parentId);
 
@@ -22,10 +22,12 @@ public interface TbSystemconfigArchitectureMapper extends BaseMapper<TbSystemcon
 
     BaseVO queryMaxAndMinByParendId(Long parentId);
 
-    void updateSortNum( @Param("params")UpdateStatusParam updateStatusParam);
+    void updateSortNum(@Param("params") UpdateStatusParam updateStatusParam);
 
     String queryNameByPingtai();
 
 
-    List<MenuTreeNode> getAreaTree(@Param("parentId")int parentId);
+    List<MenuTreeNode> getAreaTree(@Param("parentId") int parentId);
+
+    TbSystemconfigArchitectureEntity getArchitecutueSortNum(@Param("params") UpdateStatusParam updateStatusParam);
 }
