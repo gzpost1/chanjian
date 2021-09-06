@@ -45,7 +45,11 @@ public class SystemConfigArchitureController {
     @PostMapping("/getMenuTree")
     public JsonResult getMenuTree() {
         List<MenuTreeNode> treeNodeList = service.getAreaTree(0);
-        return JsonResult.success(TreeUtil.makeTree(treeNodeList));
+        List<MenuTreeNode> menuTreeNodes = TreeUtil.makeTree(treeNodeList);
+        String pintaiName = service.getPintaiName();
+        menuTreeNodes.get(0).setLabel(pintaiName);
+        menuTreeNodes.get(0).setTitle(pintaiName);
+        return JsonResult.success(menuTreeNodes);
     }
 
     /**

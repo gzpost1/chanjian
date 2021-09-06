@@ -86,10 +86,14 @@ public class TbSystemconfigArchitectureService extends ServiceImpl<TbSystemconfi
         //第一次创建平台
         Integer sortNum = getChildNumByParendId(0L);
         if (Objects.isNull(byId.getMenuId()) && sortNum == 0) {
-            systemconfigChartsVo.setMenuName(Optional.ofNullable(this.baseMapper.queryNameByPingtai()).orElse("产业监测平台"));
+            systemconfigChartsVo.setMenuName(getPintaiName());
         }
         return systemconfigChartsVo;
 
+    }
+
+    public String getPintaiName(){
+        return Optional.ofNullable(this.baseMapper.queryNameByPingtai()).orElse("产业监测平台");
     }
 
     public void create(SystemconfigArchitectureCreateDto createDto) {
@@ -144,7 +148,14 @@ public class TbSystemconfigArchitectureService extends ServiceImpl<TbSystemconfi
     }
 
     public void updateSortNum(UpdateStatusParam updateStatusParam) {
-        this.baseMapper.updateSortNum(updateStatusParam);
+        TbSystemconfigArchitectureEntity sortEntity = this.baseMapper.getArchitecutueSortNum(updateStatusParam);
+        TbSystemconfigArchitectureEntity byId = this.getById(updateStatusParam.getId());
+        Integer sortNum = sortEntity.getSortNum();
+        Integer sortNum1 = byId.getSortNum();
+        sortEntity.setSortNum(sortNum1);
+        byId.setSortNum(sortNum);
+        this.updateById(byId);
+        this.updateById(sortEntity);
     }
 
     /**
