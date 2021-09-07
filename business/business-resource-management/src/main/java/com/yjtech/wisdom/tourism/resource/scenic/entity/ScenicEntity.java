@@ -90,4 +90,9 @@ public class ScenicEntity extends BaseEntity {
 
     /**启停用状态*/
     private Byte status;
+
+    /**
+     * 景区状态(数据字典)
+     */
+    private Byte equipStatus;
 }
