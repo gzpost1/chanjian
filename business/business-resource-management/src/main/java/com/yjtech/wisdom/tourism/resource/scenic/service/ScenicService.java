@@ -88,7 +88,7 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
                 if(sysDictMap.containsKey(item.getLevel())){
                     item.setLevel(sysDictMap.get(item.getLevel()).getDictLabel());
                 }
-                item.setIconUrl(iconService.queryIconUrl(IconSpotEnum.SCENIC,item.getEquipStatus().toString()));
+                item.setIconUrl(iconService.queryIconUrl(IconSpotEnum.SCENIC, String.valueOf(item.getEquipStatus())));
                 //天气
                 WeatherQuery weatherQuery = new WeatherQuery();
                 weatherQuery.setLatitude(item.getLatitude());
