@@ -153,4 +153,14 @@
     </if>
     LIMIT 1
   </select>
+
+  <select id="getChildMaxNumByParendId" resultType="java.lang.Integer">
+    select
+    max(sort_num)
+    from
+    tb_systemconfig_architecture
+    where
+    deleted = 0
+    and parent_id = #{parentId}
+  </select>
 </mapper>
