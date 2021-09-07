@@ -1,0 +1,29 @@
+@startuml
+actor 用户
+用户 -> OneTravelStatisticsScreenController: 1.表单参数
+activate OneTravelStatisticsScreenController
+activate OneTravelApiService
+activate FxDistApiService
+activate SmartTravelApiService
+OneTravelStatisticsScreenController -> OneTravelApiService: 1.1.1查询全国用户分布
+OneTravelStatisticsScreenController -> OneTravelApiService: 1.1.2查询访问数据
+OneTravelStatisticsScreenController -> OneTravelApiService: 1.1.3查询用户年龄分布
+OneTravelStatisticsScreenController -> OneTravelApiService: 1.1.4查询运营数据
+
+OneTravelStatisticsScreenController -> FxDistApiService: 1.1.5查询交易数据
+OneTravelStatisticsScreenController -> FxDistApiService: 1.1.6查询运营数据
+OneTravelStatisticsScreenController -> FxDistApiService: 1.1.7查询商品订单分布
+OneTravelStatisticsScreenController -> FxDistApiService: 1.1.8查询商品交易额分布
+OneTravelStatisticsScreenController -> FxDistApiService: 1.1.9查询本年订单趋势
+OneTravelStatisticsScreenController -> FxDistApiService: 1.1.10查询本年交易额趋势
+
+OneTravelStatisticsScreenController -> SmartTravelApiService: 1.1.11查询运营数据
+
+deactivate SmartTravelApiService
+deactivate FxDistApiService
+deactivate OneTravelApiService
+SmartTravelApiService -> OneTravelStatisticsScreenController: 1.1.12汇总、脱敏
+FxDistApiService -> OneTravelStatisticsScreenController: 1.1.13汇总、脱敏
+OneTravelApiService -> OneTravelStatisticsScreenController: 1.1.14汇总、脱敏
+deactivate OneTravelStatisticsScreenController
+@enduml

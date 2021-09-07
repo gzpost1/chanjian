@@ -75,7 +75,7 @@ spring:
             config:
               multi-statement-allow: true
   redis:
-    database: 12
+    database: 9
     # 地址
     host: 42.193.2.246
     # 端口，默认为6379

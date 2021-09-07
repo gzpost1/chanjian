@@ -16,6 +16,7 @@ import com.yjtech.wisdom.tourism.integration.service.FxDistApiService;
 import com.yjtech.wisdom.tourism.integration.service.OneTravelApiService;
 import com.yjtech.wisdom.tourism.integration.service.SmartTravelApiService;
 import com.yjtech.wisdom.tourism.mybatis.entity.IndexQueryVO;
+import com.yjtech.wisdom.tourism.mybatis.entity.SimulationBaseVO;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
@@ -95,7 +96,7 @@ public class ImplOneTravelQryExtPt implements OneTravelQryExtPt {
      * @return
      */
     @Override
-    public List<OneTravelAreaVisitStatisticsBO> queryUserNationDistribution() {
+    public List<OneTravelAreaVisitStatisticsBO> queryUserNationDistribution(SimulationBaseVO vo) {
         return oneTravelApiService.queryProvinceVisitStatistics();
     }
 
@@ -104,7 +105,7 @@ public class ImplOneTravelQryExtPt implements OneTravelQryExtPt {
      * @return
      */
     @Override
-    public OneTravelVisitStatisticsBO queryVisitStatistics() {
+    public OneTravelVisitStatisticsBO queryVisitStatistics(SimulationBaseVO vo) {
         return oneTravelApiService.queryVisitStatistics();
     }
 
@@ -123,7 +124,7 @@ public class ImplOneTravelQryExtPt implements OneTravelQryExtPt {
      * @return
      */
     @Override
-    public List<BasePercentVO> queryUserAgeDistribution() {
+    public List<BasePercentVO> queryUserAgeDistribution(SimulationBaseVO vo) {
         return oneTravelApiService.queryUserAgeDistribution();
     }
 
@@ -132,7 +133,7 @@ public class ImplOneTravelQryExtPt implements OneTravelQryExtPt {
      * @return
      */
     @Override
-    public OperationDataInfo queryOperationStatistics() {
+    public OperationDataInfo queryOperationStatistics(SimulationBaseVO vo) {
         //获取入驻景点
         Integer scenicCount = smartTravelApiService.queryScenicCountByArea(null);
         //获取入驻商户（店铺数）

@@ -128,4 +128,8 @@ public interface HotelQryExtPt extends ExtensionPointI {
      */
     List<AnalysisBaseInfo> queryEvaluateSatisfactionAnalysis(EvaluateQueryVO vo);
 
+    public static void main(String[] args) {
+        System.out.println(System.currentTimeMillis());
+    }
+
 }
