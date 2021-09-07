@@ -33,11 +33,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -132,6 +131,9 @@ public class MessageMangerService extends ServiceImpl<MessageMapper, MessageEnti
             setEventInfo(record, touristComplaintsEventList, queryType, item);
         }
 
+        // 数据排序
+        Collections.reverse(record);
+
         // 进行自主分页
         IPage<MessageDto> page = PageHelpUtil.page(vo.getPageNo(), vo.getPageSize(), record);
 
@@ -168,6 +170,7 @@ public class MessageMangerService extends ServiceImpl<MessageMapper, MessageEnti
                 messageDto.setEventType(item.getEventType());
                 messageDto.setEventDealPersonId(item.getEventDealPersonId());
                 messageDto.setCreateTime(item.getCreateTime());
+                messageDto.setTitle(item.getTitle());
 
                 // 已处理数据
                 if (MessageConstants.EVENT_STATUS_COMPLETE.equals(emergencyItem.getEventStatus())) {

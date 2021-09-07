@@ -129,6 +129,16 @@ public class ScenicScreenVo {
     private String comfortCategory;
 
     /**
+     * 景区状态(数据字典)
+     */
+    private Byte equipStatus;
+
+    /**
+     * 图标地址
+     */
+    private String iconUrl;
+
+    /**
      * 天气
      */
     private WeatherInfoVO weatherInfoVO;

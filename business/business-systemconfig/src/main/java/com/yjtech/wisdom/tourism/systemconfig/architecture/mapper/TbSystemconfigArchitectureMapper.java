@@ -17,6 +17,7 @@ public interface TbSystemconfigArchitectureMapper extends BaseMapper<TbSystemcon
     IPage<SystemconfigArchitectureDto> queryForPage(Page page, @Param("params") SystemconfigArchitecturePageQuery query);
 
     Integer queryChildsByParent(Long parentId);
+    Integer getChildMaxNumByParendId(Long parentId);
 
     TbSystemconfigArchitectureEntity getFirstByParent(int parentId);
 

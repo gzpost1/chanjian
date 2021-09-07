@@ -34,7 +34,7 @@ public class VenueEntity implements Serializable {
      * id
      */
     @TableId(value = "id", type = IdType.ID_WORKER)
-    private Long id;
+    private String id;
 
     /**
      * 场馆名称
@@ -151,4 +151,10 @@ public class VenueEntity implements Serializable {
      */
     @TableField(exist = false)
     private Integer venueTypeNumber;
+
+    /**
+     * 场馆类型数量
+     */
+    @TableField(exist = false)
+    private String areaCode;
 }

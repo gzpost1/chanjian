@@ -67,10 +67,14 @@ public class EventService extends ServiceImpl<EventMapper, EventEntity> implemen
 
         EventSumaryQuery totalQuery = new EventSumaryQuery();
         Integer total = this.getBaseMapper().queryQuantity(totalQuery);
+        totalQuery.setBeginTime(query.getBeginTime());
+        totalQuery.setEndTime(query.getEndTime());
         result.add(BaseVO.builder().name("total").value(String.valueOf(total)).build());
 
         EventSumaryQuery statusQuery = new EventSumaryQuery();
         statusQuery.setEventStatus(EventContants.UNTREATED);
+        statusQuery.setBeginTime(query.getBeginTime());
+        statusQuery.setEndTime(query.getEndTime());
         Integer untreated = this.getBaseMapper().queryQuantityByStatus(statusQuery);
 
         statusQuery.setEventStatus(EventContants.PROCESSED);

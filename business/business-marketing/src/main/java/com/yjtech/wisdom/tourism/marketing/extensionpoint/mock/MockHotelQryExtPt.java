@@ -122,7 +122,7 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
      */
     @Override
     public List<BaseVO> queryEvaluateHotRank(EvaluateQueryVO vo) {
-        return calculateAndQuery(vo.getBeginTime(), vo.getEndTime()).getHotRankDetail().get(Long.valueOf(vo.getPlaceId()));
+        return calculateAndQuery(vo.getBeginTime(), vo.getEndTime()).getHotRankBigData();
     }
 
     /**
@@ -370,7 +370,7 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
         //查询评价类型分布-酒店民宿大数据
         List<BasePercentVO> typeDistributionBigData = Arrays.asList(new BasePercentVO("好评", null, goodRatePercentAll.divide(new BigDecimal(hotelCount), 1, BigDecimal.ROUND_HALF_UP).doubleValue()),
                 new BasePercentVO("中评", null, mediumRatePercentAll.divide(new BigDecimal(hotelCount), 1, BigDecimal.ROUND_HALF_UP).doubleValue()),
-                new BasePercentVO("差评", null, badRatePercentAll.divide(new BigDecimal(hotelCount)).doubleValue()));
+                new BasePercentVO("差评", null, badRatePercentAll.divide(new BigDecimal(hotelCount), 1, BigDecimal.ROUND_HALF_UP).doubleValue()));
 
         //所有分页按照每10条一页进行处理
         //查询酒店评价排行-酒店民宿大数据
