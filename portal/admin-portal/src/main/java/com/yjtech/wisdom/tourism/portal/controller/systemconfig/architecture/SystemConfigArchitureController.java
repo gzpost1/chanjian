@@ -140,9 +140,13 @@ public class SystemConfigArchitureController {
             return JsonResult.error(ErrorCode.BUSINESS_EXCEPTION.code(), "该节点下有子节点，不可修改为页面");
         }
 
+        TbSystemconfigArchitectureEntity byId = this.service.getById(updateDto.getMenuId());
+
         TbSystemconfigArchitectureEntity entity = new TbSystemconfigArchitectureEntity();
         BeanUtils.copyProperties(updateDto, entity);
-
+        if(!byId.getParentId().equals(updateDto.getParentId())){
+            entity.setSortNum(sortNum+1);
+        }
         service.updateById(entity);
 
         return JsonResult.ok();

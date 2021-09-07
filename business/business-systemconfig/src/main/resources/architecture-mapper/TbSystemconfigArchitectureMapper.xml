@@ -149,7 +149,7 @@
     </if>
     <if test="params.status.toString() == '1'.toString() ">
       and a2.sort_num - a1.sort_num >0
-      ORDER BY (a2.sort_num - a1.sort_num) asc,a2.create_time
+      ORDER BY (a2.sort_num - a1.sort_num) asc,a2.first_id,a2.sort_num,a2.secon_id,a2.sort_num
     </if>
     LIMIT 1
   </select>
