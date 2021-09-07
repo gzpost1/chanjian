@@ -585,7 +585,7 @@ public class MockScenicQryExtPt implements ScenicQryExtPt {
                         BigDecimal randomForCache2 = getRandomForCache(SimulationConstants.SCENIC, String.valueOf(entity.getId()), "mon_visit_quantity:" + beginTime.getMonthValue() + "-" + beginTime.getDayOfMonth());
                         BigDecimal otherDay = new BigDecimal(0);
                         if (dayOfMonth != 1) {
-                            otherDay = (monQuantity.subtract(dailylyQuantity)).divide(new BigDecimal(dayOfMonth - 1)).multiply(new BigDecimal(100).add(randomForCache2)).divide(new BigDecimal(100));
+                            otherDay = (monQuantity.subtract(dailylyQuantity)).divide(new BigDecimal(dayOfMonth - 1),3).multiply(new BigDecimal(100).add(randomForCache2)).divide(new BigDecimal(100));
                         }
                         visitQuantity = visitQuantity.add(otherDay);
                     }
