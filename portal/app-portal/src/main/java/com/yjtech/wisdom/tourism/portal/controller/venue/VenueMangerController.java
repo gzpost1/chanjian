@@ -26,9 +26,6 @@ public class VenueMangerController {
     @Autowired
     private VenueMangerService venueMangerService;
 
-    @Autowired
-    private VenueMangerTask v;
-
     /**
      * 查询文博场馆列表_分页
      *
@@ -49,16 +46,5 @@ public class VenueMangerController {
     @GetMapping("queryScale")
     private JsonResult<List<VenueScaleDto>> queryScale () {
         return JsonResult.success(venueMangerService.queryScale());
-    }
-
-    /**
-     * 查询文博场馆分布比列
-     *
-     * @return
-     */
-    @GetMapping("getA")
-    private JsonResult getA () {
-        v.saveOrUpdateBatchAmap();
-        return JsonResult.success();
     }
 }

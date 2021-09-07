@@ -44,8 +44,6 @@ public class VenueMangerTask {
     private PlatformService platformService;
     @Autowired
     private SysDictTypeService sysDictTypeService;
-    @Autowired
-    private Executor threadPoolTaskExecutor;
 
     private CopyOnWriteArrayList<Map<String, Object>> exceptionPoilist = new CopyOnWriteArrayList<>();
 
