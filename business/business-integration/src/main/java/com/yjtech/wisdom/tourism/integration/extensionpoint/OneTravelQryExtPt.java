@@ -10,6 +10,7 @@ import com.yjtech.wisdom.tourism.integration.pojo.bo.onetravel.OneTravelVisitSta
 import com.yjtech.wisdom.tourism.integration.pojo.vo.FxDistQueryVO;
 import com.yjtech.wisdom.tourism.integration.pojo.vo.OneTravelQueryVO;
 import com.yjtech.wisdom.tourism.mybatis.entity.IndexQueryVO;
+import com.yjtech.wisdom.tourism.mybatis.entity.SimulationBaseVO;
 
 import java.util.List;
 
@@ -64,17 +65,17 @@ public interface OneTravelQryExtPt extends ExtensionPointI {
 
     /**
      * 查询全国用户分布-一码游统计
-     *
+     * @param vo
      * @return
      */
-    List<OneTravelAreaVisitStatisticsBO> queryUserNationDistribution();
+    List<OneTravelAreaVisitStatisticsBO> queryUserNationDistribution(SimulationBaseVO vo);
 
     /**
      * 查询访问数据-一码游统计
-     *
+     * @param vo
      * @return
      */
-    OneTravelVisitStatisticsBO queryVisitStatistics();
+    OneTravelVisitStatisticsBO queryVisitStatistics(SimulationBaseVO vo);
 
     /**
      * 查询交易数据-一码游统计
@@ -86,17 +87,17 @@ public interface OneTravelQryExtPt extends ExtensionPointI {
 
     /**
      * 查询用户年龄分布-一码游统计
-     *
+     * @param vo
      * @return
      */
-    List<BasePercentVO> queryUserAgeDistribution();
+    List<BasePercentVO> queryUserAgeDistribution(SimulationBaseVO vo);
 
     /**
      * 运营数据-一码游统计
-     *
+     * @param vo
      * @return
      */
-    OperationDataInfo queryOperationStatistics();
+    OperationDataInfo queryOperationStatistics(SimulationBaseVO vo);
 
     /**
      * 商品订单分布-一码游统计

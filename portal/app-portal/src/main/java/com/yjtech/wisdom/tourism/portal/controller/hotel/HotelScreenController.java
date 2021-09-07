@@ -5,8 +5,11 @@ import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.hotel.dto.HotelScreenDetailDTO;
 import com.yjtech.wisdom.tourism.hotel.dto.HotelSelectInfoDTO;
+import com.yjtech.wisdom.tourism.hotel.dto.TbHotelInfoEntityParam;
+import com.yjtech.wisdom.tourism.hotel.entity.TbHotelInfoEntity;
 import com.yjtech.wisdom.tourism.hotel.service.TbHotelInfoService;
 import com.yjtech.wisdom.tourism.hotel.vo.HotelScreenQueryVO;
+import com.yjtech.wisdom.tourism.infrastructure.core.controller.BaseCurdController;
 import com.yjtech.wisdom.tourism.mybatis.entity.PageQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +30,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/hotel/screen/")
-public class HotelScreenController {
+public class HotelScreenController extends BaseCurdController<TbHotelInfoService, TbHotelInfoEntity, TbHotelInfoEntityParam> {
 
     @Autowired
     private TbHotelInfoService tbHotelInfoService;
