@@ -77,7 +77,13 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
                 .convert(item -> BeanMapper.copyBean(item, ScenicScreenVo.class));
         List<ScenicScreenVo> records = page.getRecords();
         if (CollectionUtils.isNotEmpty(records)) {
+            List<SysDictData> dictCache = DictUtils.getDictCache("scenic_level");
+            Map<String, SysDictData> sysDictMap = dictCache.stream().collect(Collectors.toMap(SysDictData::getDictValue, e -> e));
             records.forEach(item -> {
+                //转换景区等级
+                if(sysDictMap.containsKey(item.getLevel())){
+                    item.setLevel(sysDictMap.get(item.getLevel()).getDictLabel());
+                }
                 //天气
                 WeatherQuery weatherQuery = new WeatherQuery();
                 weatherQuery.setLatitude(item.getLatitude());
@@ -119,6 +125,12 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
                         .eq(ScenicEntity::getId, query.getScenicId())
                         .eq(ScenicEntity::getStatus, EntityConstants.ENABLED));
         if (!isNull(one)) {
+            List<SysDictData> dictCache = DictUtils.getDictCache("scenic_level");
+            Map<String, SysDictData> sysDictMap = dictCache.stream().collect(Collectors.toMap(SysDictData::getDictValue, e -> e));
+            //设置景区等级
+            if(sysDictMap.containsKey(one.getLevel())){
+                one.setLevel(sysDictMap.get(one.getLevel()).getDictLabel());
+            }
             ScenicScreenVo scenicScreenVo = BeanMapper.copyBean(one, ScenicScreenVo.class);
             //天气
             WeatherQuery weatherQuery = new WeatherQuery();

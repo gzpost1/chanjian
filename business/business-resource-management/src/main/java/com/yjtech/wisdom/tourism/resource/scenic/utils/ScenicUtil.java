@@ -13,7 +13,8 @@ public class ScenicUtil {
     //开放日期-开始时间 和 结束日期-结束时间 比较
     // 08-11 11:15  和  09-02 12:00
     public static void dateCompare(OpenTimeDto dto) {
-        if (StringUtils.isNotBlank(dto.getOpenEndDate()) && StringUtils.isNotBlank(dto.getOpenStartDate()) && dto.getOpenStartDate().compareTo(dto.getOpenEndDate()) > 0) {
+        if (StringUtils.isNotBlank(dto.getOpenEndDate()) && StringUtils.isNotBlank(dto.getOpenStartDate())
+                && Integer.valueOf(dto.getOpenStartDate()).compareTo(Integer.valueOf(dto.getOpenEndDate())) > 0) {
             throw new CustomException("开放月份必须小于或等于结束月份");
         }else if((StringUtils.isBlank(dto.getOpenEndDate()) && StringUtils.isNotBlank(dto.getOpenStartDate()))
                 || StringUtils.isNotBlank(dto.getOpenEndDate()) && StringUtils.isBlank(dto.getOpenStartDate())){
