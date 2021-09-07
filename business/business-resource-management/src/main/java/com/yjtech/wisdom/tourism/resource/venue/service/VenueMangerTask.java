@@ -2,13 +2,11 @@ package com.yjtech.wisdom.tourism.resource.venue.service;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
-import com.yjtech.wisdom.tourism.common.utils.AreaUtils;
 import com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysDictData;
 import com.yjtech.wisdom.tourism.resource.venue.dto.AmapPoiResponse;
 import com.yjtech.wisdom.tourism.resource.venue.entity.VenueEntity;
 import com.yjtech.wisdom.tourism.system.domain.Platform;
 import com.yjtech.wisdom.tourism.system.service.PlatformService;
-import com.yjtech.wisdom.tourism.system.service.SysDictDataService;
 import com.yjtech.wisdom.tourism.system.service.SysDictTypeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.Executor;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
