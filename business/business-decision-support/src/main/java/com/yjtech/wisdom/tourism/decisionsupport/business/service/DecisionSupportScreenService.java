@@ -80,7 +80,7 @@ public class DecisionSupportScreenService extends ServiceImpl<DecisionWarnMapper
         // 查询缺失话术
         String missConclusionText = sysConfigService.selectConfigByKey(missConclusionTextKey);
 
-        DecisionWarnWrapperDto decisionWarnWrapperDto = initDecisionWarnWrapper(currentLastMonthFirstDayStr, currentLastMonthLastDayStr, missConclusionText);
+        DecisionWarnWrapperDto decisionWarnWrapperDto = initDecisionWarnWrapper(currentLastMonthFirstDayStr, currentLastMonthLastDayStr, missConclusionText, vo.getIsSimulation());
 
         // 去数据库 查询符合条件的数据
         IPage<DecisionWarnItemDto> result;
@@ -153,7 +153,7 @@ public class DecisionSupportScreenService extends ServiceImpl<DecisionWarnMapper
         // 查询缺失话术
         String missConclusionText = sysConfigService.selectConfigByKey(missConclusionTextKey);
 
-        DecisionWarnWrapperDto decisionWarnWrapperDto = initDecisionWarnWrapper(currentLastMonthFirstDayStr, currentLastMonthLastDayStr, missConclusionText);
+        DecisionWarnWrapperDto decisionWarnWrapperDto = initDecisionWarnWrapper(currentLastMonthFirstDayStr, currentLastMonthLastDayStr, missConclusionText, vo.getIsSimulation());
 
         List<DecisionWarnItemDto> realResult;
         // 真实数据
@@ -499,7 +499,7 @@ public class DecisionSupportScreenService extends ServiceImpl<DecisionWarnMapper
      * @param missConclusionText 缺失话术
      * @return
      */
-    private DecisionWarnWrapperDto initDecisionWarnWrapper (String beginTime, String endTime, String missConclusionText) {
+    private DecisionWarnWrapperDto initDecisionWarnWrapper (String beginTime, String endTime, String missConclusionText, Integer isSimulation) {
         // 低风险项数目
         Integer lowRiskNum = findRiskNumber(DecisionSupportConstants.LOW_RISK_TYPE, beginTime, endTime);
         // 中风险项数目
@@ -520,14 +520,29 @@ public class DecisionSupportScreenService extends ServiceImpl<DecisionWarnMapper
 
         String conclusionText = missConclusionText;
 
-        // 查询概况设置的话术
-        DecisionWarnEntity comprehensive = baseMapper.selectOne(new LambdaQueryWrapper<DecisionWarnEntity>()
-                .eq(DecisionWarnEntity::getTargetId, DecisionSupportTargetConstants.ZHGK)
-                .between(DecisionWarnEntity::getCreateTime, beginTime, endTime));
-        // 概况是否使用缺失话术
-        if (!DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT.equals(comprehensive.getIsUseMissConclusionText())) {
-            conclusionText = comprehensive.getConclusionText();
+        // 真实数据
+        if (DecisionSupportConstants.ZERO_NUMBER.equals(isSimulation)) {
+            // 查询概况设置的话术
+            DecisionWarnEntity comprehensive = baseMapper.selectOne(new LambdaQueryWrapper<DecisionWarnEntity>()
+                    .eq(DecisionWarnEntity::getTargetId, DecisionSupportTargetConstants.ZHGK)
+                    .between(DecisionWarnEntity::getCreateTime, beginTime, endTime));
+            // 概况是否使用缺失话术
+            if (!DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT.equals(comprehensive.getIsUseMissConclusionText())) {
+                conclusionText = comprehensive.getConclusionText();
+            }
         }
+        // 模拟数据
+        else {
+            // 查询概况设置的话术
+            DecisionWarnMockEntity comprehensive = decisionWarnMockMapper.selectOne(new LambdaQueryWrapper<DecisionWarnMockEntity>()
+                    .eq(DecisionWarnMockEntity::getTargetId, DecisionSupportTargetConstants.ZHGK)
+                    .between(DecisionWarnMockEntity::getCreateTime, beginTime, endTime));
+            // 概况是否使用缺失话术
+            if (!DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT.equals(comprehensive.getIsUseMissConclusionText())) {
+                conclusionText = comprehensive.getConclusionText();
+            }
+        }
+
 
         return  DecisionWarnWrapperDto.builder()
                 .conclusionText(conclusionText)
