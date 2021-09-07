@@ -109,7 +109,7 @@ public class IndexController {
 
     /**
      * 酒店民宿
-     *
+     *[
      * @param vo
      * @return
      */

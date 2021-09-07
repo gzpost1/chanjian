@@ -97,6 +97,9 @@ public class TbSystemconfigArchitectureService extends ServiceImpl<TbSystemconfi
     }
 
     public void create(SystemconfigArchitectureCreateDto createDto) {
+        //查询当前的序号
+        Integer sortNum = getChildMaxNumByParendId(createDto.getParentId());
+
         TbSystemconfigArchitectureEntity entity = new TbSystemconfigArchitectureEntity();
         BeanUtils.copyProperties(createDto, entity);
         entity.setMenuId(IdWorker.getInstance().nextId());
@@ -121,10 +124,12 @@ public class TbSystemconfigArchitectureService extends ServiceImpl<TbSystemconfi
             }
         }
 
-        //查询当前的序号
-        Integer sortNum = getChildNumByParendId(createDto.getParentId());
         entity.setSortNum(sortNum + 1);
         this.save(entity);
+    }
+
+    private Integer getChildMaxNumByParendId(Long parentId) {
+        return Optional.ofNullable(this.baseMapper.getChildMaxNumByParendId(parentId)).orElse(0);
     }
 
     public Integer getChildNumByParendId(Long parentId) {

@@ -23,6 +23,7 @@ import com.yjtech.wisdom.tourism.integration.pojo.vo.FxDistQueryVO;
 import com.yjtech.wisdom.tourism.integration.pojo.vo.OneTravelQueryVO;
 import com.yjtech.wisdom.tourism.integration.service.OneTravelApiService;
 import com.yjtech.wisdom.tourism.mybatis.entity.IndexQueryVO;
+import com.yjtech.wisdom.tourism.mybatis.entity.SimulationBaseVO;
 import com.yjtech.wisdom.tourism.redis.RedisCache;
 import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.onetravel.SimulationOneTravelDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -124,9 +124,8 @@ public class MockOneTravelQryExtPt implements OneTravelQryExtPt {
      * @return
      */
     @Override
-    public List<OneTravelAreaVisitStatisticsBO> queryUserNationDistribution() {
-        LocalDateTime now = LocalDateTime.now();
-        return calculateAndQuery(now.with(TemporalAdjusters.firstDayOfMonth()), now).getUserNationDistribution();
+    public List<OneTravelAreaVisitStatisticsBO> queryUserNationDistribution(SimulationBaseVO vo) {
+        return calculateAndQuery(vo.getBeginTime(), vo.getEndTime()).getUserNationDistribution();
     }
 
     /**
@@ -135,9 +134,8 @@ public class MockOneTravelQryExtPt implements OneTravelQryExtPt {
      * @return
      */
     @Override
-    public OneTravelVisitStatisticsBO queryVisitStatistics() {
-        LocalDateTime now = LocalDateTime.now();
-        return calculateAndQuery(now.with(TemporalAdjusters.firstDayOfMonth()), now).getVisitStatistics();
+    public OneTravelVisitStatisticsBO queryVisitStatistics(SimulationBaseVO vo) {
+        return calculateAndQuery(vo.getBeginTime(), vo.getEndTime()).getVisitStatistics();
     }
 
     /**
@@ -157,9 +155,8 @@ public class MockOneTravelQryExtPt implements OneTravelQryExtPt {
      * @return
      */
     @Override
-    public List<BasePercentVO> queryUserAgeDistribution() {
-        LocalDateTime now = LocalDateTime.now();
-        return calculateAndQuery(now.with(TemporalAdjusters.firstDayOfMonth()), now).getUserAgeDistribution();
+    public List<BasePercentVO> queryUserAgeDistribution(SimulationBaseVO vo) {
+        return calculateAndQuery(vo.getBeginTime(), vo.getEndTime()).getUserAgeDistribution();
     }
 
     /**
@@ -168,9 +165,8 @@ public class MockOneTravelQryExtPt implements OneTravelQryExtPt {
      * @return
      */
     @Override
-    public OperationDataInfo queryOperationStatistics() {
-        LocalDateTime now = LocalDateTime.now();
-        return calculateAndQuery(now.with(TemporalAdjusters.firstDayOfMonth()), now).getOperationStatistics();
+    public OperationDataInfo queryOperationStatistics(SimulationBaseVO vo) {
+        return calculateAndQuery(vo.getBeginTime(), vo.getEndTime()).getOperationStatistics();
     }
 
     /**
@@ -203,8 +199,7 @@ public class MockOneTravelQryExtPt implements OneTravelQryExtPt {
      */
     @Override
     public List<AnalysisBaseInfo> queryOrderAnalysis(FxDistQueryVO vo) {
-        LocalDateTime now = LocalDateTime.now();
-        return calculateAndQuery(now.with(TemporalAdjusters.firstDayOfMonth()), now).getOrderAnalysis();
+        return calculateAndQuery(vo.getBeginTime(), vo.getEndTime()).getOrderAnalysis();
     }
 
     /**
