@@ -35,4 +35,9 @@ public class MessageDto extends MessageCallDto implements Serializable {
      */
     private String eventDealPersonId;
 
+    /**
+     * 消息标题
+     */
+    private String title;
+
 }

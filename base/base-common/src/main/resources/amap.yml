@@ -1,0 +1,14 @@
+amap:
+  key: dfb15654d9f87f93e2d4b9deb5af72f3
+  offset: 20
+  page: 1
+  extensions: all
+  citylimit: true
+  url: https://restapi.amap.com/v3/place/text
+  baseUrl: https://restapi.amap.com/v3/
+  provinceCode: 150000000000
+  city: 贵阳,六盘水,遵义,安顺,毕节,铜仁,黔西南布依族苗族自治州,黔东南苗族侗族自治州,黔南布依族苗族自治州
+
+  venue: {'140100': 博物馆,'140400': 美术馆,'140500': 图书馆}
+
+
