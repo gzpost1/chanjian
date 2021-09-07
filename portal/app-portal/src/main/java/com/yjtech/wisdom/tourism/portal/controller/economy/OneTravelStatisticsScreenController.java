@@ -2,7 +2,6 @@ package com.yjtech.wisdom.tourism.portal.controller.economy;
 
 import com.yjtech.wisdom.tourism.common.bean.AnalysisBaseInfo;
 import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
-import com.yjtech.wisdom.tourism.common.bean.SimulationBaseVO;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.extension.BizScenario;
 import com.yjtech.wisdom.tourism.extension.ExtensionConstant;
@@ -14,6 +13,7 @@ import com.yjtech.wisdom.tourism.integration.pojo.bo.fxdist.FxDistOrderStatistic
 import com.yjtech.wisdom.tourism.integration.pojo.bo.onetravel.OneTravelAreaVisitStatisticsBO;
 import com.yjtech.wisdom.tourism.integration.pojo.bo.onetravel.OneTravelVisitStatisticsBO;
 import com.yjtech.wisdom.tourism.integration.pojo.vo.FxDistQueryVO;
+import com.yjtech.wisdom.tourism.mybatis.entity.SimulationBaseVO;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,7 +45,7 @@ public class OneTravelStatisticsScreenController {
     public JsonResult<List<OneTravelAreaVisitStatisticsBO>> queryUserNationDistribution(@RequestBody @Valid SimulationBaseVO vo) {
         return JsonResult.success(extensionExecutor.execute(OneTravelQryExtPt.class,
                 buildOneTravelBizScenario(OneTravelExtensionConstant.ONE_TRAVEL_QUANTITY, vo.getIsSimulation()),
-                OneTravelQryExtPt::queryUserNationDistribution));
+                extension -> extension.queryUserNationDistribution(vo)));
     }
 
     /**
@@ -56,7 +56,7 @@ public class OneTravelStatisticsScreenController {
     public JsonResult<OneTravelVisitStatisticsBO> queryVisitStatistics(@RequestBody @Valid SimulationBaseVO vo) {
         return JsonResult.success(extensionExecutor.execute(OneTravelQryExtPt.class,
                 buildOneTravelBizScenario(OneTravelExtensionConstant.ONE_TRAVEL_QUANTITY, vo.getIsSimulation()),
-                OneTravelQryExtPt::queryVisitStatistics));
+                extension -> extension.queryVisitStatistics(vo)));
     }
 
     /**
@@ -78,7 +78,7 @@ public class OneTravelStatisticsScreenController {
     public JsonResult<List<BasePercentVO>> queryUserAgeDistribution(@RequestBody @Valid SimulationBaseVO vo) {
         return JsonResult.success(extensionExecutor.execute(OneTravelQryExtPt.class,
                 buildOneTravelBizScenario(OneTravelExtensionConstant.ONE_TRAVEL_QUANTITY, vo.getIsSimulation()),
-                OneTravelQryExtPt::queryUserAgeDistribution));
+                extension -> extension.queryUserAgeDistribution(vo)));
     }
 
     /**
@@ -89,7 +89,7 @@ public class OneTravelStatisticsScreenController {
     public JsonResult<OperationDataInfo> queryOperationStatistics(@RequestBody @Valid SimulationBaseVO vo) {
         return JsonResult.success(extensionExecutor.execute(OneTravelQryExtPt.class,
                 buildOneTravelBizScenario(OneTravelExtensionConstant.ONE_TRAVEL_QUANTITY, vo.getIsSimulation()),
-                OneTravelQryExtPt::queryOperationStatistics));
+                extension -> extension.queryOperationStatistics(vo)));
     }
 
     /**
