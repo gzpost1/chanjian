@@ -1,7 +1,8 @@
 package com.yjtech.wisdom.tourism.decisionsupport.business.strategyimpl;
 
 import com.alibaba.fastjson.JSONObject;
-import com.yjtech.wisdom.tourism.command.service.travelcomplaint.TravelComplaintService;
+import com.yjtech.wisdom.tourism.command.extensionpoint.TravelComplaintExtensionConstant;
+import com.yjtech.wisdom.tourism.command.extensionpoint.TravelComplaintQryExtPt;
 import com.yjtech.wisdom.tourism.command.vo.travelcomplaint.TravelComplaintScreenQueryVO;
 import com.yjtech.wisdom.tourism.common.bean.AnalysisBaseInfo;
 import com.yjtech.wisdom.tourism.common.constant.DecisionSupportConstants;
@@ -13,10 +14,11 @@ import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionEntity;
 import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionWarnEntity;
 import com.yjtech.wisdom.tourism.decisionsupport.common.strategy.BaseStrategy;
 import com.yjtech.wisdom.tourism.decisionsupport.common.util.PlaceholderUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.yjtech.wisdom.tourism.extension.ExtensionExecutor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -28,8 +30,8 @@ import java.util.List;
 @Component
 public class TouristComplaintsStrategyImpl extends BaseStrategy {
 
-    @Autowired
-    private TravelComplaintService travelComplaintService;
+    @Resource
+    private ExtensionExecutor extensionExecutor;
 
     /**
      * 游客投诉
@@ -51,13 +53,18 @@ public class TouristComplaintsStrategyImpl extends BaseStrategy {
         travelComplaintScreenQueryVO.setIsSimulation(isSimulation.byteValue());
         travelComplaintScreenQueryVO.setBeginTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentLastMonthStr() + DecisionSupportConstants.START_DAY_STR));
         travelComplaintScreenQueryVO.setEndTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentLastMonthStr() + DecisionSupportConstants.END_DAY_STR));
-        Integer total = travelComplaintService.queryTravelComplaintTotal(travelComplaintScreenQueryVO);
+        Integer total = extensionExecutor.execute(TravelComplaintQryExtPt.class,
+                buildBizScenario(TravelComplaintExtensionConstant.TRAVEL_COMPLAINT_QUANTITY, travelComplaintScreenQueryVO.getIsSimulation()),
+                extension -> extension.queryTravelComplaintTotal(travelComplaintScreenQueryVO));
+
 
         travelComplaintScreenQueryVO.setBeginTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentYearStr() + DecisionSupportConstants.START_DATE_STR));
         travelComplaintScreenQueryVO.setEndTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentYearStr() + DecisionSupportConstants.END_DATE_STR));
         travelComplaintScreenQueryVO.setType(DecisionSupportConstants.YEAR_MONTH);
         // 年趋势
-        List<AnalysisBaseInfo> tourComplaintTotal = travelComplaintService.queryComplaintAnalysis(travelComplaintScreenQueryVO);
+        List<AnalysisBaseInfo> tourComplaintTotal = extensionExecutor.execute(TravelComplaintQryExtPt.class,
+                buildBizScenario(TravelComplaintExtensionConstant.TRAVEL_COMPLAINT_QUANTITY, travelComplaintScreenQueryVO.getIsSimulation()),
+                extension -> extension.queryComplaintAnalysis(travelComplaintScreenQueryVO));
 
         String currentLastMonthStr1 = DateTimeUtil.getCurrentLastMonthStr();
 

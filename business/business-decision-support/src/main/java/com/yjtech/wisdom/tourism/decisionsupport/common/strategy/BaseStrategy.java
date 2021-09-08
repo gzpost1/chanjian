@@ -9,6 +9,8 @@ import com.yjtech.wisdom.tourism.decisionsupport.base.service.TargetQueryService
 import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionEntity;
 import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionWarnEntity;
 import com.yjtech.wisdom.tourism.dto.MonthPassengerFlowDto;
+import com.yjtech.wisdom.tourism.extension.BizScenario;
+import com.yjtech.wisdom.tourism.extension.ExtensionConstant;
 import com.yjtech.wisdom.tourism.mybatis.utils.AnalysisUtils;
 import com.yjtech.wisdom.tourism.service.impl.DistrictTourImplService;
 import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.decisionsupport.DecisionMockDTO;
@@ -348,5 +350,17 @@ public abstract class BaseStrategy implements ApplicationListener {
     @Override
     public void onApplicationEvent(ApplicationEvent applicationEvent) {
 
+    }
+
+    /**
+     * 构建业务扩展点
+     *
+     * @param useCasePraiseType
+     * @param isSimulation
+     * @return
+     */
+    public BizScenario buildBizScenario(String useCasePraiseType, Byte isSimulation) {
+        return BizScenario.valueOf(ExtensionConstant.HOTEL, useCasePraiseType
+                , isSimulation == 0 ? ExtensionConstant.SCENARIO_IMPL : ExtensionConstant.SCENARIO_MOCK);
     }
 }
