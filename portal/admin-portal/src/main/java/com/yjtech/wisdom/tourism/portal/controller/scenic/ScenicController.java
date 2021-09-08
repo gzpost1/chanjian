@@ -82,6 +82,7 @@ public class ScenicController {
         ScenicEntity entity = BeanMapper.copyBean(createDto, ScenicEntity.class);
         //默认为启用状态
         entity.setStatus((byte) 1);
+        entity.setEquipStatus((byte) 1);
         scenicService.save(entity);
         return JsonResult.success();
     }

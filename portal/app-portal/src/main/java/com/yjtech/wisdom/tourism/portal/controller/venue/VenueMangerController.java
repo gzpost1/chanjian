@@ -5,6 +5,7 @@ import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.resource.venue.dto.VenueDto;
 import com.yjtech.wisdom.tourism.resource.venue.dto.VenueScaleDto;
 import com.yjtech.wisdom.tourism.resource.venue.service.VenueMangerService;
+import com.yjtech.wisdom.tourism.resource.venue.service.VenueMangerTask;
 import com.yjtech.wisdom.tourism.resource.venue.vo.VenueVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;

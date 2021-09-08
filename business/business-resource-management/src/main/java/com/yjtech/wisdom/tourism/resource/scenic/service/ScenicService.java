@@ -30,6 +30,8 @@ import com.yjtech.wisdom.tourism.resource.scenic.mapper.ScenicMapper;
 import com.yjtech.wisdom.tourism.resource.scenic.query.ScenicScreenQuery;
 import com.yjtech.wisdom.tourism.resource.ticket.service.TicketCheckService;
 import com.yjtech.wisdom.tourism.resource.ticket.vo.SaleTrendVO;
+import com.yjtech.wisdom.tourism.system.domain.IconSpotEnum;
+import com.yjtech.wisdom.tourism.system.service.IconService;
 import com.yjtech.wisdom.tourism.weather.service.WeatherService;
 import com.yjtech.wisdom.tourism.weather.vo.WeatherInfoVO;
 import com.yjtech.wisdom.tourism.weather.web.WeatherQuery;
@@ -60,6 +62,8 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
     private TicketCheckService ticketCheckService;
     @Autowired
     private MarketingEvaluateService evaluateService;
+    @Autowired
+    private IconService iconService;
 
     public IPage<ScenicEntity> queryForPage(ScenicScreenQuery query) {
         LambdaQueryWrapper wrapper = getCommonWrapper(query.getName(), query.getStatus())
@@ -84,6 +88,7 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
                 if(sysDictMap.containsKey(item.getLevel())){
                     item.setLevel(sysDictMap.get(item.getLevel()).getDictLabel());
                 }
+                item.setIconUrl(iconService.queryIconUrl(IconSpotEnum.SCENIC, String.valueOf(item.getEquipStatus())));
                 //天气
                 WeatherQuery weatherQuery = new WeatherQuery();
                 weatherQuery.setLatitude(item.getLatitude());

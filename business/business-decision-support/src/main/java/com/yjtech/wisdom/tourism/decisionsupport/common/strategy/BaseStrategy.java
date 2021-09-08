@@ -1,37 +1,30 @@
 package com.yjtech.wisdom.tourism.decisionsupport.common.strategy;
 
 
-import com.alibaba.fastjson.JSONObject;
-import com.google.common.collect.Maps;
 import com.yjtech.wisdom.tourism.common.bean.BaseValueVO;
 import com.yjtech.wisdom.tourism.common.constant.DecisionSupportConstants;
-import com.yjtech.wisdom.tourism.common.constant.MockDataConstant;
 import com.yjtech.wisdom.tourism.common.utils.DateTimeUtil;
 import com.yjtech.wisdom.tourism.common.utils.MathUtil;
 import com.yjtech.wisdom.tourism.decisionsupport.base.service.TargetQueryService;
 import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionEntity;
 import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionWarnEntity;
 import com.yjtech.wisdom.tourism.dto.MonthPassengerFlowDto;
-import com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysDictData;
 import com.yjtech.wisdom.tourism.mybatis.utils.AnalysisUtils;
 import com.yjtech.wisdom.tourism.service.impl.DistrictTourImplService;
-import com.yjtech.wisdom.tourism.system.service.SysDictTypeService;
-import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.SimulationQueryDto;
 import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.decisionsupport.DecisionMockDTO;
-import com.yjtech.wisdom.tourism.systemconfig.simulation.service.SimulationConfigService;
 import com.yjtech.wisdom.tourism.vo.PassengerFlowVo;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 /**
@@ -124,13 +117,19 @@ public abstract class BaseStrategy implements ApplicationListener {
         // 模拟数据
         if (DecisionSupportConstants.MOCK.equals(isSimulation) && !MapUtils.isEmpty(riskTypeMap)) {
             if (!ObjectUtils.isEmpty(mockRuleData)) {
+                AtomicBoolean isStop = new AtomicBoolean(false);
                 for (DecisionMockDTO data: mockRuleData) {
                     riskTypeMap.forEach((k, v) -> {
-                        if (data.getValue().equals(v)) {
+                        if (data.getName().equals(entity.getTargetName()) && data.getValue().equals(v)) {
                             entity.setAlarmType(Integer.parseInt(data.getValue()));
                             entity.setAlarmTypeText(k);
+                            isStop.set(true);
+                            return;
                         }
                     });
+                    if (isStop.get()) {
+                        return;
+                    }
                 }
             }
             return;
@@ -188,16 +187,21 @@ public abstract class BaseStrategy implements ApplicationListener {
         // 模拟数据
         if (DecisionSupportConstants.MOCK.equals(isSimulation) && !MapUtils.isEmpty(riskTypeMap)) {
             if (!ObjectUtils.isEmpty(mockRuleData)) {
-                for (DecisionMockDTO data: mockRuleData) {
+                AtomicBoolean isStop = new AtomicBoolean(false);
+                for (DecisionMockDTO data : mockRuleData) {
                     riskTypeMap.forEach((k, v) -> {
-                        if (data.getValue().equals(v)) {
+                        if (data.getName().equals(entity.getTargetName()) && data.getValue().equals(v)) {
                             entity.setAlarmType(Integer.parseInt(data.getValue()));
                             entity.setAlarmTypeText(k);
+                            isStop.set(true);
+                            return;
                         }
                     });
+                    if (isStop.get()) {
+                        return;
+                    }
                 }
             }
-            return;
         }
 
         if (DEFAULT_STR.equals(scale)) {
