@@ -22,10 +22,10 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("screen/countrytour")
-public class CountryTourController {
+public class CountryTourScreenController {
     private final TbCountryTourService countryTourService;
 
-    public CountryTourController(TbCountryTourService countryTourService) {
+    public CountryTourScreenController(TbCountryTourService countryTourService) {
         this.countryTourService = countryTourService;
     }
 
