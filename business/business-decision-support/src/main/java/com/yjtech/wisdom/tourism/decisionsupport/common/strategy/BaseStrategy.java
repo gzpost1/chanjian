@@ -27,6 +27,8 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -41,6 +43,10 @@ public abstract class BaseStrategy implements ApplicationListener {
     private static final int HUNDRED = 100;
 
     private static final String DEFAULT_STR = "-";
+
+    private static final String LOW_LINE_STR = "_";
+
+    private static Pattern linePattern = Pattern.compile("_(\\w)");
 
     /**
      * 风险等级缓存
@@ -360,7 +366,29 @@ public abstract class BaseStrategy implements ApplicationListener {
      * @return
      */
     public BizScenario buildBizScenario(String useCasePraiseType, Byte isSimulation) {
-        return BizScenario.valueOf(ExtensionConstant.HOTEL, useCasePraiseType
+        String biz = useCasePraiseType;
+        if (useCasePraiseType.contains(LOW_LINE_STR)) {
+            biz = lineToHump(useCasePraiseType);
+        }
+
+        return BizScenario.valueOf(biz, useCasePraiseType
                 , isSimulation == 0 ? ExtensionConstant.SCENARIO_IMPL : ExtensionConstant.SCENARIO_MOCK);
+    }
+
+    /**
+     * 下划线转驼峰
+     *
+     * @param str
+     * @return
+     */
+    public static String lineToHump(String str) {
+        str = str.toLowerCase();
+        Matcher matcher = linePattern.matcher(str);
+        StringBuffer sb = new StringBuffer();
+        while (matcher.find()) {
+            matcher.appendReplacement(sb, matcher.group(1).toUpperCase());
+        }
+        matcher.appendTail(sb);
+        return sb.toString();
     }
 }
