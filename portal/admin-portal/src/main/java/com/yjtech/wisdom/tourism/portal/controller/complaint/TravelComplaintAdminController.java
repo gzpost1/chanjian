@@ -155,7 +155,7 @@ public class TravelComplaintAdminController {
      * @return
      */
     @PostMapping("queryAssignUser")
-    public JsonResult queryAssignUser() {
+    public JsonResult<AssignUserInfo> queryAssignUser() {
         return JsonResult.success(travelComplaintService.queryAssignUser());
     }
 
