@@ -215,6 +215,9 @@ public abstract class BaseStrategy implements ApplicationListener {
         if (DEFAULT_STR.equals(scale)) {
             return;
         }
+        if (ObjectUtils.isEmpty(decisionInfo)) {
+            return;
+        }
         // 数值
         if (DecisionSupportConstants.DECISION_WARN_TYPE_NUMBER.equals(decisionInfo.getConfigType())) {
             switch (decisionInfo.getChangeType()) {
