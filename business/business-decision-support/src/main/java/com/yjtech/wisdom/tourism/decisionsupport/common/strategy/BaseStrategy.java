@@ -9,6 +9,8 @@ import com.yjtech.wisdom.tourism.decisionsupport.base.service.TargetQueryService
 import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionEntity;
 import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionWarnEntity;
 import com.yjtech.wisdom.tourism.dto.MonthPassengerFlowDto;
+import com.yjtech.wisdom.tourism.extension.BizScenario;
+import com.yjtech.wisdom.tourism.extension.ExtensionConstant;
 import com.yjtech.wisdom.tourism.mybatis.utils.AnalysisUtils;
 import com.yjtech.wisdom.tourism.service.impl.DistrictTourImplService;
 import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.decisionsupport.DecisionMockDTO;
@@ -25,6 +27,8 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -39,6 +43,10 @@ public abstract class BaseStrategy implements ApplicationListener {
     private static final int HUNDRED = 100;
 
     private static final String DEFAULT_STR = "-";
+
+    private static final String LOW_LINE_STR = "_";
+
+    private static Pattern linePattern = Pattern.compile("_(\\w)");
 
     /**
      * 风险等级缓存
@@ -348,5 +356,39 @@ public abstract class BaseStrategy implements ApplicationListener {
     @Override
     public void onApplicationEvent(ApplicationEvent applicationEvent) {
 
+    }
+
+    /**
+     * 构建业务扩展点
+     *
+     * @param useCasePraiseType
+     * @param isSimulation
+     * @return
+     */
+    public BizScenario buildBizScenario(String useCasePraiseType, Byte isSimulation) {
+        String biz = useCasePraiseType;
+        if (useCasePraiseType.contains(LOW_LINE_STR)) {
+            biz = lineToHump(useCasePraiseType);
+        }
+
+        return BizScenario.valueOf(biz, useCasePraiseType
+                , isSimulation == 0 ? ExtensionConstant.SCENARIO_IMPL : ExtensionConstant.SCENARIO_MOCK);
+    }
+
+    /**
+     * 下划线转驼峰
+     *
+     * @param str
+     * @return
+     */
+    public static String lineToHump(String str) {
+        str = str.toLowerCase();
+        Matcher matcher = linePattern.matcher(str);
+        StringBuffer sb = new StringBuffer();
+        while (matcher.find()) {
+            matcher.appendReplacement(sb, matcher.group(1).toUpperCase());
+        }
+        matcher.appendTail(sb);
+        return sb.toString();
     }
 }

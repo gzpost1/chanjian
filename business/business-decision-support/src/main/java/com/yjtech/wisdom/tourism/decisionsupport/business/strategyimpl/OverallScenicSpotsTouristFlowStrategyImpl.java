@@ -9,14 +9,14 @@ import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionEntity;
 import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionWarnEntity;
 import com.yjtech.wisdom.tourism.decisionsupport.common.strategy.BaseStrategy;
 import com.yjtech.wisdom.tourism.decisionsupport.common.util.PlaceholderUtils;
-import com.yjtech.wisdom.tourism.dto.MonthPassengerFlowDto;
-import com.yjtech.wisdom.tourism.mybatis.utils.AnalysisUtils;
+import com.yjtech.wisdom.tourism.extension.ExtensionExecutor;
+import com.yjtech.wisdom.tourism.resource.scenic.extensionpoint.ScenicExtensionConstant;
+import com.yjtech.wisdom.tourism.resource.scenic.extensionpoint.ScenicQryExtPt;
 import com.yjtech.wisdom.tourism.resource.scenic.query.ScenicScreenQuery;
-import com.yjtech.wisdom.tourism.resource.scenic.service.ScenicService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -28,9 +28,9 @@ import java.util.List;
  */
 @Component
 public class OverallScenicSpotsTouristFlowStrategyImpl extends BaseStrategy {
-
-    @Autowired
-    private ScenicService scenicService;
+    
+    @Resource
+    private ExtensionExecutor extensionExecutor;
 
     /**
      * 整体景区客流
@@ -58,19 +58,28 @@ public class OverallScenicSpotsTouristFlowStrategyImpl extends BaseStrategy {
         query.setBeginTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentYearStr() + DecisionSupportConstants.START_DATE_STR));
         query.setEndTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentYearStr() + DecisionSupportConstants.END_DATE_STR));
         query.setType(DecisionSupportConstants.YEAR_MONTH);
-        List<MonthPassengerFlowDto> monthPassengerFlowDtos = scenicService.queryPassengerFlowTrend(query);
+        List<BaseValueVO> monthPassengerFlowDtos = extensionExecutor.execute(ScenicQryExtPt.class,
+                buildBizScenario(ScenicExtensionConstant.SCENIC_QUANTITY, query.getIsSimulation().byteValue()),
+                extension -> extension.queryPassengerFlow(query));
 
         Integer total = DecisionSupportConstants.ZERO_NUMBER;
         String tb = DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE;
         String hb = DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE;
 
-        // 上月日期
-        String currentLastMonth = DateTimeUtil.getCurrentLastMonthStr();
-        for (MonthPassengerFlowDto v : monthPassengerFlowDtos) {
-            if (currentLastMonth.equals(v.getDate())) {
-                total = v.getNumber();
-                tb = v.getTbScale();
-                hb = v.getHbScale();
+        int index = Integer.parseInt(DateTimeUtil.getLastMonthStr()) - 1;
+        for (BaseValueVO v : monthPassengerFlowDtos) {
+            if ("tbScale".equals(v.getName())) {
+                tb = String.valueOf(v.getValue().get(index));
+            }
+            if ("hbScale".equals(v.getName())) {
+                hb = String.valueOf(v.getValue().get(index));
+            }
+            if ("number".equals(v.getName())) {
+                for (Object i : v.getValue()) {
+                    if (i instanceof Integer) {
+                        total += (Integer) i;
+                    }
+                }
             }
         }
 
@@ -162,11 +171,9 @@ public class OverallScenicSpotsTouristFlowStrategyImpl extends BaseStrategy {
 
         query.setType(DecisionSupportConstants.YEAR_MONTH);
 
-        return AnalysisUtils.MultipleBuildAnalysis(
-                query,
-                scenicService.queryPassengerFlowTrend(query),
-                true,
-                MonthPassengerFlowDto::getNumber, MonthPassengerFlowDto::getTbNumber, MonthPassengerFlowDto::getHbScale, MonthPassengerFlowDto::getTbScale);
+        return extensionExecutor.execute(ScenicQryExtPt.class,
+                buildBizScenario(ScenicExtensionConstant.SCENIC_QUANTITY, query.getIsSimulation().byteValue()),
+                extension -> extension.queryPassengerFlow(query));
 
     }
 }
