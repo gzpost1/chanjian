@@ -302,15 +302,14 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
     /**
      * 获取指派人员
      */
-    public List<Long> queryAssignUser() {
+    public AssignUserInfo queryAssignUser() {
         //获取当前指派人员信息
         Object cacheObject = redisCache.getCacheObject(CacheKeyContants.KEY_ASSIGN_TRAVEL_COMPLAINT);
         if (null != cacheObject) {
-            AssignUserInfo assignUserInfo = JSONObject.parseObject(JSONObject.toJSONString(cacheObject), AssignUserInfo.class);
-            //获取指派人员id
-            return assignUserInfo.getAssignUserIdList();
+            //获取指派人员信息
+            return JSONObject.parseObject(JSONObject.toJSONString(cacheObject), AssignUserInfo.class);
         }
-        return Collections.emptyList();
+        return null;
     }
 
     /**
