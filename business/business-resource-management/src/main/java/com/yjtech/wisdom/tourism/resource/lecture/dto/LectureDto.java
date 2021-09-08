@@ -1,5 +1,6 @@
 package com.yjtech.wisdom.tourism.resource.lecture.dto;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -118,4 +119,10 @@ public class LectureDto implements Serializable {
      * 启停用状态
      */
     private Byte status;
+
+    /**
+     * 图标地址
+     */
+    @TableField(exist = false)
+    private String iconUrl;
 }

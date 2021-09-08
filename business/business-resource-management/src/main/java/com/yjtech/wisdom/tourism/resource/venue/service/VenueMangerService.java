@@ -13,6 +13,8 @@ import com.yjtech.wisdom.tourism.resource.venue.dto.VenueScaleDto;
 import com.yjtech.wisdom.tourism.resource.venue.entity.VenueEntity;
 import com.yjtech.wisdom.tourism.resource.venue.mapper.VenueMapper;
 import com.yjtech.wisdom.tourism.resource.venue.vo.VenueVo;
+import com.yjtech.wisdom.tourism.system.domain.IconSpotEnum;
+import com.yjtech.wisdom.tourism.system.service.IconService;
 import com.yjtech.wisdom.tourism.system.service.SysDictDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,7 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 文博场馆管理
@@ -33,6 +36,9 @@ public class VenueMangerService extends BaseMybatisServiceImpl<VenueMapper, Venu
 
     @Autowired
     private SysDictDataService sysDictDataService;
+
+    @Autowired
+    private IconService iconService;
 
     /**
      * 查询文博场馆列表_分页
@@ -52,6 +58,9 @@ public class VenueMangerService extends BaseMybatisServiceImpl<VenueMapper, Venu
             VenueDto venueDto = JSONObject.parseObject(JSONObject.toJSONString(item), VenueDto.class);
             // 字典获取
             String name = sysDictDataService.selectDictLabel(item.getVenueType(), item.getVenueValue());
+            // 设置点位图标
+            venueDto.setIconUrl(iconService.queryIconUrl(IconSpotEnum.MUSEUM,
+                    Objects.isNull(item.getStatus()) ? "0" : item.getStatus().toString()));
             venueDto.setDictName(name);
             return venueDto;
         });
