@@ -33,7 +33,7 @@ public class VenueEntity implements Serializable {
     /**
      * id
      */
-    @TableId(value = "id", type = IdType.ID_WORKER)
+    @TableId(value = "id", type = IdType.UUID)
     private String id;
 
     /**

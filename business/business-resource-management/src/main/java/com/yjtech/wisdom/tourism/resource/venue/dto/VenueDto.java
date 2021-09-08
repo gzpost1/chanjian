@@ -27,7 +27,7 @@ public class VenueDto implements Serializable {
     /**
      * id
      */
-    private Long id;
+    private String id;
 
     /**
      * 场馆名称

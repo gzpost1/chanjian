@@ -229,7 +229,7 @@ public abstract class BaseStrategy implements ApplicationListener {
             return;
         }
         // 数值
-        if (DecisionSupportConstants.DECISION_WARN_TYPE_NUMBER.equals(decisionInfo.getConfigType())) {
+        if (DecisionSupportConstants.DECISION_WARN_TYPE_NUMBER.equals(decisionInfo.getConfigType()) && !StringUtils.isEmpty(decisionInfo.getConfigType())) {
             switch (decisionInfo.getChangeType()) {
                 // 上升
                 case DecisionSupportConstants.NUMBER_TYPE_UP:

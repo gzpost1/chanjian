@@ -53,7 +53,9 @@ public class VenueMangerService extends BaseMybatisServiceImpl<VenueMapper, Venu
                     .like(!StringUtils.isEmpty(vo.getVenueName()), VenueEntity::getVenueName, vo.getVenueName())
                     .eq(!ObjectUtils.isEmpty(vo.getStatus()), VenueEntity::getStatus, vo.getStatus())
                     .eq(!ObjectUtils.isEmpty(vo.getVenueValue()), VenueEntity::getVenueValue, vo.getVenueValue())
-                    .orderByDesc(VenueEntity::getUpdateTime))
+                    .orderByDesc(VenueEntity::getUpdateTime)
+                    .orderByDesc(VenueEntity::getCreateTime))
+
         .convert(item -> {
             VenueDto venueDto = JSONObject.parseObject(JSONObject.toJSONString(item), VenueDto.class);
             // 字典获取
