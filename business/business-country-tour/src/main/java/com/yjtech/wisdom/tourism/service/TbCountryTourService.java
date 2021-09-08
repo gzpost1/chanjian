@@ -8,6 +8,9 @@ import com.yjtech.wisdom.tourism.entity.TbCountryTour;
 import com.yjtech.wisdom.tourism.mapper.TbCountryTourMapper;
 import com.yjtech.wisdom.tourism.mybatis.base.BaseMybatisServiceImpl;
 import com.yjtech.wisdom.tourism.mybatis.entity.PageQuery;
+import com.yjtech.wisdom.tourism.system.domain.IconSpotEnum;
+import com.yjtech.wisdom.tourism.system.service.IconService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +27,9 @@ import java.util.Locale;
 @Service
 public class TbCountryTourService extends BaseMybatisServiceImpl<TbCountryTourMapper, TbCountryTour> {
     private DateFormat format = new SimpleDateFormat("HH:mm");
+
+    @Autowired
+    private IconService iconService;
 
     public List<SelectVo> statistic() {
         return baseMapper.statistic();
@@ -48,6 +54,9 @@ public class TbCountryTourService extends BaseMybatisServiceImpl<TbCountryTourMa
         page.setRecords(baseMapper.listExtra(page, entity));
         for (TbCountryTour record : page.getRecords()) {
             record.setOpenTimeStr(makeOpenTimeStr(record));
+        }
+        for (TbCountryTour record : page.getRecords()) {
+            record.setIconUrl(iconService.queryIconUrl(IconSpotEnum.COUNTRY, "1"));
         }
         return page;
     }
