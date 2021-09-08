@@ -126,6 +126,7 @@
         (120) as price
         from
         tb_hotel_info
+        INNER JOIN
         <where>
             <if test="params != null">
                 <if test="params.areaCode != null and params.areaCode != ''">

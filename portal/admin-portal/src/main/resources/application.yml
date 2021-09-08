@@ -175,7 +175,7 @@ wechat.open:
 sms.sdk:
   appid: 1400562010
   appkey: 26de35754956355ef32964fdf48518d6
-  smsSign: 标准产业监测平台
+  smsSign: 235198
   ipSmsLimitCount: 100 # 调用终端的ip限制次数
   ipSmsLimitExpire: 86400 # 调用终端的ip限制次数的时间,单位为秒,默认1天
   phoneSmsLimitExpire: 60 # 限制目标手机号调用间隔,单位为秒,默认1分钟

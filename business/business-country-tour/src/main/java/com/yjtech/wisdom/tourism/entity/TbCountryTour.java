@@ -160,4 +160,10 @@ public class TbCountryTour implements Serializable {
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
+
+    /**
+     * 点位图标
+     */
+    @TableField(exist = false)
+    private String iconUrl;
 }

@@ -86,6 +86,11 @@ public class HotelSimulationDataDTO implements Serializable {
     private List<BaseVO> hotRankBigData;
 
     /**
+     * 查询房型价格统计-酒店民宿大数据
+     */
+    private RoomTypePriceScreenDTO roomPriceStatisticsBigData;
+
+    /**
      * 查询评价量趋势、同比、环比-酒店民宿大数据
      */
     private List<AnalysisBaseInfo> evaluateAnalysisBigData;

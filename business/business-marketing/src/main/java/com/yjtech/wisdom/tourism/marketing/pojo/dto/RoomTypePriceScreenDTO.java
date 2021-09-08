@@ -35,4 +35,9 @@ public class RoomTypePriceScreenDTO implements Serializable {
      */
     private BigDecimal averagePrice;
 
+    public RoomTypePriceScreenDTO(BigDecimal init) {
+        this.highestPrice = init;
+        this.lowestPrice = init;
+        this.averagePrice = init;
+    }
 }
