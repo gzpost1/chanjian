@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
+import com.yjtech.wisdom.tourism.common.utils.CommonUtil;
 import com.yjtech.wisdom.tourism.common.utils.MathUtil;
 import com.yjtech.wisdom.tourism.mybatis.base.BaseMybatisServiceImpl;
 import com.yjtech.wisdom.tourism.resource.lecture.dto.LectureDto;
@@ -16,6 +17,8 @@ import com.yjtech.wisdom.tourism.resource.lecture.mapper.LectureMapper;
 import com.yjtech.wisdom.tourism.resource.lecture.vo.LecturePageByVenueIdVo;
 import com.yjtech.wisdom.tourism.resource.lecture.vo.LectureScaleVo;
 import com.yjtech.wisdom.tourism.resource.lecture.vo.LectureVo;
+import com.yjtech.wisdom.tourism.system.domain.IconSpotEnum;
+import com.yjtech.wisdom.tourism.system.service.IconService;
 import com.yjtech.wisdom.tourism.system.service.SysDictDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +27,7 @@ import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 展演讲座管理
@@ -36,6 +40,9 @@ public class LectureMangerService extends BaseMybatisServiceImpl<LectureMapper, 
 
     @Autowired
     private SysDictDataService sysDictDataService;
+
+    @Autowired
+    private IconService iconService;
 
     /**
      * 查询展演讲座列表_分页
@@ -58,6 +65,9 @@ public class LectureMangerService extends BaseMybatisServiceImpl<LectureMapper, 
             LectureDto lectureDto = JSONObject.parseObject(JSONObject.toJSONString(item), LectureDto.class);
             // 字典获取
             String name = sysDictDataService.selectDictLabel(lectureDto.getLectureType(), lectureDto.getLectureValue());
+            // 设置点位图标
+            lectureDto.setIconUrl(iconService.queryIconUrl(IconSpotEnum.LECTURE,
+                    Objects.isNull(item.getStatus()) ? "0" : item.getStatus().toString()));
             lectureDto.setDictName(name);
             return lectureDto;
         });
