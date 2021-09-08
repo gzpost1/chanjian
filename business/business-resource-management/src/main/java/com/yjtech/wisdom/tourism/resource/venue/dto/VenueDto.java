@@ -1,5 +1,6 @@
 package com.yjtech.wisdom.tourism.resource.venue.dto;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -119,4 +120,10 @@ public class VenueDto implements Serializable {
      * 启停用状态
      */
     private Byte status;
+
+    /**
+     * 图标地址
+     */
+    @TableField(exist = false)
+    private String iconUrl;
 }
