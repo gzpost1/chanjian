@@ -236,7 +236,7 @@ public class ComprehensiveStrategyImpl extends BaseStrategy {
                     DecisionSupportConfigEnum.MIDDLE_RISK_WARNING_ITEMS_TARGET.getKey(), currentAlarmData.getMediumRiskName(),
                     DecisionSupportConfigEnum.LOW_RISK_WARNING_ITEMS_TARGET.getKey(), currentAlarmData.getLowRiskName(),
                     DecisionSupportConfigEnum.YEAR_MONTH_STATISTICAL.getKey(), currentLastMonthStr + "月",
-                    DecisionSupportConfigEnum.PLATFORM_SIMPLE_NAME.getKey(), simpleName
+                    DecisionSupportConfigEnum.PLATFORM_NAME.getKey(), simpleName
             );
             result.setConclusionText(conclusionText);
         }
