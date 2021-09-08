@@ -59,7 +59,7 @@ public class EvaluateController {
 
         return JsonResult.success(extensionExecutor.execute(HotelQryExtPt.class,
                 buildBizScenario(HotelExtensionConstant.HOTEL_QUANTITY, vo.getIsSimulation()),
-                extension -> extension.queryEvaluateStatistics(vo)));
+                extension -> extension.queryEvaluateStatisticsBigData(vo)));
     }
 
     /**
@@ -75,7 +75,7 @@ public class EvaluateController {
 
         return JsonResult.success(extensionExecutor.execute(HotelQryExtPt.class,
                 buildBizScenario(HotelExtensionConstant.HOTEL_QUANTITY, vo.getIsSimulation()),
-                extension -> extension.queryEvaluateTypeDistribution(vo)));
+                extension -> extension.queryEvaluateTypeDistributionBigData(vo)));
     }
 
     /**

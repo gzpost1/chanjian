@@ -148,6 +148,16 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
     }
 
     /**
+     * 查询房型价格统计-酒店民宿大数据
+     * @param vo
+     * @return
+     */
+    @Override
+    public RoomTypePriceScreenDTO queryRoomPriceStatisticsBigData(RoomScreenQueryVO vo) {
+        return calculateAndQuery(vo.getBeginTime(), vo.getEndTime()).getRoomPriceStatisticsBigData();
+    }
+
+    /**
      * 查询房型价格趋势-酒店民宿详情
      *
      * @param vo
@@ -276,7 +286,8 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
         Map<Long, List<RoomPriceAnalysisDTO>> roomPriceAnalysisDetail = Maps.newHashMap();
         //查询评价热词排行-酒店民宿大数据
         List<BaseVO> hotRankBigDataAll = Lists.newArrayList();
-
+        //查询房型价格统计-酒店民宿大数据
+        RoomTypePriceScreenDTO roomPriceStatisticsBigData = new RoomTypePriceScreenDTO(BigDecimal.ZERO);
 
         //评价数量总计
         Integer evaluateTotalAll = 0;
@@ -354,8 +365,24 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
 
                 //构建单个酒店房型价格趋势
                 roomPriceAnalysisDetail.put(hotelId, calculateRoomPriceAnalysis(endDate, averagePrice, simulationHotelDTO.getRoomTypePrice()));
+
+                //设置整体历史最高价格
+                if(highestPrice.compareTo(roomPriceStatisticsBigData.getHighestPrice()) > 0){
+                    roomPriceStatisticsBigData.setHighestPrice(highestPrice);
+                }
+                //设置整体历史最低价格
+                if(roomPriceStatisticsBigData.getLowestPrice().compareTo(BigDecimal.ZERO) == 0){
+                    roomPriceStatisticsBigData.setLowestPrice(lowestPrice);
+                }else {
+                    if(lowestPrice.compareTo(roomPriceStatisticsBigData.getLowestPrice()) < 0 ){
+                        roomPriceStatisticsBigData.setLowestPrice(lowestPrice);
+                    }
+                }
             }
         }
+
+        //查询房型价格统计-酒店民宿大数据
+        roomPriceStatisticsBigData.setAveragePrice(roomPriceStatisticsBigData.getHighestPrice().add(roomPriceStatisticsBigData.getLowestPrice()).divide(new BigDecimal(2), 1, BigDecimal.ROUND_HALF_UP));
 
         //查询酒店民宿统计-综合总览
         HotelStatisticsDTO statisticsIndex = new HotelStatisticsDTO(evaluateTotalAll,
@@ -407,7 +434,7 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
 
         HotelSimulationDataDTO dto = new HotelSimulationDataDTO(statisticsDetail, typeDistributionDetail, hotRankDetail, roomPriceStatisticsDetail, roomPriceAnalysisDetail,
                 statisticsIndex, statisticsBigData, typeDistributionBigData, hotelCount, evaluateRankBigData, satisfactionRankBigData,
-                hotRankBigData, evaluateAnalysisBigData, satisfactionAnalysisBigData, roomPriceAnalysisBigData);
+                hotRankBigData, roomPriceStatisticsBigData, evaluateAnalysisBigData, satisfactionAnalysisBigData, roomPriceAnalysisBigData);
 
         //获取缓存数据
         redisCache.setCacheObject(CacheKeyContants.HOTEL_SIMULATION_PREFIX + beginTime + endTime, dto, (int) DateUtils.getCacheExpire(), TimeUnit.MINUTES);

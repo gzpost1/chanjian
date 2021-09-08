@@ -260,7 +260,7 @@ public class HighIncidenceEmergencyEventStrategyImpl extends BaseStrategy {
         String tb = "-";
         String hb = "-";
 
-        if (!StringUtils.isEmpty(tempDto.getValue())) {
+        if (!StringUtils.isEmpty(tempDto.getValue()) && 0 != Integer.parseInt(tempDto.getValue())) {
             tb = MathUtil.calPercent(
                     new BigDecimal(Integer.parseInt(tempDto.getValue()) - Integer.parseInt(lastYearLastMonth.get(index).getValue())),
                     new BigDecimal(tempDto.getValue()), 2).toString();
