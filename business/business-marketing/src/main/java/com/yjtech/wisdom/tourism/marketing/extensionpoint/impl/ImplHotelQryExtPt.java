@@ -123,6 +123,17 @@ public class ImplHotelQryExtPt implements HotelQryExtPt {
     }
 
     /**
+     * 查询房型价格统计-酒店民宿详情
+     *
+     * @param vo
+     * @return
+     */
+    @Override
+    public RoomTypePriceScreenDTO queryRoomPriceStatisticsBigData(RoomScreenQueryVO vo) {
+        return marketingHotelRoomService.queryRoomPriceStatistics(vo);
+    }
+
+    /**
      * 查询房型价格趋势-酒店民宿详情
      *
      * @param vo

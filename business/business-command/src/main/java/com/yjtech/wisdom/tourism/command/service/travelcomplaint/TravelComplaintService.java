@@ -93,7 +93,7 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
                     TravelComplaintTypeEnum.getDescByValue(vo.getComplaintType()),
                     getComplaintObject(entity.getComplaintType(), entity.getComplaintObject(), entity.getObjectId()),
                     vo.getComplaintTime().toString(),
-                    vo.getLocation());
+                    StringUtils.isBlank(vo.getLocation()) ? "" : vo.getLocation());
             //发送消息
             sendMessageNotice(CacheKeyContants.KEY_ASSIGN_TRAVEL_COMPLAINT,
                     entity.getId(),
@@ -207,7 +207,7 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
                     TravelComplaintTypeEnum.getDescByValue(complaintEntity.getComplaintType()),
                     complaintObject,
                     complaintEntity.getComplaintTime().toString(),
-                    complaintEntity.getLocation());
+                    StringUtils.isBlank(complaintEntity.getLocation()) ? "" : complaintEntity.getLocation());
             //构建App消息模板
             String appTemplate = MessageFormat.format(
                     TemplateConstants.TEMPLATE_APP_TRAVEL_COMPLAINT_ASSIGN,
