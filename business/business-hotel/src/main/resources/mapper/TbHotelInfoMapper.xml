@@ -124,12 +124,10 @@
         hotel.longitude as longitude,
         hotel.latitude as latitude,
         hotel.area_code as areaCode,
-        MIN(hotelRoom.price) as price,
-        icon.url as iconUrl
+        (select MIN(price) from tb_marketing_hotel_room <where> hotel_id = hotel.id </where>) as price,
+        (select url from tb_icon <where> type = 2 </where>) as iconUrl
         from
         tb_hotel_info hotel
-        LEFT JOIN tb_marketing_hotel_room hotelRoom ON hotel.id = hotelRoom.hotel_id
-        LEFT JOIN tb_icon icon ON 1 = 1 and icon.type = 2
         <where>
             <if test="params != null">
                 <if test="params.areaCode != null and params.areaCode != ''">
