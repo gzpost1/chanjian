@@ -151,7 +151,7 @@
         tb_event
         <where>
             <if test="params.beginTime != null and params.endTime != null">
-                and tb_event >= #{params.beginTime} and tb_event <![CDATA[<]]> #{params.endTime}
+                and event_date >= #{params.beginTime} and event_date <![CDATA[<]]> #{params.endTime}
             </if>
             <if test="params.eventStatus != null and params.eventStatus != ''">
                 and event_status = #{params.eventStatus}

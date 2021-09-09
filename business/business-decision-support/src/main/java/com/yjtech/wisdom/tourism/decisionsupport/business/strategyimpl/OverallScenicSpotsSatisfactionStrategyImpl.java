@@ -246,7 +246,7 @@ public class OverallScenicSpotsSatisfactionStrategyImpl extends BaseStrategy {
             good = marketingEvaluateStatisticsDTO.getSatisfaction().divide(new BigDecimal(100), 0).multiply(new BigDecimal(total)).intValue();
         }
 
-        return StatisticsDto.builder().total(total).goodTotal(good).satisfaction(satisfaction).build();
+        return StatisticsDto.builder().total(total).goodTotal(good).satisfaction(new BigDecimal(satisfaction).setScale(1, BigDecimal.ROUND_HALF_UP).toString()).build();
     }
 
 }

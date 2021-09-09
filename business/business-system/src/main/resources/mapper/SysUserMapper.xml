@@ -24,6 +24,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result property="remark"       column="remark"       />
 		<result property="deleted"       column="deleted"       />
 		<result property="roleName"       column="role_name"       />
+		<result property="pushToken"       column="push_token"       />
 		<association property="dept"    column="dept_id" javaType="com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysDept" resultMap="deptResult" />
 		<collection  property="roles"   javaType="java.util.List"        resultMap="RoleResult" />
 	</resultMap>
