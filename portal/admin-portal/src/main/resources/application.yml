@@ -185,3 +185,14 @@ sms.sdk:
   tourTemplateId: 1086274
   # 应急事件短信模板
   emergencyTemplateId: 1086283
+
+# app消息推送配置
+tpns:
+  config:
+    androidAppId: 1500021206
+    androidSecretKey: AQ8C1MZM1X41
+    # iosAppId: 1600018472
+    # iosSecretKey: dc932e7fce0b2ca6943fd2e8cb942dbf
+    connectTimeOut: 30
+    readTimeOut: 30
+    domainUrl: https://api.tpns.tencent.com/
