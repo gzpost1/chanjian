@@ -1,6 +1,7 @@
 package com.yjtech.wisdom.tourism.decisionsupport.business.strategyimpl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
 import com.yjtech.wisdom.tourism.common.constant.DecisionSupportConstants;
 import com.yjtech.wisdom.tourism.common.enums.DecisionSupportConfigEnum;
 import com.yjtech.wisdom.tourism.common.utils.DateTimeUtil;
@@ -191,9 +192,13 @@ public class OverallScenicSpotsSatisfactionStrategyImpl extends BaseStrategy {
         vo.setEndTime(endDate);
         // 1：景区
         vo.setDataType((byte)1);
-        return extensionExecutor.execute(ScenicQryExtPt.class,
+        List<BasePercentVO> execute = extensionExecutor.execute(ScenicQryExtPt.class,
                 buildBizScenario(ScenicExtensionConstant.SCENIC_QUANTITY, vo.getIsSimulation().byteValue()),
                 extension -> extension.queryEvaluateTypeDistribution(vo));
+        for (BasePercentVO v : execute) {
+            v.setRate(new BigDecimal(v.getRate()).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue());
+        }
+        return execute;
     }
 
     /**
@@ -241,7 +246,7 @@ public class OverallScenicSpotsSatisfactionStrategyImpl extends BaseStrategy {
             good = marketingEvaluateStatisticsDTO.getSatisfaction().divide(new BigDecimal(100), 0).multiply(new BigDecimal(total)).intValue();
         }
 
-        return StatisticsDto.builder().total(total).goodTotal(good).satisfaction(satisfaction).build();
+        return StatisticsDto.builder().total(total).goodTotal(good).satisfaction(new BigDecimal(satisfaction).setScale(1, BigDecimal.ROUND_HALF_UP).toString()).build();
     }
 
 }

@@ -95,17 +95,6 @@ spring:
 #      username: industry
 #      password: yjwlindustry
 
-# app消息推送配置
-tpns:
-  config:
-    androidAppId: 1500018471
-    androidSecretKey: 2aab961f5af78d8c7cf70b3fcc04ae23
-    iosAppId: 1600018472
-    iosSecretKey: dc932e7fce0b2ca6943fd2e8cb942dbf
-    connectTimeOut: 30
-    readTimeOut: 30
-    domainUrl: https://api.tpns.tencent.com/
-
 
 # 游客结构-区县大数据接口配置
 tourist:

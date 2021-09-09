@@ -276,7 +276,7 @@ public class OverallHotelHomestaySatisfactionRankingStrategyImpl extends BaseStr
     private MarketingEvaluateStatisticsDTO getMaxDownHotel(EvaluateQueryVO evaluateScreenQueryVO) {
         return extensionExecutor.execute(HotelQryExtPt.class,
                 buildBizScenario(HotelExtensionConstant.HOTEL_QUANTITY, evaluateScreenQueryVO.getIsSimulation()),
-                extension -> extension.queryEvaluateStatistics(evaluateScreenQueryVO));
+                extension -> extension.queryEvaluateStatisticsBigData(evaluateScreenQueryVO));
     }
 
     /**
