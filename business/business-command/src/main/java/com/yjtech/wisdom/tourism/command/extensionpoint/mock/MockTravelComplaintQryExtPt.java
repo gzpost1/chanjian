@@ -124,10 +124,10 @@ public class MockTravelComplaintQryExtPt implements TravelComplaintQryExtPt {
      */
     public TravelComplaintSimulationDTO calculateAndQuery(Byte complaintType, LocalDateTime beginTime, LocalDateTime endTime){
         //获取缓存数据
-        TravelComplaintSimulationDTO cacheInfo = redisCache.getCacheObject(CacheKeyContants.TRAVEL_COMPLAINT_SIMULATION_PREFIX + beginTime + endTime);
-        if (null != cacheInfo) {
-            return cacheInfo;
-        }
+//        TravelComplaintSimulationDTO cacheInfo = redisCache.getCacheObject(CacheKeyContants.TRAVEL_COMPLAINT_SIMULATION_PREFIX + beginTime + endTime);
+//        if (null != cacheInfo) {
+//            return cacheInfo;
+//        }
 
         //获取当前时间
         LocalDateTime now = LocalDateTime.now();
@@ -169,7 +169,7 @@ public class MockTravelComplaintQryExtPt implements TravelComplaintQryExtPt {
                 complaintStatusDistribution, complaintTopByType, complaintAnalysis, queryTotal);
 
         //获取缓存数据
-        redisCache.setCacheObject(CacheKeyContants.TRAVEL_COMPLAINT_SIMULATION_PREFIX + beginTime + endTime, dto, (int) DateUtils.getCacheExpire(), TimeUnit.MINUTES);
+//        redisCache.setCacheObject(CacheKeyContants.TRAVEL_COMPLAINT_SIMULATION_PREFIX + beginTime + endTime, dto, (int) DateUtils.getCacheExpire(), TimeUnit.MINUTES);
 
         return dto;
     }
