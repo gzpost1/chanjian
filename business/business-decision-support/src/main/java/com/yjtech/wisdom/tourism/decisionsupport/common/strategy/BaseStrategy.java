@@ -1,6 +1,7 @@
 package com.yjtech.wisdom.tourism.decisionsupport.common.strategy;
 
 
+import com.alibaba.fastjson.JSONObject;
 import com.yjtech.wisdom.tourism.common.bean.BaseValueVO;
 import com.yjtech.wisdom.tourism.common.constant.DecisionSupportConstants;
 import com.yjtech.wisdom.tourism.common.utils.DateTimeUtil;
@@ -15,6 +16,7 @@ import com.yjtech.wisdom.tourism.mybatis.utils.AnalysisUtils;
 import com.yjtech.wisdom.tourism.service.impl.DistrictTourImplService;
 import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.decisionsupport.DecisionMockDTO;
 import com.yjtech.wisdom.tourism.vo.PassengerFlowVo;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEvent;
@@ -38,6 +40,7 @@ import java.util.stream.Collectors;
  * @date 2021/8/5 10:46
  */
 @Component
+@Slf4j
 public abstract class BaseStrategy implements ApplicationListener {
 
     private static final int HUNDRED = 100;
@@ -192,8 +195,10 @@ public abstract class BaseStrategy implements ApplicationListener {
      * @param scale 百分比
      */
     protected void numberAlarmDeal(DecisionEntity decisionInfo, DecisionWarnEntity entity, String scale, Integer isSimulation) {
+        log.info("【报警类数值】开始处理");
         // 模拟数据
         if (DecisionSupportConstants.MOCK.equals(isSimulation) && !MapUtils.isEmpty(riskTypeMap)) {
+            log.info("【报警类数值】-->模拟数据<--");
             if (!ObjectUtils.isEmpty(mockRuleData)) {
                 AtomicBoolean isStop = new AtomicBoolean(false);
                 for (DecisionMockDTO data : mockRuleData) {
@@ -206,17 +211,25 @@ public abstract class BaseStrategy implements ApplicationListener {
                         }
                     });
                     if (isStop.get()) {
+                        log.info("【报警类数值-模拟数据-处理结果：{}】", JSONObject.toJSONString(entity));
                         return;
                     }
                 }
             }
         }
+        log.info("【报警类数值】-->真实数据<--");
+        log.info("【报警类数值】决策模板数据：{}", JSONObject.toJSONString(decisionInfo));
+        log.info("【报警类数值】数据库数据：{}", JSONObject.toJSONString(entity));
+        log.info("【报警类数值】比例：{}", scale);
 
         if (DEFAULT_STR.equals(scale)) {
             return;
         }
+        if (ObjectUtils.isEmpty(decisionInfo)) {
+            return;
+        }
         // 数值
-        if (DecisionSupportConstants.DECISION_WARN_TYPE_NUMBER.equals(decisionInfo.getConfigType())) {
+        if (DecisionSupportConstants.DECISION_WARN_TYPE_NUMBER.equals(decisionInfo.getConfigType()) && !StringUtils.isEmpty(decisionInfo.getConfigType())) {
             switch (decisionInfo.getChangeType()) {
                 // 上升
                 case DecisionSupportConstants.NUMBER_TYPE_UP:
@@ -244,14 +257,18 @@ public abstract class BaseStrategy implements ApplicationListener {
      * @param sign
      */
     private void numberAlarmHandle(DecisionEntity decisionInfo, DecisionWarnEntity entity, String targetNumber, int sign) {
+        log.info("=================【数值类型处理】=======================");
         // 低风险预警值
         Double lowRiskThreshold = decisionInfo.getLowRiskThreshold() * HUNDRED * sign;
         // 中风险预警值
         Double mediumRiskThreshold = decisionInfo.getMediumRiskThreshold() * HUNDRED * sign;
         // 高风险预警值
         Double highRiskThreshold = decisionInfo.getHighRiskThreshold() * HUNDRED * sign;
-
+        log.info("【数值类型处理】低风险预警指：{}", lowRiskThreshold);
+        log.info("【数值类型处理】中风险预警指：{}", mediumRiskThreshold);
+        log.info("【数值类型处理】高风险预警指：{}", highRiskThreshold);
         double tbValue = Double.parseDouble(targetNumber);
+        log.info("【数值类型处理】同比值：{}", tbValue);
 
         // 低风险
         if (tbValue > lowRiskThreshold && tbValue < mediumRiskThreshold) {

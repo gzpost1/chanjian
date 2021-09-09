@@ -53,7 +53,7 @@ public class LectureEntity implements Serializable {
     /**
      * 关联场馆ID
      */
-    private Long venueId;
+    private String venueId;
 
     /**
      * 关联场馆名称
