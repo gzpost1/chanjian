@@ -11,12 +11,14 @@ import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionEntity;
 import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionWarnEntity;
 import com.yjtech.wisdom.tourism.decisionsupport.common.strategy.BaseStrategy;
 import com.yjtech.wisdom.tourism.decisionsupport.common.util.PlaceholderUtils;
+import com.yjtech.wisdom.tourism.extension.ExtensionExecutor;
+import com.yjtech.wisdom.tourism.integration.extensionpoint.OneTravelExtensionConstant;
+import com.yjtech.wisdom.tourism.integration.extensionpoint.OneTravelQryExtPt;
 import com.yjtech.wisdom.tourism.integration.pojo.vo.FxDistQueryVO;
-import com.yjtech.wisdom.tourism.integration.service.FxDistApiService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -28,8 +30,8 @@ import java.util.List;
 @Component
 public class OneTravelOrderNumberStrategyImpl extends BaseStrategy {
 
-    @Autowired
-    private FxDistApiService fxDistApiService;
+    @Resource
+    private ExtensionExecutor extensionExecutor;
 
     /**
      * 一码游订单量
@@ -51,13 +53,17 @@ public class OneTravelOrderNumberStrategyImpl extends BaseStrategy {
         fxDistQueryVO.setIsSimulation(isSimulation.byteValue());
         fxDistQueryVO.setBeginTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentLastMonthStr() + DecisionSupportConstants.START_DAY_STR));
         fxDistQueryVO.setEndTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentLastMonthStr() + DecisionSupportConstants.END_DAY_STR));
-        String orderTotal = fxDistApiService.queryOrderStatistics(fxDistQueryVO).getOrderCount().toString();
+        String orderTotal = extensionExecutor.execute(OneTravelQryExtPt.class,
+                buildBizScenario(OneTravelExtensionConstant.ONE_TRAVEL_QUANTITY, fxDistQueryVO.getIsSimulation()),
+                extension -> extension.queryOneTravelTradeIndex(fxDistQueryVO)).getOrderCount().toString();
 
 
         fxDistQueryVO.setBeginTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentYearStr() + DecisionSupportConstants.START_DATE_STR));
         fxDistQueryVO.setEndTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentYearStr() + DecisionSupportConstants.END_DATE_STR));
         fxDistQueryVO.setType(DecisionSupportConstants.YEAR_MONTH);
-        List<AnalysisBaseInfo> order = fxDistApiService.queryOrderAnalysis(fxDistQueryVO);
+        List<AnalysisBaseInfo> order = extensionExecutor.execute(OneTravelQryExtPt.class,
+                buildBizScenario(OneTravelExtensionConstant.ONE_TRAVEL_QUANTITY, fxDistQueryVO.getIsSimulation()),
+                extension -> extension.queryOrderAnalysis(fxDistQueryVO));
 
         String currentLastMonthStr1 = DateTimeUtil.getCurrentLastMonthStr();
 

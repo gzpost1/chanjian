@@ -10,14 +10,16 @@ import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionEntity;
 import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionWarnEntity;
 import com.yjtech.wisdom.tourism.decisionsupport.common.strategy.BaseStrategy;
 import com.yjtech.wisdom.tourism.decisionsupport.common.util.PlaceholderUtils;
+import com.yjtech.wisdom.tourism.extension.ExtensionExecutor;
+import com.yjtech.wisdom.tourism.marketing.extensionpoint.HotelExtensionConstant;
+import com.yjtech.wisdom.tourism.marketing.extensionpoint.HotelQryExtPt;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateStatisticsDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateQueryVO;
-import com.yjtech.wisdom.tourism.marketing.service.MarketingEvaluateService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,8 +33,8 @@ import java.util.List;
 @Component
 public class OverallHotelHomestaySatisfactionStrategyImpl extends BaseStrategy {
 
-    @Autowired
-    private MarketingEvaluateService marketingEvaluateService;
+    @Resource
+    private ExtensionExecutor extensionExecutor;
 
     /**
      * 整体酒店民宿满意度
@@ -196,7 +198,9 @@ public class OverallHotelHomestaySatisfactionStrategyImpl extends BaseStrategy {
         evaluateQueryVO.setBeginTime(startDate);
         evaluateQueryVO.setEndTime(endDate);
         evaluateQueryVO.setStatus(DecisionSupportConstants.ENABLE);
-        return marketingEvaluateService.queryEvaluateTypeDistribution(evaluateQueryVO);
+        return extensionExecutor.execute(HotelQryExtPt.class,
+                buildBizScenario(HotelExtensionConstant.HOTEL_QUANTITY, evaluateQueryVO.getIsSimulation()),
+                extension -> extension.queryEvaluateTypeDistribution(evaluateQueryVO));
     }
 
     /**
@@ -214,7 +218,9 @@ public class OverallHotelHomestaySatisfactionStrategyImpl extends BaseStrategy {
         evaluateScreenQueryVO.setIsSimulation(isSimulation.byteValue());
 
         // 上月
-        MarketingEvaluateStatisticsDTO lastMonth = marketingEvaluateService.queryEvaluateStatistics(evaluateScreenQueryVO);
+        MarketingEvaluateStatisticsDTO lastMonth = extensionExecutor.execute(HotelQryExtPt.class,
+                buildBizScenario(HotelExtensionConstant.HOTEL_QUANTITY, evaluateScreenQueryVO.getIsSimulation()),
+                extension -> extension.queryEvaluateStatistics(evaluateScreenQueryVO));
 
         // 评价数量
         Integer evaluateTotal = lastMonth.getEvaluateTotal();

@@ -48,6 +48,7 @@
         <result column="longitude" property="longitude"/>
         <result column="latitude" property="latitude"/>
         <result property="areaCode" column="area_code"/>
+        <result property="iconUrl" column="iconUrl"/>
     </resultMap>
 
     <select id="list" resultMap="BaseResultMap"
@@ -100,52 +101,53 @@
     <select id="queryScreenPage" resultMap="ScreenDetailResult"
             parameterType="com.yjtech.wisdom.tourism.hotel.vo.HotelScreenQueryVO">
         select
-        id as id,
-        name as name,
-        lev as lev,
+        hotel.id as id,
+        hotel.name as name,
+        hotel.lev as lev,
         CASE
-        WHEN lev = 1 THEN '一星'
-        WHEN lev = 2 THEN '二星'
-        WHEN lev = 3 THEN '三星'
-        WHEN lev = 4 THEN '四星'
-        WHEN lev = 5 THEN '五星'
+        WHEN hotel.lev = 1 THEN '一星'
+        WHEN hotel.lev = 2 THEN '二星'
+        WHEN hotel.lev = 3 THEN '三星'
+        WHEN hotel.lev = 4 THEN '四星'
+        WHEN hotel.lev = 5 THEN '五星'
         ELSE '其他' END as levDesc,
-        type as type,
+        hotel.type as type,
         CASE
-        WHEN type = 1 THEN '星级酒店'
-        WHEN type = 4 THEN '民宿'
+        WHEN hotel.type = 1 THEN '星级酒店'
+        WHEN hotel.type = 4 THEN '民宿'
         ELSE '其他' END as typeDesc,
-        address as address,
-        phone as phone,
-        img as img,
-        cover_img as coverImg,
-        description as description,
-        longitude as longitude,
-        latitude as latitude,
-        area_code as areaCode,
-        (120) as price
+        hotel.address as address,
+        hotel.phone as phone,
+        hotel.img as img,
+        hotel.cover_img,
+        hotel.description as description,
+        hotel.longitude as longitude,
+        hotel.latitude as latitude,
+        hotel.area_code,
+        (select MIN(price) from tb_marketing_hotel_room <where> hotel_id = hotel.id </where>) as price,
+        (select url from tb_icon <where> type = 2 </where>) as iconUrl
         from
-        tb_hotel_info
+        tb_hotel_info hotel
         <where>
             <if test="params != null">
                 <if test="params.areaCode != null and params.areaCode != ''">
-                    area_code LIKE CONCAT('${params.areaCode}', '%') and
+                    hotel.area_code LIKE CONCAT('${params.areaCode}', '%') and
                 </if>
                 <if test="params.name != null and params.name != ''">
-                    name LIKE CONCAT('%', '${params.name}', '%') and
+                    hotel.name LIKE CONCAT('%', '${params.name}', '%') and
                 </if>
                 <choose>
                     <when test="params.status == null">
-                        status = 1 and
+                        hotel.status = 1 and
                     </when>
                     <otherwise>
-                        status = #{params.status} and
+                        hotel.status = #{params.status} and
                     </otherwise>
                 </choose>
             </if>
-            deleted = 0
+            hotel.deleted = 0
         </where>
-        ORDER BY lev DESC
+        ORDER BY hotel.lev DESC
     </select>
 
     <!-- 查询酒店类型分布 -->

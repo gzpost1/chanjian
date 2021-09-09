@@ -17,15 +17,17 @@ import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionWarnEnt
 import com.yjtech.wisdom.tourism.decisionsupport.common.strategy.BaseStrategy;
 import com.yjtech.wisdom.tourism.decisionsupport.common.util.PlaceholderUtils;
 import com.yjtech.wisdom.tourism.dto.RankingDto;
+import com.yjtech.wisdom.tourism.extension.ExtensionExecutor;
+import com.yjtech.wisdom.tourism.marketing.extensionpoint.HotelExtensionConstant;
+import com.yjtech.wisdom.tourism.marketing.extensionpoint.HotelQryExtPt;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.EvaluateSatisfactionRankDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateStatisticsDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateQueryVO;
-import com.yjtech.wisdom.tourism.marketing.service.MarketingEvaluateService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -40,8 +42,8 @@ import java.util.TreeMap;
 @Component
 public class OverallHotelHomestaySatisfactionRankingStrategyImpl extends BaseStrategy {
 
-    @Autowired
-    private MarketingEvaluateService marketingEvaluateService;
+    @Resource
+    private ExtensionExecutor extensionExecutor;
 
     /**
      * 整体酒店民宿满意度排行
@@ -93,7 +95,10 @@ public class OverallHotelHomestaySatisfactionRankingStrategyImpl extends BaseStr
         String downMaxName = maxDown.getName();
 
         // 本年满意度趋势
-        List<AnalysisBaseInfo> analysisBaseInfos = marketingEvaluateService.queryEvaluateSatisfactionAnalysis(vo);
+        List<AnalysisBaseInfo> analysisBaseInfos = extensionExecutor.execute(HotelQryExtPt.class,
+                buildBizScenario(HotelExtensionConstant.HOTEL_QUANTITY, vo.getIsSimulation()),
+                extension -> extension.queryEvaluateSatisfactionAnalysis(vo));
+
         for (AnalysisBaseInfo v : analysisBaseInfos) {
             List<OneTravelNumberDto> numberDtoList = JSONObject.parseArray(JSONObject.toJSONString(JsonUtils.getValueByKey(v, DecisionSupportConstants.DATA)), OneTravelNumberDto.class);
 
@@ -123,7 +128,7 @@ public class OverallHotelHomestaySatisfactionRankingStrategyImpl extends BaseStr
         evaluateScreenQueryVO.setEndTime(monthEndDate);
         evaluateScreenQueryVO.setPlaceId(maxDown.getId().toString());
         // 获取 满意度下降最多的 酒店信息
-        MarketingEvaluateStatisticsDTO maxDownHotel = marketingEvaluateService.queryEvaluateStatistics(evaluateScreenQueryVO);
+        MarketingEvaluateStatisticsDTO maxDownHotel = getMaxDownHotel(evaluateScreenQueryVO);
 
         // 满意度下降最多酒店民宿评价量
         Integer maxDownEvaluateTotal = maxDownHotel.getEvaluateTotal();
@@ -132,7 +137,7 @@ public class OverallHotelHomestaySatisfactionRankingStrategyImpl extends BaseStr
         String maxDownSatisfaction = maxDownHotel.getSatisfaction().toString();
 
         evaluateScreenQueryVO.setEvaluateType((byte)2);
-        MarketingEvaluateStatisticsDTO maxDownGoodHotel = marketingEvaluateService.queryEvaluateStatistics(evaluateScreenQueryVO);
+        MarketingEvaluateStatisticsDTO maxDownGoodHotel = getMaxDownHotel(evaluateScreenQueryVO);
         // 满意度下降最多酒店民宿好评量
         Integer maxDownGoodEvaluateTotal = maxDownGoodHotel.getEvaluateTotal();
 
@@ -141,7 +146,7 @@ public class OverallHotelHomestaySatisfactionRankingStrategyImpl extends BaseStr
         evaluateScreenQueryVO.setBeginTime(monthstarLastDate);
         evaluateScreenQueryVO.setEndTime(monthendLastDate);
 
-        MarketingEvaluateStatisticsDTO maxDownHotelLastLastMonth = marketingEvaluateService.queryEvaluateStatistics(evaluateScreenQueryVO);
+        MarketingEvaluateStatisticsDTO maxDownHotelLastLastMonth = getMaxDownHotel(evaluateScreenQueryVO);
 
         // 上上月 满意度下降最多酒店民宿评价量
         Integer maxDownEvaluateTotalLastLastMonth = maxDownHotelLastLastMonth.getEvaluateTotal();
@@ -150,7 +155,7 @@ public class OverallHotelHomestaySatisfactionRankingStrategyImpl extends BaseStr
         String maxDownSatisfactionLastLastMonth = maxDownHotelLastLastMonth.getSatisfaction().toString();
 
         evaluateScreenQueryVO.setEvaluateType((byte)2);
-        MarketingEvaluateStatisticsDTO maxDownGoodHotelLastLastMonth = marketingEvaluateService.queryEvaluateStatistics(evaluateScreenQueryVO);
+        MarketingEvaluateStatisticsDTO maxDownGoodHotelLastLastMonth = getMaxDownHotel(evaluateScreenQueryVO);
         // 上上月 满意度下降最多酒店民宿好评量
         Integer maxDownGoodEvaluateTotalLastLastMonth = maxDownGoodHotelLastLastMonth.getEvaluateTotal();
 
@@ -263,6 +268,18 @@ public class OverallHotelHomestaySatisfactionRankingStrategyImpl extends BaseStr
     }
 
     /**
+     * 获取 查询评价统计
+     *
+     * @param evaluateScreenQueryVO
+     * @return
+     */
+    private MarketingEvaluateStatisticsDTO getMaxDownHotel(EvaluateQueryVO evaluateScreenQueryVO) {
+        return extensionExecutor.execute(HotelQryExtPt.class,
+                buildBizScenario(HotelExtensionConstant.HOTEL_QUANTITY, evaluateScreenQueryVO.getIsSimulation()),
+                extension -> extension.queryEvaluateStatistics(evaluateScreenQueryVO));
+    }
+
+    /**
      * 图表：满意度下降月环比Top5
      *
      * @param satisfactionDownMax
@@ -325,12 +342,12 @@ public class OverallHotelHomestaySatisfactionRankingStrategyImpl extends BaseStr
         vo.setType(DecisionSupportConstants.YEAR_MONTH);
         vo.setStatus(DecisionSupportConstants.ENABLE);
         vo.setPageSize(500L);
-        List<EvaluateSatisfactionRankDTO> lastMonth = marketingEvaluateService.queryEvaluateSatisfactionRank(vo).getRecords();
+        List<EvaluateSatisfactionRankDTO> lastMonth = getRecords(vo);
 
         // 上上月
         vo.setBeginTime(starLastDate);
         vo.setEndTime(endLastDate);
-        List<EvaluateSatisfactionRankDTO> lastLastMonth = marketingEvaluateService.queryEvaluateSatisfactionRank(vo).getRecords();
+        List<EvaluateSatisfactionRankDTO> lastLastMonth = getRecords(vo);
 
         TreeMap<Double, String> map = Maps.newTreeMap();
 
@@ -359,6 +376,18 @@ public class OverallHotelHomestaySatisfactionRankingStrategyImpl extends BaseStr
         });
         return result;
 
+    }
+
+    /**
+     * 查询满意度排行
+     *
+     * @param vo
+     * @return
+     */
+    private List<EvaluateSatisfactionRankDTO> getRecords(EvaluateQueryVO vo) {
+        return extensionExecutor.execute(HotelQryExtPt.class,
+                buildBizScenario(HotelExtensionConstant.HOTEL_QUANTITY, vo.getIsSimulation()),
+                extension -> extension.queryEvaluateSatisfactionRank(vo)).getRecords();
     }
 }
 

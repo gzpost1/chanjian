@@ -1,6 +1,8 @@
 package com.yjtech.wisdom.tourism.systemconfig.simulation.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -12,6 +14,8 @@ import javax.validation.constraints.NotNull;
  * @date 2021/7/1320:45
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class SimulationQueryDto {
     /**
      * 1票务 2停车场 3wifi 4一码游 5智慧厕所 6口碑 7事件
