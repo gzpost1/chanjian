@@ -53,6 +53,7 @@ public class HighIncidenceEmergencyEventStrategyImpl extends BaseStrategy {
         // 应急事件数量
         String total = DecisionSupportConstants.ZERO;
         EventSumaryQuery eventSumaryQuery = new EventSumaryQuery();
+        //eventSumaryQuery.setType();
         eventSumaryQuery.setIsSimulation(isSimulation);
         List<BaseVO> totalList = emergencyEvenScreenService.queryEventQuantity(eventSumaryQuery);
         for (BaseVO v : totalList) {
