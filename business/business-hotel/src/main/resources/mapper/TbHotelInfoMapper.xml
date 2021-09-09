@@ -119,11 +119,11 @@
         hotel.address as address,
         hotel.phone as phone,
         hotel.img as img,
-        hotel.cover_img as coverImg,
+        hotel.cover_img,
         hotel.description as description,
         hotel.longitude as longitude,
         hotel.latitude as latitude,
-        hotel.area_code as areaCode,
+        hotel.area_code,
         (select MIN(price) from tb_marketing_hotel_room <where> hotel_id = hotel.id </where>) as price,
         (select url from tb_icon <where> type = 2 </where>) as iconUrl
         from

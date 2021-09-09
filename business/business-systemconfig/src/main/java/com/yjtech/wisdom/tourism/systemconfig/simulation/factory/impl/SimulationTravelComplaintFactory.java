@@ -50,7 +50,7 @@ public class SimulationTravelComplaintFactory implements SimulationFactory<Simul
         redisTemplate.opsForValue().set(getCacheKey(SimulationConstants.TRAVEL_COMPLAINT), obj);
 
         //删除旅游投诉模拟数据结果缓存key
-        redisTemplate.delete(redisTemplate.keys(CacheKeyContants.TRAVEL_COMPLAINT_SIMULATION_PREFIX + "*"));
+//        redisTemplate.delete(redisTemplate.keys(CacheKeyContants.TRAVEL_COMPLAINT_SIMULATION_PREFIX + "*"));
 
     }
 
