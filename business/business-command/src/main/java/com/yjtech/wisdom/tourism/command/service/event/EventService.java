@@ -66,9 +66,9 @@ public class EventService extends ServiceImpl<EventMapper, EventEntity> implemen
         ArrayList<BaseVO> result = Lists.newArrayList();
 
         EventSumaryQuery totalQuery = new EventSumaryQuery();
-        Integer total = this.getBaseMapper().queryQuantity(totalQuery);
         totalQuery.setBeginTime(query.getBeginTime());
         totalQuery.setEndTime(query.getEndTime());
+        Integer total = this.getBaseMapper().queryQuantity(totalQuery);
         result.add(BaseVO.builder().name("total").value(String.valueOf(total)).build());
 
         EventSumaryQuery statusQuery = new EventSumaryQuery();
