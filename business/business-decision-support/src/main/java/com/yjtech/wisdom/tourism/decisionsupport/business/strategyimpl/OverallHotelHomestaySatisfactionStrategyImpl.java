@@ -200,7 +200,7 @@ public class OverallHotelHomestaySatisfactionStrategyImpl extends BaseStrategy {
         evaluateQueryVO.setStatus(DecisionSupportConstants.ENABLE);
         return extensionExecutor.execute(HotelQryExtPt.class,
                 buildBizScenario(HotelExtensionConstant.HOTEL_QUANTITY, evaluateQueryVO.getIsSimulation()),
-                extension -> extension.queryEvaluateTypeDistribution(evaluateQueryVO));
+                extension -> extension.queryEvaluateTypeDistributionBigData(evaluateQueryVO));
     }
 
     /**
@@ -220,7 +220,7 @@ public class OverallHotelHomestaySatisfactionStrategyImpl extends BaseStrategy {
         // 上月
         MarketingEvaluateStatisticsDTO lastMonth = extensionExecutor.execute(HotelQryExtPt.class,
                 buildBizScenario(HotelExtensionConstant.HOTEL_QUANTITY, evaluateScreenQueryVO.getIsSimulation()),
-                extension -> extension.queryEvaluateStatistics(evaluateScreenQueryVO));
+                extension -> extension.queryEvaluateStatisticsBigData(evaluateScreenQueryVO));
 
         // 评价数量
         Integer evaluateTotal = lastMonth.getEvaluateTotal();
