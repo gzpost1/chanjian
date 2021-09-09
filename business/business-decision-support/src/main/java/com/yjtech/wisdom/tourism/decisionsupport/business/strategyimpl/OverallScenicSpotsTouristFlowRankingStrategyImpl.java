@@ -66,12 +66,25 @@ public class OverallScenicSpotsTouristFlowRankingStrategyImpl extends BaseStrate
         String otherDownName = "";
 
         // 获取数据
-        if (!CollectionUtils.isEmpty(tourDownMax)) {
-            RankingDto rankingDto = tourDownMax.get(0);
-            downMaxName = rankingDto.getName();
-            downMaxReception = rankingDto.getValue();
-            otherDownName = setOtherDownName(tourDownMax);
+        if (CollectionUtils.isEmpty(tourDownMax)) {
+            result.setMonthHbScale(DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE);
+            result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
+            result.setWarnNum(DecisionSupportConstants.MISS_CONCLUSION_TEXT_SCALE_VALUE);
+            result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
+            result.setConclusionText(null);
+            result.setChartData(Lists.newArrayList());
+            if (DecisionSupportConstants.DECISION_WARN_TYPE_NUMBER.equals(entity.getConfigType())) {
+                numberAlarmDeal(entity, result, "-", isSimulation);
+            }else if (DecisionSupportConstants.DECISION_WARN_TYPE_TEXT.equals(entity.getConfigType())) {
+                textAlarmDeal(entity, result, "", isSimulation);
+            }
+            return result;
         }
+        // 获取数据
+        RankingDto rankingDto = tourDownMax.get(0);
+        downMaxName = rankingDto.getName();
+        downMaxReception = rankingDto.getValue();
+        otherDownName = setOtherDownName(tourDownMax);
 
         // 客流趋势
         ScenicScreenQuery query = new ScenicScreenQuery();
