@@ -155,16 +155,15 @@ public class EventService extends ServiceImpl<EventMapper, EventEntity> implemen
                         // 新增时，若配置了指派人员且勾选消息通知的，给指派人员发送后台通知，若未配置，给超级管理员发生通知。重新编辑提交不进行消息通知
                         EventAppointEntity eventAppointEntity = eventAppointService.getOne(null);
                         // 未配置指派人员  未勾选消息  都发送给超级
-                        if (Objects.isNull(eventAppointEntity)) {
+                        if (Objects.isNull(eventAppointEntity) || CollectionUtils.isEmpty(eventAppointEntity.getAppointPersonnel()) || CollectionUtils.isEmpty(eventAppointEntity.getNotice())) {
                             eventDealPersonIdArray.add(messageMangerService.queryAdminId());
-                        } else if (CollectionUtils.isEmpty(eventAppointEntity.getAppointPersonnel()) || CollectionUtils.isEmpty(eventAppointEntity.getNotice())) {
-                            eventDealPersonIdArray.add(messageMangerService.queryAdminId());
-                        } else {
+                            // 默认发送后台消息
+                            sendType.add(MessagePlatformTypeEnum.MESSAGE_PLATFORM_TYPE_BACK.getValue().intValue());
+                        }  else {
                             List<String> appointPersonnel = eventAppointEntity.getAppointPersonnel();
                             eventDealPersonIdArray.addAll(appointPersonnel.stream().map(vo -> Long.valueOf(vo)).collect(Collectors.toList()));
+                            sendType.addAll(eventAppointEntity.getNotice().stream().map(vo -> Integer.valueOf(vo)).collect(Collectors.toList()));
                         }
-                        // 默认发送后台消息
-                        sendType.add(MessagePlatformTypeEnum.MESSAGE_PLATFORM_TYPE_BACK.getValue().intValue());
 
                         tranDictEntity(Lists.newArrayList(eventEntity));
                         String platformTemplate = MessageFormat.format(
