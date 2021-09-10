@@ -50,6 +50,6 @@ public class TemplateConstants {
      *  消息模板-短信-应急事件-指派
      *  突发应急事件：｛事件名称｝，请尽快登录系统处理！
      */
-    public static final String TEMPLATE_MESSAGE_EVENT_ASSIGN = "突发应急事件：｛0｝，请尽快登录系统处理！";
+    public static final String TEMPLATE_MESSAGE_EVENT_ASSIGN = "突发应急事件：{0}，请尽快登录系统处理！";
 
 }
