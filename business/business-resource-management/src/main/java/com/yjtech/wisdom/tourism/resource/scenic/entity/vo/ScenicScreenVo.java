@@ -1,5 +1,6 @@
 package com.yjtech.wisdom.tourism.resource.scenic.entity.vo;
 
+import com.yjtech.wisdom.tourism.common.utils.MathUtil;
 import com.yjtech.wisdom.tourism.common.utils.StringUtils;
 import com.yjtech.wisdom.tourism.weather.vo.WeatherInfoVO;
 import lombok.Data;
@@ -150,7 +151,9 @@ public class ScenicScreenVo {
     public String getComfortCategory() {
         String comfort = "舒适";
         if (!isNull(this.comfortWarnRate)) {
-            comfort = (this.enterNum / this.bearCapacity) >= this.comfortWarnRate.intValue() ? "拥挤" : "舒适";
+            double value = isNull(this.bearCapacity) || this.bearCapacity == 0 ? 0D
+                    : MathUtil.calPercent(new BigDecimal(this.enterNum), new BigDecimal(this.bearCapacity), 3).doubleValue();
+            comfort = value >= this.comfortWarnRate.doubleValue() ? "拥挤" : "舒适";
         }
         return comfort;
     }

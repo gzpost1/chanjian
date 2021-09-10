@@ -142,6 +142,14 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
             weatherQuery.setLatitude(scenicScreenVo.getLatitude());
             weatherQuery.setLongitude(scenicScreenVo.getLongitude());
             scenicScreenVo.setWeatherInfoVO(queryWeatherByAreaCode(weatherQuery));
+
+            //今日检票数
+            ScenicScreenQuery screenQuery = new ScenicScreenQuery();
+            screenQuery.setScenicId(query.getScenicId());
+            screenQuery.setBeginTime(LocalDateTime.of(LocalDate.now(), LocalTime.MIN));
+            screenQuery.setEndTime(LocalDateTime.of(LocalDate.now(), LocalTime.MAX));
+            Integer todayCheckNum = ticketCheckService.queryCheckNumByTime(screenQuery);
+            scenicScreenVo.setEnterNum(todayCheckNum);
             return scenicScreenVo;
         }
         return null;
