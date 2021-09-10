@@ -89,6 +89,11 @@ public class OverallHotelHomestaySatisfactionRankingStrategyImpl extends BaseStr
             result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
             result.setConclusionText(null);
             result.setChartData(Lists.newArrayList());
+            if (DecisionSupportConstants.DECISION_WARN_TYPE_NUMBER.equals(entity.getConfigType())) {
+                numberAlarmDeal(entity, result, tb, isSimulation);
+            }else if (DecisionSupportConstants.DECISION_WARN_TYPE_TEXT.equals(entity.getConfigType())) {
+                textAlarmDeal(entity, result, "", isSimulation);
+            }
             return result;
         }
         RankingDto maxDown = satisfactionDownMax.get(0);
