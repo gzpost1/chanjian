@@ -53,7 +53,7 @@
               and status = 1
         ) b
     </select>
-    <select id="listExtra" resultType="com.yjtech.wisdom.tourism.entity.TbCountryTour"
+    <select id="listExtra" resultMap="BaseResultMap"
             parameterType="com.yjtech.wisdom.tourism.entity.TbCountryTour">
         SELECT a.*,b.dict_label as type_name FROM tb_country_tour a left join (select dict_label, dict_value from
         sys_dict_data where
