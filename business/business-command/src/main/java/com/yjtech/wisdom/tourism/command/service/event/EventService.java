@@ -236,9 +236,7 @@ public class EventService extends ServiceImpl<EventMapper, EventEntity> implemen
                         }
 
                         if(sendType.contains(MessagePlatformTypeEnum.MESSAGE_PLATFORM_TYPE_SHORT_MESSAGE.getValue().intValue())){
-                             messageTemplate = MessageFormat.format(
-                                    TemplateConstants.TEMPLATE_MESSAGE_EVENT_ASSIGN,
-                                    eventEntity.getName());
+                             messageTemplate = eventEntity.getName();
                         }
 
                         messageMangerService.sendMessage(new SendMessageVo(sendType.toArray(new Integer[0]), eventEntity.getId(),
