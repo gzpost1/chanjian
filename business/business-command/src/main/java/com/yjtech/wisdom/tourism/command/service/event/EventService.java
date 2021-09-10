@@ -66,9 +66,9 @@ public class EventService extends ServiceImpl<EventMapper, EventEntity> implemen
         ArrayList<BaseVO> result = Lists.newArrayList();
 
         EventSumaryQuery totalQuery = new EventSumaryQuery();
-        Integer total = this.getBaseMapper().queryQuantity(totalQuery);
         totalQuery.setBeginTime(query.getBeginTime());
         totalQuery.setEndTime(query.getEndTime());
+        Integer total = this.getBaseMapper().queryQuantity(totalQuery);
         result.add(BaseVO.builder().name("total").value(String.valueOf(total)).build());
 
         EventSumaryQuery statusQuery = new EventSumaryQuery();
@@ -155,16 +155,15 @@ public class EventService extends ServiceImpl<EventMapper, EventEntity> implemen
                         // 新增时，若配置了指派人员且勾选消息通知的，给指派人员发送后台通知，若未配置，给超级管理员发生通知。重新编辑提交不进行消息通知
                         EventAppointEntity eventAppointEntity = eventAppointService.getOne(null);
                         // 未配置指派人员  未勾选消息  都发送给超级
-                        if (Objects.isNull(eventAppointEntity)) {
+                        if (Objects.isNull(eventAppointEntity) || CollectionUtils.isEmpty(eventAppointEntity.getAppointPersonnel()) || CollectionUtils.isEmpty(eventAppointEntity.getNotice())) {
                             eventDealPersonIdArray.add(messageMangerService.queryAdminId());
-                        } else if (CollectionUtils.isEmpty(eventAppointEntity.getAppointPersonnel()) || CollectionUtils.isEmpty(eventAppointEntity.getNotice())) {
-                            eventDealPersonIdArray.add(messageMangerService.queryAdminId());
-                        } else {
+                            // 默认发送后台消息
+                            sendType.add(MessagePlatformTypeEnum.MESSAGE_PLATFORM_TYPE_BACK.getValue().intValue());
+                        }  else {
                             List<String> appointPersonnel = eventAppointEntity.getAppointPersonnel();
                             eventDealPersonIdArray.addAll(appointPersonnel.stream().map(vo -> Long.valueOf(vo)).collect(Collectors.toList()));
+                            sendType.addAll(eventAppointEntity.getNotice().stream().map(vo -> Integer.valueOf(vo)).collect(Collectors.toList()));
                         }
-                        // 默认发送后台消息
-                        sendType.add(MessagePlatformTypeEnum.MESSAGE_PLATFORM_TYPE_BACK.getValue().intValue());
 
                         tranDictEntity(Lists.newArrayList(eventEntity));
                         String platformTemplate = MessageFormat.format(
@@ -278,6 +277,8 @@ public class EventService extends ServiceImpl<EventMapper, EventEntity> implemen
     public LambdaQueryWrapper getQueryWrapperUser() {
         LambdaQueryWrapper<EventEntity> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(EventEntity::getCreateUser, SecurityUtils.getUserId());
+        queryWrapper.eq(EventEntity::getStatus, EntityConstants.ENABLED);
+        queryWrapper.eq(EventEntity::getDeleted, EntityConstants.NOT_DELETED);
         queryWrapper.orderByDesc(EventEntity::getCreateTime);
         return queryWrapper;
     }
@@ -291,6 +292,8 @@ public class EventService extends ServiceImpl<EventMapper, EventEntity> implemen
         LambdaQueryWrapper<EventEntity> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(StringUtils.isNotBlank(query.getEventStatus()), EventEntity::getEventStatus, query.getEventStatus());
         queryWrapper.apply("JSON_CONTAINS(appoint_handle_personnel,JSON_ARRAY({0}))", String.valueOf(SecurityUtils.getUserId()));
+        queryWrapper.eq(EventEntity::getStatus, EntityConstants.ENABLED);
+        queryWrapper.eq(EventEntity::getDeleted, EntityConstants.NOT_DELETED);
         queryWrapper.orderByDesc(EventEntity::getCreateTime);
         return queryWrapper;
     }

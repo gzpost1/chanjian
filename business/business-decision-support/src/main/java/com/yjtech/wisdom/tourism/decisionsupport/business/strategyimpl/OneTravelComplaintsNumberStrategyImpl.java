@@ -11,13 +11,15 @@ import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionEntity;
 import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionWarnEntity;
 import com.yjtech.wisdom.tourism.decisionsupport.common.strategy.BaseStrategy;
 import com.yjtech.wisdom.tourism.decisionsupport.common.util.PlaceholderUtils;
+import com.yjtech.wisdom.tourism.extension.ExtensionExecutor;
+import com.yjtech.wisdom.tourism.integration.extensionpoint.OneTravelExtensionConstant;
+import com.yjtech.wisdom.tourism.integration.extensionpoint.OneTravelQryExtPt;
 import com.yjtech.wisdom.tourism.integration.pojo.vo.OneTravelQueryVO;
-import com.yjtech.wisdom.tourism.integration.service.OneTravelApiService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -29,9 +31,8 @@ import java.util.List;
 @Component
 public class OneTravelComplaintsNumberStrategyImpl extends BaseStrategy {
 
-
-    @Autowired
-    private OneTravelApiService oneTravelApiService;
+    @Resource
+    private ExtensionExecutor extensionExecutor;
 
     /**
      * 一码游投诉量
@@ -53,7 +54,9 @@ public class OneTravelComplaintsNumberStrategyImpl extends BaseStrategy {
         oneTravelQueryVO.setBeginTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentLastMonthStr() + DecisionSupportConstants.START_DAY_STR));
         oneTravelQueryVO.setEndTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentLastMonthStr() + DecisionSupportConstants.END_DAY_STR));
         oneTravelQueryVO.setType(DecisionSupportConstants.YEAR_MONTH_DAY);
-        List<AnalysisBaseInfo> analysisBaseInfos = oneTravelApiService.queryComplaintAnalysis(oneTravelQueryVO);
+        List<AnalysisBaseInfo> analysisBaseInfos = extensionExecutor.execute(OneTravelQryExtPt.class,
+                buildBizScenario(OneTravelExtensionConstant.ONE_TRAVEL_QUANTITY, oneTravelQueryVO.getIsSimulation()),
+                extension -> extension.queryOneTravelComplaintAnalysis(oneTravelQueryVO));
 
         String currentLastMonthStr1 = DateTimeUtil.getCurrentLastMonthStr();
 

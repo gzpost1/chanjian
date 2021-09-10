@@ -1,6 +1,7 @@
 package com.yjtech.wisdom.tourism.decisionsupport.business.strategyimpl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
 import com.yjtech.wisdom.tourism.common.constant.DecisionSupportConstants;
 import com.yjtech.wisdom.tourism.common.enums.DecisionSupportConfigEnum;
 import com.yjtech.wisdom.tourism.common.utils.DateTimeUtil;
@@ -9,14 +10,16 @@ import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionEntity;
 import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionWarnEntity;
 import com.yjtech.wisdom.tourism.decisionsupport.common.strategy.BaseStrategy;
 import com.yjtech.wisdom.tourism.decisionsupport.common.util.PlaceholderUtils;
+import com.yjtech.wisdom.tourism.extension.ExtensionExecutor;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateStatisticsDTO;
+import com.yjtech.wisdom.tourism.resource.scenic.extensionpoint.ScenicExtensionConstant;
+import com.yjtech.wisdom.tourism.resource.scenic.extensionpoint.ScenicQryExtPt;
 import com.yjtech.wisdom.tourism.resource.scenic.query.ScenicScreenQuery;
-import com.yjtech.wisdom.tourism.resource.scenic.service.ScenicService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,8 +33,8 @@ import java.util.List;
 @Component
 public class OverallScenicSpotsSatisfactionStrategyImpl extends BaseStrategy {
 
-    @Autowired
-    private ScenicService scenicService;
+    @Resource
+    private ExtensionExecutor extensionExecutor;
 
     /**
      * 整体景区满意度
@@ -189,7 +192,13 @@ public class OverallScenicSpotsSatisfactionStrategyImpl extends BaseStrategy {
         vo.setEndTime(endDate);
         // 1：景区
         vo.setDataType((byte)1);
-        return scenicService.queryEvaluateTypeDistribution(vo);
+        List<BasePercentVO> execute = extensionExecutor.execute(ScenicQryExtPt.class,
+                buildBizScenario(ScenicExtensionConstant.SCENIC_QUANTITY, vo.getIsSimulation().byteValue()),
+                extension -> extension.queryEvaluateTypeDistribution(vo));
+        for (BasePercentVO v : execute) {
+            v.setRate(new BigDecimal(v.getRate()).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue());
+        }
+        return execute;
     }
 
     /**
@@ -222,7 +231,9 @@ public class OverallScenicSpotsSatisfactionStrategyImpl extends BaseStrategy {
         if (type != null) {
             vo.setEvaluateType(type);
         }
-        MarketingEvaluateStatisticsDTO marketingEvaluateStatisticsDTO = scenicService.queryScenicEvaluateStatistics(vo);
+        MarketingEvaluateStatisticsDTO marketingEvaluateStatisticsDTO = extensionExecutor.execute(ScenicQryExtPt.class,
+                buildBizScenario(ScenicExtensionConstant.SCENIC_QUANTITY, vo.getIsSimulation().byteValue()),
+                extension -> extension.queryScenicEvaluateStatistics(vo));
 
         int total = 0;
         int good = 0;
@@ -235,7 +246,7 @@ public class OverallScenicSpotsSatisfactionStrategyImpl extends BaseStrategy {
             good = marketingEvaluateStatisticsDTO.getSatisfaction().divide(new BigDecimal(100), 0).multiply(new BigDecimal(total)).intValue();
         }
 
-        return StatisticsDto.builder().total(total).goodTotal(good).satisfaction(satisfaction).build();
+        return StatisticsDto.builder().total(total).goodTotal(good).satisfaction(new BigDecimal(satisfaction).setScale(1, BigDecimal.ROUND_HALF_UP).toString()).build();
     }
 
 }

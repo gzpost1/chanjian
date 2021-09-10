@@ -13,8 +13,7 @@ import com.yjtech.wisdom.tourism.decisionsupport.base.vo.WarnConfigVo;
 import com.yjtech.wisdom.tourism.decisionsupport.common.constant.TargetQueryConstants;
 import com.yjtech.wisdom.tourism.dto.DataOverviewDto;
 import com.yjtech.wisdom.tourism.dto.MonthPassengerFlowDto;
-import com.yjtech.wisdom.tourism.integration.service.DistrictBigDataService;
-import com.yjtech.wisdom.tourism.service.impl.DistrictTourImplService;
+import com.yjtech.wisdom.tourism.service.DistrictTourService;
 import com.yjtech.wisdom.tourism.system.service.PlatformService;
 import com.yjtech.wisdom.tourism.system.service.SysConfigService;
 import com.yjtech.wisdom.tourism.system.vo.PlatformVO;
@@ -46,7 +45,7 @@ public class TargetQueryService {
     private PlatformService platformService;
 
     @Autowired
-    private DistrictTourImplService districtTourService;
+    private DistrictTourService districtTourService;
 
     @Autowired
     private SysConfigService sysConfigService;

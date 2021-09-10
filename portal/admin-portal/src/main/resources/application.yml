@@ -175,7 +175,7 @@ wechat.open:
 sms.sdk:
   appid: 1400562010
   appkey: 26de35754956355ef32964fdf48518d6
-  smsSign: 235198
+  smsSign: 云景文旅科技有限公司
   ipSmsLimitCount: 100 # 调用终端的ip限制次数
   ipSmsLimitExpire: 86400 # 调用终端的ip限制次数的时间,单位为秒,默认1天
   phoneSmsLimitExpire: 60 # 限制目标手机号调用间隔,单位为秒,默认1分钟
@@ -185,3 +185,14 @@ sms.sdk:
   tourTemplateId: 1086274
   # 应急事件短信模板
   emergencyTemplateId: 1086283
+
+# app消息推送配置
+tpns:
+  config:
+    androidAppId: 1500021206
+    androidSecretKey: 3150bc98e6bd7aa75b123deefb1989ed
+    # iosAppId: 1600018472
+    # iosSecretKey: dc932e7fce0b2ca6943fd2e8cb942dbf
+    connectTimeOut: 30
+    readTimeOut: 30
+    domainUrl: https://api.tpns.tencent.com/

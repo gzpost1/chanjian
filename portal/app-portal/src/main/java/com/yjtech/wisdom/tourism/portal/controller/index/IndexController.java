@@ -109,7 +109,7 @@ public class IndexController {
 
     /**
      * 酒店民宿
-     *[
+     *
      * @param vo
      * @return
      */
@@ -128,7 +128,7 @@ public class IndexController {
         roomScreenQueryVO.setStatus(EntityConstants.ENABLED);
         RoomTypePriceScreenDTO roomPriceStatistics = extensionExecutor.execute(HotelQryExtPt.class,
                 buildHotelBizScenario(HotelExtensionConstant.HOTEL_QUANTITY, vo.getIsSimulation()),
-                extension -> extension.queryRoomPriceStatistics(roomScreenQueryVO));
+                extension -> extension.queryRoomPriceStatisticsBigData(roomScreenQueryVO));
 
         return JsonResult.success(new HotelStatisticsDTO(evaluateStatistics.getEvaluateTotal(), evaluateStatistics.getSatisfaction(), roomPriceStatistics.getAveragePrice()));
     }

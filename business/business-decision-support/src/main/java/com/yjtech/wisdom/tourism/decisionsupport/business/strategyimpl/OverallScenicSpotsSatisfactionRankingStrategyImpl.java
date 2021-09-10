@@ -13,15 +13,17 @@ import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionWarnEnt
 import com.yjtech.wisdom.tourism.decisionsupport.common.strategy.BaseStrategy;
 import com.yjtech.wisdom.tourism.decisionsupport.common.util.PlaceholderUtils;
 import com.yjtech.wisdom.tourism.dto.RankingDto;
+import com.yjtech.wisdom.tourism.extension.ExtensionExecutor;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateStatisticsDTO;
 import com.yjtech.wisdom.tourism.resource.scenic.entity.vo.ScenicBaseVo;
+import com.yjtech.wisdom.tourism.resource.scenic.extensionpoint.ScenicExtensionConstant;
+import com.yjtech.wisdom.tourism.resource.scenic.extensionpoint.ScenicQryExtPt;
 import com.yjtech.wisdom.tourism.resource.scenic.query.ScenicScreenQuery;
-import com.yjtech.wisdom.tourism.resource.scenic.service.ScenicService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -36,8 +38,8 @@ import java.util.TreeMap;
 @Component
 public class OverallScenicSpotsSatisfactionRankingStrategyImpl extends BaseStrategy {
 
-    @Autowired
-    private ScenicService scenicService;
+    @Resource
+    private ExtensionExecutor extensionExecutor;
 
     /**
      * 景区满意度排行
@@ -89,6 +91,11 @@ public class OverallScenicSpotsSatisfactionRankingStrategyImpl extends BaseStrat
             result.setIsUseMissConclusionText(DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT);
             result.setConclusionText(null);
             result.setChartData(Lists.newArrayList());
+            if (DecisionSupportConstants.DECISION_WARN_TYPE_NUMBER.equals(entity.getConfigType())) {
+                numberAlarmDeal(entity, result, tb, isSimulation);
+            }else if (DecisionSupportConstants.DECISION_WARN_TYPE_TEXT.equals(entity.getConfigType())) {
+                textAlarmDeal(entity, result, "", isSimulation);
+            }
             return result;
         }
 
@@ -110,7 +117,7 @@ public class OverallScenicSpotsSatisfactionRankingStrategyImpl extends BaseStrat
         // 1：景区
         vo.setDataType((byte)1);
         vo.setScenicId(rankingDto.getId());
-        MarketingEvaluateStatisticsDTO evaluateStatisticsDTO = scenicService.queryScenicEvaluateStatistics(vo);
+        MarketingEvaluateStatisticsDTO evaluateStatisticsDTO = getEvaluateStatisticsDTO(vo);
 
         downMaxEvaluation = evaluateStatisticsDTO.getEvaluateTotal();
         downMaxSatisfaction = evaluateStatisticsDTO.getSatisfaction().toString();
@@ -123,7 +130,7 @@ public class OverallScenicSpotsSatisfactionRankingStrategyImpl extends BaseStrat
         // 上上月
         vo.setBeginTime(starLastDate);
         vo.setEndTime(endLastDate);
-        MarketingEvaluateStatisticsDTO lastLastMonthEvaluateStatisticsDTO = scenicService.queryScenicEvaluateStatistics(vo);
+        MarketingEvaluateStatisticsDTO lastLastMonthEvaluateStatisticsDTO = getEvaluateStatisticsDTO(vo);
         lastLastMonthDownMaxEvaluation = lastLastMonthEvaluateStatisticsDTO.getEvaluateTotal();
         lastLastMonthDownMaxSatisfaction = lastLastMonthEvaluateStatisticsDTO.getSatisfaction().toString();
         lastLastMonthDownMaxGoodEvaluation = new BigDecimal(lastLastMonthDownMaxEvaluation).multiply(new BigDecimal(lastLastMonthDownMaxSatisfaction)).divide(new BigDecimal(100), 0).intValue();
@@ -237,6 +244,18 @@ public class OverallScenicSpotsSatisfactionRankingStrategyImpl extends BaseStrat
         return result;
     }
 
+    /**
+     * 游客关注及美誉度
+     *
+     * @param vo
+     * @return
+     */
+    private MarketingEvaluateStatisticsDTO getEvaluateStatisticsDTO(ScenicScreenQuery vo) {
+        return extensionExecutor.execute(ScenicQryExtPt.class,
+                buildBizScenario(ScenicExtensionConstant.SCENIC_QUANTITY, vo.getIsSimulation().byteValue()),
+                extension -> extension.queryScenicEvaluateStatistics(vo));
+    }
+
 
     /**
      * 获取满意度
@@ -253,7 +272,9 @@ public class OverallScenicSpotsSatisfactionRankingStrategyImpl extends BaseStrat
         vo.setEndTime(endDate);
         // 1：景点
         vo.setDataType((byte)1);
-        return scenicService.querySatisfactionTop5(vo).getRecords();
+        return extensionExecutor.execute(ScenicQryExtPt.class,
+                buildBizScenario(ScenicExtensionConstant.SCENIC_QUANTITY, vo.getIsSimulation().byteValue()),
+                extension -> extension.querySatisfactionTop5(vo)).getRecords();
     }
 
     /**
@@ -376,4 +397,6 @@ public class OverallScenicSpotsSatisfactionRankingStrategyImpl extends BaseStrat
         }
         return list;
     }
+
+
 }

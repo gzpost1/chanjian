@@ -86,6 +86,13 @@ public interface HotelQryExtPt extends ExtensionPointI {
     RoomTypePriceScreenDTO queryRoomPriceStatistics(RoomScreenQueryVO vo);
 
     /**
+     * 查询房型价格统计-酒店民宿大数据
+     * @param vo
+     * @return
+     */
+    RoomTypePriceScreenDTO queryRoomPriceStatisticsBigData(RoomScreenQueryVO vo);
+
+    /**
      * 查询房型价格趋势-酒店民宿详情
      * @param vo
      * @return
@@ -127,9 +134,5 @@ public interface HotelQryExtPt extends ExtensionPointI {
      * @return
      */
     List<AnalysisBaseInfo> queryEvaluateSatisfactionAnalysis(EvaluateQueryVO vo);
-
-    public static void main(String[] args) {
-        System.out.println(System.currentTimeMillis());
-    }
 
 }

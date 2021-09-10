@@ -1,24 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: standard-integrated-app-portal
-  namespace: test-standard-integrated
+  name: app-portal
+  namespace: test-standard-industry-monitor
   labels:
-    app: standard-integrated-app-portal
+    app: app-portal
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: standard-integrated-app-portal
+      app: app-portal
   template:
     metadata:
       labels:
-        app: standard-integrated-app-portal
+        app: app-portal
     spec:
       imagePullSecrets:
       - name: harbor-secret
       containers:
-      - name: standard-integrated-app-portal
+      - name: app-portal
         args:
         - --spring.profiles.active=test
         image: ${CICD_IMAGE}:${CICD_EXECUTION_SEQUENCE}
@@ -31,11 +31,11 @@ metadata:
   annotations:
     field.cattle.io/ipAddresses: "null"
     field.cattle.io/targetDnsRecordIds: "null"
-    field.cattle.io/targetWorkloadIds: '["deployment:test-standard-integrated:standard-integrated-app-portal"]'
-  name: standard-integrated-app-portal
-  namespace: test-standard-integrated
+    field.cattle.io/targetWorkloadIds: '["deployment:test-standard-industry-monitor:app-portal"]'
+  name: app-portal
+  namespace: test-standard-industry-monitor
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
     - protocol: TCP
       port: 8090

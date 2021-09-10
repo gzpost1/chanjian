@@ -482,13 +482,17 @@ public class DecisionSupportScreenService extends ServiceImpl<DecisionWarnMapper
      * @param type
      * @return
      */
-    private Integer findRiskNumber (Integer type, String beginTime, String endTime) {
-        return baseMapper.selectCount(
-                new LambdaQueryWrapper<DecisionWarnEntity>()
+    private Integer findRiskNumber (Integer type, String beginTime, String endTime, Integer isSimulation) {
+        if (DecisionSupportConstants.MOCK.equals(isSimulation)) {
+            return decisionWarnMockMapper.selectCount(new LambdaQueryWrapper<DecisionWarnMockEntity>()
+                    .eq(DecisionWarnMockEntity::getAlarmType, type)
+                    .between(DecisionWarnMockEntity::getCreateTime, beginTime, endTime)
+                    .ne(DecisionWarnMockEntity::getTargetId, DecisionSupportTargetConstants.ZHGK));
+        }
+        return baseMapper.selectCount(new LambdaQueryWrapper<DecisionWarnEntity>()
                 .eq(DecisionWarnEntity::getAlarmType, type)
                 .between(DecisionWarnEntity::getCreateTime, beginTime, endTime)
-                .ne(DecisionWarnEntity::getTargetId, DecisionSupportTargetConstants.ZHGK)
-        );
+                .ne(DecisionWarnEntity::getTargetId, DecisionSupportTargetConstants.ZHGK));
     }
 
     /**
@@ -501,11 +505,11 @@ public class DecisionSupportScreenService extends ServiceImpl<DecisionWarnMapper
      */
     private DecisionWarnWrapperDto initDecisionWarnWrapper (String beginTime, String endTime, String missConclusionText, Integer isSimulation) {
         // 低风险项数目
-        Integer lowRiskNum = findRiskNumber(DecisionSupportConstants.LOW_RISK_TYPE, beginTime, endTime);
+        Integer lowRiskNum = findRiskNumber(DecisionSupportConstants.LOW_RISK_TYPE, beginTime, endTime, isSimulation);
         // 中风险项数目
-        Integer  mediumRiskNum = findRiskNumber(DecisionSupportConstants.MEDIUM_RISK_TYPE, beginTime, endTime);
+        Integer  mediumRiskNum = findRiskNumber(DecisionSupportConstants.MEDIUM_RISK_TYPE, beginTime, endTime, isSimulation);
         // 高风险项数目
-        Integer  highRiskNum =findRiskNumber(DecisionSupportConstants.HIGH_RISK_TYPE, beginTime, endTime);
+        Integer  highRiskNum =findRiskNumber(DecisionSupportConstants.HIGH_RISK_TYPE, beginTime, endTime, isSimulation);
 
         // 获取上次分析时间
         Object lastTime = redisTemplate.opsForValue().get(DecisionSupportConstants.LAST_ANALYZE_DATE_KEY);

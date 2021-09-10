@@ -109,6 +109,7 @@ public class EmergencyEventAppController {
         //当前登录人是否是指定处理人员
         LambdaQueryWrapper<EventEntity> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.apply("JSON_CONTAINS(appoint_handle_personnel,JSON_ARRAY({0}))",String.valueOf(SecurityUtils.getUserId()));
+        queryWrapper.eq(EventEntity::getId,idParam.getId());
         appEventDetail.setAppointPersonnel(eventService.count(queryWrapper) >0);
         return JsonResult.success(appEventDetail);
     }

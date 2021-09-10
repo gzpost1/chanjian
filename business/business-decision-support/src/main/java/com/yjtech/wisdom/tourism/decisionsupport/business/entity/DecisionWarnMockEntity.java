@@ -23,7 +23,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
-@TableName("tb_decision_warn_mock")
+@TableName(value = "tb_decision_warn_mock", autoResultMap = true)
 public class DecisionWarnMockEntity implements Serializable {
 
     private static final long serialVersionUID = 803197240906158093L;

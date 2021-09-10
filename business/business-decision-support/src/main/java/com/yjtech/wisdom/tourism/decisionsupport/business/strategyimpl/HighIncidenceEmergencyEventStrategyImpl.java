@@ -2,7 +2,6 @@ package com.yjtech.wisdom.tourism.decisionsupport.business.strategyimpl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.yjtech.wisdom.tourism.command.query.event.EventSumaryQuery;
 import com.yjtech.wisdom.tourism.command.service.screen.EmergencyEvenScreenService;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
@@ -17,15 +16,12 @@ import com.yjtech.wisdom.tourism.decisionsupport.common.strategy.BaseStrategy;
 import com.yjtech.wisdom.tourism.decisionsupport.common.util.PlaceholderUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 高发应急事件 -pass
@@ -57,6 +53,7 @@ public class HighIncidenceEmergencyEventStrategyImpl extends BaseStrategy {
         // 应急事件数量
         String total = DecisionSupportConstants.ZERO;
         EventSumaryQuery eventSumaryQuery = new EventSumaryQuery();
+        //eventSumaryQuery.setType();
         eventSumaryQuery.setIsSimulation(isSimulation);
         List<BaseVO> totalList = emergencyEvenScreenService.queryEventQuantity(eventSumaryQuery);
         for (BaseVO v : totalList) {
@@ -260,7 +257,7 @@ public class HighIncidenceEmergencyEventStrategyImpl extends BaseStrategy {
         String tb = "-";
         String hb = "-";
 
-        if (!StringUtils.isEmpty(tempDto.getValue())) {
+        if (!StringUtils.isEmpty(tempDto.getValue()) && 0 != Integer.parseInt(tempDto.getValue())) {
             tb = MathUtil.calPercent(
                     new BigDecimal(Integer.parseInt(tempDto.getValue()) - Integer.parseInt(lastYearLastMonth.get(index).getValue())),
                     new BigDecimal(tempDto.getValue()), 2).toString();

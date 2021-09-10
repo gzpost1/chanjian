@@ -94,4 +94,9 @@ public class HotelScreenDetailDTO implements Serializable {
      */
     private BigDecimal price;
 
+    /**
+     * 酒店点位图标
+     */
+    private String iconUrl;
+
 }

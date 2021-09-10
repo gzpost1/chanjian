@@ -9,6 +9,10 @@ import lombok.Getter;
  */
 public enum IconSpotEnum {
     /**
+     * 展演讲座
+     */
+    LECTURE("展演讲座", "0"),
+    /**
      * 景区
      */
     SCENIC("景区", "1"),
