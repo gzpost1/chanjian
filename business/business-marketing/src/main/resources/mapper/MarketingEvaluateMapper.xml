@@ -539,7 +539,7 @@
         </where>
         GROUP BY evaluate.id
         ) evaluate_new
-        GROUP BY DATE_FORMAT( evaluate_new.evaluate_time, '%Y-%m-%d' )
+        GROUP BY DATE_FORMAT( evaluate_new.evaluate_time, '%Y-%m-01' )
         ORDER BY evaluate_new.evaluate_time
     </select>
 
@@ -560,7 +560,7 @@
         </where>
         GROUP BY evaluate.id
         ) evaluate_new
-        group by DATE_FORMAT(evaluate_new.evaluate_time,'%Y-%m-%d')
+        group by DATE_FORMAT(evaluate_new.evaluate_time,'%Y-%m-01')
         order by evaluate_new.evaluate_time
     </select>
 
