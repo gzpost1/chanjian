@@ -277,7 +277,7 @@
         tb_travel_complaint
         <where>
             complaint_time like concat(left((SELECT DATE_SUB(a.complaint_time,INTERVAL 1 YEAR)),7),'%') and
-            equip_status = 0 and
+            equip_status = 1 and
             deleted = 0
         </where>
         ))/(select COUNT(id)
@@ -285,7 +285,7 @@
         tb_travel_complaint
         <where>
             complaint_time like concat(left((SELECT DATE_SUB(a.complaint_time,INTERVAL 1 YEAR)),7),'%') and
-            equip_status = 0 and
+            equip_status = 1 and
             deleted = 0
         </where>
         )),3)*100 as same,
@@ -295,7 +295,7 @@
         tb_travel_complaint
         <where>
             complaint_time like concat(left((SELECT DATE_SUB(a.complaint_time,INTERVAL 1 MONTH)),7),'%') and
-            equip_status = 0 and
+            equip_status = 1 and
             deleted = 0
         </where>
         ))/(select COUNT(id)
@@ -303,7 +303,7 @@
         tb_travel_complaint
         <where>
             complaint_time like concat(left((SELECT DATE_SUB(a.complaint_time,INTERVAL 1 MONTH)),7),'%') and
-            equip_status = 0 and
+            equip_status = 1 and
             deleted = 0
         </where>
         )),3)*100 as sequential
@@ -311,7 +311,7 @@
         <where>
             <![CDATA[ a.complaint_time >= CONCAT(YEAR(now()),'-01-01 00:00:00') and ]]>
             <![CDATA[ a.complaint_time <= CONCAT(YEAR(now()),'-12-31 23:59:59') and ]]>
-            equip_status = 0 and
+            equip_status = 1 and
             deleted = 0
         </where>
         GROUP BY DATE_FORMAT(a.complaint_time,#{params.sqlDateFormat})
@@ -326,7 +326,7 @@
         from tb_travel_complaint
         <where>
             create_time like concat(YEAR(now())-1,'%') and
-            equip_status = 0 and
+            equip_status = 1 and
             deleted = 0
         </where>
         GROUP BY DATE_FORMAT(complaint_time,#{params.sqlDateFormat})

@@ -198,7 +198,7 @@ public class TravelComplaintService extends ServiceImpl<TravelComplaintMapper, T
         int result = baseMapper.updateById(complaintEntity);
 
         //更新成功，且数据状态为待处理时，发送消息
-        if(result > 0 && TravelComplaintStatusEnum.TRAVEL_COMPLAINT_STATUS_NO_DEAL.getValue().equals(complaintEntity.getStatus())){
+        if(result > 0 && TravelComplaintStatusEnum.TRAVEL_COMPLAINT_STATUS_NO_DEAL.getValue().equals(complaintEntity.getStatus()) && null == statusParam.getEquipStatus()){
             //获取投诉对象名称
             String complaintObject = getComplaintObject(complaintEntity.getComplaintType(), complaintEntity.getComplaintObject(), complaintEntity.getObjectId());
             //构建后台消息模板
