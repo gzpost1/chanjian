@@ -19,6 +19,7 @@ import com.yjtech.wisdom.tourism.resource.scenic.entity.vo.ScenicBaseVo;
 import com.yjtech.wisdom.tourism.resource.scenic.extensionpoint.ScenicExtensionConstant;
 import com.yjtech.wisdom.tourism.resource.scenic.extensionpoint.ScenicQryExtPt;
 import com.yjtech.wisdom.tourism.resource.scenic.query.ScenicScreenQuery;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -36,6 +37,7 @@ import java.util.TreeMap;
  * @date 2021/8/9 10:05
  */
 @Component
+@Slf4j
 public class OverallScenicSpotsSatisfactionRankingStrategyImpl extends BaseStrategy {
 
     @Resource
@@ -296,12 +298,19 @@ public class OverallScenicSpotsSatisfactionRankingStrategyImpl extends BaseStrat
         LocalDateTime startLastYearDate = DateTimeUtil.getLocalDateTime(DateTimeUtil.getLastYearLastMonthStr() + DecisionSupportConstants.START_DAY_STR);
         LocalDateTime endLastYearDate = DateTimeUtil.getLocalDateTime(DateTimeUtil.getLastYearLastMonthStr() + DecisionSupportConstants.END_DAY_STR);
 
-        // 上月 满意度 排行
-        List<ScenicBaseVo> lastMonthRankings = getSatisfaction(startDate, endDate, isSimulation);
-        // 上上月 满意度 排行
-        List<ScenicBaseVo> lastLastMonthRankings = getSatisfaction(starLastDate, endLastDate, isSimulation);
-        //去年同月 满意度 排行
-        List<ScenicBaseVo> lastYearLastMonthRankings = getSatisfaction(startLastYearDate, endLastYearDate, isSimulation);
+        List<ScenicBaseVo> lastMonthRankings =  Lists.newArrayList();
+        List<ScenicBaseVo> lastLastMonthRankings = Lists.newArrayList();
+        List<ScenicBaseVo> lastYearLastMonthRankings = Lists.newArrayList();
+        try {
+            // 上月 满意度 排行
+            lastMonthRankings = getSatisfaction(startDate, endDate, isSimulation);
+            // 上上月 满意度 排行
+            lastLastMonthRankings = getSatisfaction(starLastDate, endLastDate, isSimulation);
+            //去年同月 满意度 排行
+            lastYearLastMonthRankings = getSatisfaction(startLastYearDate, endLastYearDate, isSimulation);
+        }catch (Exception e) {
+            log.error("景区满意度排行调用接口出错！");
+        }
 
         TreeMap<Double, ScaleDto> map = Maps.newTreeMap();
 
@@ -339,9 +348,10 @@ public class OverallScenicSpotsSatisfactionRankingStrategyImpl extends BaseStrat
         }
 
         List<RankingDto> result = Lists.newArrayList();
+        List<ScenicBaseVo> finalLastMonthRankings = lastMonthRankings;
         map.forEach((key, value) -> {
             // 设置数据
-            for (ScenicBaseVo lastMonth : lastMonthRankings) {
+            for (ScenicBaseVo lastMonth : finalLastMonthRankings) {
                 if (value.equals(lastMonth.getName())) {
                     result.add(RankingDto.builder()
                             .name(value.getName())
