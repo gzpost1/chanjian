@@ -13,13 +13,10 @@ import com.yjtech.wisdom.tourism.common.bean.BaseValueVO;
 import com.yjtech.wisdom.tourism.common.constant.Constants;
 import com.yjtech.wisdom.tourism.common.constant.SimulationConstants;
 import com.yjtech.wisdom.tourism.common.utils.MathUtil;
-import com.yjtech.wisdom.tourism.common.utils.StringUtils;
 import com.yjtech.wisdom.tourism.common.utils.bean.BeanMapper;
-import com.yjtech.wisdom.tourism.common.utils.spring.SpringUtils;
 import com.yjtech.wisdom.tourism.dto.MonthPassengerFlowDto;
 import com.yjtech.wisdom.tourism.extension.Extension;
 import com.yjtech.wisdom.tourism.extension.ExtensionConstant;
-import com.yjtech.wisdom.tourism.marketing.entity.MarketingEvaluateEntity;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateStatisticsDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateQueryVO;
 import com.yjtech.wisdom.tourism.marketing.service.MarketingEvaluateService;
@@ -36,6 +33,7 @@ import com.yjtech.wisdom.tourism.resource.ticket.vo.SaleTrendVO;
 import com.yjtech.wisdom.tourism.systemconfig.menu.dto.SystemconfigChartsListDatavDto;
 import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.scenic.SimulationScenicDto;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.validation.constraints.NotNull;
@@ -394,7 +392,16 @@ public class MockScenicQryExtPt implements ScenicQryExtPt {
 
             result.add(ScenicBaseVo.builder().id(entity.getId()).name(entity.getName()).value(String.valueOf(total)).build());
         }
-        result = result.stream().sorted(Comparator.comparing(ScenicBaseVo::getValue).reversed()).collect(Collectors.toList());
+        result = result.stream().sorted(Comparator.comparing(ScenicBaseVo::getValue,(x ,y) ->{
+            if(StringUtils.isBlank(x) && StringUtils.isNotBlank(y)){
+                return 1;
+            }else if(StringUtils.isNotBlank(x) && StringUtils.isBlank(y) ){
+                return -1;
+            }else if(StringUtils.isBlank(x) && StringUtils.isBlank(y)) {
+                return -1;
+            }
+            return Integer.valueOf(x).compareTo(Integer.valueOf(y));
+        }).reversed()).collect(Collectors.toList());
         List<List<ScenicBaseVo>> partition = Lists.partition(result, query.getPageSize().intValue());
         Page<ScenicBaseVo> page = new Page<>();
         page.setRecords(partition.get(query.getPageNo().intValue() -1));
@@ -422,7 +429,16 @@ public class MockScenicQryExtPt implements ScenicQryExtPt {
             evaluate = evaluate.add(dailyEvaluate.multiply(timeInterval));
             result.add(BaseVO.builder().name(entity.getName()).value(String.valueOf(evaluate)).build());
         }
-        result = result.stream().sorted(Comparator.comparing(BaseVO::getValue).reversed()).collect(Collectors.toList());
+        result = result.stream().sorted(Comparator.comparing(BaseVO::getValue,(x ,y) ->{
+            if(StringUtils.isBlank(x) && StringUtils.isNotBlank(y)){
+                return 1;
+            }else if(StringUtils.isNotBlank(x) && StringUtils.isBlank(y) ){
+                return -1;
+            }else if(StringUtils.isBlank(x) && StringUtils.isBlank(y)) {
+                return -1;
+            }
+            return Integer.valueOf(x).compareTo(Integer.valueOf(y));
+            }).reversed()).collect(Collectors.toList());
         List<List<BaseVO>> partition = Lists.partition(result, query.getPageSize().intValue());
         Page<BaseVO> page = new Page<>();
         page.setRecords(partition.get(query.getPageNo().intValue() -1));
@@ -432,6 +448,7 @@ public class MockScenicQryExtPt implements ScenicQryExtPt {
         page.setPages(partition.size());
         return page;
     }
+
 
     @Override
     public IPage<ScenicBaseVo> querySatisfactionTop5(ScenicScreenQuery query) {
@@ -447,7 +464,16 @@ public class MockScenicQryExtPt implements ScenicQryExtPt {
             BigDecimal satisfaction = dto.getInitialPraiseRate().add(good_evaluate.divide(new BigDecimal(5))).add(good_evaluate.divide(new BigDecimal(100)));
             result.add(ScenicBaseVo.builder().id(entity.getId()).name(entity.getName()).value(String.valueOf(satisfaction)).build());
         }
-        result = result.stream().sorted(Comparator.comparing(ScenicBaseVo::getValue).reversed()).collect(Collectors.toList());
+        result = result.stream().sorted(Comparator.comparing(ScenicBaseVo::getValue,(x ,y) ->{
+            if(StringUtils.isBlank(x) && StringUtils.isNotBlank(y)){
+                return 1;
+            }else if(StringUtils.isNotBlank(x) && StringUtils.isBlank(y) ){
+                return -1;
+            }else if(StringUtils.isBlank(x) && StringUtils.isBlank(y)) {
+                return -1;
+            }
+            return Integer.valueOf(x).compareTo(Integer.valueOf(y));
+        }).reversed()).collect(Collectors.toList());
         List<List<ScenicBaseVo>> partition = Lists.partition(result, query.getPageSize().intValue());
         Page<ScenicBaseVo> page = new Page<>();
         page.setRecords(partition.get(query.getPageNo().intValue() -1));
