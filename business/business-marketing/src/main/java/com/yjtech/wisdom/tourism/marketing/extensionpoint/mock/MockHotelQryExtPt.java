@@ -149,6 +149,7 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
 
     /**
      * 查询房型价格统计-酒店民宿大数据
+     *
      * @param vo
      * @return
      */
@@ -312,10 +313,10 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
         if (null != hotelInfoList && !hotelInfoList.isEmpty()) {
             for (HotelSelectInfoDTO hotelInfo : hotelInfoList) {
                 Long hotelId = hotelInfo.getId();
-                int randomInt = (int) (-20 + Math.random() * (20 - (-20) + 1));
+                int randomInt = (int) (20 + Math.random() * (20 - (-20) + 1));
                 //构建单个酒店统计数据
                 //评价总数
-                Integer evaluateTotal = simulationHotelDTO.getDayOfInitCount() * randomInt * (int) beginTime.until(endTime, ChronoUnit.DAYS);
+                Integer evaluateTotal = (simulationHotelDTO.getDayOfInitCount() + randomInt) * (int) beginTime.until(endTime, ChronoUnit.DAYS);
                 evaluateRankAll.add(new BaseVO(hotelInfo.getName(), evaluateTotal.toString()));
                 evaluateTotalAll += evaluateTotal;
                 //满意度/好评率
@@ -367,14 +368,14 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
                 roomPriceAnalysisDetail.put(hotelId, calculateRoomPriceAnalysis(endDate, averagePrice, simulationHotelDTO.getRoomTypePrice()));
 
                 //设置整体历史最高价格
-                if(highestPrice.compareTo(roomPriceStatisticsBigData.getHighestPrice()) > 0){
+                if (highestPrice.compareTo(roomPriceStatisticsBigData.getHighestPrice()) > 0) {
                     roomPriceStatisticsBigData.setHighestPrice(highestPrice);
                 }
                 //设置整体历史最低价格
-                if(roomPriceStatisticsBigData.getLowestPrice().compareTo(BigDecimal.ZERO) == 0){
+                if (roomPriceStatisticsBigData.getLowestPrice().compareTo(BigDecimal.ZERO) == 0) {
                     roomPriceStatisticsBigData.setLowestPrice(lowestPrice);
-                }else {
-                    if(lowestPrice.compareTo(roomPriceStatisticsBigData.getLowestPrice()) < 0 ){
+                } else {
+                    if (lowestPrice.compareTo(roomPriceStatisticsBigData.getLowestPrice()) < 0) {
                         roomPriceStatisticsBigData.setLowestPrice(lowestPrice);
                     }
                 }
@@ -418,7 +419,7 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
                 if (o1.getValue().compareTo(o2.getValue()) > 0) {
                     return -1;
                 }
-                return o1.getValue().compareTo(o2.getValue());
+                return o2.getValue().compareTo(o1.getValue());
             }
         });
 
@@ -463,13 +464,13 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
             roomPriceAnalysisDetail.add(new RoomPriceAnalysisDTO(dayMark,
                     averagePrice.multiply(new BigDecimal(100 + randomInt)).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP),
                     null == roomTypePriceMap.get("大床房") ? BigDecimal.ZERO :
-                    new BigDecimal(Integer.valueOf(roomTypePriceMap.get("大床房")) + randomInt).multiply(new BigDecimal(100 + randomInt)).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP),
+                            new BigDecimal(Integer.valueOf(roomTypePriceMap.get("大床房")) + randomInt).multiply(new BigDecimal(100 + randomInt)).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP),
                     null == roomTypePriceMap.get("双床房") ? BigDecimal.ZERO :
-                    new BigDecimal(Integer.valueOf(roomTypePriceMap.get("双床房")) + randomInt).multiply(new BigDecimal(100 + randomInt)).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP),
+                            new BigDecimal(Integer.valueOf(roomTypePriceMap.get("双床房")) + randomInt).multiply(new BigDecimal(100 + randomInt)).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP),
                     null == roomTypePriceMap.get("亲子/家庭房") ? BigDecimal.ZERO :
-                    new BigDecimal(Integer.valueOf(roomTypePriceMap.get("亲子/家庭房")) + randomInt).multiply(new BigDecimal(100 + randomInt)).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP),
+                            new BigDecimal(Integer.valueOf(roomTypePriceMap.get("亲子/家庭房")) + randomInt).multiply(new BigDecimal(100 + randomInt)).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP),
                     null == roomTypePriceMap.get("套房") ? BigDecimal.ZERO :
-                    new BigDecimal(Integer.valueOf(roomTypePriceMap.get("套房")) + randomInt).multiply(new BigDecimal(100 + randomInt)).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP)
+                            new BigDecimal(Integer.valueOf(roomTypePriceMap.get("套房")) + randomInt).multiply(new BigDecimal(100 + randomInt)).divide(new BigDecimal(100), 2, BigDecimal.ROUND_HALF_UP)
             ));
         }
 
@@ -559,13 +560,13 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
         Map<Integer, List<T>> rankPageInfo = Maps.newHashMap();
         if (null != rankInfo && !rankInfo.isEmpty()) {
             //排序
-            rankInfo.sort(new Comparator<BaseVO>() {
+            rankInfo.sort(new Comparator<T>() {
                 @Override
-                public int compare(BaseVO o1, BaseVO o2) {
+                public int compare(T o1, T o2) {
                     if (o1.getValue().compareTo(o2.getValue()) > 0) {
                         return -1;
                     }
-                    return o1.getValue().compareTo(o2.getValue());
+                    return o2.getValue().compareTo(o1.getValue());
                 }
             });
 
