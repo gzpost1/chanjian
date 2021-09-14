@@ -176,10 +176,9 @@ public class MockScenicQryExtPt implements ScenicQryExtPt {
             BigDecimal satisfaction = dto.getInitialPraiseRate().add(good_evaluate.divide(new BigDecimal(5))).add(good_evaluate.divide(new BigDecimal(100)));
             satisfactionTotal = satisfactionTotal.add(satisfaction);
 
-            //评价类型分布-中评 =（100-好评占比）/2+随机数
+            //评价类型分布-中评 =（100-好评占比）/5
             // 中评占比=评价类型分布-中评
-            BigDecimal normal_evaluate = getRandomForCache(SimulationConstants.SCENIC, String.valueOf(entity.getId()), "normal_evaluate");
-            BigDecimal normal = (new BigDecimal(100).subtract(satisfaction)).divide(new BigDecimal(2)).add(normal_evaluate);
+            BigDecimal normal = (new BigDecimal(100).subtract(satisfaction)).divide(new BigDecimal(5));
             normalTotal = normalTotal.add(normal);
 
             //评价类型分布-差评	100-好评占比-差评占比

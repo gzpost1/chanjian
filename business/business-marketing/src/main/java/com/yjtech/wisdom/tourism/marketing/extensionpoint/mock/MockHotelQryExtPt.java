@@ -330,7 +330,7 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
 
                 //构建单个酒店评价类型分布数据
                 //中评率
-                BigDecimal mediumRatePercent = new BigDecimal(100).subtract(goodRatePercent).divide(new BigDecimal(2), 1, BigDecimal.ROUND_HALF_UP).add(new BigDecimal(randomInt));
+                BigDecimal mediumRatePercent = new BigDecimal(100).subtract(goodRatePercent).divide(new BigDecimal(5), 1, BigDecimal.ROUND_HALF_UP);
                 mediumRatePercentAll = mediumRatePercentAll.add(mediumRatePercent);
                 //差评率
                 BigDecimal badRatePercent = new BigDecimal(100).subtract(goodRatePercent).subtract(mediumRatePercent);
