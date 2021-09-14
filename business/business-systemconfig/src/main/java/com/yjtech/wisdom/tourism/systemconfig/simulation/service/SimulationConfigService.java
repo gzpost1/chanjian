@@ -58,8 +58,6 @@ public class SimulationConfigService extends ServiceImpl<SimulationConfigMapper,
         entity.setDeleted(Byte.valueOf("0"));
         this.save(entity);
 
-        //3  计算模拟数据并写入redis
-        getFactory(dto.getDomainId()).generateMockRedisData(dto);
     }
     public void refreshData(SimulationQueryDto query) {
         //3  计算模拟数据并写入redis

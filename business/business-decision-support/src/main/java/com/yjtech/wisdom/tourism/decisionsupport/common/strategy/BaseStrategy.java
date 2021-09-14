@@ -2,9 +2,13 @@ package com.yjtech.wisdom.tourism.decisionsupport.common.strategy;
 
 
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Maps;
 import com.yjtech.wisdom.tourism.common.bean.BaseValueVO;
+import com.yjtech.wisdom.tourism.common.constant.Constants;
 import com.yjtech.wisdom.tourism.common.constant.DecisionSupportConstants;
+import com.yjtech.wisdom.tourism.common.constant.SimulationConstants;
 import com.yjtech.wisdom.tourism.common.utils.DateTimeUtil;
+import com.yjtech.wisdom.tourism.common.utils.JsonUtils;
 import com.yjtech.wisdom.tourism.common.utils.MathUtil;
 import com.yjtech.wisdom.tourism.decisionsupport.base.service.TargetQueryService;
 import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionEntity;
@@ -12,16 +16,18 @@ import com.yjtech.wisdom.tourism.decisionsupport.business.entity.DecisionWarnEnt
 import com.yjtech.wisdom.tourism.dto.MonthPassengerFlowDto;
 import com.yjtech.wisdom.tourism.extension.BizScenario;
 import com.yjtech.wisdom.tourism.extension.ExtensionConstant;
+import com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysDictData;
 import com.yjtech.wisdom.tourism.mybatis.utils.AnalysisUtils;
 import com.yjtech.wisdom.tourism.service.impl.DistrictTourImplService;
+import com.yjtech.wisdom.tourism.system.service.SysDictTypeService;
 import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.decisionsupport.DecisionMockDTO;
 import com.yjtech.wisdom.tourism.vo.PassengerFlowVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEvent;
-import org.springframework.context.ApplicationListener;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
@@ -41,7 +47,7 @@ import java.util.stream.Collectors;
  */
 @Component
 @Slf4j
-public abstract class BaseStrategy implements ApplicationListener {
+public abstract class BaseStrategy {
 
     private static final int HUNDRED = 100;
 
@@ -51,21 +57,19 @@ public abstract class BaseStrategy implements ApplicationListener {
 
     private static Pattern linePattern = Pattern.compile("_(\\w)");
 
-    /**
-     * 风险等级缓存
-     */
-    protected static HashMap<String, Object> riskTypeMap;
-
-    /**
-     * 决策辅助-模拟规则
-     */
-    protected static List<DecisionMockDTO> mockRuleData;
+    private static final String DEFAULT_MOCK_RULE = "[{\"name\":\"省外游客\",\"value\":\"3\"},{\"name\":\"省内游客\",\"value\":\"3\"},{\"name\":\"整体游客\",\"value\":\"3\"},{\"name\":\"整体景区客流\",\"value\":\"3\"},{\"name\":\"景区客流排行\",\"value\":\"3\"},{\"name\":\"整体景区满意度\",\"value\":\"3\"},{\"name\":\"景区满意度排行\",\"value\":\"3\"},{\"name\":\"整体酒店民宿满意度\",\"value\":\"3\"},{\"name\":\"酒店民宿满意度排行\",\"value\":\"3\"},{\"name\":\"投诉量\",\"value\":\"3\"},{\"name\":\"订单量\",\"value\":\"3\"},{\"name\":\"交易额\",\"value\":\"3\"},{\"name\":\"旅游投诉\",\"value\":\"3\"},{\"name\":\"应急事件统计\",\"value\":\"3\"},{\"name\":\"高发应急事件\",\"value\":\"3\"}]";
 
     @Autowired
     private TargetQueryService targetQueryService;
 
     @Autowired
     private DistrictTourImplService districtTourService;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
+
+    @Autowired
+    private SysDictTypeService sysDictTypeService;
 
     /**
      * 初始化方法
@@ -124,12 +128,12 @@ public abstract class BaseStrategy implements ApplicationListener {
      * @param entity
      */
     protected void textAlarmDeal(DecisionEntity decisionInfo, DecisionWarnEntity entity, String queryResult, Integer isSimulation) {
-
+        HashMap<String, Object> riskTypeMap = getRiskType();
         // 模拟数据
         if (DecisionSupportConstants.MOCK.equals(isSimulation) && !MapUtils.isEmpty(riskTypeMap)) {
-            if (!ObjectUtils.isEmpty(mockRuleData)) {
+            if (!ObjectUtils.isEmpty(getMockRule())) {
                 AtomicBoolean isStop = new AtomicBoolean(false);
-                for (DecisionMockDTO data: mockRuleData) {
+                for (DecisionMockDTO data: getMockRule()) {
                     riskTypeMap.forEach((k, v) -> {
                         if (data.getName().equals(entity.getTargetName()) && data.getValue().equals(v)) {
                             entity.setAlarmType(Integer.parseInt(data.getValue()));
@@ -195,13 +199,14 @@ public abstract class BaseStrategy implements ApplicationListener {
      * @param scale 百分比
      */
     protected void numberAlarmDeal(DecisionEntity decisionInfo, DecisionWarnEntity entity, String scale, Integer isSimulation) {
+        HashMap<String, Object> riskTypeMap = getRiskType();
         log.info("【报警类数值】开始处理");
         // 模拟数据
         if (DecisionSupportConstants.MOCK.equals(isSimulation) && !MapUtils.isEmpty(riskTypeMap)) {
             log.info("【报警类数值】-->模拟数据<--");
-            if (!ObjectUtils.isEmpty(mockRuleData)) {
+            if (!ObjectUtils.isEmpty(getMockRule())) {
                 AtomicBoolean isStop = new AtomicBoolean(false);
-                for (DecisionMockDTO data : mockRuleData) {
+                for (DecisionMockDTO data : getMockRule()) {
                     riskTypeMap.forEach((k, v) -> {
                         if (data.getName().equals(entity.getTargetName()) && data.getValue().equals(v)) {
                             entity.setAlarmType(Integer.parseInt(data.getValue()));
@@ -370,11 +375,6 @@ public abstract class BaseStrategy implements ApplicationListener {
                 MonthPassengerFlowDto::getNumber, MonthPassengerFlowDto::getTbNumber, MonthPassengerFlowDto::getHbScale, MonthPassengerFlowDto::getTbScale);
     }
 
-    @Override
-    public void onApplicationEvent(ApplicationEvent applicationEvent) {
-
-    }
-
     /**
      * 构建业务扩展点
      *
@@ -407,5 +407,41 @@ public abstract class BaseStrategy implements ApplicationListener {
         }
         matcher.appendTail(sb);
         return sb.toString();
+    }
+
+    /**
+     * 获取模拟数据规则
+     *
+     * @return
+     */
+    public List<DecisionMockDTO> getMockRule() {
+        List<DecisionMockDTO> mockRuleData;
+        String configValue = JSONObject.toJSONString(redisTemplate.opsForValue().get(Constants.SIMULATION_KEY +SimulationConstants.DECISION));
+        if (!StringUtils.isEmpty(configValue) && !DecisionSupportConstants.NULL.equals(configValue)) {
+            Object list = JsonUtils.getValueByKey(configValue, DecisionSupportConstants.LIST);
+            if (!ObjectUtils.isEmpty(list)) {
+                configValue = JSONObject.toJSONString(list);
+            }
+            mockRuleData  = JSONObject.parseArray(configValue, DecisionMockDTO.class);
+        }
+        // 获取不到，使用初始化模拟规则
+        else {
+            mockRuleData =  JSONObject.parseArray(DEFAULT_MOCK_RULE, DecisionMockDTO.class);
+        }
+        return mockRuleData;
+    }
+
+    /**
+     * 获取风险等级
+     *
+     * @return
+     */
+    public HashMap<String, Object> getRiskType() {
+        HashMap<String, Object> riskTypeMap = Maps.newHashMap();
+        List<SysDictData> sysDictData = sysDictTypeService.selectDictDataByType(DecisionSupportConstants.RISK_TYPE);
+        if (!CollectionUtils.isEmpty(sysDictData)) {
+            sysDictData.forEach(v -> riskTypeMap.put(v.getDictLabel(), v.getDictValue()));
+        }
+        return riskTypeMap;
     }
 }
