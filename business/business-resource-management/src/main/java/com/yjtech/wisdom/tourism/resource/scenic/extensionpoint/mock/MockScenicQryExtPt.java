@@ -472,7 +472,7 @@ public class MockScenicQryExtPt implements ScenicQryExtPt {
             }else if(StringUtils.isBlank(x) && StringUtils.isBlank(y)) {
                 return -1;
             }
-            return Integer.valueOf(x).compareTo(Integer.valueOf(y));
+            return Double.valueOf(x).compareTo(Double.valueOf(y));
         }).reversed()).collect(Collectors.toList());
         List<List<ScenicBaseVo>> partition = Lists.partition(result, query.getPageSize().intValue());
         Page<ScenicBaseVo> page = new Page<>();
