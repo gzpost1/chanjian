@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.yjtech.wisdom.tourism.common.constant.DecisionSupportConstants;
 import com.yjtech.wisdom.tourism.common.constant.DistrictBigDataConstants;
-import com.yjtech.wisdom.tourism.common.constant.MockDataConstant;
 import com.yjtech.wisdom.tourism.common.constant.SimulationConstants;
 import com.yjtech.wisdom.tourism.common.utils.DateTimeUtil;
 import com.yjtech.wisdom.tourism.common.utils.MathUtil;
@@ -20,20 +19,16 @@ import com.yjtech.wisdom.tourism.extension.Extension;
 import com.yjtech.wisdom.tourism.extension.ExtensionConstant;
 import com.yjtech.wisdom.tourism.service.point.DistrictExtPt;
 import com.yjtech.wisdom.tourism.system.service.PlatformService;
-import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.SimulationQueryDto;
 import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.districttour.DistrictMockRuleDTO;
 import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.districttour.OriginDistributedProvinceInsideDTO;
 import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.districttour.OriginDistributedProvinceOutsideDTO;
 import com.yjtech.wisdom.tourism.systemconfig.simulation.factory.SimulationFactory;
-import com.yjtech.wisdom.tourism.systemconfig.simulation.service.SimulationConfigService;
 import com.yjtech.wisdom.tourism.vo.DataOverviewVo;
 import com.yjtech.wisdom.tourism.vo.MonthPassengerFlowVo;
 import com.yjtech.wisdom.tourism.vo.PassengerFlowVo;
 import com.yjtech.wisdom.tourism.vo.VisitorVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
@@ -55,7 +50,12 @@ import java.util.concurrent.TimeUnit;
         useCase = DistrictExtensionConstant.DISTRICT,
         scenario = ExtensionConstant.SCENARIO_MOCK)
 @Component(SimulationConstants.TOURIST)
-public class DistrictTourMockService implements SimulationFactory<DistrictMockRuleDTO>, DistrictExtPt, ApplicationListener<ContextRefreshedEvent> {
+public class DistrictTourMockService implements SimulationFactory<DistrictMockRuleDTO>, DistrictExtPt {
+
+    /**
+     * 游客结构-默认模拟数据规则
+     */
+    private static final String DEFAULT_TOUR = "{\"domainId\":11,\"dayPassengerFlowValue\":1594,\"monthPassengerFlowValue\":5,\"provinceOutsideDistributed\":[{\"name\":\"北京市\",\"value\":\"1.18\"},{\"name\":\"天津市\",\"value\":\"4\"},{\"name\":\"河北省\",\"value\":\"0.9\"},{\"name\":\"山西省\",\"value\":\"0.52\"},{\"name\":\"内蒙古自治区\",\"value\":\"2\"},{\"name\":\"辽宁省\",\"value\":\"2\"},{\"name\":\"吉林省\",\"value\":\"3.21\"},{\"name\":\"黑龙江省\",\"value\":\"1\"},{\"name\":\"上海市\",\"value\":\"0.81\"},{\"name\":\"江苏省\",\"value\":\"1.23\"},{\"name\":\"浙江省\",\"value\":\"2.4\"},{\"name\":\"安徽省\",\"value\":\"0\"},{\"name\":\"福建省\",\"value\":\"0\"},{\"name\":\"江西省\",\"value\":\"0\"},{\"name\":\"山东省\",\"value\":\"1.01\"},{\"name\":\"河南省\",\"value\":\"0\"},{\"name\":\"湖北省\",\"value\":\"0\"},{\"name\":\"湖南省\",\"value\":\"0\"},{\"name\":\"广东省\",\"value\":\"3.64\"},{\"name\":\"广西壮族自治区\",\"value\":\"0\"},{\"name\":\"海南省\",\"value\":\"0\"},{\"name\":\"重庆市\",\"value\":\"3.93\"},{\"name\":\"四川省\",\"value\":\"0.5\"},{\"name\":\"贵州省\",\"value\":\"50\"},{\"name\":\"云南省\",\"value\":\"0\"},{\"name\":\"西藏自治区\",\"value\":\"0.79\"},{\"name\":\"陕西省\",\"value\":\"12.31\"},{\"name\":\"甘肃省\",\"value\":\"1.43\"},{\"name\":\"青海省\",\"value\":\"0\"},{\"name\":\"宁夏回族自治区\",\"value\":\"0\"},{\"name\":\"新疆维吾尔自治区\",\"value\":\"1.34\"}],\"provinceInsideDistributed\":[{\"name\":\"贵阳市\",\"value\":\"42.56\"},{\"name\":\"六盘水市\",\"value\":\"2.69\"},{\"name\":\"遵义市\",\"value\":\"8.92\"},{\"name\":\"安顺市\",\"value\":\"3.48\"},{\"name\":\"毕节市\",\"value\":\"2.14\"},{\"name\":\"铜仁市\",\"value\":\"3.29\"},{\"name\":\"黔西南布依族苗族自治州\",\"value\":\"7.33\"},{\"name\":\"黔东南苗族侗族自治州\",\"value\":\"2.22\"},{\"name\":\"黔南布依族苗族自治州\",\"value\":\"2.69\"}]}";
 
     @Autowired
     private PlatformService platformService;
@@ -63,15 +63,9 @@ public class DistrictTourMockService implements SimulationFactory<DistrictMockRu
     @Autowired
     private RedisTemplate redisTemplate;
 
-    @Autowired
-    private SimulationConfigService service;
-
     @Value("${tourist.configAreaCodeKey}")
     private String configAreaCodeKey;
 
-    private static OriginDistributedProvinceOutsideDTO province;
-
-    private static List<OriginDistributedProvinceInsideDTO> city;
 
     /**
      * 查询游客总数据-数据总览
@@ -107,6 +101,7 @@ public class DistrictTourMockService implements SimulationFactory<DistrictMockRu
             }
         }
 
+        OriginDistributedProvinceOutsideDTO province = getProvince();
         // 计算省内人数
         if (!ObjectUtils.isEmpty(province)) {
             String scale = province.getValue();
@@ -165,7 +160,7 @@ public class DistrictTourMockService implements SimulationFactory<DistrictMockRu
         }
         // 全省
         else if(DistrictBigDataConstants.TOUR_SOURCE_PROVINCE.equals(vo.getStatisticsType())) {
-            for (OriginDistributedProvinceInsideDTO provinceInsideDto : city) {
+            for (OriginDistributedProvinceInsideDTO provinceInsideDto : getCity()) {
                 setList(vo, allTouristNum, record, provinceInsideDto.getValue(), provinceInsideDto.getName());
             }
         }
@@ -197,6 +192,7 @@ public class DistrictTourMockService implements SimulationFactory<DistrictMockRu
     public List<MonthPassengerFlowDto> queryYearPassengerFlow(PassengerFlowVo vo) {
         String scale = "1";
 
+        OriginDistributedProvinceOutsideDTO province = getProvince();
         // 省外游客
         if (DistrictBigDataConstants.PROVINCE_OUTSIDE.equals(vo.getStatisticsType())) {
             scale = String.valueOf(DistrictBigDataConstants.ONE_HUNDRED - Double.parseDouble(province.getValue()));
@@ -281,7 +277,7 @@ public class DistrictTourMockService implements SimulationFactory<DistrictMockRu
     @Override
     public List<MonthPassengerFlowDto> queryMonthPassengerFlow(MonthPassengerFlowVo vo) {
         String scale = "1";
-
+        OriginDistributedProvinceOutsideDTO province = getProvince();
         // 省内游客
         if (DistrictBigDataConstants.PROVINCE_INSIDI.equals(vo.getStatisticsType())) {
             scale = province.getValue();
@@ -454,11 +450,9 @@ public class DistrictTourMockService implements SimulationFactory<DistrictMockRu
      * @return
      */
     public DistrictMockRuleDTO getMockRule() {
-        SimulationQueryDto simulationQueryDto = new SimulationQueryDto();
-        simulationQueryDto.setDomainId(MockDataConstant.DISTRICT_TOUR_MOCK_DOMAIN_ID);
-        String configValue = JSONObject.toJSONString(service.queryForDetail(simulationQueryDto));
+        String configValue = JSONObject.toJSONString(redisTemplate.opsForValue().get(getCacheKey(SimulationConstants.TOURIST)));
         if (StringUtils.isEmpty(configValue) || DecisionSupportConstants.NULL.equals(configValue)) {
-            return null;
+            return JSONObject.parseObject(DEFAULT_TOUR, DistrictMockRuleDTO.class);
         }
         return JSONObject.parseObject(configValue, DistrictMockRuleDTO.class);
     }
@@ -489,25 +483,31 @@ public class DistrictTourMockService implements SimulationFactory<DistrictMockRu
     }
 
     /**
-     * 容器初始化完毕后执行初始化数据
+     * 获取市
      *
-     * @param contextRefreshedEvent
+     * @return
      */
-    @Override
-    public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
-        DistrictMockRuleDTO mockRule = getMockRule();
-        if (ObjectUtils.isEmpty(mockRule)) {
-            return;
-        }
-        city = mockRule.getProvinceInsideDistributed();
-        List<OriginDistributedProvinceOutsideDTO> provinceOutsideDistributed = mockRule.getProvinceOutsideDistributed();
+    private List<OriginDistributedProvinceInsideDTO> getCity() {
+        return getMockRule().getProvinceInsideDistributed();
+    }
+
+    /**
+     * 获取省
+     *
+     * @return
+     */
+    private OriginDistributedProvinceOutsideDTO getProvince() {
+        List<OriginDistributedProvinceOutsideDTO> provinceOutsideDistributed = getMockRule().getProvinceOutsideDistributed();
         String provinceName = com.yjtech.wisdom.tourism.common.utils.StringUtils.substringBefore(platformService.getPlatform().getAreaName(), "/");
         for (OriginDistributedProvinceOutsideDTO provinceOutsideDto : provinceOutsideDistributed) {
             if (provinceName.equals(provinceOutsideDto.getName())) {
-                province = provinceOutsideDto;
+                return provinceOutsideDto;
             }
         }
+        return OriginDistributedProvinceOutsideDTO.builder().build();
     }
+
+
 
     @Override
     public Object parse(String json) {
