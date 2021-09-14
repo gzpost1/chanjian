@@ -45,11 +45,6 @@ public class ComprehensiveStrategyImpl extends BaseStrategy {
     @Autowired
     private DecisionWarnMapper decisionWarnMapper;
 
-    @Autowired
-    private SysDictTypeService sysDictTypeService;
-
-    @Autowired
-    private SimulationConfigService simulationConfigService;
 
 
     /**
@@ -289,35 +284,4 @@ public class ComprehensiveStrategyImpl extends BaseStrategy {
         }
         return text;
     }
-
-    /**
-     * 缓存数据
-     *
-     * @param applicationEvent
-     */
-    @Override
-    public void onApplicationEvent(ApplicationEvent applicationEvent) {
-        // 缓存 风险等级字典
-        if (null == riskTypeMap) {
-            riskTypeMap = Maps.newHashMap();
-            List<SysDictData> sysDictData = sysDictTypeService.selectDictDataByType(DecisionSupportConstants.RISK_TYPE);
-            if (!CollectionUtils.isEmpty(sysDictData)) {
-                sysDictData.forEach(v -> riskTypeMap.put(v.getDictLabel(), v.getDictValue()));
-            }
-        }
-        // 缓存 决策辅助模拟配置数据
-        if (null == mockRuleData) {
-            SimulationQueryDto simulationQueryDto = new SimulationQueryDto();
-            simulationQueryDto.setDomainId(MockDataConstant.DECISION_SUPPORT_MOCK_DOMAIN_ID);
-            String configValue = JSONObject.toJSONString(simulationConfigService.queryForDetail(simulationQueryDto));
-            if (!StringUtils.isEmpty(configValue) && !DecisionSupportConstants.NULL.equals(configValue)) {
-                Object list = JsonUtils.getValueByKey(configValue, DecisionSupportConstants.LIST);
-                if (!ObjectUtils.isEmpty(list)) {
-                        configValue = JSONObject.toJSONString(list);
-                }
-                mockRuleData = JSONObject.parseArray(configValue, DecisionMockDTO.class);
-            }
-        }
-    }
-
 }

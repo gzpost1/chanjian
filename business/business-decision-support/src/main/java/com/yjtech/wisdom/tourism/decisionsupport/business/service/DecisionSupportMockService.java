@@ -29,7 +29,6 @@ public class DecisionSupportMockService implements SimulationFactory<SimulationD
     public String toJSONBytes(SimulationDecisionSupportDTO obj) {
         return JSONObject.toJSONString(obj);
     }
-
     @Override
     public void generateMockRedisData(SimulationDecisionSupportDTO obj) {
         redisTemplate.opsForValue().set(getCacheKey(SimulationConstants.DECISION), obj);
