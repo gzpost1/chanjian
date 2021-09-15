@@ -81,7 +81,7 @@ spring:
     # 端口，默认为6379
     port: 6379
     # 密码
-    password:
+    password: yjwl2019!@#
 
 #  data:
 #    mongodb:
