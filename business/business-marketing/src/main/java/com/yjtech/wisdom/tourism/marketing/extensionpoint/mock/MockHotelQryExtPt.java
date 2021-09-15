@@ -310,7 +310,7 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
         //获取当前时间
         String endDate = DateUtil.today();
 
-        if (null != hotelInfoList && !hotelInfoList.isEmpty()) {
+        if (!hotelInfoList.isEmpty()) {
             for (HotelSelectInfoDTO hotelInfo : hotelInfoList) {
                 Long hotelId = hotelInfo.getId();
                 int randomInt = (int) (20 + Math.random() * (20 - (-20) + 1));
@@ -430,7 +430,7 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
         List<AnalysisBaseInfo> satisfactionAnalysisBigData = calculateAnalysis(endDate, null, simulationHotelDTO.getGoodRatePercent());
 
         //查询房型价格趋势-酒店民宿大数据
-        List<RoomPriceAnalysisDTO> roomPriceAnalysisBigData = calculateRoomPriceAnalysis(endDate, averagePriceAll, simulationHotelDTO.getRoomTypePrice());
+        List<RoomPriceAnalysisDTO> roomPriceAnalysisBigData = calculateRoomPriceAnalysis(endDate, averagePriceAll.divide(new BigDecimal(hotelInfoList.size()), 1, BigDecimal.ROUND_HALF_UP), simulationHotelDTO.getRoomTypePrice());
 
 
         HotelSimulationDataDTO dto = new HotelSimulationDataDTO(statisticsDetail, typeDistributionDetail, hotRankDetail, roomPriceStatisticsDetail, roomPriceAnalysisDetail,
