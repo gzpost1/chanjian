@@ -40,11 +40,11 @@ public class ZcResponse implements Serializable {
 
 
     public boolean isSuccess(){
-        return StringUtils.isNotBlank(getCode()) && RespStatusEnum.SUCCESS.getCode().equals(getCode()) ? true : false;
+        return StringUtils.isNotBlank(getCode()) && RespStatusEnum.SUCCESS.getCode().equals(getCode());
     }
 
     public boolean isEmpty(){
-        return Objects.isNull(getData()) ? true : false;
+        return Objects.isNull(getData());
     }
 
 }
