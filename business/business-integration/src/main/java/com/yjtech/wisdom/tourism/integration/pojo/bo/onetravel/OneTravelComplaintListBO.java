@@ -1,7 +1,7 @@
 package com.yjtech.wisdom.tourism.integration.pojo.bo.onetravel;
 
 import com.baomidou.mybatisplus.annotation.TableField;
-import com.yjtech.wisdom.tourism.mybatis.typehandler.EncryptTypeHandler;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.yjtech.wisdom.tourism.mybatis.typehandler.JsonTypeHandler;
 import lombok.Data;
 
@@ -39,7 +39,6 @@ public class OneTravelComplaintListBO implements Serializable {
     /**
      * 联系电话
      */
-    @TableField(typeHandler = EncryptTypeHandler.class)
     private String complaintPhone;
 
     /**
@@ -71,6 +70,7 @@ public class OneTravelComplaintListBO implements Serializable {
     /**
      * 投诉时间
      */
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date complaintTime;
 
     /**
@@ -81,6 +81,7 @@ public class OneTravelComplaintListBO implements Serializable {
     /**
      * 处理时间
      */
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date operateTime;
 
     /**
@@ -96,6 +97,7 @@ public class OneTravelComplaintListBO implements Serializable {
     /**
      * 评价时间
      */
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date evaluateTime;
 
     /**
