@@ -1,6 +1,7 @@
 package com.yjtech.wisdom.tourism.integration.pojo.bo.onetravel;
 
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.yjtech.wisdom.tourism.mybatis.typehandler.EncryptTypeHandler;
 import com.yjtech.wisdom.tourism.mybatis.typehandler.JsonTypeHandler;
 import lombok.Data;
 
@@ -38,6 +39,7 @@ public class OneTravelComplaintListBO implements Serializable {
     /**
      * 联系电话
      */
+    @TableField(typeHandler = EncryptTypeHandler.class)
     private String complaintPhone;
 
     /**
