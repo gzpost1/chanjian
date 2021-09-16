@@ -13,6 +13,7 @@ import com.yjtech.wisdom.tourism.integration.extensionpoint.OneTravelQryExtPt;
 import com.yjtech.wisdom.tourism.integration.pojo.bo.onetravel.OneTravelComplaintListBO;
 import com.yjtech.wisdom.tourism.integration.pojo.vo.OneTravelQueryVO;
 import com.yjtech.wisdom.tourism.integration.service.OneTravelApiService;
+import com.yjtech.wisdom.tourism.mybatis.typehandler.EncryptTypeHandler;
 import com.yjtech.wisdom.tourism.system.domain.IconSpotEnum;
 import com.yjtech.wisdom.tourism.system.service.IconService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +66,7 @@ public class OneTravelComplaintScreenController {
         //通过配置缓存设置iconUrl
         for (OneTravelComplaintListBO oneTravelComplaintListBO : page.getRecords()){
             oneTravelComplaintListBO.setIconUrl(iconService.queryIconUrl(IconSpotEnum.ONE_TRAVEL_COMPLAINT, oneTravelComplaintListBO.getComplaintStatus()));
+            oneTravelComplaintListBO.setComplaintPhone(EncryptTypeHandler.AES.decrypt(oneTravelComplaintListBO.getComplaintPhone()));
         }
         return JsonResult.success(page);
     }
