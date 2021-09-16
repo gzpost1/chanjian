@@ -199,12 +199,12 @@
         tb_hotel_info
         <where>
             <include refid="distribution_where"/>
-            and lev in (0,1,2,3)
+            and type = 1
         </where>
         ) as total ON 1 = 1
         <where>
             <include refid="distribution_where"/>
-            and lev in (0,1,2,3)
+            and type = 1
         </where>
         GROUP BY lev
     </select>

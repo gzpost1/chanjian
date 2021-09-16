@@ -6,6 +6,7 @@ import lombok.Data;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Date;
 
 /**
  * 旅游投诉 列表DTO
@@ -88,5 +89,27 @@ public class TravelComplaintListDTO implements Serializable {
      * 纬度
      */
     private BigDecimal latitude;
+
+    /**
+     * 联系人
+     */
+    private String contactUser;
+
+    /**
+     * 联系电话
+     */
+    private String contactMobile;
+
+    /**
+     * 处理人
+     */
+    private String acceptUser;
+
+    /**
+     * 处理时间
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private Date acceptTime;
+
 
 }
