@@ -2,8 +2,10 @@ package com.yjtech.wisdom.tourism.system.vo;
 
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.Range;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 
@@ -67,4 +69,11 @@ public class PlatformVO implements Serializable {
     @NotBlank(message = "中心点纬度不能为空")
     @Pattern(regexp = "^[\\-\\+]?([0-8]?\\d\\.\\d{1,6}|90\\.0{1,6})$", message = "请输入正确的纬度")
     private String latitude;
+
+    /**
+     * 默认时间筛选类型（1-30天 2-60天 3-90天 4-其他）
+     */
+    @NotNull(message = "默认时间筛选类型不能为空")
+    @Range(min = 1, max = 4, message = "请输入正确的时间筛选类型")
+    private Byte timeSelectType;
 }

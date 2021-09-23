@@ -56,5 +56,9 @@ public class Platform extends BaseEntity {
      */
     private String latitude;
 
+    /**
+     * 默认时间筛选类型（1-30天 2-60天 3-90天 4-其他）
+     */
+    private Byte timeSelectType;
 
 }

@@ -1,7 +1,6 @@
 package com.yjtech.wisdom.tourism.portal.controller.video;
 
 
-import com.yjtech.wisdom.tourism.infrastructure.core.controller.BaseCurdController;
 import com.yjtech.wisdom.tourism.infrastructure.core.controller.BaseQueryController;
 import com.yjtech.wisdom.tourism.resource.video.domain.TbVideoParam;
 import com.yjtech.wisdom.tourism.resource.video.entity.TbVideoEntity;

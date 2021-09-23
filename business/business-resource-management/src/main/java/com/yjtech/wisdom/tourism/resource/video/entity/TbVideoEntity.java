@@ -1,25 +1,19 @@
 package com.yjtech.wisdom.tourism.resource.video.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.*;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
-import java.time.LocalDateTime;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.TableLogic;
-import com.baomidou.mybatisplus.annotation.TableField;
-import java.io.Serializable;
-
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
+import com.yjtech.wisdom.tourism.common.validator.BeanValidationGroup;
 import com.yjtech.wisdom.tourism.resource.scenic.entity.ScenicEntity;
 import lombok.*;
 import lombok.experimental.Accessors;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import javax.validation.constraints.NotNull;
 
-import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
-import com.yjtech.wisdom.tourism.common.validator.BeanValidationGroup;
+import javax.validation.constraints.NotNull;
+import java.io.Serializable;
+import java.time.LocalDateTime;
 /**
  * 视频设备
  *
@@ -147,6 +141,11 @@ public class TbVideoEntity extends Model<TbVideoEntity> {
      * 状态(0:离线,1:在线)
      */
     private Byte equipStatus;
+
+    /**
+     * 视频封面图片url
+     */
+    private String coverUrl;
 
 
     public static final String ID = "id";
