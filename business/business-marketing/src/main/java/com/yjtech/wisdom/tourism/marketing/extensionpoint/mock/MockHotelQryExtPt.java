@@ -527,7 +527,7 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
             else {
                 BigDecimal count = null == monthOfEvaluateTotal ?
                         goodRatePercent.add(new BigDecimal(randomInt)) :
-                        monthOfEvaluateTotal.multiply(new BigDecimal(100 + randomInt)).divide(new BigDecimal(100), 1, BigDecimal.ROUND_HALF_UP);
+                        monthOfEvaluateTotal.multiply(new BigDecimal(100 + randomInt)).divide(new BigDecimal(100), 0, BigDecimal.ROUND_UP);
                 currentYearByMonth = new AnalysisMonthChartInfo().build(monthMark, count, lastYearByMonth.getCount(), lastMonthValue);
             }
 

@@ -30,12 +30,12 @@ public class MonthPassengerFlowDto extends BaseSaleTrendVO implements Serializab
     /**
      * 数量
      */
-    private Integer number;
+    private Object number;
 
     /**
      * 同比数量
      */
-    private int tbNumber;
+    private Object tbNumber;
 
     /**
      * 同比日期

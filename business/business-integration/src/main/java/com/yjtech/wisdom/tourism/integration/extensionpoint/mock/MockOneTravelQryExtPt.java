@@ -289,12 +289,12 @@ public class MockOneTravelQryExtPt implements OneTravelQryExtPt {
                 //随机值
                 int randomInt = (int) (-20 + Math.random() * (20 - (-20) + 1));
                 //获取分布占比
-                double rate = USER_AGE_CALCULATE_COEFFICIENT + randomInt / 10.0;
+                double rate = new BigDecimal(USER_AGE_CALCULATE_COEFFICIENT + randomInt / 10.0).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
                 userAgeDistribution.add(new BasePercentVO(userAgeDistributionName, null, rate));
                 statistics += rate;
             }
             //设置其他
-            userAgeDistribution.add(new BasePercentVO(USER_AGE_DISTRIBUTION_NAME, null, 100.0 - statistics));
+            userAgeDistribution.add(new BasePercentVO(USER_AGE_DISTRIBUTION_NAME, null, new BigDecimal(100.0 - statistics).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue()));
         }
 
         //运营数据-一码游统计

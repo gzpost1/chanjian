@@ -47,6 +47,22 @@ public class EvaluateController {
 
 
     /**
+     * 查询评价统计-酒店详情
+     *
+     * @param vo
+     * @return
+     */
+    @PostMapping("queryEvaluateStatisticsDetail")
+    public JsonResult<MarketingEvaluateStatisticsDTO> queryEvaluateStatisticsDetail(@RequestBody @Valid EvaluateQueryVO vo) {
+        //设置默认评论状态-启用
+        vo.setEquipStatus(Objects.isNull(vo.getEquipStatus()) ? EntityConstants.ENABLED : vo.getEquipStatus());
+
+        return JsonResult.success(extensionExecutor.execute(HotelQryExtPt.class,
+                buildBizScenario(HotelExtensionConstant.HOTEL_QUANTITY, vo.getIsSimulation()),
+                extension -> extension.queryEvaluateStatistics(vo)));
+    }
+
+    /**
      * 查询评价统计
      *
      * @param vo

@@ -19,7 +19,6 @@ import com.yjtech.wisdom.tourism.extension.Extension;
 import com.yjtech.wisdom.tourism.extension.ExtensionConstant;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateStatisticsDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateQueryVO;
-import com.yjtech.wisdom.tourism.marketing.service.MarketingEvaluateService;
 import com.yjtech.wisdom.tourism.mybatis.utils.AnalysisUtils;
 import com.yjtech.wisdom.tourism.redis.RedisCache;
 import com.yjtech.wisdom.tourism.resource.scenic.entity.ScenicEntity;
@@ -30,13 +29,11 @@ import com.yjtech.wisdom.tourism.resource.scenic.extensionpoint.ScenicQryExtPt;
 import com.yjtech.wisdom.tourism.resource.scenic.query.ScenicScreenQuery;
 import com.yjtech.wisdom.tourism.resource.scenic.service.ScenicService;
 import com.yjtech.wisdom.tourism.resource.ticket.vo.SaleTrendVO;
-import com.yjtech.wisdom.tourism.systemconfig.menu.dto.SystemconfigChartsListDatavDto;
 import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.scenic.SimulationScenicDto;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -95,13 +92,13 @@ public class MockScenicQryExtPt implements ScenicQryExtPt {
             //累计游客人次=日累计客流量*筛选时段天数
             total = total.add(dailylyQuantity.multiply(timeInterval));
 
-            //承载度=今日接待人次/单个景区承载量*100%，结果保留2位小数
+            //承载度=今日接待人次/单个景区承载量*100%，结果保留1位小数
             bearCapacity = bearCapacity + entity.getBearCapacity();
 
 
         }
         double BearingRate = Objects.isNull(bearCapacity) || bearCapacity == 0 ? 0D : MathUtil.calPercent(new BigDecimal(String.valueOf(dailylyQuantity)),
-                new BigDecimal(String.valueOf(bearCapacity)), 3).doubleValue();
+                new BigDecimal(String.valueOf(bearCapacity)), 2).doubleValue();
 
         List<BaseVO> vos = new ArrayList<>();
         vos.add(BaseVO.builder().name("todayCheckNum").value(String.valueOf(dailylyQuantity)).build());
@@ -129,26 +126,25 @@ public class MockScenicQryExtPt implements ScenicQryExtPt {
 
             //评分 + 评分初始数+随机数/10
             BigDecimal randomForCache3 = getRandomForCache(SimulationConstants.SCENIC, String.valueOf(query.getScenicId()), "score:");
-            score = score.add(dto.getInitialScore().add(randomForCache3.divide(new BigDecimal(10))));
+            score = score.add(dto.getInitialScore().add(randomForCache3.divide(new BigDecimal(10), 1, BigDecimal.ROUND_HALF_UP)));
         }
 
-        BigDecimal satisfaction = new BigDecimal(0);
+        BigDecimal satisfaction;
         if (Objects.nonNull(query.getScenicId())) {
             //评价类型分布-好评 = 好评占比初始值+随机数/5+随机数/100
             //满意度=评价类型分布-好评。
             DateTimeFormatter dateTimeFormatter1 = DateTimeFormatter.ofPattern("yyyy-MM");
             BigDecimal good_evaluate = getRandomForCache(SimulationConstants.SCENIC, String.valueOf(query.getScenicId()), "good_evaluate:");
-            satisfaction = dto.getInitialPraiseRate().add(good_evaluate.divide(new BigDecimal(5))).add(good_evaluate.divide(new BigDecimal(100)));
+            satisfaction = dto.getInitialPraiseRate().add(good_evaluate.divide(new BigDecimal(5))).add(good_evaluate.divide(new BigDecimal(100))).setScale(1, BigDecimal.ROUND_HALF_UP);
 
         } else {
             //通过统计筛选时段各个景区评价数量*好评占比，结果保留整数，汇总各个景区好评数量，满意度=好评数量/收获评价数量*100%，结果保留2位小数。
             BigDecimal goodEvaluate = evaluate.multiply(dto.getInitialPraiseRate()).divide(new BigDecimal(100), 0);
-            satisfaction = MathUtil.calPercent(goodEvaluate, evaluate, 3);
-
+            satisfaction = MathUtil.calPercent(goodEvaluate, evaluate, 1);
 
             //评分：汇总所有景区评分/有评分值的景区数量，结果保留2位小数
             if (CollectionUtils.isNotEmpty(list)) {
-                score = score.divide(new BigDecimal(list.size()), 3);
+                score = score.divide(new BigDecimal(list.size()), 1, BigDecimal.ROUND_HALF_UP);
             }
         }
 
@@ -188,11 +184,11 @@ public class MockScenicQryExtPt implements ScenicQryExtPt {
         }
         BigDecimal size = new BigDecimal(list.size());
 
-        result.add(BasePercentVO.builder().name("好评").rate(size.compareTo(new BigDecimal(0)) == 0 ? 0d : satisfactionTotal.divide(size, 3).doubleValue()).build());
+        result.add(BasePercentVO.builder().name("好评").rate(size.compareTo(new BigDecimal(0)) == 0 ? 0d : satisfactionTotal.divide(size, 1).doubleValue()).build());
 
-        result.add(BasePercentVO.builder().name("中评").rate(size.compareTo(new BigDecimal(0)) == 0 ? 0d : normalTotal.divide(size, 3).doubleValue()).build());
+        result.add(BasePercentVO.builder().name("中评").rate(size.compareTo(new BigDecimal(0)) == 0 ? 0d : normalTotal.divide(size, 1).doubleValue()).build());
 
-        result.add(BasePercentVO.builder().name("差评").rate(size.compareTo(new BigDecimal(0)) == 0 ? 0d : badTotal.divide(size, 3).doubleValue()).build());
+        result.add(BasePercentVO.builder().name("差评").rate(size.compareTo(new BigDecimal(0)) == 0 ? 0d : badTotal.divide(size, 1).doubleValue()).build());
         return result;
     }
 

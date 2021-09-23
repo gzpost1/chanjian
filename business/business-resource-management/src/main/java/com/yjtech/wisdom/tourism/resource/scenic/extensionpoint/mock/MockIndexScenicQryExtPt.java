@@ -14,7 +14,6 @@ import com.yjtech.wisdom.tourism.redis.RedisCache;
 import com.yjtech.wisdom.tourism.resource.scenic.entity.ScenicEntity;
 import com.yjtech.wisdom.tourism.resource.scenic.extensionpoint.IndexScenicQryExtPt;
 import com.yjtech.wisdom.tourism.resource.scenic.extensionpoint.ScenicExtensionConstant;
-import com.yjtech.wisdom.tourism.resource.scenic.query.ScenicScreenQuery;
 import com.yjtech.wisdom.tourism.resource.scenic.service.ScenicService;
 import com.yjtech.wisdom.tourism.resource.ticket.query.TicketSummaryQuery;
 import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.scenic.SimulationScenicDto;
@@ -24,7 +23,6 @@ import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -104,10 +102,9 @@ public class MockIndexScenicQryExtPt implements IndexScenicQryExtPt {
             evaluate = evaluate.add(dailyEvaluate.multiply(new BigDecimal(day)));
         }
 
-
         //评价类型分布-好评 = 好评占比初始值+随机数/5+随机数/100
         BigDecimal good_evaluate = getRandomForCache(SimulationConstants.SCENIC, null,"good_evaluate:");
-        BigDecimal satisfaction = dto.getInitialPraiseRate().add(good_evaluate.divide(new BigDecimal(5))).add(good_evaluate.divide(new BigDecimal(100)));
+        BigDecimal satisfaction = dto.getInitialPraiseRate().add(good_evaluate.divide(new BigDecimal(5))).add(good_evaluate.divide(new BigDecimal(100))).setScale(1, BigDecimal.ROUND_HALF_UP);
         return new ScenicBuildingDTO(tourist.longValue(),evaluate.intValue(),satisfaction);
     }
 
