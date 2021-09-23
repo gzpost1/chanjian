@@ -364,7 +364,7 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
             String tbRateNew = tbRate.compareTo(BigDecimal.ZERO) == 0 ? "-" : String.valueOf(MathUtil.calPercent((curRate.subtract(tbRate)), tbRate, 3).doubleValue());
             //较上月变化
             String hbRateNew = hbRate.compareTo(BigDecimal.ZERO) == 0 ? "-" : String.valueOf(MathUtil.calPercent((curRate.subtract(hbRate)), hbRate, 3).doubleValue());
-            resultList.add(MonthPassengerFlowDto.builder().date(date.substring(0, 7)).number(curRate).tbNumber(tbRate).tbScale(tbRateNew).hbScale(hbRateNew).build());
+            resultList.add(MonthPassengerFlowDto.builder().date(date.substring(0, 7)).number(curNum).tbNumber(tbNum).tbScale(tbRateNew).hbScale(hbRateNew).build());
         }
         if (CollectionUtils.isNotEmpty(resultList)) {
             resultList.forEach(item -> item.setTime(item.getDate()));
