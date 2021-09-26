@@ -65,11 +65,11 @@ public class SimulationPraiseFactory implements SimulationFactory<SimulationPrai
 
                 BasePercentVO excellentPercentVo = new BasePercentVO();
                 if (StringUtils.equals("0", baseVO.getName())) {
-                    excellentPercentVo.setName("好评");
+                    excellentPercentVo.setName(SimulationConstants.GOOD_EVALUATE_DESCRIBE);
                 } else if (StringUtils.equals("1", baseVO.getName())) {
-                    excellentPercentVo.setName("中评");
+                    excellentPercentVo.setName(SimulationConstants.MEDIUM_EVALUATE_DESCRIBE);
                 } else {
-                    excellentPercentVo.setName("差评");
+                    excellentPercentVo.setName(SimulationConstants.BAD_EVALUATE_DESCRIBE);
                 }
                 excellentPercentVo.setValue(String.valueOf(Arith.round(Arith.mul(allDayleiji, rate * 0.01), 0)));
                 excellentPercentVo.setRate(rate);

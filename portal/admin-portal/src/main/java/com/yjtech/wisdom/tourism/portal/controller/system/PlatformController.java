@@ -44,6 +44,7 @@ public class PlatformController {
         return JsonResult.success(BeanMapper.map(platform, PlatformVO.class));
     }
 
+
     /**
      * 编辑平台信息
      *

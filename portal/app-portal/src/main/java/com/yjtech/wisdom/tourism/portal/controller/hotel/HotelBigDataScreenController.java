@@ -177,7 +177,7 @@ public class HotelBigDataScreenController {
         vo.setStatus(EntityConstants.ENABLED);
         return JsonResult.success(extensionExecutor.execute(HotelQryExtPt.class,
                 buildBizScenario(HotelExtensionConstant.HOTEL_QUANTITY, vo.getIsSimulation()),
-                extension -> extension.queryEvaluateAnalysis(vo)));
+                extension -> extension.queryEvaluateAnalysisBigData(vo)));
     }
 
     /**
@@ -192,7 +192,7 @@ public class HotelBigDataScreenController {
         vo.setStatus(EntityConstants.ENABLED);
         return JsonResult.success(extensionExecutor.execute(HotelQryExtPt.class,
                 buildBizScenario(HotelExtensionConstant.HOTEL_QUANTITY, vo.getIsSimulation()),
-                extension -> extension.queryEvaluateSatisfactionAnalysis(vo)));
+                extension -> extension.queryEvaluateSatisfactionAnalysisBigData(vo)));
     }
 
 
@@ -203,8 +203,8 @@ public class HotelBigDataScreenController {
      * @return
      */
     private BizScenario buildBizScenario(String useCasePraiseType, Byte isSimulation) {
-        return BizScenario.valueOf(ExtensionConstant.HOTEL, useCasePraiseType
-                , isSimulation == 0 ? ExtensionConstant.SCENARIO_IMPL : ExtensionConstant.SCENARIO_MOCK);
+        return BizScenario.valueOf(ExtensionConstant.HOTEL, useCasePraiseType,
+                EntityConstants.NO.equals(isSimulation) ? ExtensionConstant.SCENARIO_IMPL : ExtensionConstant.SCENARIO_MOCK);
     }
 
 }

@@ -3,17 +3,21 @@ package com.yjtech.wisdom.tourism.portal.controller.economy;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
 import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
+import com.yjtech.wisdom.tourism.extension.BizScenario;
+import com.yjtech.wisdom.tourism.extension.ExtensionConstant;
+import com.yjtech.wisdom.tourism.extension.ExtensionExecutor;
+import com.yjtech.wisdom.tourism.marketing.extensionpoint.HotelExtensionConstant;
+import com.yjtech.wisdom.tourism.marketing.extensionpoint.HotelQryExtPt;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.RoomPriceAnalysisDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.RoomTypePriceScreenDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.vo.RoomScreenQueryVO;
-import com.yjtech.wisdom.tourism.marketing.service.MarketingHotelRoomService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -28,9 +32,8 @@ import java.util.List;
 @RequestMapping("/hotelEconomy/screen/")
 public class HotelEconomyScreenController {
 
-
-    @Autowired
-    private MarketingHotelRoomService marketingHotelRoomService;
+    @Resource
+    private ExtensionExecutor extensionExecutor;
 
 
     /**
@@ -43,7 +46,9 @@ public class HotelEconomyScreenController {
     public JsonResult<RoomTypePriceScreenDTO> queryRoomPriceStatistics(@RequestBody @Valid RoomScreenQueryVO vo) {
         //默认状态为启用
         vo.setStatus(EntityConstants.ENABLED);
-        return JsonResult.success(marketingHotelRoomService.queryRoomPriceStatistics(vo));
+        return JsonResult.success(extensionExecutor.execute(HotelQryExtPt.class,
+                buildBizScenario(HotelExtensionConstant.HOTEL_QUANTITY, vo.getIsSimulation()),
+                extension -> extension.queryRoomPriceStatisticsBigData(vo)));
     }
 
     /**
@@ -56,7 +61,9 @@ public class HotelEconomyScreenController {
     public JsonResult<List<RoomPriceAnalysisDTO>> queryRoomPriceAnalysis(@RequestBody @Valid RoomScreenQueryVO vo) {
         //默认状态为启用
         vo.setStatus(EntityConstants.ENABLED);
-        return JsonResult.success(marketingHotelRoomService.queryRoomPriceAnalysis(vo));
+        return JsonResult.success(extensionExecutor.execute(HotelQryExtPt.class,
+                buildBizScenario(HotelExtensionConstant.HOTEL_QUANTITY, vo.getIsSimulation()),
+                extension -> extension.queryRoomPriceAnalysisBigData(vo)));
     }
 
     /**
@@ -69,7 +76,9 @@ public class HotelEconomyScreenController {
     public JsonResult<List<BaseVO>> queryRoomTypePriceDistribution(@RequestBody @Valid RoomScreenQueryVO vo) {
         //默认状态为启用
         vo.setStatus(EntityConstants.ENABLED);
-        return JsonResult.success(marketingHotelRoomService.queryRoomTypePriceDistribution(vo));
+        return JsonResult.success(extensionExecutor.execute(HotelQryExtPt.class,
+                buildBizScenario(HotelExtensionConstant.HOTEL_QUANTITY, vo.getIsSimulation()),
+                extension -> extension.queryRoomTypePriceDistribution(vo)));
     }
 
     /**
@@ -82,8 +91,21 @@ public class HotelEconomyScreenController {
     public JsonResult<List<BaseVO>> queryRoomPriceRank(@RequestBody @Valid RoomScreenQueryVO vo) {
         //默认状态为启用
         vo.setStatus(EntityConstants.ENABLED);
-        return JsonResult.success(marketingHotelRoomService.queryRoomPriceRank(vo));
+        return JsonResult.success(extensionExecutor.execute(HotelQryExtPt.class,
+                buildBizScenario(HotelExtensionConstant.HOTEL_QUANTITY, vo.getIsSimulation()),
+                extension -> extension.queryRoomPriceRank(vo)));
     }
 
+
+    /**
+     * 构建酒店民宿业务扩展点
+     * @param useCasePraiseType
+     * @param isSimulation
+     * @return
+     */
+    private BizScenario buildBizScenario(String useCasePraiseType, Byte isSimulation) {
+        return BizScenario.valueOf(ExtensionConstant.HOTEL, useCasePraiseType,
+                EntityConstants.NO.equals(isSimulation) ? ExtensionConstant.SCENARIO_IMPL : ExtensionConstant.SCENARIO_MOCK);
+    }
 
 }

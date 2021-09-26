@@ -105,4 +105,18 @@ public class HotelSimulationDataDTO implements Serializable {
      */
     private List<RoomPriceAnalysisDTO> roomPriceAnalysisBigData;
 
+    /**
+     * 查询酒店均价排行-经济效益
+     */
+    private List<BaseVO> roomPriceRank;
+
+    /**
+     * 查询评价量趋势、同比、环比-评价分析
+     */
+    private List<AnalysisBaseInfo> evaluateAnalysis;
+
+    /**
+     * 查询评价满意度趋势、同比、环比-评价分析
+     */
+    private List<AnalysisBaseInfo> satisfactionAnalysis;
 }

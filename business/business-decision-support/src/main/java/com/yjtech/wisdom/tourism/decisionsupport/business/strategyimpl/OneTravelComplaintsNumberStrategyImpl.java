@@ -41,7 +41,7 @@ public class OneTravelComplaintsNumberStrategyImpl extends BaseStrategy {
      * @return
      */
     @Override
-    public DecisionWarnEntity init(DecisionEntity entity, Integer isSimulation) {
+    public DecisionWarnEntity init(DecisionEntity entity, Byte isSimulation) {
         DecisionWarnEntity result = JSONObject.parseObject(JSONObject.toJSONString(entity), DecisionWarnEntity.class);
 
         int configId = entity.getConfigId().intValue();

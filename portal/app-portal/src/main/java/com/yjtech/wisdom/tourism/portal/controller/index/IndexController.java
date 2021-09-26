@@ -192,7 +192,7 @@ public class IndexController {
         DataOverviewVo dataOverviewVo = new DataOverviewVo();
         dataOverviewVo.setBeginDate(vo.getBeginTime().toLocalDate().toString());
         dataOverviewVo.setEndDate(vo.getEndTime().toLocalDate().toString());
-        dataOverviewVo.setIsSimulation(vo.getIsSimulation().intValue());
+        dataOverviewVo.setIsSimulation(vo.getIsSimulation());
 
         DataOverviewDto dto = districtTourService.queryDataOverview(dataOverviewVo);
         //计算省内游客占比
@@ -251,8 +251,8 @@ public class IndexController {
      * @return
      */
     private BizScenario buildScenicBizScenario(String useCasePraiseType, Byte isSimulation) {
-        return BizScenario.valueOf(ExtensionConstant.SCENIC, useCasePraiseType
-                , isSimulation == 0 ? ExtensionConstant.SCENARIO_IMPL : ExtensionConstant.SCENARIO_MOCK);
+        return BizScenario.valueOf(ExtensionConstant.SCENIC, useCasePraiseType,
+                EntityConstants.NO.equals(isSimulation) ? ExtensionConstant.SCENARIO_IMPL : ExtensionConstant.SCENARIO_MOCK);
     }
 
     /**
@@ -262,8 +262,8 @@ public class IndexController {
      * @return
      */
     private BizScenario buildOneTravelBizScenario(String useCasePraiseType, Byte isSimulation) {
-        return BizScenario.valueOf(ExtensionConstant.ONE_TRAVEL, useCasePraiseType
-                , isSimulation == 0 ? ExtensionConstant.SCENARIO_IMPL : ExtensionConstant.SCENARIO_MOCK);
+        return BizScenario.valueOf(ExtensionConstant.ONE_TRAVEL, useCasePraiseType,
+                EntityConstants.NO.equals(isSimulation) ? ExtensionConstant.SCENARIO_IMPL : ExtensionConstant.SCENARIO_MOCK);
     }
 
 }

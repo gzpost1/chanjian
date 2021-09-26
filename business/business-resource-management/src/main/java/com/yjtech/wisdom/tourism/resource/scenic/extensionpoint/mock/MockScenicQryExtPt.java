@@ -184,11 +184,11 @@ public class MockScenicQryExtPt implements ScenicQryExtPt {
         }
         BigDecimal size = new BigDecimal(list.size());
 
-        result.add(BasePercentVO.builder().name("好评").rate(size.compareTo(new BigDecimal(0)) == 0 ? 0d : satisfactionTotal.divide(size, 1).doubleValue()).build());
+        result.add(BasePercentVO.builder().name(SimulationConstants.GOOD_EVALUATE_DESCRIBE).rate(size.compareTo(new BigDecimal(0)) == 0 ? 0d : satisfactionTotal.divide(size, 1).doubleValue()).build());
 
-        result.add(BasePercentVO.builder().name("中评").rate(size.compareTo(new BigDecimal(0)) == 0 ? 0d : normalTotal.divide(size, 1).doubleValue()).build());
+        result.add(BasePercentVO.builder().name(SimulationConstants.MEDIUM_EVALUATE_DESCRIBE).rate(size.compareTo(new BigDecimal(0)) == 0 ? 0d : normalTotal.divide(size, 1).doubleValue()).build());
 
-        result.add(BasePercentVO.builder().name("差评").rate(size.compareTo(new BigDecimal(0)) == 0 ? 0d : badTotal.divide(size, 1).doubleValue()).build());
+        result.add(BasePercentVO.builder().name(SimulationConstants.BAD_EVALUATE_DESCRIBE).rate(size.compareTo(new BigDecimal(0)) == 0 ? 0d : badTotal.divide(size, 1).doubleValue()).build());
         return result;
     }
 
@@ -319,16 +319,18 @@ public class MockScenicQryExtPt implements ScenicQryExtPt {
         queryVO.setBeginTime(trendDto.getHbBeginDate());
         queryVO.setEndTime(trendDto.getHbEndDate());
         Map<String, String> hbMap = querySatisfaction(queryVO);
-        int curNum, tbNum, hbNum;
+        BigDecimal curNum, tbNum, hbNum;
         for (String date : trendDto.getAbscissa()) {
-            curNum = StringUtils.isNotBlank(curMap.get(date)) ? Integer.parseInt(curMap.get(date)) : 0;
+            curNum = StringUtils.isNotBlank(curMap.get(date)) ? new BigDecimal(curMap.get(date)) : BigDecimal.ZERO;
             String tbDate = scenicService.dateToDateFormat(date, "year");
-            tbNum = StringUtils.isNotBlank(tbMap.get(tbDate)) ? Integer.parseInt(tbMap.get(tbDate)) : 0;
+            tbNum = StringUtils.isNotBlank(tbMap.get(tbDate)) ? new BigDecimal(tbMap.get(tbDate)) : BigDecimal.ZERO;
             String hbDate = scenicService.dateToDateFormat(date, "month");
-            hbNum = StringUtils.isNotBlank(hbMap.get(hbDate)) ? Integer.parseInt(hbMap.get(hbDate)) : 0;
-            String tbRate = tbNum == 0 ? "-" : String.valueOf(MathUtil.calPercent(new BigDecimal(curNum - tbNum), new BigDecimal(tbNum), 3).doubleValue());
-            String hbRate = hbNum == 0 ? "-" : String.valueOf(MathUtil.calPercent(new BigDecimal(curNum - hbNum), new BigDecimal(hbNum), 3).doubleValue());
-            resultList.add(MonthPassengerFlowDto.builder().date(date.substring(0, 7)).number(curNum).tbNumber(tbNum).tbScale(tbRate).hbScale(hbRate).build());
+            hbNum = StringUtils.isNotBlank(hbMap.get(hbDate)) ? new BigDecimal(hbMap.get(hbDate)) : BigDecimal.ZERO;
+            String tbRate = BigDecimal.ZERO.compareTo(tbNum) == 0 ? "-"
+                    : String.valueOf(MathUtil.calPercent(curNum.subtract(tbNum), tbNum, 3).doubleValue());
+            String hbRate = BigDecimal.ZERO.compareTo(hbNum) == 0 ? "-"
+                    : String.valueOf(MathUtil.calPercent(curNum.subtract(hbNum), hbNum, 3).doubleValue());
+            resultList.add(MonthPassengerFlowDto.builder().date(date.substring(0, 7)).number(curNum.intValue()).tbNumber(tbNum.intValue()).rate(curNum).tbRate(tbNum).tbScale(tbRate).hbScale(hbRate).build());
         }
         if (CollectionUtils.isNotEmpty(resultList)) {
             resultList.forEach(item -> item.setTime(item.getDate()));
@@ -698,10 +700,10 @@ public class MockScenicQryExtPt implements ScenicQryExtPt {
                 }
                 //● 各月满意度：汇总各个景区该月的评价数量得到评价总数，通过各个景区评价数量*好评占比得到好评数量，汇总好评数量/评价总数得到该月满意度。
                 BigDecimal goodEvaluate = evaluate.multiply(satisfaction).divide(new BigDecimal(100));
-                satisfaction = MathUtil.calPercent(goodEvaluate, evaluate, 3);
+                satisfaction = MathUtil.calPercent(goodEvaluate, evaluate, 1);
             }
             BaseVO vo = new BaseVO();
-            vo.setValue(String.valueOf(satisfaction.intValue()));
+            vo.setValue(satisfaction.toString());
             vo.setName(beginTime.format(dateTimeFormatter1) + "-01");
             curBaseVOS.add(vo);
             beginTime = beginTime.plusMonths(1);

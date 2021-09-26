@@ -1,5 +1,6 @@
 package com.yjtech.wisdom.tourism.portal.controller.marketing;
 
+import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.extension.BizScenario;
 import com.yjtech.wisdom.tourism.extension.ExtensionConstant;
@@ -83,8 +84,8 @@ public class HotelRoomController {
      * @return
      */
     private BizScenario buildBizScenario(String useCasePraiseType, Byte isSimulation) {
-        return BizScenario.valueOf(ExtensionConstant.HOTEL, useCasePraiseType
-                , isSimulation == 0 ? ExtensionConstant.SCENARIO_IMPL : ExtensionConstant.SCENARIO_MOCK);
+        return BizScenario.valueOf(ExtensionConstant.HOTEL, useCasePraiseType,
+                EntityConstants.NO.equals(isSimulation) ? ExtensionConstant.SCENARIO_IMPL : ExtensionConstant.SCENARIO_MOCK);
     }
 
 }

@@ -44,7 +44,7 @@ public class OverallHotelHomestaySatisfactionStrategyImpl extends BaseStrategy {
      * @return
      */
     @Override
-    public DecisionWarnEntity init(DecisionEntity entity, Integer isSimulation) {
+    public DecisionWarnEntity init(DecisionEntity entity, Byte isSimulation) {
         DecisionWarnEntity result = JSONObject.parseObject(JSONObject.toJSONString(entity), DecisionWarnEntity.class);
 
         int configId = entity.getConfigId().intValue();
@@ -192,9 +192,9 @@ public class OverallHotelHomestaySatisfactionStrategyImpl extends BaseStrategy {
      * @param endDate
      * @return
      */
-    private List getCharData(LocalDateTime startDate, LocalDateTime endDate, Integer isSimulation) {
+    private List getCharData(LocalDateTime startDate, LocalDateTime endDate, Byte isSimulation) {
         EvaluateQueryVO evaluateQueryVO = new EvaluateQueryVO();
-        evaluateQueryVO.setIsSimulation(isSimulation.byteValue());
+        evaluateQueryVO.setIsSimulation(isSimulation);
         evaluateQueryVO.setBeginTime(startDate);
         evaluateQueryVO.setEndTime(endDate);
         evaluateQueryVO.setStatus(DecisionSupportConstants.ENABLE);
@@ -210,12 +210,12 @@ public class OverallHotelHomestaySatisfactionStrategyImpl extends BaseStrategy {
      * @param endDate
      * @return
      */
-    private StatisticsDto getSatisfaction (LocalDateTime startDate, LocalDateTime endDate, Integer isSimulation) {
+    private StatisticsDto getSatisfaction (LocalDateTime startDate, LocalDateTime endDate, Byte isSimulation) {
 
         EvaluateQueryVO evaluateScreenQueryVO = new EvaluateQueryVO();
         evaluateScreenQueryVO.setBeginTime(startDate);
         evaluateScreenQueryVO.setEndTime(endDate);
-        evaluateScreenQueryVO.setIsSimulation(isSimulation.byteValue());
+        evaluateScreenQueryVO.setIsSimulation(isSimulation);
 
         // 上月
         MarketingEvaluateStatisticsDTO lastMonth = extensionExecutor.execute(HotelQryExtPt.class,
@@ -225,10 +225,10 @@ public class OverallHotelHomestaySatisfactionStrategyImpl extends BaseStrategy {
         // 评价数量
         Integer evaluateTotal = lastMonth.getEvaluateTotal();
         // 满意度
-        Double satisfaction = lastMonth.getSatisfaction().doubleValue();
+        double satisfaction = lastMonth.getSatisfaction().doubleValue();
 
         // 好评数量 = 评价数量 * 满意度/100
-        Integer goodEvaluateTotal = 0;
+        int goodEvaluateTotal = 0;
         if (ObjectUtils.isEmpty(satisfaction)) {
             satisfaction = 0d;
         }

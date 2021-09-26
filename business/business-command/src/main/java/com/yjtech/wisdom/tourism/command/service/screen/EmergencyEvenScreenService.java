@@ -81,7 +81,7 @@ public class EmergencyEvenScreenService {
      * @param isSimulation
      * @return
      */
-    private BizScenario buildBizScenario(String useCasePraiseType, Integer isSimulation) {
+    private BizScenario buildBizScenario(String useCasePraiseType, Byte isSimulation) {
         return BizScenario.valueOf(ExtensionConstant.BIZ_EVENT, useCasePraiseType
                 , isSimulation == 0 ? ExtensionConstant.SCENARIO_IMPL : ExtensionConstant.SCENARIO_MOCK);
     }

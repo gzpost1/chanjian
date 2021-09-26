@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
+import com.yjtech.wisdom.tourism.common.constant.SimulationConstants;
 import com.yjtech.wisdom.tourism.common.utils.DateTimeUtil;
 import com.yjtech.wisdom.tourism.common.utils.MathUtil;
 import com.yjtech.wisdom.tourism.mybatis.entity.PageQuery;
@@ -41,22 +42,22 @@ public class PraiseTypeSummaryService extends ServiceImpl<PraiseTypeSummaryMappe
         screenCommentTotalDto.setValuesList(valuesList);
 
         BasePercentVO excellentPercentVo = new BasePercentVO();
-        excellentPercentVo.setName("好评");
-        excellentPercentVo.setValue(String.valueOf(entity.getCommentExcellent() + ""));
+        excellentPercentVo.setName(SimulationConstants.GOOD_EVALUATE_DESCRIBE);
+        excellentPercentVo.setValue(entity.getCommentExcellent() + "");
         excellentPercentVo.setRate(screenCommentTotalDto.getCommentTotal() == 0L ? 0D :
                 MathUtil.divide(BigDecimal.valueOf(Double.valueOf(excellentPercentVo.getValue())), BigDecimal.valueOf(screenCommentTotalDto.getCommentTotal()), 4).doubleValue());
         valuesList.add(excellentPercentVo);
 
         BasePercentVO poorPercentVo = new BasePercentVO();
-        poorPercentVo.setName("差评");
-        poorPercentVo.setValue(String.valueOf(entity.getCommentPoor() + ""));
+        poorPercentVo.setName(SimulationConstants.BAD_EVALUATE_DESCRIBE);
+        poorPercentVo.setValue(entity.getCommentPoor() + "");
         poorPercentVo.setRate(screenCommentTotalDto.getCommentTotal() == 0L ? 0D :
                 MathUtil.divide(BigDecimal.valueOf(Double.valueOf(poorPercentVo.getValue())), BigDecimal.valueOf(screenCommentTotalDto.getCommentTotal()), 4).doubleValue());
         valuesList.add(poorPercentVo);
 
         BasePercentVO mediumPercentVo = new BasePercentVO();
-        mediumPercentVo.setName("中评");
-        mediumPercentVo.setValue(String.valueOf(entity.getCommentMedium() + ""));
+        mediumPercentVo.setName(SimulationConstants.MEDIUM_EVALUATE_DESCRIBE);
+        mediumPercentVo.setValue(entity.getCommentMedium() + "");
         mediumPercentVo.setRate(screenCommentTotalDto.getCommentTotal() == 0L ? 0D :
                 MathUtil.divide(BigDecimal.valueOf(Double.valueOf(mediumPercentVo.getValue())), BigDecimal.valueOf(screenCommentTotalDto.getCommentTotal()), 4).doubleValue());
         valuesList.add(mediumPercentVo);

@@ -59,12 +59,12 @@ public class DecisionSupportConstants {
     /**
      * 模拟数据
      */
-    public static final Integer MOCK = 1;
+    public static final Byte MOCK = 1;
 
     /**
      * 真实数据
      */
-    public static final Integer IMPL = 0;
+    public static final Byte IMPL = 0;
 
     /**
      * 应急事件-同比

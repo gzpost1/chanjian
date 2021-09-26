@@ -47,7 +47,7 @@ public class OverallScenicSpotsTouristFlowRankingStrategyImpl extends BaseStrate
      * @return
      */
     @Override
-    public DecisionWarnEntity init(DecisionEntity entity, Integer isSimulation) {
+    public DecisionWarnEntity init(DecisionEntity entity, Byte isSimulation) {
         DecisionWarnEntity result = JSONObject.parseObject(JSONObject.toJSONString(entity), DecisionWarnEntity.class);
 
         int configId = entity.getConfigId().intValue();
@@ -215,7 +215,7 @@ public class OverallScenicSpotsTouristFlowRankingStrategyImpl extends BaseStrate
      *
      * @return
      */
-    private List<RankingDto> getSatisfactionDownMax(Integer isSimulation) {
+    private List<RankingDto> getSatisfactionDownMax(Byte isSimulation) {
 
         // 当年 上月
         LocalDateTime startDate = DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentLastMonthStr() + DecisionSupportConstants.START_DAY_STR);
