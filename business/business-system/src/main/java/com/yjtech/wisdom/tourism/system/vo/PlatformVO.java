@@ -8,6 +8,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.Serializable;
+import java.time.LocalDate;
 
 /**
  * 平台信息
@@ -71,9 +72,21 @@ public class PlatformVO implements Serializable {
     private String latitude;
 
     /**
-     * 默认时间筛选类型（1-30天 2-60天 3-90天 4-其他）
+     * 默认时间筛选类型（1-7天 2-30天 3-90天 4-其他）
      */
     @NotNull(message = "默认时间筛选类型不能为空")
     @Range(min = 1, max = 4, message = "请输入正确的时间筛选类型")
     private Byte timeSelectType;
+
+    /**
+     * 默认开始日期
+     * timeSelectType=4时必传
+     */
+    private LocalDate defaultBeginTime;
+
+    /**
+     * 默认结束日期
+     * timeSelectType=4时必传
+     */
+    private LocalDate defaultEndTime;
 }

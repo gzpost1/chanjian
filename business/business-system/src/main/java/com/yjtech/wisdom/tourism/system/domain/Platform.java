@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.yjtech.wisdom.tourism.mybatis.entity.BaseEntity;
 import lombok.Data;
 
+import java.time.LocalDate;
+
 /**
  * @author liuhong
  * @date 2021-07-02 15:17
@@ -57,8 +59,18 @@ public class Platform extends BaseEntity {
     private String latitude;
 
     /**
-     * 默认时间筛选类型（1-30天 2-60天 3-90天 4-其他）
+     * 默认时间筛选类型（1-7天 2-30天 3-90天 4-其他）
      */
     private Byte timeSelectType;
+
+    /**
+     * 默认开始日期
+     */
+    private LocalDate defaultBeginTime;
+
+    /**
+     * 默认结束日期
+     */
+    private LocalDate defaultEndTime;
 
 }
