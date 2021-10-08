@@ -42,11 +42,7 @@ public class PlatformController {
         if (Objects.isNull(platform)) {
             return JsonResult.success();
         }
-        //设置时间筛选类型描述
-        PlatformVO platformVO = BeanUtils.copyBean(platform, PlatformVO.class);
-        platformVO.setTimeSelectTypeDesc(PlatformDefaultTimeTypeEnum.getDescByValue(platformVO.getTimeSelectType()));
-
-        return JsonResult.success(platformVO);
+        return JsonResult.success(BeanUtils.copyBean(platform, PlatformVO.class));
     }
 
 
