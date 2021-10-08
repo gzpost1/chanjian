@@ -1,5 +1,6 @@
 package com.yjtech.wisdom.tourism.system.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
@@ -79,14 +80,21 @@ public class PlatformVO implements Serializable {
     private Byte timeSelectType;
 
     /**
+     * 默认时间筛选类型描述
+     */
+    private String timeSelectTypeDesc;
+
+    /**
      * 默认开始日期
      * timeSelectType=4时必传
      */
+    @JsonFormat(pattern = "yyyy-MM-dd",timezone = "GMT+8")
     private LocalDate defaultBeginTime;
 
     /**
      * 默认结束日期
      * timeSelectType=4时必传
      */
+    @JsonFormat(pattern = "yyyy-MM-dd",timezone = "GMT+8")
     private LocalDate defaultEndTime;
 }

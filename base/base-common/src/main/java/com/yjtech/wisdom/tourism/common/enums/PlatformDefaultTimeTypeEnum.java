@@ -69,7 +69,7 @@ public enum PlatformDefaultTimeTypeEnum {
                 return item.getDescribe();
             }
         }
-        return "";
+        return null;
     }
 
 }

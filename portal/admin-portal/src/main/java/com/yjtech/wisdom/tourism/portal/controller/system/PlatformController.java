@@ -4,7 +4,7 @@ import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.common.enums.PlatformDefaultTimeTypeEnum;
 import com.yjtech.wisdom.tourism.common.exception.CustomException;
 import com.yjtech.wisdom.tourism.common.exception.ErrorCode;
-import com.yjtech.wisdom.tourism.common.utils.bean.BeanMapper;
+import com.yjtech.wisdom.tourism.common.utils.bean.BeanUtils;
 import com.yjtech.wisdom.tourism.system.domain.Platform;
 import com.yjtech.wisdom.tourism.system.service.PlatformService;
 import com.yjtech.wisdom.tourism.system.vo.PlatformVO;
@@ -42,7 +42,11 @@ public class PlatformController {
         if (Objects.isNull(platform)) {
             return JsonResult.success();
         }
-        return JsonResult.success(BeanMapper.map(platform, PlatformVO.class));
+        //设置时间筛选类型描述
+        PlatformVO platformVO = BeanUtils.copyBean(platform, PlatformVO.class);
+        platformVO.setTimeSelectTypeDesc(PlatformDefaultTimeTypeEnum.getDescByValue(platformVO.getTimeSelectType()));
+
+        return JsonResult.success(platformVO);
     }
 
 
@@ -64,7 +68,7 @@ public class PlatformController {
                 throw new CustomException(ErrorCode.PARAM_WRONG, "编辑失败：时间区间设置不合法");
             }
         }
-        Platform platform = BeanMapper.map(params, Platform.class);
+        Platform platform = BeanUtils.copyBean(params, Platform.class);
         platformService.savePlatform(platform);
         return JsonResult.success();
     }
