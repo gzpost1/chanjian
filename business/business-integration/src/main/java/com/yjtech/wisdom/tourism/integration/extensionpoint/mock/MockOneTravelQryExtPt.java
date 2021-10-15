@@ -245,11 +245,12 @@ public class MockOneTravelQryExtPt implements OneTravelQryExtPt {
                 new BigDecimal(((simulationOneTravelDTO.getDayOfOrderSum().intValue() + randomNumber) * untilDay)));
 
         //查询一码游投诉
-        Integer oneTravelComplaint = (simulationOneTravelDTO.getDayOfComplaintCount() / 10 + randomNumber) * untilDay;
+        Integer oneTravelComplaint = (simulationOneTravelDTO.getDayOfComplaintCount() + randomNumber / 10) * untilDay;
 
         //查询一码游投诉趋势-一码游投诉
         List<AnalysisBaseInfo> oneTravelComplaintAnalysis = calculateAnalysis(now.toLocalDate().toString(),
-                new BigDecimal((simulationOneTravelDTO.getDayOfComplaintCount() / 10 + randomNumber) * now.getDayOfMonth() + simulationOneTravelDTO.getMonthOfComplaintCountTotal()));
+                new BigDecimal((simulationOneTravelDTO.getDayOfComplaintCount() + randomNumber / 10) * now.getDayOfMonth() + simulationOneTravelDTO.getMonthOfComplaintCountTotal()),
+                0);
 
         //查询一码游受理状态分布-一码游投诉
         List<BasePercentVO> oneTravelComplaintDistribution = simulationOneTravelDTO.getComplaintStatusDistribution();
@@ -289,12 +290,12 @@ public class MockOneTravelQryExtPt implements OneTravelQryExtPt {
                 //随机值
                 int randomInt = (int) (-20 + Math.random() * (20 - (-20) + 1));
                 //获取分布占比
-                double rate = USER_AGE_CALCULATE_COEFFICIENT + randomInt / 10.0;
+                double rate = new BigDecimal(USER_AGE_CALCULATE_COEFFICIENT + randomInt / 10.0).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
                 userAgeDistribution.add(new BasePercentVO(userAgeDistributionName, null, rate));
                 statistics += rate;
             }
             //设置其他
-            userAgeDistribution.add(new BasePercentVO(USER_AGE_DISTRIBUTION_NAME, null, 100.0 - statistics));
+            userAgeDistribution.add(new BasePercentVO(USER_AGE_DISTRIBUTION_NAME, null, new BigDecimal(100.0 - statistics).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue()));
         }
 
         //运营数据-一码游统计
@@ -308,11 +309,13 @@ public class MockOneTravelQryExtPt implements OneTravelQryExtPt {
 
         //本年订单趋势-一码游统计
         List<AnalysisBaseInfo> orderAnalysis = calculateAnalysis(now.toLocalDate().toString(),
-                new BigDecimal((simulationOneTravelDTO.getDayOfOrderCount() + randomNumber) * now.getDayOfMonth() + simulationOneTravelDTO.getMonthOfOrderCountTotal()));
+                new BigDecimal((simulationOneTravelDTO.getDayOfOrderCount() + randomNumber) * now.getDayOfMonth() + simulationOneTravelDTO.getMonthOfOrderCountTotal()),
+                0);
 
         //本年交易额趋势-一码游统计
         List<AnalysisBaseInfo> orderSumAnalysis = calculateAnalysis(now.toLocalDate().toString(),
-                (simulationOneTravelDTO.getDayOfOrderSum().add(new BigDecimal(randomNumber))).multiply(new BigDecimal(now.getDayOfMonth())).add(simulationOneTravelDTO.getMonthOfOrderSumTotal()).setScale(2, BigDecimal.ROUND_HALF_UP));
+                (simulationOneTravelDTO.getDayOfOrderSum().add(new BigDecimal(randomNumber))).multiply(new BigDecimal(now.getDayOfMonth())).add(simulationOneTravelDTO.getMonthOfOrderSumTotal()).setScale(2, BigDecimal.ROUND_HALF_UP),
+                1);
 
 
         OneTravelSimulationDataBO dto = new OneTravelSimulationDataBO(oneTravelVisitIndex, oneTravelTradeIndex, oneTravelComplaint, oneTravelComplaintAnalysis,
@@ -331,9 +334,10 @@ public class MockOneTravelQryExtPt implements OneTravelQryExtPt {
      *
      * @param currentDate
      * @param monthOfTotal
+     * @param preciseFigures
      * @return
      */
-    private List<AnalysisBaseInfo> calculateAnalysis(String currentDate, BigDecimal monthOfTotal) {
+    private List<AnalysisBaseInfo> calculateAnalysis(String currentDate, BigDecimal monthOfTotal, Integer preciseFigures) {
         //获取当前月份
         String currentMonth = currentDate.substring(0, 7);
 
@@ -373,7 +377,7 @@ public class MockOneTravelQryExtPt implements OneTravelQryExtPt {
              * 3.月累计订单金额
              */
             else {
-                currentYearByMonth = new AnalysisMonthChartInfo().build(monthMark, monthOfTotal.multiply(new BigDecimal(100 + randomInt)).divide(new BigDecimal(100), 1, BigDecimal.ROUND_HALF_UP), lastYearByMonth.getCount(), lastMonthValue);
+                currentYearByMonth = new AnalysisMonthChartInfo().build(monthMark, monthOfTotal.multiply(new BigDecimal(100 + randomInt)).divide(new BigDecimal(100), preciseFigures, BigDecimal.ROUND_HALF_UP), lastYearByMonth.getCount(), lastMonthValue);
             }
 
             //同步同比、环比

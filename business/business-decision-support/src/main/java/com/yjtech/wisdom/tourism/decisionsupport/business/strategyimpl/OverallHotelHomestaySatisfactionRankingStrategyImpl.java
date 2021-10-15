@@ -53,7 +53,7 @@ public class OverallHotelHomestaySatisfactionRankingStrategyImpl extends BaseStr
      * @return
      */
     @Override
-    public DecisionWarnEntity init(DecisionEntity entity, Integer isSimulation) {
+    public DecisionWarnEntity init(DecisionEntity entity, Byte isSimulation) {
         DecisionWarnEntity result = JSONObject.parseObject(JSONObject.toJSONString(entity), DecisionWarnEntity.class);
 
         int configId = entity.getConfigId().intValue();
@@ -102,7 +102,7 @@ public class OverallHotelHomestaySatisfactionRankingStrategyImpl extends BaseStr
         // 本年满意度趋势
         List<AnalysisBaseInfo> analysisBaseInfos = extensionExecutor.execute(HotelQryExtPt.class,
                 buildBizScenario(HotelExtensionConstant.HOTEL_QUANTITY, vo.getIsSimulation()),
-                extension -> extension.queryEvaluateSatisfactionAnalysis(vo));
+                extension -> extension.queryEvaluateSatisfactionAnalysisBigData(vo));
 
         for (AnalysisBaseInfo v : analysisBaseInfos) {
             List<OneTravelNumberDto> numberDtoList = JSONObject.parseArray(JSONObject.toJSONString(JsonUtils.getValueByKey(v, DecisionSupportConstants.DATA)), OneTravelNumberDto.class);
@@ -328,7 +328,7 @@ public class OverallHotelHomestaySatisfactionRankingStrategyImpl extends BaseStr
      *
      * @return
      */
-    private List<RankingDto> getSatisfactionDownMax(Integer isSimulation) {
+    private List<RankingDto> getSatisfactionDownMax(Byte isSimulation) {
 
         // 当年 上月
         LocalDateTime startDate = DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentLastMonthStr() + DecisionSupportConstants.START_DAY_STR);

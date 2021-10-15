@@ -19,4 +19,20 @@ public class SimulationConstants {
 
     //凌晨1点
     public static final Integer HOUR = 1;
+
+    /**
+     * 好评 描述
+     */
+    public static final String GOOD_EVALUATE_DESCRIBE = "好评";
+
+    /**
+     * 中评 描述
+     */
+    public static final String MEDIUM_EVALUATE_DESCRIBE = "中评";
+
+    /**
+     * 差评 描述
+     */
+    public static final String BAD_EVALUATE_DESCRIBE = "差评";
+
 }

@@ -1,9 +1,10 @@
 package com.yjtech.wisdom.tourism.portal.controller.system;
 
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
-import com.yjtech.wisdom.tourism.common.core.domain.validate.CreateGroup;
-import com.yjtech.wisdom.tourism.common.utils.StringUtils;
-import com.yjtech.wisdom.tourism.common.utils.bean.BeanMapper;
+import com.yjtech.wisdom.tourism.common.enums.PlatformDefaultTimeTypeEnum;
+import com.yjtech.wisdom.tourism.common.exception.CustomException;
+import com.yjtech.wisdom.tourism.common.exception.ErrorCode;
+import com.yjtech.wisdom.tourism.common.utils.bean.BeanUtils;
 import com.yjtech.wisdom.tourism.system.domain.Platform;
 import com.yjtech.wisdom.tourism.system.service.PlatformService;
 import com.yjtech.wisdom.tourism.system.vo.PlatformVO;
@@ -41,8 +42,9 @@ public class PlatformController {
         if (Objects.isNull(platform)) {
             return JsonResult.success();
         }
-        return JsonResult.success(BeanMapper.map(platform, PlatformVO.class));
+        return JsonResult.success(BeanUtils.copyBean(platform, PlatformVO.class));
     }
+
 
     /**
      * 编辑平台信息
@@ -53,7 +55,16 @@ public class PlatformController {
     @PreAuthorize("@ss.hasPermi('system:platform:update')")
     @PostMapping("update")
     public JsonResult<?> update(@RequestBody @Validated PlatformVO params) {
-        Platform platform = BeanMapper.map(params, Platform.class);
+        //时间筛选类型为其他时，校验开始时间与结束时间
+        if(PlatformDefaultTimeTypeEnum.PLATFORM_DEFAULT_TIME_TYPE_ELSE.getValue().equals(params.getTimeSelectType())){
+            if(null == params.getDefaultBeginTime() || null == params.getDefaultEndTime()){
+                throw new CustomException(ErrorCode.PARAM_MISS, "编辑失败：开始时间或结束时间不能为空");
+            }
+            if(!params.getDefaultBeginTime().isBefore(params.getDefaultEndTime())){
+                throw new CustomException(ErrorCode.PARAM_WRONG, "编辑失败：时间区间设置不合法");
+            }
+        }
+        Platform platform = BeanUtils.copyBean(params, Platform.class);
         platformService.savePlatform(platform);
         return JsonResult.success();
     }

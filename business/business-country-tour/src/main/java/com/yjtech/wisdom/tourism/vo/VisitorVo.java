@@ -47,7 +47,7 @@ public class VisitorVo extends TimeBaseQuery implements Serializable {
     /**
      * is_simulation 是否有模拟数据 1有 0无
      */
-    private Integer isSimulation = 0;
+    private Byte isSimulation = 0;
 
     /**
      * 开始时间

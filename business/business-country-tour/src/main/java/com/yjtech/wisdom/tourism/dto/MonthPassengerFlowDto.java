@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * 月客流趋势
@@ -36,6 +37,16 @@ public class MonthPassengerFlowDto extends BaseSaleTrendVO implements Serializab
      * 同比数量
      */
     private int tbNumber;
+
+    /**
+     * 当前月满意度
+     */
+    private BigDecimal rate;
+
+    /**
+     * 同步月满意度
+     */
+    private BigDecimal tbRate;
 
     /**
      * 同比日期

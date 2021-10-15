@@ -233,25 +233,80 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
     }
 
     /**
-     * 查询评价量趋势、同比、环比
+     * 查询评价量趋势、同比、环比-酒店民宿大数据
+     *
+     * @param vo
+     * @return
+     */
+    @Override
+    public List<AnalysisBaseInfo> queryEvaluateAnalysisBigData(EvaluateQueryVO vo) {
+        return calculateAndQuery(vo.getBeginTime(), vo.getEndTime()).getEvaluateAnalysisBigData();
+    }
+
+    /**
+     * 查询评价满意度趋势、同比、环比-酒店民宿大数据
+     *
+     * @param vo
+     * @return
+     */
+    @Override
+    public List<AnalysisBaseInfo> queryEvaluateSatisfactionAnalysisBigData(EvaluateQueryVO vo) {
+        return calculateAndQuery(vo.getBeginTime(), vo.getEndTime()).getSatisfactionAnalysisBigData();
+    }
+
+    /**
+     * 查询评价量趋势、同比、环比-评价分析
      *
      * @param vo
      * @return
      */
     @Override
     public List<AnalysisBaseInfo> queryEvaluateAnalysis(EvaluateQueryVO vo) {
-        return calculateAndQuery(vo.getBeginTime(), vo.getEndTime()).getEvaluateAnalysisBigData();
+        return calculateAndQuery(vo.getBeginTime(), vo.getEndTime()).getEvaluateAnalysis();
     }
 
     /**
-     * 查询评价满意度趋势、同比、环比
+     * 查询评价满意度趋势、同比、环比-评价分析
      *
      * @param vo
      * @return
      */
     @Override
     public List<AnalysisBaseInfo> queryEvaluateSatisfactionAnalysis(EvaluateQueryVO vo) {
-        return calculateAndQuery(vo.getBeginTime(), vo.getEndTime()).getSatisfactionAnalysisBigData();
+        return calculateAndQuery(vo.getBeginTime(), vo.getEndTime()).getSatisfactionAnalysis();
+    }
+
+    /**
+     * 查询酒店均价排行-经济效益
+     *
+     * @param vo
+     * @return
+     */
+    @Override
+    public List<BaseVO> queryRoomPriceRank(RoomScreenQueryVO vo) {
+        return calculateAndQuery(vo.getBeginTime(), vo.getEndTime()).getRoomPriceRank();
+    }
+
+    /**
+     * 查询房型价格分布-经济效益
+     *
+     * @param vo
+     * @return
+     */
+    @Override
+    public List<BaseVO> queryRoomTypePriceDistribution(RoomScreenQueryVO vo) {
+        List<RoomPriceAnalysisDTO> dtoList = calculateAndQuery(vo.getBeginTime(), vo.getEndTime()).getRoomPriceAnalysisBigData();
+        //构建返回信息列表
+        List<BaseVO> dataList = Lists.newArrayList();
+        if (!dtoList.isEmpty()) {
+            //获取房型价格趋势中的第一条数据
+            RoomPriceAnalysisDTO dto = dtoList.get(0);
+            dataList.add(new BaseVO("大床房", dto.getBigBedPrice().toString()));
+            dataList.add(new BaseVO("双床房", dto.getDoubleBedPrice().toString()));
+            dataList.add(new BaseVO("亲子/家庭房", dto.getFamilyRoomPrice().toString()));
+            dataList.add(new BaseVO("套房", dto.getSuiteRoomPrice().toString()));
+        }
+        return dataList;
     }
 
 
@@ -289,6 +344,8 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
         List<BaseVO> hotRankBigDataAll = Lists.newArrayList();
         //查询房型价格统计-酒店民宿大数据
         RoomTypePriceScreenDTO roomPriceStatisticsBigData = new RoomTypePriceScreenDTO(BigDecimal.ZERO);
+        //查询酒店均价排行
+        List<BaseVO> roomPriceRank = Lists.newArrayList();
 
         //评价数量总计
         Integer evaluateTotalAll = 0;
@@ -336,9 +393,9 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
                 BigDecimal badRatePercent = new BigDecimal(100).subtract(goodRatePercent).subtract(mediumRatePercent);
                 badRatePercentAll = badRatePercentAll.add(badRatePercent);
                 typeDistributionDetail.put(hotelId, Arrays.asList(
-                        new BasePercentVO("好评", null, goodRatePercent.doubleValue()),
-                        new BasePercentVO("中评", null, mediumRatePercent.doubleValue()),
-                        new BasePercentVO("差评", null, badRatePercent.doubleValue())));
+                        new BasePercentVO(SimulationConstants.GOOD_EVALUATE_DESCRIBE, null, goodRatePercent.doubleValue()),
+                        new BasePercentVO(SimulationConstants.MEDIUM_EVALUATE_DESCRIBE, null, mediumRatePercent.doubleValue()),
+                        new BasePercentVO(SimulationConstants.BAD_EVALUATE_DESCRIBE, null, badRatePercent.doubleValue())));
 
                 //构建单个酒店热词排行
                 List<BaseVO> hotTagRank = simulationHotelDTO.getHotTagRank();
@@ -379,6 +436,8 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
                         roomPriceStatisticsBigData.setLowestPrice(lowestPrice);
                     }
                 }
+                //构建单个酒店均价信息
+                roomPriceRank.add(new BaseVO(hotelInfo.getName(), averagePrice.toString()));
             }
         }
 
@@ -396,9 +455,10 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
                 rateAll.divide(new BigDecimal(hotelCount), 1, BigDecimal.ROUND_HALF_UP));
 
         //查询评价类型分布-酒店民宿大数据
-        List<BasePercentVO> typeDistributionBigData = Arrays.asList(new BasePercentVO("好评", null, goodRatePercentAll.divide(new BigDecimal(hotelCount), 1, BigDecimal.ROUND_HALF_UP).doubleValue()),
-                new BasePercentVO("中评", null, mediumRatePercentAll.divide(new BigDecimal(hotelCount), 1, BigDecimal.ROUND_HALF_UP).doubleValue()),
-                new BasePercentVO("差评", null, badRatePercentAll.divide(new BigDecimal(hotelCount), 1, BigDecimal.ROUND_HALF_UP).doubleValue()));
+        List<BasePercentVO> typeDistributionBigData = Arrays.asList(
+                new BasePercentVO(SimulationConstants.GOOD_EVALUATE_DESCRIBE, null, goodRatePercentAll.divide(new BigDecimal(hotelCount), 1, BigDecimal.ROUND_HALF_UP).doubleValue()),
+                new BasePercentVO(SimulationConstants.MEDIUM_EVALUATE_DESCRIBE, null, mediumRatePercentAll.divide(new BigDecimal(hotelCount), 1, BigDecimal.ROUND_HALF_UP).doubleValue()),
+                new BasePercentVO(SimulationConstants.BAD_EVALUATE_DESCRIBE, null, badRatePercentAll.divide(new BigDecimal(hotelCount), 1, BigDecimal.ROUND_HALF_UP).doubleValue()));
 
         //所有分页按照每10条一页进行处理
         //查询酒店评价排行-酒店民宿大数据
@@ -423,19 +483,36 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
             }
         });
 
+        //排序
+        roomPriceRank.sort(new Comparator<BaseVO>() {
+            @Override
+            public int compare(BaseVO o1, BaseVO o2) {
+                if (o1.getValue().compareTo(o2.getValue()) > 0) {
+                    return -1;
+                }
+                return o2.getValue().compareTo(o1.getValue());
+            }
+        });
+
         //查询评价量趋势、同比、环比-酒店民宿大数据
         List<AnalysisBaseInfo> evaluateAnalysisBigData = calculateAnalysis(endDate, new BigDecimal(evaluateTotalAll * (Integer.valueOf(endDate.substring(8, 9)))).add(simulationHotelDTO.getMonthOfEvaluateTotal()), null);
+
+        //查询评价量趋势、同比、环比-评价分析
+        List<AnalysisBaseInfo> evaluateAnalysis = calculateAnalysis(endDate, new BigDecimal(evaluateTotalAll * (Integer.valueOf(endDate.substring(8, 9)))).add(simulationHotelDTO.getMonthOfEvaluateTotal()), null);
 
         //查询评价满意度趋势、同比、环比-酒店民宿大数据
         List<AnalysisBaseInfo> satisfactionAnalysisBigData = calculateAnalysis(endDate, null, simulationHotelDTO.getGoodRatePercent());
 
+        //查询评价满意度趋势、同比、环比-评价分析
+        List<AnalysisBaseInfo> satisfactionAnalysis = calculateAnalysis(endDate, null, simulationHotelDTO.getGoodRatePercent());
+
         //查询房型价格趋势-酒店民宿大数据
         List<RoomPriceAnalysisDTO> roomPriceAnalysisBigData = calculateRoomPriceAnalysis(endDate, averagePriceAll.divide(new BigDecimal(hotelInfoList.size()), 1, BigDecimal.ROUND_HALF_UP), simulationHotelDTO.getRoomTypePrice());
 
-
         HotelSimulationDataDTO dto = new HotelSimulationDataDTO(statisticsDetail, typeDistributionDetail, hotRankDetail, roomPriceStatisticsDetail, roomPriceAnalysisDetail,
                 statisticsIndex, statisticsBigData, typeDistributionBigData, hotelCount, evaluateRankBigData, satisfactionRankBigData,
-                hotRankBigData, roomPriceStatisticsBigData, evaluateAnalysisBigData, satisfactionAnalysisBigData, roomPriceAnalysisBigData);
+                hotRankBigData, roomPriceStatisticsBigData, evaluateAnalysisBigData, satisfactionAnalysisBigData, roomPriceAnalysisBigData,
+                roomPriceRank, evaluateAnalysis, satisfactionAnalysis);
 
         //获取缓存数据
         redisCache.setCacheObject(CacheKeyContants.HOTEL_SIMULATION_PREFIX + beginTime + endTime, dto, (int) DateUtils.getCacheExpire(), TimeUnit.MINUTES);
@@ -527,7 +604,7 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
             else {
                 BigDecimal count = null == monthOfEvaluateTotal ?
                         goodRatePercent.add(new BigDecimal(randomInt)) :
-                        monthOfEvaluateTotal.multiply(new BigDecimal(100 + randomInt)).divide(new BigDecimal(100), 1, BigDecimal.ROUND_HALF_UP);
+                        monthOfEvaluateTotal.multiply(new BigDecimal(100 + randomInt)).divide(new BigDecimal(100), 0, BigDecimal.ROUND_UP);
                 currentYearByMonth = new AnalysisMonthChartInfo().build(monthMark, count, lastYearByMonth.getCount(), lastMonthValue);
             }
 

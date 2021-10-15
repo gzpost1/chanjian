@@ -70,7 +70,7 @@ public class OneTravelComplaintListBO implements Serializable {
     /**
      * 投诉时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date complaintTime;
 
     /**
@@ -81,7 +81,7 @@ public class OneTravelComplaintListBO implements Serializable {
     /**
      * 处理时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date operateTime;
 
     /**
@@ -97,7 +97,7 @@ public class OneTravelComplaintListBO implements Serializable {
     /**
      * 评价时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date evaluateTime;
 
     /**

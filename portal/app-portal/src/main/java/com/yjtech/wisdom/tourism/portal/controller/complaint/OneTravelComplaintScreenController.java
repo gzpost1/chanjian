@@ -3,6 +3,7 @@ package com.yjtech.wisdom.tourism.portal.controller.complaint;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.yjtech.wisdom.tourism.common.bean.AnalysisBaseInfo;
 import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
+import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.common.enums.AnalysisDateTypeEnum;
 import com.yjtech.wisdom.tourism.extension.BizScenario;
@@ -105,8 +106,8 @@ public class OneTravelComplaintScreenController {
      * @return
      */
     private BizScenario buildOneTravelBizScenario(String useCasePraiseType, Byte isSimulation) {
-        return BizScenario.valueOf(ExtensionConstant.ONE_TRAVEL, useCasePraiseType
-                , isSimulation == 0 ? ExtensionConstant.SCENARIO_IMPL : ExtensionConstant.SCENARIO_MOCK);
+        return BizScenario.valueOf(ExtensionConstant.ONE_TRAVEL, useCasePraiseType,
+                EntityConstants.NO.equals(isSimulation) ? ExtensionConstant.SCENARIO_IMPL : ExtensionConstant.SCENARIO_MOCK);
     }
 
 }

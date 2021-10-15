@@ -38,7 +38,7 @@ public class DistrictTourService {
     @Autowired
     private SysConfigService sysConfigService;
 
-    @Autowired
+    @Resource
     private SysConfigMapper configMapper;
 
     /**
@@ -136,7 +136,7 @@ public class DistrictTourService {
      * @param isSimulation
      * @return
      */
-    private BizScenario buildBizScenario(String useCasePraiseType, Integer isSimulation) {
+    private BizScenario buildBizScenario(String useCasePraiseType, Byte isSimulation) {
         return BizScenario.valueOf(ExtensionConstant.DISTRICT, useCasePraiseType
                 , isSimulation == 0 ? ExtensionConstant.SCENARIO_IMPL : ExtensionConstant.SCENARIO_MOCK);
     }

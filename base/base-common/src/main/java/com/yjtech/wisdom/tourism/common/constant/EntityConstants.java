@@ -11,9 +11,14 @@ public abstract class EntityConstants {
     public static final Byte ENABLED = Byte.parseByte("1");
     public static final Byte DISABLED = Byte.parseByte("0");
 
-    //否
+    /**
+     * 否
+     */
     public static final Byte NO = 0;
-    //是
+
+    /**
+     * 是
+     */
     public static final Byte YES = 1;
 
 }

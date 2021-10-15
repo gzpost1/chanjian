@@ -83,7 +83,7 @@ public abstract class BaseStrategy {
      *
      * @return
      */
-    public Object init(DecisionEntity entity, Integer isSimulation){return null;}
+    public Object init(DecisionEntity entity, Byte isSimulation){return null;}
 
     /**
      * 初始化方法 - 综合概况
@@ -127,7 +127,7 @@ public abstract class BaseStrategy {
      * @param decisionInfo
      * @param entity
      */
-    protected void textAlarmDeal(DecisionEntity decisionInfo, DecisionWarnEntity entity, String queryResult, Integer isSimulation) {
+    protected void textAlarmDeal(DecisionEntity decisionInfo, DecisionWarnEntity entity, String queryResult, Byte isSimulation) {
         HashMap<String, Object> riskTypeMap = getRiskType();
         // 模拟数据
         if (DecisionSupportConstants.MOCK.equals(isSimulation) && !MapUtils.isEmpty(riskTypeMap)) {
@@ -198,7 +198,7 @@ public abstract class BaseStrategy {
      * @param entity
      * @param scale 百分比
      */
-    protected void numberAlarmDeal(DecisionEntity decisionInfo, DecisionWarnEntity entity, String scale, Integer isSimulation) {
+    protected void numberAlarmDeal(DecisionEntity decisionInfo, DecisionWarnEntity entity, String scale, Byte isSimulation) {
         HashMap<String, Object> riskTypeMap = getRiskType();
         log.info("【报警类数值】开始处理");
         // 模拟数据
@@ -352,7 +352,7 @@ public abstract class BaseStrategy {
      *
      * @return
      */
-    protected List<BaseValueVO> getProvinceCharData(String statisticsType, Integer isSimulation) {
+    protected List<BaseValueVO> getProvinceCharData(String statisticsType, Byte isSimulation) {
         String beginDate = DateTimeUtil.getCurrentYearStr() + DecisionSupportConstants.START_DATE_STR;
         String endTime = DateTimeUtil.getCurrentYearStr() + DecisionSupportConstants.END_DATE_STR;
 
