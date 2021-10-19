@@ -2,6 +2,26 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yjtech.wisdom.tourism.integration.mapper.OneTravelApiMapper">
 
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseListResultMap" type="com.yjtech.wisdom.tourism.integration.pojo.bo.onetravel.OneTravelComplaintListBO">
+        <id column="id" property="id" />
+        <result column="complaint_type" property="complaintObject" />
+        <result column="user_name" property="complaintUser" />
+        <result column="phone" property="complaintPhone" />
+        <result column="status" property="complaintStatus" />
+        <result column="complaint_content" property="complaintContent" />
+        <result column="image" property="complaintImage" typeHandler="com.yjtech.wisdom.tourism.mybatis.typehandler.JsonTypeHandler"/>
+        <result column="happen_location" property="happenLocation" />
+        <result column="complaint_time" property="complaintTime" />
+        <result column="operate_content" property="operateContent" />
+        <result column="operate_time" property="operateTime" />
+        <result column="operate_user_name" property="operateUser" />
+        <result column="evaluate_content" property="evaluateContent" />
+        <result column="evaluate_time" property="evaluateTime" />
+        <result column="longitude" property="longitude" />
+        <result column="latitude" property="latitude" />
+    </resultMap>
+
     <select id="queryVisitStatistics" resultType="com.yjtech.wisdom.tourism.integration.pojo.bo.onetravel.OneTravelVisitStatisticsBO">
         select
         SUM(sum_visit_uv_new) as userTotal,
@@ -130,31 +150,30 @@
         </where>
     </select>
 
-    <select id="queryComplaintForPage"
-            resultType="com.yjtech.wisdom.tourism.integration.pojo.bo.onetravel.OneTravelComplaintListBO"
+    <select id="queryComplaintForPage" resultMap="BaseListResultMap"
             parameterType="com.yjtech.wisdom.tourism.integration.pojo.vo.OneTravelQueryVO">
         select
-        id as id,
-        complaint_type as complaintObject,
-        user_name as complaintUser,
-        phone as complaintPhone,
-        status as complaintStatus,
+        id,
+        complaint_type,
+        user_name,
+        phone,
+        status,
         CASE
         WHEN status = '1'THEN '待处理'
         WHEN status = '2'THEN '已处理'
         WHEN status = '3'THEN '已评价'
         ELSE '其他' END as complaintStatusDesc,
-        complaint_content as complaintContent,
-        image as complaintImage,
-        happen_location as happenLocation,
-        complaint_time as complaintTime,
-        operate_content as operateContent,
-        operate_time as operateTime,
-        operate_user_name as operateUser,
-        evaluate_content as evaluateContent,
-        evaluate_time as evaluateTime,
-        longitude as longitude,
-        latitude as latitude
+        complaint_content,
+        image,
+        happen_location,
+        complaint_time,
+        operate_content,
+        operate_time,
+        operate_user_name,
+        evaluate_content,
+        evaluate_time,
+        longitude,
+        latitude
         from
         tb_complaint
         <where>

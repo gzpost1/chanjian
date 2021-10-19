@@ -111,5 +111,9 @@ public class TravelComplaintListDTO implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date acceptTime;
 
+    /**
+     * 处理单位
+     */
+    private String acceptOrganization;
 
 }

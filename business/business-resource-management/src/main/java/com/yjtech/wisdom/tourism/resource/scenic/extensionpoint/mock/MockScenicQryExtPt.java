@@ -135,14 +135,14 @@ public class MockScenicQryExtPt implements ScenicQryExtPt {
             //满意度=评价类型分布-好评。
             DateTimeFormatter dateTimeFormatter1 = DateTimeFormatter.ofPattern("yyyy-MM");
             BigDecimal good_evaluate = getRandomForCache(SimulationConstants.SCENIC, String.valueOf(query.getScenicId()), "good_evaluate:");
-            satisfaction = dto.getInitialPraiseRate().add(good_evaluate.divide(new BigDecimal(5))).add(good_evaluate.divide(new BigDecimal(100))).setScale(1, BigDecimal.ROUND_HALF_UP);
+            satisfaction = dto.getInitialPraiseRate().add(good_evaluate.divide(new BigDecimal(5),1,BigDecimal.ROUND_HALF_UP)).add(good_evaluate.divide(new BigDecimal(100),1,BigDecimal.ROUND_HALF_UP));
 
         } else {
-            //通过统计筛选时段各个景区评价数量*好评占比，结果保留整数，汇总各个景区好评数量，满意度=好评数量/收获评价数量*100%，结果保留2位小数。
-            BigDecimal goodEvaluate = evaluate.multiply(dto.getInitialPraiseRate()).divide(new BigDecimal(100), 0);
-            satisfaction = MathUtil.calPercent(goodEvaluate, evaluate, 1);
+            //通过统计筛选时段各个景区评价数量*好评占比，结果保留整数，汇总各个景区好评数量，满意度=好评数量/收获评价数量*100%，结果保留1位小数。
+            BigDecimal goodEvaluate = evaluate.multiply(dto.getInitialPraiseRate()).divide(new BigDecimal(100), 1, BigDecimal.ROUND_HALF_UP);
+            satisfaction = goodEvaluate.multiply(new BigDecimal(100)).divide(evaluate, 1, BigDecimal.ROUND_HALF_UP);
 
-            //评分：汇总所有景区评分/有评分值的景区数量，结果保留2位小数
+            //评分：汇总所有景区评分/有评分值的景区数量，结果保留1位小数
             if (CollectionUtils.isNotEmpty(list)) {
                 score = score.divide(new BigDecimal(list.size()), 1, BigDecimal.ROUND_HALF_UP);
             }
@@ -169,12 +169,12 @@ public class MockScenicQryExtPt implements ScenicQryExtPt {
             //评价类型分布-好评	好评占比初始值+随机数/5+随机数/100
             // 好评占比=评价类型分布-好评
             BigDecimal good_evaluate = getRandomForCache(SimulationConstants.SCENIC, String.valueOf(entity.getId()), "good_evaluate");
-            BigDecimal satisfaction = dto.getInitialPraiseRate().add(good_evaluate.divide(new BigDecimal(5))).add(good_evaluate.divide(new BigDecimal(100)));
+            BigDecimal satisfaction = dto.getInitialPraiseRate().add(good_evaluate.divide(new BigDecimal(5), 1, BigDecimal.ROUND_HALF_UP)).add(good_evaluate.divide(new BigDecimal(100), 1, BigDecimal.ROUND_HALF_UP));
             satisfactionTotal = satisfactionTotal.add(satisfaction);
 
             //评价类型分布-中评 =（100-好评占比）/5
             // 中评占比=评价类型分布-中评
-            BigDecimal normal = (new BigDecimal(100).subtract(satisfaction)).divide(new BigDecimal(5));
+            BigDecimal normal = (new BigDecimal(100).subtract(satisfaction)).divide(new BigDecimal(5), 1, BigDecimal.ROUND_HALF_UP);
             normalTotal = normalTotal.add(normal);
 
             //评价类型分布-差评	100-好评占比-差评占比
@@ -184,11 +184,11 @@ public class MockScenicQryExtPt implements ScenicQryExtPt {
         }
         BigDecimal size = new BigDecimal(list.size());
 
-        result.add(BasePercentVO.builder().name(SimulationConstants.GOOD_EVALUATE_DESCRIBE).rate(size.compareTo(new BigDecimal(0)) == 0 ? 0d : satisfactionTotal.divide(size, 1).doubleValue()).build());
+        result.add(BasePercentVO.builder().name(SimulationConstants.GOOD_EVALUATE_DESCRIBE).rate(size.compareTo(new BigDecimal(0)) == 0 ? 0d : satisfactionTotal.divide(size, 1, BigDecimal.ROUND_HALF_UP).doubleValue()).build());
 
-        result.add(BasePercentVO.builder().name(SimulationConstants.MEDIUM_EVALUATE_DESCRIBE).rate(size.compareTo(new BigDecimal(0)) == 0 ? 0d : normalTotal.divide(size, 1).doubleValue()).build());
+        result.add(BasePercentVO.builder().name(SimulationConstants.MEDIUM_EVALUATE_DESCRIBE).rate(size.compareTo(new BigDecimal(0)) == 0 ? 0d : normalTotal.divide(size, 1, BigDecimal.ROUND_HALF_UP).doubleValue()).build());
 
-        result.add(BasePercentVO.builder().name(SimulationConstants.BAD_EVALUATE_DESCRIBE).rate(size.compareTo(new BigDecimal(0)) == 0 ? 0d : badTotal.divide(size, 1).doubleValue()).build());
+        result.add(BasePercentVO.builder().name(SimulationConstants.BAD_EVALUATE_DESCRIBE).rate(size.compareTo(new BigDecimal(0)) == 0 ? 0d : badTotal.divide(size, 1, BigDecimal.ROUND_HALF_UP).doubleValue()).build());
         return result;
     }
 

@@ -103,8 +103,8 @@ public class MockIndexScenicQryExtPt implements IndexScenicQryExtPt {
         }
 
         //评价类型分布-好评 = 好评占比初始值+随机数/5+随机数/100
-        BigDecimal good_evaluate = getRandomForCache(SimulationConstants.SCENIC, null,"good_evaluate:");
-        BigDecimal satisfaction = dto.getInitialPraiseRate().add(good_evaluate.divide(new BigDecimal(5))).add(good_evaluate.divide(new BigDecimal(100))).setScale(1, BigDecimal.ROUND_HALF_UP);
+        BigDecimal goodEvaluate = getRandomForCache(SimulationConstants.SCENIC, null,"good_evaluate:");
+        BigDecimal satisfaction = dto.getInitialPraiseRate().add(goodEvaluate.divide(new BigDecimal(5), 1, BigDecimal.ROUND_HALF_UP)).add(goodEvaluate.divide(new BigDecimal(100), 1, BigDecimal.ROUND_HALF_UP));
         return new ScenicBuildingDTO(tourist.longValue(),evaluate.intValue(),satisfaction);
     }
 
