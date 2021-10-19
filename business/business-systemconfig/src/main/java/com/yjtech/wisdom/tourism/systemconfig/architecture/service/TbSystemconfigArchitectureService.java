@@ -235,10 +235,6 @@ public class TbSystemconfigArchitectureService extends ServiceImpl<TbSystemconfi
             Iterator<MenuTreeNode> iterator = makeTree.iterator();
             while (iterator.hasNext()) {
                 MenuTreeNode next = iterator.next();
-
-                if(Objects.isNull(next.getPageId()) && StringUtils.equals("0",next.getIsShow()+"")){
-                    iterator.remove();
-                }
                 if(CollectionUtils.isEmpty(next.getChildren()) && Objects.isNull(next.getPageId())){
                     iterator.remove();
                 }
