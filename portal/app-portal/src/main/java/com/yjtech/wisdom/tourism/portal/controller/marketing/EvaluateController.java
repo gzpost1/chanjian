@@ -33,7 +33,10 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -232,11 +235,11 @@ public class EvaluateController {
                     return o1;
                 })).values());
 
-        if (EntityConstants.YES.equals(vo.getIsSimulation())) {
-            resultList = resultList.stream().sorted(Comparator.comparing(i -> Integer.parseInt(i.getValue())))
-                    .collect(Collectors.toList())
-                    .subList(resultList.size() - 5, resultList.size());
-        }
+//        if (EntityConstants.YES.equals(vo.getIsSimulation())) {
+//            resultList = resultList.stream().sorted(Comparator.comparing(i -> Integer.parseInt(i.getValue())))
+//                    .collect(Collectors.toList())
+//                    .subList(resultList.size() - 5, resultList.size());
+//        }
         return JsonResult.success(resultList);
     }
 
