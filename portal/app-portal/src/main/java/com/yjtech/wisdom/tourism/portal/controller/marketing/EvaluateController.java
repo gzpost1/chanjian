@@ -33,10 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -169,8 +166,8 @@ public class EvaluateController {
 
             //构建返回信息
             List<BasePercentVO> resultList = Lists.newArrayList();
-            resultList.add(new BasePercentVO("景区", scenic.getEvaluateTotal().toString(), new BigDecimal(scenic.getEvaluateTotal() / total * 100).doubleValue()));
-            resultList.add(new BasePercentVO("酒店", hotel.getEvaluateTotal().toString(), new BigDecimal(hotel.getEvaluateTotal() / total * 100).doubleValue()));
+            resultList.add(new BasePercentVO("景区", scenic.getEvaluateTotal().toString(), new BigDecimal(scenic.getEvaluateTotal() * 100).divide(new BigDecimal(total), 1, BigDecimal.ROUND_HALF_UP).doubleValue()));
+            resultList.add(new BasePercentVO("酒店", hotel.getEvaluateTotal().toString(), new BigDecimal(hotel.getEvaluateTotal() * 100).divide(new BigDecimal(total), 1, BigDecimal.ROUND_HALF_UP).doubleValue()));
 
             return JsonResult.success(resultList);
         }
@@ -235,6 +232,11 @@ public class EvaluateController {
                     return o1;
                 })).values());
 
+        if (EntityConstants.YES.equals(vo.getIsSimulation())) {
+            resultList = resultList.stream().sorted(Comparator.comparing(i -> Integer.parseInt(i.getValue())))
+                    .collect(Collectors.toList())
+                    .subList(resultList.size() - 5, resultList.size());
+        }
         return JsonResult.success(resultList);
     }
 

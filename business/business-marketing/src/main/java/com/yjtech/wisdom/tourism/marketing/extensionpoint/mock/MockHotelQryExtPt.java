@@ -368,6 +368,8 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
         String endDate = DateUtil.today();
 
         if (!hotelInfoList.isEmpty()) {
+            //获取评论热词模板列表
+            List<BaseVO> hotTagRank = simulationHotelDTO.getHotTagRank();
             for (HotelSelectInfoDTO hotelInfo : hotelInfoList) {
                 Long hotelId = hotelInfo.getId();
                 int randomInt = (int) (20 + Math.random() * (20 - (-20) + 1));
@@ -397,18 +399,18 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
                         new BasePercentVO(SimulationConstants.MEDIUM_EVALUATE_DESCRIBE, null, mediumRatePercent.doubleValue()),
                         new BasePercentVO(SimulationConstants.BAD_EVALUATE_DESCRIBE, null, badRatePercent.doubleValue())));
 
-                //构建单个酒店热词排行
-                List<BaseVO> hotTagRank = simulationHotelDTO.getHotTagRank();
                 if (null != hotTagRank && !hotTagRank.isEmpty()) {
+                    //构建单个酒店热词排行
+                    List<BaseVO> hotTagDetailList = Lists.newArrayList();
                     for (BaseVO hotTag : hotTagRank) {
                         //计算单日词频
                         Integer workFrequency = Integer.valueOf(hotTag.getValue()) + randomInt / 10;
                         //配置实际返回模拟数据
-                        hotTag.setValue(String.valueOf(workFrequency * (int) beginTime.until(endTime, ChronoUnit.DAYS)));
+                        hotTagDetailList.add(new BaseVO(hotTag.getName(), String.valueOf(workFrequency * (int) beginTime.until(endTime, ChronoUnit.DAYS))));
                     }
-                    hotRankDetail.put(hotelId, hotTagRank);
+                    hotRankDetail.put(hotelId, hotTagDetailList);
 
-                    hotRankBigDataAll.addAll(hotTagRank);
+                    hotRankBigDataAll.addAll(hotTagDetailList);
                 }
 
                 //构建单个酒店房型价格统计

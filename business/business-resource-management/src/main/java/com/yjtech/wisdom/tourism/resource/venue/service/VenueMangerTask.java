@@ -93,11 +93,15 @@ public class VenueMangerTask {
                 venueValue = sysDictData.getDictValue();
             }
             // 美术馆
-            if ("140400".equals(poi.getTypecode())) {
+            else if ("140400".equals(poi.getTypecode())) {
                 venueValue = sysDictData.getDictValue();
             }
             // 图书馆
-            if ("140500".equals(poi.getTypecode())) {
+            else if ("140500".equals(poi.getTypecode())) {
+                venueValue = sysDictData.getDictValue();
+            }
+            //默认
+            else {
                 venueValue = sysDictData.getDictValue();
             }
         }

@@ -101,6 +101,7 @@
         ELSE '-' END as equipStatusDesc,
         complaint_time as complaintTime,
         longitude as longitude,
+        latitude as latitude,
         contact_user as contactUser,
         contact_mobile as contactMobile,
         (select nick_name from sys_user <where> user_id = complaint.accept_user_id </where> LIMIT 1) as acceptUser,
