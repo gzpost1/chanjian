@@ -138,6 +138,7 @@ public abstract class BaseStrategy {
                         if (data.getName().equals(entity.getTargetName()) && data.getValue().equals(v)) {
                             entity.setAlarmType(Integer.parseInt(data.getValue()));
                             entity.setAlarmTypeText(k);
+                            entity.setRiskType(Integer.parseInt(v.toString()));
                             isStop.set(true);
                             return;
                         }
@@ -211,6 +212,7 @@ public abstract class BaseStrategy {
                         if (data.getName().equals(entity.getTargetName()) && data.getValue().equals(v)) {
                             entity.setAlarmType(Integer.parseInt(data.getValue()));
                             entity.setAlarmTypeText(k);
+                            entity.setRiskType(Integer.parseInt(v.toString()));
                             isStop.set(true);
                             return;
                         }

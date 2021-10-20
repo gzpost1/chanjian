@@ -483,7 +483,7 @@ public class DecisionSupportScreenService extends ServiceImpl<DecisionWarnMapper
      * @return
      */
     private Integer findRiskNumber (Integer type, String beginTime, String endTime, Integer isSimulation) {
-        if (DecisionSupportConstants.MOCK.equals(isSimulation)) {
+        if (DecisionSupportConstants.MOCK.equals(Byte.parseByte(String.valueOf(isSimulation)))) {
             return decisionWarnMockMapper.selectCount(new LambdaQueryWrapper<DecisionWarnMockEntity>()
                     .eq(DecisionWarnMockEntity::getAlarmType, type)
                     .between(DecisionWarnMockEntity::getCreateTime, beginTime, endTime)
