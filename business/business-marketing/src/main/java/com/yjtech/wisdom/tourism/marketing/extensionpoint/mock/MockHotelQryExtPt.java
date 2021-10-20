@@ -399,17 +399,18 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
 
                 //构建单个酒店热词排行
                 List<BaseVO> hotTagRank = simulationHotelDTO.getHotTagRank();
-                if (null != hotTagRank && !hotTagRank.isEmpty()) {
-                    for (BaseVO hotTag : hotTagRank) {
-                        //计算单日词频
-                        Integer workFrequency = Integer.valueOf(hotTag.getValue()) + randomInt / 10;
-                        //配置实际返回模拟数据
-                        hotTag.setValue(String.valueOf(workFrequency * (int) beginTime.until(endTime, ChronoUnit.DAYS)));
-                    }
-                    hotRankDetail.put(hotelId, hotTagRank);
-
-                    hotRankBigDataAll.addAll(hotTagRank);
+                List<BaseVO> hotTagRankNew = Lists.newArrayList();
+                for (BaseVO hotTag : hotTagRank) {
+                    BaseVO hotTagRankTemp = BaseVO.builder().name(hotTag.getName()).build();
+                    //计算单日词频
+                    Long workFrequency = Long.valueOf(hotTag.getValue()) + randomInt / 10;
+                    //配置实际返回模拟数据
+                    hotTagRankTemp.setValue(String.valueOf(workFrequency * (int) beginTime.until(endTime, ChronoUnit.DAYS)));
+                    hotTagRankNew.add(hotTagRankTemp);
                 }
+                hotRankDetail.put(hotelId, hotTagRankNew);
+
+                hotRankBigDataAll.addAll(hotTagRankNew);
 
                 //构建单个酒店房型价格统计
                 //历史最高价
