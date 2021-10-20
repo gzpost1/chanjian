@@ -169,8 +169,8 @@ public class EvaluateController {
 
             //构建返回信息
             List<BasePercentVO> resultList = Lists.newArrayList();
-            resultList.add(new BasePercentVO("景区", scenic.getEvaluateTotal().toString(), new BigDecimal(scenic.getEvaluateTotal() / total * 100).doubleValue()));
-            resultList.add(new BasePercentVO("酒店", hotel.getEvaluateTotal().toString(), new BigDecimal(hotel.getEvaluateTotal() / total * 100).doubleValue()));
+            resultList.add(new BasePercentVO("景区", scenic.getEvaluateTotal().toString(), new BigDecimal(scenic.getEvaluateTotal() * 100).divide(new BigDecimal(total), 1, BigDecimal.ROUND_HALF_UP).doubleValue()));
+            resultList.add(new BasePercentVO("酒店", hotel.getEvaluateTotal().toString(), new BigDecimal(hotel.getEvaluateTotal() * 100).divide(new BigDecimal(total), 1, BigDecimal.ROUND_HALF_UP).doubleValue()));
 
             return JsonResult.success(resultList);
         }

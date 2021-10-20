@@ -27,5 +27,5 @@ public class LecturePageByVenueIdVo extends PageQuery implements Serializable {
      * 场馆id
      */
     @NotNull
-    private Long venueId;
+    private String venueId;
 }
