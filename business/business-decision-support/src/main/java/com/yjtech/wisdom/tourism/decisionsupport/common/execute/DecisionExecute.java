@@ -37,8 +37,8 @@ public class DecisionExecute extends StrategyExecute {
 
         // 拿到对象后 通过反射执行 init 方法，获得结果对象
         try {
-            Method initMethod = obj.getClass().getMethod("init", DecisionEntity.class, Integer.class);
-            Object invoke = initMethod.invoke(obj, entity, isSimulation);
+            Method initMethod = obj.getClass().getMethod("init", DecisionEntity.class, Byte.class);
+            Object invoke = initMethod.invoke(obj, entity, Byte.parseByte(String.valueOf(isSimulation)));
             return (DecisionWarnEntity) invoke;
         } catch (Exception e) {
             e.printStackTrace();
