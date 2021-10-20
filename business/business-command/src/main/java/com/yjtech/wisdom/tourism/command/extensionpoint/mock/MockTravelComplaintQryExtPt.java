@@ -10,7 +10,6 @@ import com.yjtech.wisdom.tourism.common.bean.AnalysisBaseInfo;
 import com.yjtech.wisdom.tourism.common.bean.AnalysisMonthChartInfo;
 import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
-import com.yjtech.wisdom.tourism.common.constant.CacheKeyContants;
 import com.yjtech.wisdom.tourism.common.constant.Constants;
 import com.yjtech.wisdom.tourism.common.constant.SimulationConstants;
 import com.yjtech.wisdom.tourism.common.enums.TravelComplaintTypeEnum;
@@ -28,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * 旅游投诉 模拟数据 扩展
@@ -153,8 +151,14 @@ public class MockTravelComplaintQryExtPt implements TravelComplaintQryExtPt {
         List<BaseVO> complaintTopByType;
         if(TravelComplaintTypeEnum.TRAVEL_COMPLAINT_TYPE_SCENIC.getValue().equals(complaintType)){
             complaintTopByType =  simulationTravelComplaintDTO.getScenicComplaintRank();
+            for(BaseVO baseVO : complaintTopByType){
+                baseVO.setValue(String.valueOf((int)(travelComplaintTotal * (Double.valueOf(baseVO.getValue()) / 100))));
+            }
         }else if(TravelComplaintTypeEnum.TRAVEL_COMPLAINT_TYPE_HOTEL.getValue().equals(complaintType)){
             complaintTopByType =  simulationTravelComplaintDTO.getHotelComplaintRank();
+            for(BaseVO baseVO : complaintTopByType){
+                baseVO.setValue(String.valueOf((int)(travelComplaintTotal * (Double.valueOf(baseVO.getValue()) / 100))));
+            }
         }else {
             complaintTopByType = Collections.emptyList();
         }
