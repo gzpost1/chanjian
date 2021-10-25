@@ -43,6 +43,11 @@ public class LoginUser implements UserDetails {
   /** 用户信息 */
   private SysUser user;
 
+  /**
+   * 0正常 1长时间token
+   */
+  private String tokenType;
+
   public String getToken() {
     return token;
   }
@@ -171,6 +176,14 @@ public class LoginUser implements UserDetails {
 
   public void setUser(SysUser user) {
     this.user = user;
+  }
+
+  public String getTokenType() {
+    return tokenType;
+  }
+
+  public void setTokenType(String tokenType) {
+    this.tokenType = tokenType;
   }
 
   @Override
