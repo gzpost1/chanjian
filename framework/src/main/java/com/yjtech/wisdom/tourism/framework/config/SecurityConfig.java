@@ -115,6 +115,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .anonymous()
                 .antMatchers("/wxopen/auth/**")
                 .anonymous()
+                //zlmedia相关调用，不参与鉴权
+                .antMatchers("/index/hook/on_stream_not_found", "/index/hook/on_stream_none_reader")
+                .anonymous()
                 // 除上面外的所有请求全部需要鉴权认证
                 .anyRequest()
                 .authenticated()
