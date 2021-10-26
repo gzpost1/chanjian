@@ -122,7 +122,7 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
      */
     @Override
     public List<BaseVO> queryEvaluateHotRank(EvaluateQueryVO vo) {
-        return calculateAndQuery(vo.getBeginTime(), vo.getEndTime()).getHotRankBigData();
+        return calculateAndQuery(vo.getBeginTime(), vo.getEndTime()).getHotRankDetail().get(Long.valueOf(vo.getPlaceId()));
     }
 
     /**

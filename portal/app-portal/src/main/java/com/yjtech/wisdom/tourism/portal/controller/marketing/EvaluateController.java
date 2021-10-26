@@ -8,6 +8,7 @@ import com.yjtech.wisdom.tourism.common.bean.BaseVO;
 import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.common.constant.SimulationConstants;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
+import com.yjtech.wisdom.tourism.common.utils.StringUtils;
 import com.yjtech.wisdom.tourism.common.utils.bean.BeanUtils;
 import com.yjtech.wisdom.tourism.extension.BizScenario;
 import com.yjtech.wisdom.tourism.extension.ExtensionConstant;
@@ -33,10 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -215,32 +213,34 @@ public class EvaluateController {
         //设置默认评论状态-启用
         vo.setEquipStatus(Objects.isNull(vo.getEquipStatus()) ? EntityConstants.ENABLED : vo.getEquipStatus());
 
-        //获取酒店民宿
-        List<BaseVO> hotelHotList = extensionExecutor.execute(HotelQryExtPt.class,
+        if(StringUtils.isBlank(vo.getPlaceId())){
+            //获取酒店民宿
+            List<BaseVO> hotelHotList = extensionExecutor.execute(HotelQryExtPt.class,
+                    buildBizScenario(HotelExtensionConstant.HOTEL_QUANTITY, vo.getIsSimulation()),
+                    extension -> extension.queryEvaluateHotRankBigData(vo));
+
+            ScenicScreenQuery query = BeanUtils.copyBean(vo, ScenicScreenQuery.class);
+            //获取景区
+            List<BaseVO> scenicHotList = extensionExecutor.execute(ScenicQryExtPt.class,
+                    buildBizScenarioScenic(ScenicExtensionConstant.SCENIC_QUANTITY, query.getIsSimulation()),
+                    extension -> extension.queryScenicHotRank(query));
+
+            hotelHotList.addAll(scenicHotList);
+            //合并去重，降序排列
+            List<BaseVO> resultList = new ArrayList<>(hotelHotList.stream().collect(Collectors.toMap(BaseVO::getName,
+                    item -> item,
+                    (o1, o2) -> {
+                        o1.setValue(String.valueOf(Integer.valueOf(o1.getValue()) + Integer.valueOf(o2.getValue())));
+                        return o1;
+                    })).values()).stream().sorted(Comparator.comparing(BaseVO::getValue).reversed()).collect(Collectors.toList());
+
+            return JsonResult.success(resultList);
+        }
+
+        //获取酒店民宿详情
+        return JsonResult.success(extensionExecutor.execute(HotelQryExtPt.class,
                 buildBizScenario(HotelExtensionConstant.HOTEL_QUANTITY, vo.getIsSimulation()),
-                extension -> extension.queryEvaluateHotRank(vo));
-
-        ScenicScreenQuery query = BeanUtils.copyBean(vo, ScenicScreenQuery.class);
-        //获取景区
-        List<BaseVO> scenicHotList = extensionExecutor.execute(ScenicQryExtPt.class,
-                buildBizScenarioScenic(ScenicExtensionConstant.SCENIC_QUANTITY, query.getIsSimulation()),
-                extension -> extension.queryScenicHotRank(query));
-
-        hotelHotList.addAll(scenicHotList);
-        //合并去重
-        List<BaseVO> resultList = new ArrayList<>(hotelHotList.stream().collect(Collectors.toMap(BaseVO::getName,
-                item -> item,
-                (o1, o2) -> {
-                    o1.setValue(String.valueOf(Integer.valueOf(o1.getValue()) + Integer.valueOf(o2.getValue())));
-                    return o1;
-                })).values());
-
-//        if (EntityConstants.YES.equals(vo.getIsSimulation())) {
-//            resultList = resultList.stream().sorted(Comparator.comparing(i -> Integer.parseInt(i.getValue())))
-//                    .collect(Collectors.toList())
-//                    .subList(resultList.size() - 5, resultList.size());
-//        }
-        return JsonResult.success(resultList);
+                extension -> extension.queryEvaluateHotRank(vo)));
     }
 
     /**
