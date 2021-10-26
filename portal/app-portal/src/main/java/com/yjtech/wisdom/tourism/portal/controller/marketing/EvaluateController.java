@@ -24,6 +24,7 @@ import com.yjtech.wisdom.tourism.resource.scenic.extensionpoint.ScenicExtensionC
 import com.yjtech.wisdom.tourism.resource.scenic.extensionpoint.ScenicQryExtPt;
 import com.yjtech.wisdom.tourism.resource.scenic.query.ScenicScreenQuery;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -221,12 +222,17 @@ public class EvaluateController {
                 extension -> extension.queryEvaluateHotRank(vo));
 
         ScenicScreenQuery query = BeanUtils.copyBean(vo, ScenicScreenQuery.class);
-        //获取景区
-        List<BaseVO> scenicHotList = extensionExecutor.execute(ScenicQryExtPt.class,
-                buildBizScenarioScenic(ScenicExtensionConstant.SCENIC_QUANTITY, query.getIsSimulation()),
-                extension -> extension.queryScenicHotRank(query));
 
-        hotelHotList.addAll(scenicHotList);
+        //如果不是酒店需要将这个条件纳入
+        if(!Objects.equals(Byte.valueOf("2"),vo.getDataType())){
+            //获取景区
+            List<BaseVO> scenicHotList = extensionExecutor.execute(ScenicQryExtPt.class,
+                    buildBizScenarioScenic(ScenicExtensionConstant.SCENIC_QUANTITY, query.getIsSimulation()),
+                    extension -> extension.queryScenicHotRank(query));
+
+            hotelHotList.addAll(scenicHotList);
+        }
+
         //合并去重
         List<BaseVO> resultList = new ArrayList<>(hotelHotList.stream().collect(Collectors.toMap(BaseVO::getName,
                 item -> item,
