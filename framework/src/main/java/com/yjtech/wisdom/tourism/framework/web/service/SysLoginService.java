@@ -51,9 +51,9 @@ public class SysLoginService {
      * @param uuid     唯一标识
      * @return 结果
      */
-    public String login(String username, String password, String code, String uuid,Boolean appUser, String pushToken) throws Exception {
+    public String login(String username, String password, String code, String uuid,Boolean appUser, String pushToken,String isNeedPic,String tokenType) throws Exception {
         //App用户不用验证码登录
-        if (Objects.isNull(appUser) || !appUser) {
+        if ((Objects.isNull(appUser) || !appUser) && !org.apache.commons.lang3.StringUtils.equals("0",isNeedPic)) {
             String verifyKey = Constants.CAPTCHA_CODE_KEY + uuid;
             String captcha = redisCache.getCacheObject(verifyKey);
             redisCache.deleteObject(verifyKey);
@@ -108,6 +108,7 @@ public class SysLoginService {
             userService.updateUserProfile(sysUser);
         }
 
+        loginUser.setTokenType(tokenType);
         // 生成token
         return tokenService.createToken(loginUser);
     }
@@ -122,6 +123,6 @@ public class SysLoginService {
      * @return 结果
      */
     public String login(String username, String password, String code, String uuid,Boolean appUser) throws Exception {
-      return login(username, password, code, uuid, appUser, "");
+      return login(username, password, code, uuid, appUser, "", null, null);
     }
 }

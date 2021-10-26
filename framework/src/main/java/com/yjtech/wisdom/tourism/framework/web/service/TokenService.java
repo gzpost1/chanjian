@@ -13,7 +13,6 @@ import eu.bitwalker.useragentutils.UserAgent;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -41,6 +40,9 @@ public class TokenService {
     // 令牌有效期
     @Value("${token.expireTime}")
     private int expireTime;
+
+    // 令牌有效期
+    private int longTimeExpireTime = 480 * 3 * 360 * 3;
 
     /**
      * 数据库令牌有效期配置参数
@@ -144,10 +146,18 @@ public class TokenService {
      */
     public void refreshToken(LoginUser loginUser) {
         loginUser.setLoginTime(System.currentTimeMillis());
-        loginUser.setExpireTime(loginUser.getLoginTime() + getExpireTime() * MILLIS_MINUTE);
-        // 根据uuid将loginUser缓存
-        String userKey = getTokenKey(loginUser.getToken());
-        redisCache.setCacheObject(userKey, loginUser, getExpireTime(), TimeUnit.MINUTES);
+        if (org.apache.commons.lang3.StringUtils.equals("1", loginUser.getTokenType())) {
+            loginUser.setExpireTime(loginUser.getLoginTime() + longTimeExpireTime * MILLIS_MINUTE);
+            // 根据uuid将loginUser缓存
+            String userKey = getTokenKey(loginUser.getToken());
+            redisCache.setCacheObject(userKey, loginUser, longTimeExpireTime, TimeUnit.MINUTES);
+        } else {
+            loginUser.setExpireTime(loginUser.getLoginTime() + getExpireTime() * MILLIS_MINUTE);
+            // 根据uuid将loginUser缓存
+            String userKey = getTokenKey(loginUser.getToken());
+            redisCache.setCacheObject(userKey, loginUser, getExpireTime(), TimeUnit.MINUTES);
+        }
+
     }
 
     /**

@@ -64,7 +64,9 @@ public class SysLoginController {
                         loginBody.getCode(),
                         loginBody.getUuid(),
                         loginBody.getAppUser(),
-                        loginBody.getPushToken());
+                        loginBody.getPushToken(),
+                        loginBody.getIsNeedPic(),
+                        loginBody.getTokenType());
         return JsonResult.success(token);
     }
 

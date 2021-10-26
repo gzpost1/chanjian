@@ -27,4 +27,14 @@ public class LoginBody {
    * 推送标识
    */
   private String pushToken;
+
+  /**
+   * 是否需要验证码 0否  1/不填 需要
+   */
+  private String isNeedPic;
+
+  /**
+   * 0正常 1长时间token
+   */
+  private String tokenType;
 }
