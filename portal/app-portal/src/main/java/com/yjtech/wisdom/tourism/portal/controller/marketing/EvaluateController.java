@@ -34,7 +34,10 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -227,12 +230,12 @@ public class EvaluateController {
 
             hotelHotList.addAll(scenicHotList);
             //合并去重，降序排列
-            List<BaseVO> resultList = new ArrayList<>(hotelHotList.stream().collect(Collectors.toMap(BaseVO::getName,
+            List<BaseVO> resultList = hotelHotList.stream().collect(Collectors.toMap(BaseVO::getName,
                     item -> item,
                     (o1, o2) -> {
                         o1.setValue(String.valueOf(Integer.valueOf(o1.getValue()) + Integer.valueOf(o2.getValue())));
                         return o1;
-                    })).values()).stream().sorted(Comparator.comparing(BaseVO::getValue).reversed()).collect(Collectors.toList());
+                    })).values().stream().sorted(Comparator.comparing(BaseVO::getValue, Comparator.comparing(Integer::parseInt)).reversed()).collect(Collectors.toList());
 
             return JsonResult.success(resultList);
         }
