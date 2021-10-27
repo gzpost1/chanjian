@@ -122,21 +122,20 @@ public class SimulationConfigService extends ServiceImpl<SimulationConfigMapper,
         List<String> levelCityNameList = levelCityList.stream().filter(Objects::nonNull).map(AreaInfoVO::getCityName).collect(Collectors.toList());
         //同步停车场、票务数据（只有这两个模块有省内数据）
         List<Integer> domainIds = Lists.newArrayList();
-        domainIds.add(SimulationEnum.TICKET.getType());
-        domainIds.add(SimulationEnum.DEPORT.getType());
-//        for (Integer item : domainIds) {
-//            Object obj = queryForDetail(SimulationQueryDto.builder().domainId(item).build());
-//            String configData = getFactory(item).syncPlatformToJSONBytes(obj, levelCityNameList);
-//            if(StringUtils.isNotBlank(configData)){
-//                this.baseMapper.deleteByDomainId(item);
-//                SimulationConfigEntity entity = new SimulationConfigEntity();
-//                entity.setDomainId(item);
-//                entity.setConfigData(configData);
-//                entity.setDeleted(Byte.valueOf("0"));
-//                this.save(entity);
-//                result = true;
-//            }
-//        }
+        domainIds.add(SimulationEnum.TOURIST.getType());
+        for (Integer item : domainIds) {
+            Object obj = queryForDetail(SimulationQueryDto.builder().domainId(item).build());
+            String configData = getFactory(item).syncPlatformToJSONBytes(obj, levelCityNameList);
+            if(StringUtils.isNotBlank(configData)){
+                this.baseMapper.deleteByDomainId(item);
+                SimulationConfigEntity entity = new SimulationConfigEntity();
+                entity.setDomainId(item);
+                entity.setConfigData(configData);
+                entity.setDeleted(Byte.valueOf("0"));
+                this.save(entity);
+                result = true;
+            }
+        }
         return result;
     }
 }
