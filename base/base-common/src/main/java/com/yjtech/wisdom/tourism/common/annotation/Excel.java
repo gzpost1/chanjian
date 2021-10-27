@@ -68,6 +68,11 @@ public @interface Excel {
   /** 是否自动统计数据,在最后追加一行统计数据总和 */
   public boolean isStatistics() default false;
 
+  public boolean notNull() default false;
+  public String regex() default "";
+  public String regexMsg() default "";
+  public boolean uniqueness() default false;
+
   /** 字段类型（0：导出导入；1：仅导出；2：仅导入） */
   Type type() default Type.ALL;
 
