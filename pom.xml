@@ -47,6 +47,8 @@
         <source.disabled>false</source.disabled>
         <javadoc.disabled>false</javadoc.disabled>
         <dynamic-datasource.version>2.5.6</dynamic-datasource.version>
+        <easypoi.version>3.0.3</easypoi.version>
+
     </properties>
 
     <dependencyManagement>

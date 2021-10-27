@@ -24,6 +24,7 @@ import com.yjtech.wisdom.tourism.resource.scenic.extensionpoint.ScenicExtensionC
 import com.yjtech.wisdom.tourism.resource.scenic.extensionpoint.ScenicQryExtPt;
 import com.yjtech.wisdom.tourism.resource.scenic.query.ScenicScreenQuery;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -220,6 +221,10 @@ public class EvaluateController {
         List<BaseVO> hotelHotList = extensionExecutor.execute(HotelQryExtPt.class,
                 buildBizScenario(HotelExtensionConstant.HOTEL_QUANTITY, vo.getIsSimulation()),
                 extension -> extension.queryEvaluateHotRank(vo));
+
+        if(CollectionUtils.isEmpty(hotelHotList)){
+            hotelHotList = new ArrayList<>();
+        }
 
         ScenicScreenQuery query = BeanUtils.copyBean(vo, ScenicScreenQuery.class);
 

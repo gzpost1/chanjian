@@ -125,7 +125,7 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
         if(Objects.isNull(vo.getPlaceId())){
             return calculateAndQuery(vo.getBeginTime(), vo.getEndTime()).getHotRankBigData();
         }else {
-            return calculateAndQuery(vo.getBeginTime(), vo.getEndTime()).getHotRankDetail().get(vo.getPlaceId());
+            return calculateAndQuery(vo.getBeginTime(), vo.getEndTime()).getHotRankDetail().get(Long.valueOf(vo.getPlaceId()));
         }
     }
 
