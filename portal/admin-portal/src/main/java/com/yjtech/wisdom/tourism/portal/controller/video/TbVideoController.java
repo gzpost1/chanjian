@@ -16,12 +16,11 @@ import com.yjtech.wisdom.tourism.resource.video.entity.TbVideoEntity;
 import com.yjtech.wisdom.tourism.resource.video.service.TbVideoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.Collections;
 import java.util.List;
@@ -38,6 +37,13 @@ import static com.baomidou.mybatisplus.core.toolkit.CollectionUtils.isNotEmpty;
 @RestController
 @RequestMapping("/video")
 public class TbVideoController extends BaseCurdController<TbVideoService, TbVideoEntity, TbVideoParam> {
+
+
+    /** 获取监控excel模板 */
+    @GetMapping("/downloadExcel")
+    public void downloadExcel(HttpServletRequest request, HttpServletResponse response) {
+        new ExcelOperationController().getTemplate("监控导入",request,response);
+    }
 
     /**
      * 導入exce
