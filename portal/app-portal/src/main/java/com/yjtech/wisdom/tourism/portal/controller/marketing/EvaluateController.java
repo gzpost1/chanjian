@@ -8,7 +8,6 @@ import com.yjtech.wisdom.tourism.common.bean.BaseVO;
 import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.common.constant.SimulationConstants;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
-import com.yjtech.wisdom.tourism.common.utils.StringUtils;
 import com.yjtech.wisdom.tourism.common.utils.bean.BeanUtils;
 import com.yjtech.wisdom.tourism.extension.BizScenario;
 import com.yjtech.wisdom.tourism.extension.ExtensionConstant;
@@ -25,6 +24,7 @@ import com.yjtech.wisdom.tourism.resource.scenic.extensionpoint.ScenicExtensionC
 import com.yjtech.wisdom.tourism.resource.scenic.extensionpoint.ScenicQryExtPt;
 import com.yjtech.wisdom.tourism.resource.scenic.query.ScenicScreenQuery;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.math.BigDecimal;
-import java.util.Comparator;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -55,7 +55,6 @@ public class EvaluateController {
     private MarketingEvaluateService marketingEvaluateService;
     @Resource
     private ExtensionExecutor extensionExecutor;
-
 
 
     /**
@@ -155,7 +154,7 @@ public class EvaluateController {
         //设置默认评论状态-启用
         vo.setEquipStatus(Objects.isNull(vo.getEquipStatus()) ? EntityConstants.ENABLED : vo.getEquipStatus());
         //模拟数据
-        if(EntityConstants.YES.equals(vo.getIsSimulation())){
+        if (EntityConstants.YES.equals(vo.getIsSimulation())) {
             ScenicScreenQuery query = BeanUtils.copyBean(vo, ScenicScreenQuery.class);
             //获取景区
             MarketingEvaluateStatisticsDTO scenic = extensionExecutor.execute(ScenicQryExtPt.class,
@@ -216,34 +215,42 @@ public class EvaluateController {
         //设置默认评论状态-启用
         vo.setEquipStatus(Objects.isNull(vo.getEquipStatus()) ? EntityConstants.ENABLED : vo.getEquipStatus());
 
-        if(StringUtils.isBlank(vo.getPlaceId())){
-            //获取酒店民宿
-            List<BaseVO> hotelHotList = extensionExecutor.execute(HotelQryExtPt.class,
-                    buildBizScenario(HotelExtensionConstant.HOTEL_QUANTITY, vo.getIsSimulation()),
-                    extension -> extension.queryEvaluateHotRankBigData(vo));
+        //获取酒店民宿
+        List<BaseVO> hotelHotList = extensionExecutor.execute(HotelQryExtPt.class,
+                buildBizScenario(HotelExtensionConstant.HOTEL_QUANTITY, vo.getIsSimulation()),
+                extension -> extension.queryEvaluateHotRank(vo));
 
-            ScenicScreenQuery query = BeanUtils.copyBean(vo, ScenicScreenQuery.class);
+        if (CollectionUtils.isEmpty(hotelHotList)) {
+            hotelHotList = new ArrayList<>();
+        }
+
+        ScenicScreenQuery query = BeanUtils.copyBean(vo, ScenicScreenQuery.class);
+
+        //如果不是酒店需要将这个条件纳入
+        if (!Objects.equals(Byte.valueOf("2"), vo.getDataType())) {
             //获取景区
             List<BaseVO> scenicHotList = extensionExecutor.execute(ScenicQryExtPt.class,
                     buildBizScenarioScenic(ScenicExtensionConstant.SCENIC_QUANTITY, query.getIsSimulation()),
                     extension -> extension.queryScenicHotRank(query));
 
             hotelHotList.addAll(scenicHotList);
-            //合并去重，降序排列
-            List<BaseVO> resultList = hotelHotList.stream().collect(Collectors.toMap(BaseVO::getName,
-                    item -> item,
-                    (o1, o2) -> {
-                        o1.setValue(String.valueOf(Integer.valueOf(o1.getValue()) + Integer.valueOf(o2.getValue())));
-                        return o1;
-                    })).values().stream().sorted(Comparator.comparing(BaseVO::getValue, Comparator.comparing(Integer::parseInt)).reversed()).collect(Collectors.toList());
-
-            return JsonResult.success(resultList);
         }
 
-        //获取酒店民宿详情
-        return JsonResult.success(extensionExecutor.execute(HotelQryExtPt.class,
-                buildBizScenario(HotelExtensionConstant.HOTEL_QUANTITY, vo.getIsSimulation()),
-                extension -> extension.queryEvaluateHotRank(vo)));
+        //合并去重
+        List<BaseVO> resultList = new ArrayList<>(hotelHotList.stream().collect(Collectors.toMap(BaseVO::getName,
+                item -> item,
+                (o1, o2) -> {
+                    o1.setValue(String.valueOf(Integer.valueOf(o1.getValue()) + Integer.valueOf(o2.getValue())));
+                    return o1;
+                })).values());
+
+//        if (EntityConstants.YES.equals(vo.getIsSimulation())) {
+//            resultList = resultList.stream().sorted(Comparator.comparing(i -> Integer.parseInt(i.getValue())))
+//                    .collect(Collectors.toList())
+//                    .subList(resultList.size() - 5, resultList.size());
+//        }
+        return JsonResult.success(resultList);
+
     }
 
     /**
@@ -319,6 +326,7 @@ public class EvaluateController {
 
     /**
      * 构建酒店业务扩展点
+     *
      * @param useCasePraiseType
      * @param isSimulation
      * @return
@@ -330,6 +338,7 @@ public class EvaluateController {
 
     /**
      * 构建景区业务扩展点
+     *
      * @param useCasePraiseType
      * @param isSimulation
      * @return
