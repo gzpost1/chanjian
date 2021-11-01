@@ -122,7 +122,11 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
      */
     @Override
     public List<BaseVO> queryEvaluateHotRank(EvaluateQueryVO vo) {
-        return calculateAndQuery(vo.getBeginTime(), vo.getEndTime()).getHotRankDetail().get(Long.valueOf(vo.getPlaceId()));
+        if(Objects.isNull(vo.getPlaceId())){
+            return calculateAndQuery(vo.getBeginTime(), vo.getEndTime()).getHotRankBigData();
+        }else {
+            return calculateAndQuery(vo.getBeginTime(), vo.getEndTime()).getHotRankDetail().get(Long.valueOf(vo.getPlaceId()));
+        }
     }
 
     /**
@@ -404,7 +408,7 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
                     List<BaseVO> hotTagDetailList = Lists.newArrayList();
                     for (BaseVO hotTag : hotTagRank) {
                         //计算单日词频
-                        int workFrequency = Integer.valueOf(hotTag.getValue()) + randomInt / 10;
+                        Integer workFrequency = Integer.valueOf(hotTag.getValue()) + randomInt / 10;
                         //配置实际返回模拟数据
                         hotTagDetailList.add(new BaseVO(hotTag.getName(), String.valueOf(workFrequency * (int) beginTime.until(endTime, ChronoUnit.DAYS))));
                     }
@@ -474,7 +478,7 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
                 (id, transfer) -> {
                     transfer.stream().reduce((a, b) -> new BaseVO(a.getName(), String.valueOf(Integer.valueOf(a.getValue()) + Integer.valueOf(b.getValue())))).ifPresent(hotRankBigData::add);
                 });
-        //降序排列
+        //排序
         hotRankBigData.sort(new Comparator<BaseVO>() {
             @Override
             public int compare(BaseVO o1, BaseVO o2) {
@@ -485,8 +489,16 @@ public class MockHotelQryExtPt implements HotelQryExtPt {
             }
         });
 
-        //降序排列
-        roomPriceRank = roomPriceRank.stream().sorted(Comparator.comparing(BaseVO::getValue).reversed()).collect(Collectors.toList());
+        //排序
+        roomPriceRank.sort(new Comparator<BaseVO>() {
+            @Override
+            public int compare(BaseVO o1, BaseVO o2) {
+                if (o1.getValue().compareTo(o2.getValue()) > 0) {
+                    return -1;
+                }
+                return o2.getValue().compareTo(o1.getValue());
+            }
+        });
 
         //查询评价量趋势、同比、环比-酒店民宿大数据
         List<AnalysisBaseInfo> evaluateAnalysisBigData = calculateAnalysis(endDate, new BigDecimal(evaluateTotalAll * (Integer.valueOf(endDate.substring(8, 9)))).add(simulationHotelDTO.getMonthOfEvaluateTotal()), null);

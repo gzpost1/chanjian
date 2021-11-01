@@ -1,6 +1,7 @@
 package com.yjtech.wisdom.tourism.common.utils.file;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLEncoder;
 
@@ -49,6 +50,22 @@ public class FileUtils extends org.apache.commons.io.FileUtils {
           e1.printStackTrace();
         }
       }
+    }
+  }
+
+  /**
+   * 输出指定文件的byte数组
+   * @param is
+   * @param response
+   */
+  public static void writeBytes(InputStream is, HttpServletResponse response) throws IOException {
+    byte[] buffer = new byte[1024];
+    BufferedInputStream bis = new BufferedInputStream(is);
+    OutputStream outputStream = response.getOutputStream();
+    int i = bis.read(buffer);
+    while (i != -1) {
+      outputStream.write(buffer, 0, i);
+      i = bis.read(buffer);
     }
   }
 

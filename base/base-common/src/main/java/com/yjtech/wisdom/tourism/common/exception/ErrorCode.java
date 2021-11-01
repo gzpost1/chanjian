@@ -18,6 +18,8 @@ public enum ErrorCode implements IExceptionType {
   EXCEL_EXPORT_ERROR("00009", "excel导出异常"),
   PROBE_FAILURE("00019","failed to call probe interface"),
   DICT_VALUE_EXISTED("00023","该字典键值已存在"),
+  EXCEL_IMPORT_ERROR("00011", "excel导入异常"),
+
   // 请求
   PARAM_MISS("00020", "缺失参数"),
   PARAM_INVALID("00021", "输入参数的格式不正确"),
