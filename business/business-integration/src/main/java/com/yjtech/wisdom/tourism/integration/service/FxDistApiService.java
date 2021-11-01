@@ -6,8 +6,6 @@ import com.yjtech.wisdom.tourism.common.bean.AnalysisBaseInfo;
 import com.yjtech.wisdom.tourism.common.bean.AnalysisMonthChartInfo;
 import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
 import com.yjtech.wisdom.tourism.common.constant.ProductTypeConstant;
-import com.yjtech.wisdom.tourism.mybatis.utils.AnalysisUtils;
-import com.yjtech.wisdom.tourism.common.utils.DateUtils;
 import com.yjtech.wisdom.tourism.integration.mapper.FxDistApiMapper;
 import com.yjtech.wisdom.tourism.integration.pojo.bo.fxdist.FxDistAreaSaleListBO;
 import com.yjtech.wisdom.tourism.integration.pojo.bo.fxdist.FxDistOrderStatisticsBO;
@@ -16,6 +14,7 @@ import com.yjtech.wisdom.tourism.integration.pojo.bo.fxdist.FxDistSaleRankListBO
 import com.yjtech.wisdom.tourism.integration.pojo.bo.smarttravel.SmartTravelScenicInfoBO;
 import com.yjtech.wisdom.tourism.integration.pojo.vo.FxDistQueryVO;
 import com.yjtech.wisdom.tourism.integration.pojo.vo.SmartTravelQueryVO;
+import com.yjtech.wisdom.tourism.mybatis.utils.AnalysisUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -165,7 +164,7 @@ public class FxDistApiService {
         List<SmartTravelScenicInfoBO> scenicList = smartTravelApiService.queryScenicList(smartTravelQueryVO);
 
         //构建景区销售列表
-        List<FxDistSaleRankListBO> scenicSaleList = new ArrayList<>();
+        List<FxDistSaleRankListBO> scenicSaleList = Lists.newArrayList();
         if (null != scenicList && !scenicList.isEmpty()) {
             for (SmartTravelScenicInfoBO scenicInfo : scenicList) {
                 //景区未关联店铺，则设置默认
@@ -181,12 +180,7 @@ public class FxDistApiService {
         }
 
         //根据销售额排序
-        scenicSaleList.sort((o1, o2) -> {
-            if (o1.getSale().compareTo(o2.getSale()) == 0) {
-                return -1;
-            }
-            return o2.getSale().compareTo(o1.getSale());
-        });
+        scenicSaleList = scenicSaleList.stream().sorted(Comparator.comparing(FxDistSaleRankListBO::getSale).reversed()).collect(Collectors.toList());
 
         return scenicSaleList;
     }

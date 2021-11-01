@@ -183,4 +183,15 @@ public class SimulationController {
         service.saveUpdated(dto);
         return JsonResult.success();
     }
+
+    /**
+     * 同步平台信息
+     *
+     * @param
+     * @return
+     */
+    @PostMapping("/syncSimulation")
+    public JsonResult syncSimulation() {
+        return JsonResult.success(service.syncSimulation());
+    }
 }

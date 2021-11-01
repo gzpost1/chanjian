@@ -91,7 +91,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // 过滤请求
                 .authorizeRequests()
                 // 对于登录login 验证码captchaImage 允许匿名访问
-                .antMatchers("/login", "/captchaImage")
+                .antMatchers("/login", "/captchaImage","/video/downloadExcel")
                 .anonymous()
                 .antMatchers(HttpMethod.GET, "/*.html", "/**/*.html", "/**/*.css", "/**/*.js")
                 .permitAll()
@@ -114,6 +114,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/wxopen/notify/**")
                 .anonymous()
                 .antMatchers("/wxopen/auth/**")
+                .anonymous()
+                //zlmedia相关调用，不参与鉴权
+                .antMatchers("/index/hook/on_stream_not_found", "/index/hook/on_stream_none_reader")
                 .anonymous()
                 // 除上面外的所有请求全部需要鉴权认证
                 .anyRequest()
