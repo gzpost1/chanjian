@@ -50,6 +50,12 @@ public class SystemconfigChartsEntity extends BaseEntity {
     private String commponentType;
 
     /**
+     * H5组件类型
+     */
+    @TableField(value = "app_commponent_type")
+    private String appCommponentType;
+
+    /**
      * list_type 当图表类型选择列表时显示
      */
     @TableField(value = "list_type",updateStrategy = FieldStrategy.IGNORED)
@@ -66,6 +72,12 @@ public class SystemconfigChartsEntity extends BaseEntity {
      */
     @TableField(value = "sample_img")
     private String sampleImg;
+
+    /**
+     * H5示例图
+     */
+    @TableField(value = "app_sample_img")
+    private String appSampleImg;
 
     /**
      * sample_img 点位类型 当图表类型选择列表时显示
@@ -91,4 +103,9 @@ public class SystemconfigChartsEntity extends BaseEntity {
     @TableField(value = "index_item",updateStrategy = FieldStrategy.IGNORED)
     private String indexItem;
 
+    /**
+     * H5跳转页面id
+     */
+    @TableField(value = "app_redirect_id",updateStrategy = FieldStrategy.IGNORED)
+    private String appRedirectId;
 }

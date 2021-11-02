@@ -5,14 +5,14 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
 import com.yjtech.wisdom.tourism.systemconfig.menu.dto.*;
+import com.yjtech.wisdom.tourism.systemconfig.menu.entity.SystemconfigAppMenuEntity;
 import com.yjtech.wisdom.tourism.systemconfig.menu.entity.SystemconfigMenuEntity;
-import com.yjtech.wisdom.tourism.systemconfig.menu.vo.SystemconfigMenuDatavlDto;
 import com.yjtech.wisdom.tourism.systemconfig.menu.vo.SystemconfigMenuPageVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
-public interface SystemconfigMenuMapper extends BaseMapper<SystemconfigMenuEntity> {
+public interface SystemconfigAppMenuMapper extends BaseMapper<SystemconfigAppMenuEntity> {
 
     IPage<SystemconfigMenuPageVo> queryForPage(Page page, @Param("params") SystemconfigMenuPageQueryDto query);
 

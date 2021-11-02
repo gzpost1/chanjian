@@ -6,16 +6,13 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
 import com.yjtech.wisdom.tourism.common.core.domain.UpdateStatusParam;
-import com.yjtech.wisdom.tourism.dto.area.AreaTreeNode;
 import com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysDictData;
 import com.yjtech.wisdom.tourism.system.domain.Icon;
 import com.yjtech.wisdom.tourism.system.service.IconService;
 import com.yjtech.wisdom.tourism.system.service.SysDictTypeService;
-import com.yjtech.wisdom.tourism.systemconfig.architecture.dto.MenuTreeNode;
 import com.yjtech.wisdom.tourism.systemconfig.menu.dto.*;
 import com.yjtech.wisdom.tourism.systemconfig.menu.entity.SystemconfigMenuEntity;
 import com.yjtech.wisdom.tourism.systemconfig.menu.mapper.SystemconfigMenuMapper;
-import com.yjtech.wisdom.tourism.systemconfig.menu.vo.SystemconfigMenuDatavlDto;
 import com.yjtech.wisdom.tourism.systemconfig.menu.vo.SystemconfigMenuDetailDto;
 import com.yjtech.wisdom.tourism.systemconfig.menu.vo.SystemconfigMenuPageVo;
 import org.apache.commons.collections.CollectionUtils;
@@ -31,7 +28,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class SystemconfigMenuService extends ServiceImpl<SystemconfigMenuMapper, SystemconfigMenuEntity> {
+public class SystemconfigAppMenuService extends ServiceImpl<SystemconfigMenuMapper, SystemconfigMenuEntity> {
 
     @Autowired
     private SysDictTypeService service;

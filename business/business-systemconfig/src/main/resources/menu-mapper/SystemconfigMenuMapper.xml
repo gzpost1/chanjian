@@ -158,4 +158,13 @@
                 tb_systemconfig_menu
         where deleted = 0
     </select>
+
+    <select id="queryAppRedirectPages" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO">
+        select
+                id as value,name
+        from
+                tb_systemconfig_app_menu
+        where
+                deleted = 0
+    </select>
 </mapper>
