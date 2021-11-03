@@ -1,6 +1,7 @@
 package com.yjtech.wisdom.tourism.decisionsupport.business.strategyimpl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Lists;
 import com.yjtech.wisdom.tourism.command.extensionpoint.TravelComplaintExtensionConstant;
 import com.yjtech.wisdom.tourism.command.extensionpoint.TravelComplaintQryExtPt;
 import com.yjtech.wisdom.tourism.command.vo.travelcomplaint.TravelComplaintScreenQueryVO;
@@ -53,18 +54,30 @@ public class TouristComplaintsStrategyImpl extends BaseStrategy {
         travelComplaintScreenQueryVO.setIsSimulation(isSimulation.byteValue());
         travelComplaintScreenQueryVO.setBeginTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentLastMonthStr() + DecisionSupportConstants.START_DAY_STR));
         travelComplaintScreenQueryVO.setEndTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentLastMonthStr() + DecisionSupportConstants.END_DAY_STR));
-        Integer total = extensionExecutor.execute(TravelComplaintQryExtPt.class,
-                buildBizScenario(TravelComplaintExtensionConstant.TRAVEL_COMPLAINT_QUANTITY, travelComplaintScreenQueryVO.getIsSimulation()),
-                extension -> extension.queryTravelComplaintTotal(travelComplaintScreenQueryVO));
+        Integer total = 0;
+        try {
+            total = extensionExecutor.execute(TravelComplaintQryExtPt.class,
+                    buildBizScenario(TravelComplaintExtensionConstant.TRAVEL_COMPLAINT_QUANTITY, travelComplaintScreenQueryVO.getIsSimulation()),
+                    extension -> extension.queryTravelComplaintTotal(travelComplaintScreenQueryVO));
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
 
 
         travelComplaintScreenQueryVO.setBeginTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentYearStr() + DecisionSupportConstants.START_DATE_STR));
         travelComplaintScreenQueryVO.setEndTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentYearStr() + DecisionSupportConstants.END_DATE_STR));
         travelComplaintScreenQueryVO.setType(DecisionSupportConstants.YEAR_MONTH);
+
+        List<AnalysisBaseInfo> tourComplaintTotal = Lists.newArrayList();
         // 年趋势
-        List<AnalysisBaseInfo> tourComplaintTotal = extensionExecutor.execute(TravelComplaintQryExtPt.class,
-                buildBizScenario(TravelComplaintExtensionConstant.TRAVEL_COMPLAINT_QUANTITY, travelComplaintScreenQueryVO.getIsSimulation()),
-                extension -> extension.queryComplaintAnalysis(travelComplaintScreenQueryVO));
+        try {
+            tourComplaintTotal = extensionExecutor.execute(TravelComplaintQryExtPt.class,
+                    buildBizScenario(TravelComplaintExtensionConstant.TRAVEL_COMPLAINT_QUANTITY, travelComplaintScreenQueryVO.getIsSimulation()),
+                    extension -> extension.queryComplaintAnalysis(travelComplaintScreenQueryVO));
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+
 
         String currentLastMonthStr1 = DateTimeUtil.getCurrentLastMonthStr();
 

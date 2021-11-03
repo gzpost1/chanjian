@@ -31,7 +31,7 @@ public class DecisionExecute extends StrategyExecute {
          * @return
          */
     @Override
-    public DecisionWarnEntity execute(Enum strategyEnum, DecisionEntity entity, Integer isSimulation) {
+    public DecisionWarnEntity execute(Enum strategyEnum, DecisionEntity entity, Byte isSimulation) {
         // 使用工厂，创建出需要的对象实例
         Object obj = DecisionStrategyFactory.getInstance().execute(strategyEnum);
 
@@ -74,7 +74,7 @@ public class DecisionExecute extends StrategyExecute {
      * @param strategyEnum
      * @return
      */
-    public static DecisionWarnEntity get(DecisionStrategyEnum strategyEnum, DecisionEntity entity, Integer isSimulation) {
+    public static DecisionWarnEntity get(DecisionStrategyEnum strategyEnum, DecisionEntity entity, Byte isSimulation) {
         return instance.execute(strategyEnum, entity, isSimulation);
     }
 

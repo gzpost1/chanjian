@@ -62,10 +62,10 @@ public class ComprehensiveStrategyImpl extends BaseStrategy {
         // 本月报警数据
         ComprehensiveAlarmDataDto currentAlarmData = this.computeAlarmData(list);
 
-        ComprehensiveAlarmDataDto lastMonthAlarmData = null;
+        ComprehensiveAlarmDataDto lastMonthAlarmData = new ComprehensiveAlarmDataDto();
 
         // 统计年月
-        String currentLastMonthStr = DateTimeUtil.getCurrentMonthStr();
+        String currentLastMonthStr = DateTimeUtil.getCurrentLastMonthStr();
         // 平台简称
         String simpleName = targetQueryService.queryPlatformSimpleName().getName();
 
