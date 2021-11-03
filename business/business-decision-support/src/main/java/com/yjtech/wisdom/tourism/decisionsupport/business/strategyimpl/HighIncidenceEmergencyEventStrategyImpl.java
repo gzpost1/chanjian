@@ -16,6 +16,7 @@ import com.yjtech.wisdom.tourism.decisionsupport.common.strategy.BaseStrategy;
 import com.yjtech.wisdom.tourism.decisionsupport.common.util.PlaceholderUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
@@ -243,8 +244,12 @@ public class HighIncidenceEmergencyEventStrategyImpl extends BaseStrategy {
      */
     private List getCharData(HighIncidenceEventTypeDto maxEventType, HighIncidenceEventTypeDto maxEventLevel) {
         ArrayList<Object> result = Lists.newArrayList();
-        result.add(maxEventType);
-        result.add(maxEventLevel);
+        if (!ObjectUtils.isEmpty(maxEventType)) {
+            result.add(maxEventType);
+        }
+        if (!ObjectUtils.isEmpty(maxEventLevel)) {
+            result.add(maxEventLevel);
+        }
         return result;
     }
 
