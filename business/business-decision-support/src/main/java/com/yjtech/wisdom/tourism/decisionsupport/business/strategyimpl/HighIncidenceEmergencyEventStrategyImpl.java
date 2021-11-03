@@ -1,6 +1,7 @@
 package com.yjtech.wisdom.tourism.decisionsupport.business.strategyimpl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSONPObject;
 import com.google.common.collect.Lists;
 import com.yjtech.wisdom.tourism.command.query.event.EventSumaryQuery;
 import com.yjtech.wisdom.tourism.command.service.screen.EmergencyEvenScreenService;
@@ -35,6 +36,8 @@ public class HighIncidenceEmergencyEventStrategyImpl extends BaseStrategy {
 
     @Autowired
     private EmergencyEvenScreenService emergencyEvenScreenService;
+
+    private static HighIncidenceEventTypeDto e = new HighIncidenceEventTypeDto();
 
     /**
      * 高发应急事件
@@ -244,12 +247,15 @@ public class HighIncidenceEmergencyEventStrategyImpl extends BaseStrategy {
      */
     private List getCharData(HighIncidenceEventTypeDto maxEventType, HighIncidenceEventTypeDto maxEventLevel) {
         ArrayList<Object> result = Lists.newArrayList();
-        if (!ObjectUtils.isEmpty(maxEventType)) {
+
+        if (!e.equals(maxEventType)) {
             result.add(maxEventType);
         }
-        if (!ObjectUtils.isEmpty(maxEventLevel)) {
+
+        if (!e.equals(maxEventLevel)) {
             result.add(maxEventLevel);
         }
+
         return result;
     }
 
