@@ -554,7 +554,7 @@ public class DecisionSupportScreenService extends ServiceImpl<DecisionWarnMapper
                 .lowRiskNum(lowRiskNum)
                 .mediumRiskNum(mediumRiskNum)
                 .highRiskNum(highRiskNum)
-                .analyzeDate(DateTimeUtil.getCurrentYearAndMonth())
+                .analyzeDate(DateTimeUtil.getCurrentLastMonthStr())
                 .lastAnalyzeDate(lastAnalyzeDate)
                 .build();
     }
