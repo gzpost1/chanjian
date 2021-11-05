@@ -22,10 +22,14 @@ public class DecisionSupportTimeTask {
     /**
      * 分析辅助指标
      */
-    public void analysisTask() {
+    public void analysisTask(Integer isSimulation) {
         log.info("==================> 【决策辅助-指标分析】定时任务 <==================");
         log.info("执行开始时间：{}", DateTimeUtil.getCurrentTime());
-        decisionSupportScreenService.analyzeDecisionWarn(new AnalyzeDecisionWarnVo());
+        AnalyzeDecisionWarnVo analyzeDecisionWarnVo = new AnalyzeDecisionWarnVo();
+        if (null != isSimulation) {
+            analyzeDecisionWarnVo.setIsSimulation(isSimulation);
+        }
+        decisionSupportScreenService.analyzeDecisionWarn(analyzeDecisionWarnVo);
         log.info("执行完成时间：{}", DateTimeUtil.getCurrentTime());
     }
 }
