@@ -9,6 +9,21 @@ package com.yjtech.wisdom.tourism.common.constant;
 public class ZlmediaConstants {
 
     /**
+     * 标准产监 流标识
+     */
+    public static final String INDUSTRY_MONITORING_STANDARD_MARK = "standard";
+
+    /**
+     * 标准产监 视频 流标识
+     */
+    public static final String INDUSTRY_MONITORING_STANDARD_VIDEO_MARK = "standard_video_";
+
+    /**
+     * 默认延时时长 100毫秒
+     */
+    public static final Long DEFAULT_DELAYED_DURATION = 100L;
+
+    /**
      * zlmedia接口路由-新增流代理
      */
     public static final String ZLMEDIA_INTERFACE_ADD_STREAM_PROXY = "/index/api/addStreamProxy";

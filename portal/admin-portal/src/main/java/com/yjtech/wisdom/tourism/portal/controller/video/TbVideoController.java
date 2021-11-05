@@ -1,12 +1,16 @@
 package com.yjtech.wisdom.tourism.portal.controller.video;
 
 
+import com.yjtech.wisdom.tourism.common.bean.zlmedia.ZlmediaTaskBaseInfo;
 import com.yjtech.wisdom.tourism.common.constant.Constants;
+import com.yjtech.wisdom.tourism.common.constant.ZlmediaConstants;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.common.core.domain.ValidateExcelEntity;
 import com.yjtech.wisdom.tourism.common.enums.ImportInfoTypeEnum;
 import com.yjtech.wisdom.tourism.common.exception.ErrorCode;
+import com.yjtech.wisdom.tourism.common.task.ZlmediaDelayedTask;
 import com.yjtech.wisdom.tourism.common.utils.StringUtils;
+import com.yjtech.wisdom.tourism.framework.manager.ZlmediaDelayQueueManager;
 import com.yjtech.wisdom.tourism.infrastructure.core.controller.BaseCurdController;
 import com.yjtech.wisdom.tourism.infrastructure.poi.ExcelUtil;
 import com.yjtech.wisdom.tourism.portal.controller.command.ExcelOperationController;
@@ -15,6 +19,7 @@ import com.yjtech.wisdom.tourism.resource.video.domain.TbVideoParam;
 import com.yjtech.wisdom.tourism.resource.video.entity.TbVideoEntity;
 import com.yjtech.wisdom.tourism.resource.video.service.TbVideoService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,11 +43,33 @@ import static com.baomidou.mybatisplus.core.toolkit.CollectionUtils.isNotEmpty;
 @RequestMapping("/video")
 public class TbVideoController extends BaseCurdController<TbVideoService, TbVideoEntity, TbVideoParam> {
 
+    @Autowired
+    private ZlmediaDelayQueueManager zlmediaDelayQueueManager;
+
 
     /** 获取监控excel模板 */
     @GetMapping("/downloadExcel")
     public void downloadExcel(HttpServletRequest request, HttpServletResponse response) {
         new ExcelOperationController().getTemplate("监控导入",request,response);
+    }
+
+    /**
+     * 更新信息
+     * @param entity
+     * @return
+     */
+    @Override
+    @PostMapping("/update")
+    public JsonResult update(@RequestBody @Valid TbVideoEntity entity) {
+        boolean result = service.updateById(entity);
+
+        //修改视频流地址后，同步新增代理
+        if(result && StringUtils.isNotBlank(entity.getUrl())){
+            zlmediaDelayQueueManager.put(new ZlmediaDelayedTask(new ZlmediaTaskBaseInfo(entity.getId().toString(),
+                    ZlmediaConstants.INDUSTRY_MONITORING_STANDARD_VIDEO_MARK + entity.getId(),
+                    entity.getUrl()), ZlmediaConstants.DEFAULT_DELAYED_DURATION));
+        }
+        return JsonResult.success(result);
     }
 
     /**
