@@ -65,9 +65,13 @@ public class TbVideoController extends BaseCurdController<TbVideoService, TbVide
 
         //修改视频流地址后，同步新增代理
         if(result && StringUtils.isNotBlank(entity.getUrl())){
+            //获取流id
+            String stream = ZlmediaConstants.INDUSTRY_MONITORING_STANDARD_VIDEO_MARK + entity.getId();
+            //移除历史流代理
+            service.closeStreamsByMedia(stream);
+
             zlmediaDelayQueueManager.put(new ZlmediaDelayedTask(new ZlmediaTaskBaseInfo(entity.getId().toString(),
-                    ZlmediaConstants.INDUSTRY_MONITORING_STANDARD_VIDEO_MARK + entity.getId(),
-                    entity.getUrl()), ZlmediaConstants.DEFAULT_DELAYED_DURATION));
+                    stream, entity.getUrl()), ZlmediaConstants.DEFAULT_DELAYED_DURATION));
         }
         return JsonResult.success(result);
     }
