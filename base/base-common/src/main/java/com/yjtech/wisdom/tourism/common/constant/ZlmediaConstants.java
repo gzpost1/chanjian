@@ -28,6 +28,11 @@ public class ZlmediaConstants {
      */
     public static final String ZLMEDIA_INTERFACE_ADD_STREAM_PROXY = "/index/api/addStreamProxy";
 
+    /**
+     * zlmedia接口路由-关闭流
+     */
+    public static final String ZLMEDIA_INTERFACE_CLOSE_STREAMS = "/index/api/close_streams";
+
 
     /** ********** zlmedia缓存key ********** */
     /**
