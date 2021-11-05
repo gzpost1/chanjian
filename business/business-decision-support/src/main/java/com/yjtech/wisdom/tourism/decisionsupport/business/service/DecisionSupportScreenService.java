@@ -184,7 +184,7 @@ public class DecisionSupportScreenService extends ServiceImpl<DecisionWarnMapper
     public void analyzeDecisionWarn (AnalyzeDecisionWarnVo vo) {
 
         // 是否模拟数据
-        Byte isSimulation = vo.getIsSimulation();
+        Byte isSimulation = Byte.parseByte(String.valueOf(vo.getIsSimulation()));
 
         // 查询所有 决策数据
         List<DecisionEntity> decisionList = decisionMapper.selectList(null);
