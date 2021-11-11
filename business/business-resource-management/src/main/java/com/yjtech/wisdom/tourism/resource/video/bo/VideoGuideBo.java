@@ -20,8 +20,8 @@ public class VideoGuideBo {
 
     @Excel(name = "设备编号\n（必填，不能重复）",
             notNull = true,
-            regex = "^.{1,128}$",
-            regexMsg = "允许输入长度必须小于128")
+            regex = "^.{1,50}$",
+            regexMsg = "允许输入长度必须小于50")
     private String deviceId;
 
     @Excel(name = "设备名称\n（必填）",
@@ -32,7 +32,7 @@ public class VideoGuideBo {
 
     @Excel(name = "所在位置",
             regex = "^.{1,100}$",
-            regexMsg = "允许输入长度必须小于100")
+            regexMsg = "允许输入长度必须小于100") 
     private String address;
 
     @Excel(name = "经度",

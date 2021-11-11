@@ -285,7 +285,7 @@ public class ExcelUtil<T> {
             throw new IOException("文件sheet不存在");
         }
 
-        int rows = sheet.getPhysicalNumberOfRows();
+        int rows = sheet.getLastRowNum()+1;
 
         if (rows > 0) {
             // 定义一个map用于存放excel列的序号和field.
