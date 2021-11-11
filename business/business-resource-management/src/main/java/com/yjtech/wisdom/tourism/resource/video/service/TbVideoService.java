@@ -126,7 +126,7 @@ public class TbVideoService extends BaseMybatisServiceImpl<TbVideoMapper, TbVide
      *
      * @param stream 流id
      */
-    public void closeStreamsByMedia(String stream){
+    public void closeStreamsByMedia(String stream){ 
         try {
             //构建url
             String url = redisCache.getCacheObject(Constants.SYS_CONFIG_KEY + ZlmediaConstants.ZLMEDIA_SERVER_URL_KEY) + ZlmediaConstants.ZLMEDIA_INTERFACE_CLOSE_STREAMS;
