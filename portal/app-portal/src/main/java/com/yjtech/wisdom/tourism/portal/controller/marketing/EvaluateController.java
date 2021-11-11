@@ -25,6 +25,7 @@ import com.yjtech.wisdom.tourism.resource.scenic.extensionpoint.ScenicQryExtPt;
 import com.yjtech.wisdom.tourism.resource.scenic.query.ScenicScreenQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -55,6 +56,7 @@ public class EvaluateController {
     private MarketingEvaluateService marketingEvaluateService;
     @Resource
     private ExtensionExecutor extensionExecutor;
+
 
 
     /**
@@ -154,7 +156,7 @@ public class EvaluateController {
         //设置默认评论状态-启用
         vo.setEquipStatus(Objects.isNull(vo.getEquipStatus()) ? EntityConstants.ENABLED : vo.getEquipStatus());
         //模拟数据
-        if (EntityConstants.YES.equals(vo.getIsSimulation())) {
+        if(EntityConstants.YES.equals(vo.getIsSimulation())){
             ScenicScreenQuery query = BeanUtils.copyBean(vo, ScenicScreenQuery.class);
             //获取景区
             MarketingEvaluateStatisticsDTO scenic = extensionExecutor.execute(ScenicQryExtPt.class,
@@ -220,14 +222,14 @@ public class EvaluateController {
                 buildBizScenario(HotelExtensionConstant.HOTEL_QUANTITY, vo.getIsSimulation()),
                 extension -> extension.queryEvaluateHotRank(vo));
 
-        if (CollectionUtils.isEmpty(hotelHotList)) {
+        if(CollectionUtils.isEmpty(hotelHotList)){
             hotelHotList = new ArrayList<>();
         }
 
         ScenicScreenQuery query = BeanUtils.copyBean(vo, ScenicScreenQuery.class);
 
         //如果不是酒店需要将这个条件纳入
-        if (!Objects.equals(Byte.valueOf("2"), vo.getDataType())) {
+        if(!Objects.equals(Byte.valueOf("2"),vo.getDataType())){
             //获取景区
             List<BaseVO> scenicHotList = extensionExecutor.execute(ScenicQryExtPt.class,
                     buildBizScenarioScenic(ScenicExtensionConstant.SCENIC_QUANTITY, query.getIsSimulation()),
@@ -250,7 +252,6 @@ public class EvaluateController {
 //                    .subList(resultList.size() - 5, resultList.size());
 //        }
         return JsonResult.success(resultList);
-
     }
 
     /**
@@ -326,7 +327,6 @@ public class EvaluateController {
 
     /**
      * 构建酒店业务扩展点
-     *
      * @param useCasePraiseType
      * @param isSimulation
      * @return
@@ -338,7 +338,6 @@ public class EvaluateController {
 
     /**
      * 构建景区业务扩展点
-     *
      * @param useCasePraiseType
      * @param isSimulation
      * @return
