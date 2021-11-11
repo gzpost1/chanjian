@@ -3,6 +3,12 @@ package com.yjtech.wisdom.tourism.resource.video.bo;
 import com.yjtech.wisdom.tourism.common.annotation.Excel;
 import lombok.Data;
 
+/**
+ *
+ *
+ * @date 2021/11/11 17:53
+ * @author horadirm
+ */
 @Data
 public class VideoGuideBo {
 
