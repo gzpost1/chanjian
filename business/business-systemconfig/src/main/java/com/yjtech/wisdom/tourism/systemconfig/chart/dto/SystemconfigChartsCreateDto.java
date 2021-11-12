@@ -1,5 +1,7 @@
 package com.yjtech.wisdom.tourism.systemconfig.chart.dto;
 
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
@@ -16,7 +18,7 @@ public class SystemconfigChartsCreateDto {
      * name 图表名称
      */
     @NotBlank(message = "图表名称不能为空")
-    @Length(max = 10, message = "图表名称必须小于等于10位")
+    @Length(max = 15, message = "图表名称必须小于等于10位")
     private String name;
 
     /**
@@ -56,6 +58,11 @@ public class SystemconfigChartsCreateDto {
     private String commponentType;
 
     /**
+     * H5组件类型
+     */
+    private String appCommponentType;
+
+    /**
      * is_simulation 是否有模拟数据 1有 0无
      */
     @NotNull(message = "是否有模拟数据不能为空")
@@ -66,6 +73,11 @@ public class SystemconfigChartsCreateDto {
      */
     @NotBlank(message = "示例图不能为空")
     private String sampleImg;
+
+    /**
+     * H5示例图
+     */
+    private String appSampleImg;
 
     /**
      * 是否有页面跳转 0-否,1-是
@@ -83,4 +95,8 @@ public class SystemconfigChartsCreateDto {
      */
     private String indexItem;
 
+    /**
+     * H5跳转页面id
+     */
+    private String appRedirectId;
 }
