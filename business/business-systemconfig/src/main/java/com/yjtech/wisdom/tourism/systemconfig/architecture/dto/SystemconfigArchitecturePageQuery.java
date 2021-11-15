@@ -32,4 +32,6 @@ public class SystemconfigArchitecturePageQuery extends PageQuery {
      * 拼接的sql前端不用传
      */
     private String querySql;
+
+    private Integer type;
 }

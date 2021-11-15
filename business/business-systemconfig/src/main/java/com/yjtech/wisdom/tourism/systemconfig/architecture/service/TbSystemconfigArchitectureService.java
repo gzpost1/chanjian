@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
+import com.yjtech.wisdom.tourism.common.constant.Constants;
 import com.yjtech.wisdom.tourism.common.core.domain.UpdateStatusParam;
 import com.yjtech.wisdom.tourism.common.utils.IdWorker;
 import com.yjtech.wisdom.tourism.infrastructure.utils.TreeUtil;
@@ -70,8 +71,8 @@ public class TbSystemconfigArchitectureService extends ServiceImpl<TbSystemconfi
         return baseMapper.queryForPage(new Page(query.getPageNo(), query.getPageSize()), query);
     }
 
-    public List<MenuTreeNode> getAreaTree(int i) {
-        return this.baseMapper.getAreaTree(i);
+    public List<MenuTreeNode> getAreaTree(int i,Integer type) {
+        return this.baseMapper.getAreaTree(i,type);
     }
 
     private TbSystemconfigArchitectureEntity getFirstByParent(int parentId) {
@@ -172,7 +173,7 @@ public class TbSystemconfigArchitectureService extends ServiceImpl<TbSystemconfi
     public List<MenuTreeNode> getDatavMenu() {
         //查找所有菜单
 
-        List<MenuTreeNode> treeNodeList = this.getAreaTree(0);
+        List<MenuTreeNode> treeNodeList = this.getAreaTree(0,Constants.TYPE_BIG_SCREEN);
 
         if (CollectionUtils.isEmpty(treeNodeList)) {
             return new ArrayList<>();

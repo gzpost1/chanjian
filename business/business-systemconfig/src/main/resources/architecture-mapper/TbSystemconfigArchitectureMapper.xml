@@ -33,7 +33,16 @@
     b.name as page_name,b.img_url
     from
             tb_systemconfig_architecture a
-    left join tb_systemconfig_menu b on a.page_id = b.id and b.deleted = 0
+    left join
+    <choose>
+      <when test="params.type == null or params.type==0">
+        tb_systemconfig_menu b
+      </when>
+      <otherwise>
+        tb_systemconfig_h5_menu b
+      </otherwise>
+    </choose>
+    on a.page_id = b.id and b.deleted = 0
     where
     a.deleted = 0
     <if test="params != null and params.menuName != null and params.menuName != ''">
@@ -51,6 +60,14 @@
     <if test="params != null and params.menuId != null">
       and a.parent_id = #{params.menuId}
     </if>
+    <choose>
+      <when test="params.type !=null and params.type !=''">
+        and a.type = #{params.type}
+      </when>
+      <otherwise>
+        and a.type = 0
+      </otherwise>
+    </choose>
     order by a.first_id,a.sort_num,a.secon_id,a.sort_num asc
   </select>
 
@@ -125,11 +142,28 @@
     FROM
     tb_systemconfig_architecture a
     inner join tb_systemconfig_architecture b on a.first_id = b.first_id
-    left join tb_systemconfig_menu c on b.page_id = c.id
+    left join
+    <choose>
+      <when test="type == null or type==0">
+        tb_systemconfig_menu c
+      </when>
+      <otherwise>
+        tb_systemconfig_h5_menu c
+      </otherwise>
+    </choose>
+    on b.page_id = c.id
     WHERE
     a.deleted = 0 and
     b.deleted = 0
     AND a.parent_id = #{parentId}
+    <choose>
+      <when test="type != null">
+        and a.type=#{type}
+      </when>
+      <otherwise>
+        and a.type=0
+      </otherwise>
+    </choose>
     ORDER BY b.first_id,b.sort_num,b.secon_id,b.sort_num,b.three_id,b.sort_num
   </select>
 

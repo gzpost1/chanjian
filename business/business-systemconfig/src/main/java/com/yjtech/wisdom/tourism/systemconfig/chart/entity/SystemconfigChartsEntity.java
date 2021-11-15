@@ -91,4 +91,21 @@ public class SystemconfigChartsEntity extends BaseEntity {
     @TableField(value = "index_item",updateStrategy = FieldStrategy.IGNORED)
     private String indexItem;
 
+    /**
+     * h5_sample_img h5示例图
+     */
+    @TableField(value = "h5_sample_img")
+    private String h5SampleImg;
+    /**
+     * h5跳转页面id
+     */
+    @TableField(value = "h5_redirect_id")
+    private String h5RedirectId;
+
+    /**
+     * h5_commponent_type h5组件类型
+     */
+    @TableField(value = "h5_commponent_type")
+    private String h5CommponentType;
+
 }

@@ -22,11 +22,15 @@
     <result column="is_redirect" jdbcType="TINYINT" property="isRedirect" />
     <result column="redirect_id" jdbcType="BIGINT" property="redirectId" />
     <result column="index_item" jdbcType="VARCHAR" property="indexItem" />
+    <result column="h5_redirect_id" jdbcType="VARCHAR" property="h5RedirectId" />
+    <result column="h5_commponent_type" jdbcType="VARCHAR" property="h5CommponentType" />
+    <result column="h5_sample_img" jdbcType="VARCHAR" property="h5SampleImg" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
     id, `name`, chart_type, menu_type, service_url, commponent_type, list_type, is_simulation, 
     sample_img, create_time, update_time, create_user, update_user, deleted,point_type,is_redirect,redirect_id,index_item
+    ,h5_redirect_id,h5_commponent_type,h5_sample_img
   </sql>
 
   <select id="queryForPage" resultType="com.yjtech.wisdom.tourism.systemconfig.chart.vo.SystemconfigChartsVo">
@@ -47,6 +51,9 @@
     </if>
     <if test="params != null and params.menuType != null and params.menuType != ''">
       and a.menu_type = #{params.menuType}
+    </if>
+    <if test="params.isH5 != null and params.isH5 == 1">
+      and a.h5_commponent_type is not null and a.h5_commponent_type != ''
     </if>
     order by a.create_time desc,b.dict_sort
   </select>

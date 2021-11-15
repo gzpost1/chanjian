@@ -16,7 +16,7 @@ public class SystemconfigChartsCreateDto {
      * name 图表名称
      */
     @NotBlank(message = "图表名称不能为空")
-    @Length(max = 10, message = "图表名称必须小于等于10位")
+    @Length(max = 15, message = "图表名称必须小于等于15位")
     private String name;
 
     /**
@@ -77,7 +77,19 @@ public class SystemconfigChartsCreateDto {
      * 跳转页面id
      */
     private String redirectId;
+    /**
+     * h5_sample_img h5示例图
+     */
+    private String h5SampleImg;
+    /**
+     * h5跳转页面id
+     */
+    private String h5RedirectId;
 
+    /**
+     * h5_commponent_type h5组件类型
+     */
+    private String h5CommponentType;
     /**
      * 指标项
      */

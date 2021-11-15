@@ -52,7 +52,7 @@ public class SysLoginController {
             loginBody.getPassword(),
             loginBody.getCode(),
             loginBody.getUuid(),
-                false);
+                true);
     return JsonResult.success(token);
   }
 

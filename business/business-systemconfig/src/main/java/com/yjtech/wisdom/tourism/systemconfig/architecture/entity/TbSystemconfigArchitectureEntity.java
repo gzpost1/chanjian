@@ -69,4 +69,12 @@ public class TbSystemconfigArchitectureEntity extends BaseEntity {
      */
     @TableField(value = "sort_num")
     private Integer sortNum;
+
+    /**
+     * 类型 0.大屏 1.H5
+     */
+    @TableField(value = "type")
+    private Integer type;
+
+
 }

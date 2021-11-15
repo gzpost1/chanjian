@@ -7,7 +7,6 @@ import com.yjtech.wisdom.tourism.common.core.domain.IdParam;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.common.core.domain.UpdateStatusParam;
 import com.yjtech.wisdom.tourism.common.exception.ErrorCode;
-import com.yjtech.wisdom.tourism.dto.area.AreaTreeNode;
 import com.yjtech.wisdom.tourism.infrastructure.utils.TreeUtil;
 import com.yjtech.wisdom.tourism.systemconfig.architecture.dto.*;
 import com.yjtech.wisdom.tourism.systemconfig.architecture.entity.TbSystemconfigArchitectureEntity;
@@ -16,6 +15,7 @@ import com.yjtech.wisdom.tourism.systemconfig.menu.service.SystemconfigMenuServi
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,15 +26,12 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * 后台管理-系统配置-大屏菜单架构
+ * 后台管理-系统配置-H5菜单架构
  *
- * @author 李波
- * @description: 后台管理-系统配置-图标库
- * @date 2021/7/2 11:40
  */
 @RestController
-@RequestMapping("/systemconfig/architeure")
-public class SystemConfigArchitureController {
+@RequestMapping("/systemconfig/h5/architeure")
+public class SystemConfigH5ArchitureController {
     @Autowired
     private TbSystemconfigArchitectureService service;
     @Autowired
@@ -45,11 +42,19 @@ public class SystemConfigArchitureController {
      */
     @PostMapping("/getMenuTree")
     public JsonResult getMenuTree() {
-        List<MenuTreeNode> treeNodeList = service.getAreaTree(0,Constants.TYPE_BIG_SCREEN);
+        List<MenuTreeNode> treeNodeList = service.getAreaTree(1,Constants.TYPE_H5_SCREEN);
         List<MenuTreeNode> menuTreeNodes = TreeUtil.makeTree(treeNodeList);
         String pintaiName = service.getPintaiName();
-        menuTreeNodes.get(0).setLabel(pintaiName);
-        menuTreeNodes.get(0).setTitle(pintaiName);
+        if( treeNodeList.size()==0){
+            MenuTreeNode menuTreeNode = new MenuTreeNode();
+            menuTreeNode.setId("1");
+            menuTreeNode.setLabel(pintaiName);
+            menuTreeNode.setTitle(pintaiName);
+            menuTreeNodes.add(menuTreeNode);
+        }else {
+            menuTreeNodes.get(0).setLabel(pintaiName);
+            menuTreeNodes.get(0).setTitle(pintaiName);
+        }
         return JsonResult.success(menuTreeNodes);
     }
 
@@ -61,6 +66,7 @@ public class SystemConfigArchitureController {
      */
     @PostMapping("/queryForPage")
     public JsonResult<IPage<SystemconfigArchitectureDto>> queryForPage(@RequestBody SystemconfigArchitecturePageQuery query) {
+        query.setType(Constants.TYPE_H5_SCREEN);
         return JsonResult.success(service.queryForPage(query));
     }
 
@@ -119,8 +125,9 @@ public class SystemConfigArchitureController {
      * @return
      */
     @PostMapping("/create")
+//    @PreAuthorize("@ss.hasPermi('h5:menu:add')")
     public JsonResult create(@RequestBody @Valid SystemconfigArchitectureCreateDto createDto) {
-
+        createDto.setType(Constants.TYPE_H5_SCREEN);
         service.create(createDto);
 
         return JsonResult.ok();
@@ -133,6 +140,7 @@ public class SystemConfigArchitureController {
      * @return
      */
     @PostMapping("/update")
+//    @PreAuthorize("@ss.hasPermi('h5:menu:edit')")
     public JsonResult update(@RequestBody @Valid SystemconfigArchitectureUpdateDto updateDto) {
 
         Integer sortNum = service.getChildNumByParendId(updateDto.getMenuId());
@@ -157,6 +165,7 @@ public class SystemConfigArchitureController {
      * @todo
      */
     @PostMapping("/delete")
+//    @PreAuthorize("@ss.hasPermi('h5:menu:remove')")
     public JsonResult delete(@RequestBody @Valid IdParam idParam) {
         Integer sortNum = service.getChildNumByParendId(idParam.getId());
 
@@ -176,6 +185,7 @@ public class SystemConfigArchitureController {
      * @return
      */
     @PostMapping("/updateSimulationStatus")
+//    @PreAuthorize("@ss.hasPermi('h5:menu:isMock')")
     public JsonResult updateSimulationStatus(@RequestBody @Valid UpdateStatusParam updateStatusParam) {
         service.updateSimulationStatus(updateStatusParam);
         return JsonResult.ok();
@@ -188,6 +198,7 @@ public class SystemConfigArchitureController {
      * @return
      */
     @PostMapping("/updateShowStatus")
+//    @PreAuthorize("@ss.hasPermi('h5:menu:isShow')")
     public JsonResult updateShowStatus(@RequestBody @Valid UpdateStatusParam updateStatusParam) {
         service.updateShowStatus(updateStatusParam);
         return JsonResult.ok();
