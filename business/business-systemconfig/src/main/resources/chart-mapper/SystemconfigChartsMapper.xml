@@ -93,4 +93,14 @@
     deleted = 0
     and redirect_id = #{id}
   </select>
+
+  <select id="findChartAppMenusNum" resultType="java.lang.Integer">
+    select
+    count(1)
+    from
+    tb_systemconfig_app_menu
+    where
+    deleted = 0
+    and chart_data like concat('%',#{id},'%')
+  </select>
 </mapper>

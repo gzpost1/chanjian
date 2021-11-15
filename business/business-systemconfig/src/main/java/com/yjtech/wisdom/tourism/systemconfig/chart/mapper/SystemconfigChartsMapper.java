@@ -26,4 +26,6 @@ public interface SystemconfigChartsMapper extends BaseMapper<SystemconfigChartsE
     Integer findChartMenusNum(Long id);
 
     Integer findMenuIsExistChart(Long id);
+
+    Integer findChartAppMenusNum(Long id);
 }

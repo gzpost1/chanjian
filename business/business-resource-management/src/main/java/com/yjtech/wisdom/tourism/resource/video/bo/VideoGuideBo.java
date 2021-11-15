@@ -3,6 +3,12 @@ package com.yjtech.wisdom.tourism.resource.video.bo;
 import com.yjtech.wisdom.tourism.common.annotation.Excel;
 import lombok.Data;
 
+/**
+ *
+ *
+ * @date 2021/11/11 17:53
+ * @author horadirm
+ */
 @Data
 public class VideoGuideBo {
 
@@ -26,7 +32,7 @@ public class VideoGuideBo {
 
     @Excel(name = "所在位置",
             regex = "^.{1,100}$",
-            regexMsg = "允许输入长度必须小于100")
+            regexMsg = "允许输入长度必须小于100") 
     private String address;
 
     @Excel(name = "经度",

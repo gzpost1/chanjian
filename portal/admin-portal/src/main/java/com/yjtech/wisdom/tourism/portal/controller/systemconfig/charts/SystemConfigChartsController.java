@@ -2,7 +2,6 @@ package com.yjtech.wisdom.tourism.portal.controller.systemconfig.charts;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
-import com.yjtech.wisdom.tourism.common.bean.SelectVo;
 import com.yjtech.wisdom.tourism.common.core.domain.IdParam;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.common.exception.ErrorCode;
@@ -17,7 +16,6 @@ import com.yjtech.wisdom.tourism.systemconfig.chart.dto.list.SystemconfigChartsL
 import com.yjtech.wisdom.tourism.systemconfig.chart.dto.list.SystemconfigChartsListVo;
 import com.yjtech.wisdom.tourism.systemconfig.chart.entity.SystemconfigChartsEntity;
 import com.yjtech.wisdom.tourism.systemconfig.chart.service.SystemconfigChartsListService;
-import com.yjtech.wisdom.tourism.systemconfig.chart.service.SystemconfigChartsPointService;
 import com.yjtech.wisdom.tourism.systemconfig.chart.service.SystemconfigChartsService;
 import com.yjtech.wisdom.tourism.systemconfig.chart.vo.SystemconfigChartsVo;
 import com.yjtech.wisdom.tourism.systemconfig.menu.service.SystemconfigMenuService;
@@ -94,12 +92,12 @@ public class SystemConfigChartsController {
         systemconfigChartsService.save(entity);
 
         //初始化列表数据
-        if(StringUtils.isNotBlank(entity.getListType())){
+        if (StringUtils.isNotBlank(entity.getListType())) {
             SystemconfigChartsListQueryVo systemconfigChartsListQueryVo = new SystemconfigChartsListQueryVo();
             systemconfigChartsListQueryVo.setChartId(entity.getId());
             systemconfigChartsListQueryVo.setListType(entity.getListType());
             List<SystemconfigChartsListVo> systemconfigChartsListVos = systemconfigChartsListService.queryChartsListsBYCharts(systemconfigChartsListQueryVo);
-            if(CollectionUtils.isNotEmpty(systemconfigChartsListVos)){
+            if (CollectionUtils.isNotEmpty(systemconfigChartsListVos)) {
                 List<SystemconfigChartsListCreateDto> collect = systemconfigChartsListVos.stream().map(e -> {
                     SystemconfigChartsListCreateDto systemconfigChartsListCreateDto = new SystemconfigChartsListCreateDto();
                     systemconfigChartsListCreateDto.setChartId(entity.getId());
@@ -148,8 +146,14 @@ public class SystemConfigChartsController {
 
         //首先校验模板是否被使用，如果已经被使用则不可删除
         int existnums = Optional.ofNullable(systemconfigChartsService.findChartMenusNum(idParam.getId())).orElse(0);
+        //模板是否被app页面配置所使用
+        int existAppnums = Optional.ofNullable(systemconfigChartsService.findChartAppMenusNum(idParam.getId())).orElse(0);
+
         if (existnums > 0) {
-            return JsonResult.error(ErrorCode.BUSINESS_EXCEPTION.code(), "已有大屏或H5页面关联，请取消关联后删除！");
+            return JsonResult.error(ErrorCode.BUSINESS_EXCEPTION.code(), "已有大屏菜单关联该模板，请取消关联后删除！");
+        } else if (existAppnums > 0) {
+            return JsonResult.error(ErrorCode.BUSINESS_EXCEPTION.code(), "已有H5菜单关联该模板，请取消关联后删除！");
+
         } else {
             systemconfigChartsService.removeById(idParam.getId());
         }
@@ -191,6 +195,17 @@ public class SystemConfigChartsController {
     @PostMapping("/queryPageList")
     public JsonResult<List<BaseVO>> queryForDetail() {
         return JsonResult.success(systemconfigMenuService.queryPageList());
+    }
+
+    /**
+     * H5跳转页面
+     *
+     * @param
+     * @return
+     */
+    @PostMapping("/queryAppRedirectPages")
+    public JsonResult<List<BaseVO>> queryAppRedirectPages() {
+        return JsonResult.success(systemconfigMenuService.queryAppRedirectPages());
     }
 
 }
