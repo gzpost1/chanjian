@@ -1,5 +1,6 @@
 package com.yjtech.wisdom.tourism.portal.controller.system;
 
+import com.yjtech.wisdom.tourism.common.constant.Constants;
 import com.yjtech.wisdom.tourism.common.core.domain.IdParam;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.common.exception.ErrorCode;
@@ -94,7 +95,16 @@ public class SysLoginController {
      */
     @GetMapping("getRouters")
     public JsonResult<List<MenuTreeNode>> getRouters() {
-        return JsonResult.success(service.getDatavMenu());
+        return JsonResult.success(service.getDatavMenu(Constants.TYPE_BIG_SCREEN));
+    }
+    /**
+     * 获取H5路由信息
+     * @todo  指标库信息未录入
+     * @return 路由信息
+     */
+    @GetMapping("getH5Routers")
+    public JsonResult<List<MenuTreeNode>> getH5Routers() {
+        return JsonResult.success(service.getDatavMenu(Constants.TYPE_H5_SCREEN));
     }
 
     /**
@@ -105,6 +115,15 @@ public class SysLoginController {
     @PostMapping("getRedirectPageData")
     public JsonResult<SystemconfigMenuDatavlDto> getRedirectPageData(@RequestBody @Valid IdParam idParam) {
         return JsonResult.success(service.getRedirectPageData(idParam.getId()));
+    }
+    /**
+     * 获取跳转的页面信息
+     * @todo
+     * @return 路由信息
+     */
+    @PostMapping("getH5RedirectPageData")
+    public JsonResult<SystemconfigMenuDatavlDto> getH5RedirectPageData(@RequestBody @Valid IdParam idParam) {
+        return JsonResult.success(service.getH5RedirectPageData(idParam.getId()));
     }
 
 
