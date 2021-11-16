@@ -193,21 +193,31 @@ public class TbSystemconfigArchitectureService extends ServiceImpl<TbSystemconfi
         //查找所有点位图标
         List<Icon> icons = iconService.querMenuIconList();
 
-        List<SystemconfigMenuEntity> pages = systemconfigMenuService.queryMenusByIds(null);
-        Map<Long, List<SystemconfigMenuDatavlDto>> allMenuPage = null;
 
-        if (CollectionUtils.isNotEmpty(pages)) {
-            allMenuPage = pages.stream()
-                    .map(e -> processMenuData(icons, pages, e))
-                    .collect(Collectors.groupingBy(SystemconfigMenuDatavlDto::getId));
+        Map<Long, List<SystemconfigMenuDatavlDto>> allMenuPage = null;
+        if (Objects.equals(Constants.TYPE_BIG_SCREEN, type)) {
+            List<SystemconfigMenuEntity> pages = systemconfigMenuService.queryMenusByIds(null);
+            if (CollectionUtils.isNotEmpty(pages)) {
+                allMenuPage = pages.stream()
+                        .map(e -> processMenuData(icons, pages, e))
+                        .collect(Collectors.groupingBy(SystemconfigMenuDatavlDto::getId));
+            }
+        } else {
+            List<TbSystemconfigH5MenuEntity> h5pages = systemconfigH5MenuService.list();
+            if (CollectionUtils.isNotEmpty(h5pages)) {
+                allMenuPage = h5pages.stream()
+                        .map(e -> processH5MenuData(icons, h5pages, e))
+                        .collect(Collectors.groupingBy(SystemconfigMenuDatavlDto::getId));
+            }
         }
+
 
         Map<Long, List<SystemconfigMenuDatavlDto>> finalAllMenuPage = allMenuPage;
         //已经存在的跳转url，用于跳出循坏依赖
         List<String> constantRedirectUrl = new ArrayList<>();
 
         treeNodeList = treeNodeList.stream()
-                .filter(e -> !StringUtils.equals(e.getParentId(), "0"))
+                .filter(e -> !StringUtils.equals(e.getParentId(), "0")  ).filter(e->!StringUtils.equals(e.getParentId(), "1"))
                 .map(e -> {
 
                     if (finalAllMenuPage != null && finalAllMenuPage.containsKey(e.getPageId())) {
@@ -239,6 +249,7 @@ public class TbSystemconfigArchitectureService extends ServiceImpl<TbSystemconfi
         }
         return allMenuPage.get(id).get(0);
     }
+
     public SystemconfigMenuDatavlDto getH5RedirectPageData(Long id) {
         //查找所有点位图标
         List<Icon> icons = iconService.querMenuIconList();
@@ -365,6 +376,7 @@ public class TbSystemconfigArchitectureService extends ServiceImpl<TbSystemconfi
         }
         return dto;
     }
+
     /**
      * 处理页面数据
      *
@@ -375,7 +387,7 @@ public class TbSystemconfigArchitectureService extends ServiceImpl<TbSystemconfi
         SystemconfigMenuDatavlDto dto = new SystemconfigMenuDatavlDto();
         BeanUtils.copyProperties(nowPage, dto);
         JSONArray chartsEntities = nowPage.getChartData();
-        List<SystemconfigChartsEntity> chartData = JSONObject.parseArray(chartsEntities.toJSONString(),SystemconfigChartsEntity.class);
+        List<SystemconfigChartsEntity> chartData = JSONObject.parseArray(chartsEntities.toJSONString(), SystemconfigChartsEntity.class);
 
 
         //查找地图标的相关信息
@@ -422,7 +434,7 @@ public class TbSystemconfigArchitectureService extends ServiceImpl<TbSystemconfi
                     //设置图表跳转路径
                     if (CollectionUtils.isNotEmpty(pages)) {
                         for (TbSystemconfigH5MenuEntity page : pages) {
-                            if (StringUtils.equals("1", chart.getIsRedirect() + "") && StringUtils.equals(chart.getRedirectId(), page.getId() + "")) {
+                            if (StringUtils.equals("1", chart.getIsRedirect() + "") && StringUtils.equals(chart.getH5RedirectId(), page.getId() + "")) {
                                 chart.setRedirectPath(page.getRoutePath());
                                 break;
                             }
