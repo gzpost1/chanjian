@@ -117,7 +117,7 @@ public class SysLoginController {
         return JsonResult.success(service.getRedirectPageData(idParam.getId()));
     }
     /**
-     * 获取跳转的页面信息
+     * 获取H5跳转的页面信息
      * @todo
      * @return 路由信息
      */
