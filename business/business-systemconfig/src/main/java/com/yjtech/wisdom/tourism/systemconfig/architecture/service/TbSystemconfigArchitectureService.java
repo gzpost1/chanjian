@@ -264,7 +264,11 @@ public class TbSystemconfigArchitectureService extends ServiceImpl<TbSystemconfi
         } else {
             return null;
         }
-        return allMenuPage.get(id).get(0);
+        List<SystemconfigMenuDatavlDto> menuDatavlDtos = allMenuPage.get(id);
+        if(Objects.isNull(menuDatavlDtos)){
+            return null;
+        }
+        return menuDatavlDtos.get(0);
     }
 
     /**
