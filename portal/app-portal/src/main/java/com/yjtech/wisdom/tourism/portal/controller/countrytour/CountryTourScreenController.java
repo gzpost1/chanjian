@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yjtech.wisdom.tourism.common.bean.SelectVo;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.entity.TbCountryTour;
+import com.yjtech.wisdom.tourism.infrastructure.core.controller.BaseQueryController;
 import com.yjtech.wisdom.tourism.service.TbCountryTourService;
 import com.yjtech.wisdom.tourism.vo.CountryTourQuery;
 import org.springframework.validation.annotation.Validated;
@@ -22,7 +23,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("screen/countrytour")
-public class CountryTourScreenController {
+public class CountryTourScreenController extends BaseQueryController<TbCountryTourService,TbCountryTour,CountryTourQuery> {
     private final TbCountryTourService countryTourService;
 
     public CountryTourScreenController(TbCountryTourService countryTourService) {
