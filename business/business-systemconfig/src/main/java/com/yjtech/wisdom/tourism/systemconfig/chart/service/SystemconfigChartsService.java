@@ -54,5 +54,9 @@ public class SystemconfigChartsService extends ServiceImpl<SystemconfigChartsMap
     public Integer findMenuIsExistChart(Long id) {
         return this.baseMapper.findMenuIsExistChart(id);
     }
+
+    public Integer findChartAppMenusNum(Long id) {
+        return this.baseMapper.findChartAppMenusNum(id);
+    }
 }
 

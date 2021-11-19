@@ -141,6 +141,9 @@ public class Constants {
      */
     public static final Byte HOUR = 4;
 
+    public static final Integer TYPE_BIG_SCREEN = 0;//大屏
+    public static final Integer TYPE_H5_SCREEN = 1;//H5
+
 
     /**
      * 数字常量
@@ -198,6 +201,12 @@ public class Constants {
          * 数字100
          */
         public static final Integer NUMBER_HUNDRED = 100;
+
+
+
+
+
+
     }
 
 }

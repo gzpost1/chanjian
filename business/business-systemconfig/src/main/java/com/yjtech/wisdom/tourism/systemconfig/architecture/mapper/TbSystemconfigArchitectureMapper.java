@@ -28,7 +28,7 @@ public interface TbSystemconfigArchitectureMapper extends BaseMapper<TbSystemcon
     String queryNameByPingtai();
 
 
-    List<MenuTreeNode> getAreaTree(@Param("parentId") int parentId);
+    List<MenuTreeNode> getAreaTree(@Param("parentId") int parentId ,@Param("type") Integer type);
 
     TbSystemconfigArchitectureEntity getArchitecutueSortNum(@Param("params") UpdateStatusParam updateStatusParam);
 }

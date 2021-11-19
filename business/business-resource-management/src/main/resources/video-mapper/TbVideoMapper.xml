@@ -71,6 +71,9 @@
                 <if test="params.equipStatus != null">
                     video.equip_status = #{params.equipStatus} and
                 </if>
+                <if test="params.id != null">
+                    video.id = #{params.id} and
+                </if>
             </if>
             video.deleted = 0 and
             scenic.deleted = 0

@@ -29,7 +29,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 
-/**
+/***
  * 视频设备 服务实现类
  *
  * @author Mujun
@@ -46,6 +46,7 @@ public class TbVideoService extends BaseMybatisServiceImpl<TbVideoMapper, TbVide
     public IPage<TbVideoEntity> queryVideoByScenicId(ScenicScreenQuery query){
         LambdaQueryWrapper<TbVideoEntity> queryWrapper = new LambdaQueryWrapper<TbVideoEntity>();
         queryWrapper.eq(TbVideoEntity::getSecenicId, query.getScenicId());
+        queryWrapper.eq(TbVideoEntity::getName, query.getVideoName());
         queryWrapper.eq(TbVideoEntity::getStatus, null == query.getStatus() ? EntityConstants.ENABLED : query.getStatus());
         queryWrapper.orderByDesc(TbVideoEntity::getEquipStatus);
         queryWrapper.orderByDesc(TbVideoEntity::getSort);

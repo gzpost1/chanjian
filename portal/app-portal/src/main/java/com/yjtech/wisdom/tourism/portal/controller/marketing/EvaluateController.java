@@ -40,7 +40,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-/**
+/***
  * 大屏_评论分析
  *
  * @Author horadirm
@@ -129,16 +129,18 @@ public class EvaluateController {
         //构建返回
         List<BasePercentVO> resultList = Lists.newArrayList();
         //计算好评
-        double goodEvaluateResult = (hotelMap.get(SimulationConstants.GOOD_EVALUATE_DESCRIBE) + scenicMap.get(SimulationConstants.GOOD_EVALUATE_DESCRIBE)) / 2;
+        double goodEvaluateResult = ((null == hotelMap.get(SimulationConstants.GOOD_EVALUATE_DESCRIBE) ? 0.0 : hotelMap.get(SimulationConstants.GOOD_EVALUATE_DESCRIBE)) +
+                (null == scenicMap.get(SimulationConstants.GOOD_EVALUATE_DESCRIBE) ? 0.0 : scenicMap.get(SimulationConstants.GOOD_EVALUATE_DESCRIBE))) / 2;
         resultList.add(new BasePercentVO(SimulationConstants.GOOD_EVALUATE_DESCRIBE, null,
                 new BigDecimal(goodEvaluateResult).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue()));
         //计算中评
-        double mediumEvaluateResult = (hotelMap.get(SimulationConstants.MEDIUM_EVALUATE_DESCRIBE) + scenicMap.get(SimulationConstants.MEDIUM_EVALUATE_DESCRIBE)) / 2;
+        double mediumEvaluateResult = ((null == hotelMap.get(SimulationConstants.MEDIUM_EVALUATE_DESCRIBE) ? 0.0 : hotelMap.get(SimulationConstants.MEDIUM_EVALUATE_DESCRIBE)) +
+                (null == scenicMap.get(SimulationConstants.MEDIUM_EVALUATE_DESCRIBE) ? 0.0 : scenicMap.get(SimulationConstants.MEDIUM_EVALUATE_DESCRIBE))) / 2;
         resultList.add(new BasePercentVO(SimulationConstants.MEDIUM_EVALUATE_DESCRIBE, null,
                 new BigDecimal(mediumEvaluateResult).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue()));
         //计算差评
         resultList.add(new BasePercentVO(SimulationConstants.BAD_EVALUATE_DESCRIBE, null,
-                new BigDecimal(100 - goodEvaluateResult - mediumEvaluateResult).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue()));
+                new BigDecimal(goodEvaluateResult == 0 && mediumEvaluateResult == 0 ? 0.0 : 100 - goodEvaluateResult - mediumEvaluateResult).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue()));
 
         return JsonResult.success(resultList);
     }

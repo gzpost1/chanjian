@@ -24,4 +24,8 @@ public class SystemConfigChartQueryPageDto extends PageQuery {
      * 页面类型
      */
     private String menuType;
+    /**
+     * 是否是H5 0不是 1是
+     */
+    private Integer isH5;
 }

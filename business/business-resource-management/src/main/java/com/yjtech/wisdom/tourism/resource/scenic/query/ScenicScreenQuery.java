@@ -11,6 +11,8 @@ public class ScenicScreenQuery extends TimeBaseQuery {
 
     /**景区名称*/
     private String name;
+    /**景区名称*/
+    private String videoName;
 
     /**景区id*/
     private Long scenicId;

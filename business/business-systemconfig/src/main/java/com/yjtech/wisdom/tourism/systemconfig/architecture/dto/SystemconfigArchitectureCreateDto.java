@@ -28,4 +28,6 @@ public class SystemconfigArchitectureCreateDto {
      * 页面id
      */
     private Long pageId;
+
+    private Integer type;
 }

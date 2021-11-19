@@ -41,6 +41,10 @@ public class MenuChartDetailDatavDto {
      * commponent_type 组件类型
      */
     private String commponentType;
+    /**
+     * h5_commponent_type 组件类型
+     */
+    private String h5CommponentType;
 
     /**
      * 点位坐标[0,1,2]
@@ -56,6 +60,10 @@ public class MenuChartDetailDatavDto {
      * 跳转页面id
      */
     private String redirectId;
+    /**
+     * h5跳转页面id
+     */
+    private String h5RedirectId;
 
     /**
      * 跳转页面路径
