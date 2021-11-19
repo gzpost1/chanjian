@@ -21,4 +21,6 @@ public class CountryTourQuery extends PageQuery {
      * 启停用状态
      */
     private Byte status;
+
+    private Long id;
 }
