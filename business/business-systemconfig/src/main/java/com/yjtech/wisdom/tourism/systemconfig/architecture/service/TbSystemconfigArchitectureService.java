@@ -264,7 +264,11 @@ public class TbSystemconfigArchitectureService extends ServiceImpl<TbSystemconfi
         } else {
             return null;
         }
-        return allMenuPage.get(id).get(0);
+        List<SystemconfigMenuDatavlDto> menuDatavlDtos = allMenuPage.get(id);
+        if(Objects.isNull(menuDatavlDtos)){
+            return null;
+        }
+        return menuDatavlDtos.get(0);
     }
 
     /**
@@ -387,12 +391,12 @@ public class TbSystemconfigArchitectureService extends ServiceImpl<TbSystemconfi
         SystemconfigMenuDatavlDto dto = new SystemconfigMenuDatavlDto();
         BeanUtils.copyProperties(nowPage, dto);
         JSONArray chartsEntities = nowPage.getChartData();
-        List<SystemconfigChartsEntity> chartData = JSONObject.parseArray(chartsEntities.toJSONString(), SystemconfigChartsEntity.class);
+
 
 
         //查找地图标的相关信息
-        if (Objects.nonNull(nowPage) && CollectionUtils.isNotEmpty(chartData)) {
-
+        if (Objects.nonNull(nowPage) && CollectionUtils.isNotEmpty(chartsEntities)) {
+            List<SystemconfigChartsEntity> chartData = JSONObject.parseArray(chartsEntities.toJSONString(), SystemconfigChartsEntity.class);
             List<Long> chartId = chartData.stream().filter(chart -> Objects.nonNull(chart.getId())).map(chart -> chart.getId()).collect(Collectors.toList());
             if (CollectionUtils.isNotEmpty(chartId)) {
                 //查找所有图表

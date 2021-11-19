@@ -85,6 +85,11 @@
         <foreach collection="chartIds" item="id" open="(" separator="," close=")">
             #{id}
         </foreach>
+        order by field(id,
+        <foreach collection="chartIds" item="id" separator=",">
+            #{id}
+        </foreach>
+        )
     </select>
 
     <select id="getMenuChartListByIds"
