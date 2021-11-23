@@ -80,8 +80,9 @@ import java.util.Optional;
     @PreAuthorize("@ss.hasPermi('h5:page:isMock')")
     @PostMapping("/updateSimulationStatus")
     public JsonResult updateSimulationStatus(@RequestBody @Valid UpdateStatusParam updateStatusParam) {
-        TbSystemconfigH5MenuEntity tbSystemconfigH5MenuEntity = TbSystemconfigH5MenuEntity.builder().id(updateStatusParam.getId()).isSimulation(updateStatusParam.getStatus()).build();
-        service.updateById(tbSystemconfigH5MenuEntity);
+        TbSystemconfigH5MenuEntity updateEntity = service.getById(updateStatusParam.getId());
+        updateEntity.setIsSimulation(updateStatusParam.getStatus());
+        service.updateById(updateEntity);
         return JsonResult.ok();
     }
 }
