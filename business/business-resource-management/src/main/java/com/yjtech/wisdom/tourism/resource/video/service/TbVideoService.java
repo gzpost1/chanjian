@@ -45,8 +45,8 @@ public class TbVideoService extends BaseMybatisServiceImpl<TbVideoMapper, TbVide
     //根据景区id查询监控
     public IPage<TbVideoEntity> queryVideoByScenicId(ScenicScreenQuery query){
         LambdaQueryWrapper<TbVideoEntity> queryWrapper = new LambdaQueryWrapper<TbVideoEntity>();
-        queryWrapper.eq(TbVideoEntity::getSecenicId, query.getScenicId());
-        queryWrapper.eq(TbVideoEntity::getName, query.getVideoName());
+        queryWrapper.eq(Objects.nonNull(query.getScenicId()),TbVideoEntity::getSecenicId, query.getScenicId());
+        queryWrapper.eq(Objects.nonNull(query.getName()),TbVideoEntity::getName, query.getVideoName());
         queryWrapper.eq(TbVideoEntity::getStatus, null == query.getStatus() ? EntityConstants.ENABLED : query.getStatus());
         queryWrapper.orderByDesc(TbVideoEntity::getEquipStatus);
         queryWrapper.orderByDesc(TbVideoEntity::getSort);
