@@ -1,5 +1,6 @@
 package com.yjtech.wisdom.tourism.resource.scenic.entity.vo;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,6 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ScenicBaseVo {
 
     /**
@@ -22,4 +24,9 @@ public class ScenicBaseVo {
 
     /**值*/
     private String value;
+
+    /**
+     * 百分比
+     */
+    private Double percent;
 }
