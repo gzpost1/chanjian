@@ -214,10 +214,16 @@ public class ScenicScreenController {
      * @return:
      */
     @PostMapping("/queryEvaluateTop5")
-    public JsonResult<IPage<BaseVO>> queryEvaluateTop5(@RequestBody @Valid ScenicScreenQuery query) {
-        IPage<BaseVO> page = extensionExecutor.execute(ScenicQryExtPt.class,
+    public JsonResult<IPage<BasePercentVO>> queryEvaluateTop5(@RequestBody @Valid ScenicScreenQuery query) {
+        IPage<BasePercentVO> page = extensionExecutor.execute(ScenicQryExtPt.class,
                 buildBizScenario(ScenicExtensionConstant.SCENIC_QUANTITY, query.getIsSimulation()),
                 extension -> extension.queryEvaluateTop5(query));
+        List<BasePercentVO> records = page.getRecords();
+        double sum = records.stream().mapToDouble(value -> Double.parseDouble(value.getValue())).sum();
+        records.forEach(baseVO -> {
+            BigDecimal value = BigDecimal.valueOf(Double.parseDouble(baseVO.getValue()));
+            baseVO.setRate(MathUtil.divide(value,BigDecimal.valueOf(sum)).doubleValue());
+        });
         return JsonResult.success(page);
     }
 

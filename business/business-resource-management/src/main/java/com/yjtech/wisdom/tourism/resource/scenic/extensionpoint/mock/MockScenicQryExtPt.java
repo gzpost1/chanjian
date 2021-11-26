@@ -410,12 +410,12 @@ public class MockScenicQryExtPt implements ScenicQryExtPt {
     }
 
     @Override
-    public IPage<BaseVO> queryEvaluateTop5(ScenicScreenQuery query) {
+    public IPage<BasePercentVO> queryEvaluateTop5(ScenicScreenQuery query) {
         SimulationScenicDto dto = redisCache.getCacheObject(Constants.SIMULATION_KEY + SimulationConstants.SCENIC);
 
         BigDecimal timeInterval = getTimeInterval(query);
         List<ScenicEntity> list = queryScenicList(query.getScenicId());
-        List<BaseVO> result = Lists.newArrayList();
+        List<BasePercentVO> result = Lists.newArrayList();
         BigDecimal evaluate = new BigDecimal(0);
         for (ScenicEntity entity : list) {
 
@@ -424,7 +424,7 @@ public class MockScenicQryExtPt implements ScenicQryExtPt {
             BigDecimal dailyEvaluate = dto.getInitialDailyEvaluate().add(randomForCache1);
             //收获评价=日累计评价量*筛选时段天数。
             evaluate = evaluate.add(dailyEvaluate.multiply(timeInterval));
-            result.add(BaseVO.builder().name(entity.getName()).value(String.valueOf(evaluate)).build());
+            result.add(BasePercentVO.builder().name(entity.getName()).value(String.valueOf(evaluate)).build());
         }
         result = result.stream().sorted(Comparator.comparing(BaseVO::getValue,(x ,y) ->{
             if(StringUtils.isBlank(x) && StringUtils.isNotBlank(y)){
@@ -436,8 +436,8 @@ public class MockScenicQryExtPt implements ScenicQryExtPt {
             }
             return Integer.valueOf(x).compareTo(Integer.valueOf(y));
             }).reversed()).collect(Collectors.toList());
-        List<List<BaseVO>> partition = Lists.partition(result, query.getPageSize().intValue());
-        Page<BaseVO> page = new Page<>();
+        List<List<BasePercentVO>> partition = Lists.partition(result, query.getPageSize().intValue());
+        Page<BasePercentVO> page = new Page<>();
         page.setRecords(partition.get(query.getPageNo().intValue() -1));
         page.setTotal(result.size());
         page.setSize(query.getPageSize());

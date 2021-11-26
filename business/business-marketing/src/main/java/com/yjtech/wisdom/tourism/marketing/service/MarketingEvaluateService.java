@@ -192,7 +192,7 @@ public class MarketingEvaluateService extends ServiceImpl<MarketingEvaluateMappe
      *
      * @return
      */
-    public IPage<BaseVO> queryEvaluateTop5(EvaluateQueryVO query) {
+    public IPage<BasePercentVO> queryEvaluateTop5(EvaluateQueryVO query) {
         return baseMapper.queryEvaluateTop5(new Page(query.getPageNo(), query.getPageSize()), query);
     }
 

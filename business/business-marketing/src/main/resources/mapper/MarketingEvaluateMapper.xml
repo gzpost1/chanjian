@@ -423,7 +423,7 @@
     </select>
 
     <!--景区大数据-评价排行top5-->
-    <select id="queryEvaluateTop5" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO">
+    <select id="queryEvaluateTop5" resultType="com.yjtech.wisdom.tourism.common.bean.BasePercentVO">
         select
         evaluate_new.place_name name,
         count(evaluate_new.id) `value`

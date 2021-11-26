@@ -262,8 +262,8 @@ public class EvaluateController {
      * @return:
      */
     @PostMapping("/queryEvaluateTop5")
-    public JsonResult<IPage<BaseVO>> queryEvaluateTop5(@RequestBody @Valid ScenicScreenQuery vo) {
-        IPage<BaseVO> page = extensionExecutor.execute(ScenicQryExtPt.class,
+    public JsonResult<IPage<BasePercentVO>> queryEvaluateTop5(@RequestBody @Valid ScenicScreenQuery vo) {
+        IPage<BasePercentVO> page = extensionExecutor.execute(ScenicQryExtPt.class,
                 buildBizScenarioScenic(ScenicExtensionConstant.SCENIC_QUANTITY, vo.getIsSimulation()),
                 extension -> extension.queryEvaluateTop5(vo));
         return JsonResult.success(page);

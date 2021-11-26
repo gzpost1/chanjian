@@ -84,7 +84,7 @@ public class ImplScenicQryExtPt implements ScenicQryExtPt {
     }
 
     @Override
-    public IPage<BaseVO> queryEvaluateTop5(ScenicScreenQuery query) {
+    public IPage<BasePercentVO> queryEvaluateTop5(ScenicScreenQuery query) {
         return scenicService.queryEvaluateTop5(query);
     }
 

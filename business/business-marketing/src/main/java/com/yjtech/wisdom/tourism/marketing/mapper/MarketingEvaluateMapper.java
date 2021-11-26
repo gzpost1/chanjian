@@ -127,7 +127,7 @@ public interface MarketingEvaluateMapper extends BaseMapper<MarketingEvaluateEnt
      * @param params
      * @return
      */
-    IPage<BaseVO> queryEvaluateTop5(Page page, @Param("params") EvaluateQueryVO params);
+    IPage<BasePercentVO> queryEvaluateTop5(Page page, @Param("params") EvaluateQueryVO params);
 
     /**
      * 景区大数据-满意度排行TOP5
