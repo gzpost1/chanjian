@@ -267,7 +267,7 @@ public class ScenicService extends ServiceImpl<ScenicMapper, ScenicEntity> {
     /**
      * 景区大数据——评价排行
      */
-    public IPage<BaseVO> queryEvaluateTop5(ScenicScreenQuery query) {
+    public IPage<BasePercentVO> queryEvaluateTop5(ScenicScreenQuery query) {
         return evaluateService.queryEvaluateTop5(queryToEvaluateQueryVO(query));
     }
 
