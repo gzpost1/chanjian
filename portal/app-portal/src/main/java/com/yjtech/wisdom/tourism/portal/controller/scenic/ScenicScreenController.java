@@ -7,6 +7,7 @@ import com.yjtech.wisdom.tourism.common.bean.BaseValueVO;
 import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.common.exception.CustomException;
+import com.yjtech.wisdom.tourism.common.utils.MathUtil;
 import com.yjtech.wisdom.tourism.extension.BizScenario;
 import com.yjtech.wisdom.tourism.extension.ExtensionConstant;
 import com.yjtech.wisdom.tourism.extension.ExtensionExecutor;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.math.BigDecimal;
 import java.util.List;
 
 import static com.baomidou.mybatisplus.core.toolkit.ObjectUtils.isNull;
@@ -195,6 +197,13 @@ public class ScenicScreenController {
         IPage<ScenicBaseVo> page = extensionExecutor.execute(ScenicQryExtPt.class,
                 buildBizScenario(ScenicExtensionConstant.SCENIC_QUANTITY, query.getIsSimulation()),
                 extension -> extension.queryPassengerFlowTop5(query));
+        List<ScenicBaseVo> records = page.getRecords();
+        double sum = records.stream().mapToDouble(value -> Double.parseDouble(value.getValue())).sum();
+        records.forEach(scenicBaseVo -> {
+            double value = Double.parseDouble(scenicBaseVo.getValue());
+            BigDecimal percent = MathUtil.divide(BigDecimal.valueOf(value), BigDecimal.valueOf(sum));
+            scenicBaseVo.setPercent(percent.doubleValue());
+        });
         return JsonResult.success(page);
     }
 
