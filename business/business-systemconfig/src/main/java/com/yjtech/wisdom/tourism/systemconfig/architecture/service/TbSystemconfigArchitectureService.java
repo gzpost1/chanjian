@@ -136,6 +136,42 @@ public class TbSystemconfigArchitectureService extends ServiceImpl<TbSystemconfi
         entity.setSortNum(sortNum + 1);
         this.save(entity);
     }
+    public void createH5(SystemconfigArchitectureCreateDto createDto) {
+        //查询当前的序号
+        Integer sortNum = getChildMaxNumByParendId(createDto.getParentId());
+
+        TbSystemconfigArchitectureEntity entity = new TbSystemconfigArchitectureEntity();
+        BeanUtils.copyProperties(createDto, entity);
+        entity.setMenuId(IdWorker.getInstance().nextId());
+        entity.setDeleted((byte) 0);
+        entity.setIsShow(Byte.valueOf("1"));
+        entity.setIsSimulation(Byte.valueOf("0"));
+
+        //查询自己现在是第几级
+        TbSystemconfigArchitectureEntity parentEntity = this.getById(createDto.getParentId());
+        if (Objects.isNull(parentEntity)) {
+            //现在新增的是第一级
+            entity.setFirstId(entity.getMenuId());
+        } else {
+            if (parentEntity.getMenuId().equals(parentEntity.getFirstId())) {
+                //如果父级是第一级
+                entity.setFirstId(parentEntity.getFirstId());
+                entity.setSeconId(entity.getMenuId());
+            } else if (parentEntity.getMenuId().equals(parentEntity.getSeconId())) {
+                entity.setFirstId(parentEntity.getFirstId());
+                entity.setSeconId(parentEntity.getSeconId());
+                entity.setThreeId(entity.getMenuId());
+            }else if(parentEntity.getMenuId().equals(parentEntity.getThreeId())){
+                entity.setFirstId(parentEntity.getFirstId());
+                entity.setSeconId(parentEntity.getSeconId());
+                entity.setThreeId(parentEntity.getThreeId());
+                entity.setFourId(entity.getMenuId());
+            }
+        }
+
+        entity.setSortNum(sortNum + 1);
+        this.save(entity);
+    }
 
     private Integer getChildMaxNumByParendId(Long parentId) {
         return Optional.ofNullable(this.baseMapper.getChildMaxNumByParendId(parentId)).orElse(0);

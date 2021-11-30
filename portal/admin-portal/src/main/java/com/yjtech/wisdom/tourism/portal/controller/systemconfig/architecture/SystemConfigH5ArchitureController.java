@@ -27,7 +27,6 @@ import java.util.Objects;
 
 /**
  * 后台管理-系统配置-H5菜单架构
- *
  */
 @RestController
 @RequestMapping("/systemconfig/h5/architeure")
@@ -42,16 +41,16 @@ public class SystemConfigH5ArchitureController {
      */
     @PostMapping("/getMenuTree")
     public JsonResult getMenuTree() {
-        List<MenuTreeNode> treeNodeList = service.getAreaTree(1,Constants.TYPE_H5_SCREEN);
+        List<MenuTreeNode> treeNodeList = service.getAreaTree(1, Constants.TYPE_H5_SCREEN);
         List<MenuTreeNode> menuTreeNodes = TreeUtil.makeTree(treeNodeList);
         String pintaiName = service.getPintaiName();
-        if( treeNodeList.size()==0){
+        if (treeNodeList.size() == 0) {
             MenuTreeNode menuTreeNode = new MenuTreeNode();
             menuTreeNode.setId("1");
             menuTreeNode.setLabel(pintaiName);
             menuTreeNode.setTitle(pintaiName);
             menuTreeNodes.add(menuTreeNode);
-        }else {
+        } else {
             menuTreeNodes.get(0).setLabel(pintaiName);
             menuTreeNodes.get(0).setTitle(pintaiName);
         }
@@ -99,8 +98,8 @@ public class SystemConfigH5ArchitureController {
             }
 
             //包含根节点在内，当前新增层级是否超过第3级，若是，提示：最多只能创建二级菜单
-            if (Objects.nonNull(byId.getThreeId())) {
-                return JsonResult.error(ErrorCode.BUSINESS_EXCEPTION.code(), "最多只能创建二级菜单！");
+            if (Objects.nonNull(byId.getFourId())) {
+                return JsonResult.error(ErrorCode.BUSINESS_EXCEPTION.code(), "最多只能创建三级菜单！");
             }
         }
 
@@ -128,7 +127,7 @@ public class SystemConfigH5ArchitureController {
 //    @PreAuthorize("@ss.hasPermi('h5:menu:add')")
     public JsonResult create(@RequestBody @Valid SystemconfigArchitectureCreateDto createDto) {
         createDto.setType(Constants.TYPE_H5_SCREEN);
-        service.create(createDto);
+        service.createH5(createDto);
 
         return JsonResult.ok();
     }
@@ -221,9 +220,9 @@ public class SystemConfigH5ArchitureController {
         //查出父级的最小序号和最大序号
         BaseVO baseVO = this.service.queryMaxAndMinByParendId(byId.getParentId());
         if (
-                //最小值
-                (StringUtils.equals(baseVO.getName(), String.valueOf(byId.getSortNum())) && StringUtils.equals("0",updateStatusParam.getStatus()+"")) ||
-                (StringUtils.equals(baseVO.getValue(), String.valueOf(byId.getSortNum())) && StringUtils.equals("1",updateStatusParam.getStatus()+""))
+            //最小值
+                (StringUtils.equals(baseVO.getName(), String.valueOf(byId.getSortNum())) && StringUtils.equals("0", updateStatusParam.getStatus() + "")) ||
+                        (StringUtils.equals(baseVO.getValue(), String.valueOf(byId.getSortNum())) && StringUtils.equals("1", updateStatusParam.getStatus() + ""))
                 ) {
             return JsonResult.error(ErrorCode.BUSINESS_EXCEPTION.code(), "当前记录已经是最大或者最小记录，无法移动！");
         }
