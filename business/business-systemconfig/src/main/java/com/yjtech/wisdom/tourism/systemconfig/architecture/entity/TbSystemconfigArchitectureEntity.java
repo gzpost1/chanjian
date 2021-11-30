@@ -47,6 +47,12 @@ public class TbSystemconfigArchitectureEntity extends BaseEntity {
     private Long threeId;
 
     /**
+     * 第四级菜单id
+     */
+    @TableField(value = "four_id")
+    private Long fourId;
+
+    /**
      * 显示顺序
      */
     @TableField(value = "page_id", updateStrategy = FieldStrategy.IGNORED)
