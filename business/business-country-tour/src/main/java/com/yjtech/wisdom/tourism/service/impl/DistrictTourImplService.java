@@ -248,8 +248,15 @@ public class DistrictTourImplService implements DistrictExtPt {
         vo.setEndDate(DateTimeUtil.transformDateTime(vo.getEndTime().plusMonths(-1), DistrictBigDataConstants.YYYY_MM_DD));
 
         // 上月数据
+        String lastMonthResult = districtBigDataService.requestDistrict(DistrictPathEnum.PASSENGER_FLOW.getPath(), vo, DistrictPathEnum.PASSENGER_FLOW.getDesc());
+        List<MonthPassengerFlowDto> lastMonth = JSONObject.parseArray(String.valueOf(JsonUtils.getValueByKey(lastMonthResult, DistrictBigDataConstants.DATA)), MonthPassengerFlowDto.class);
+
+        // 修改上月日期
+        vo.setBeginDate(DateTimeUtil.transformDateTime(vo.getBeginTime().plusYears(-1).plusDays(-1), DistrictBigDataConstants.YYYY_MM_DD));
+        vo.setEndDate(DateTimeUtil.transformDateTime(vo.getEndTime().plusYears(-1), DistrictBigDataConstants.YYYY_MM_DD));
+        // 数据
         String lastYearResult = districtBigDataService.requestDistrict(DistrictPathEnum.PASSENGER_FLOW.getPath(), vo, DistrictPathEnum.PASSENGER_FLOW.getDesc());
-        List<MonthPassengerFlowDto> lastMonth = JSONObject.parseArray(String.valueOf(JsonUtils.getValueByKey(lastYearResult, DistrictBigDataConstants.DATA)), MonthPassengerFlowDto.class);
+        List<MonthPassengerFlowDto> lastYear = JSONObject.parseArray(String.valueOf(JsonUtils.getValueByKey(lastYearResult, DistrictBigDataConstants.DATA)), MonthPassengerFlowDto.class);
 
         // 结果数据
         List<MonthPassengerFlowDto> resultList = Lists.newArrayList();
@@ -277,21 +284,21 @@ public class DistrictTourImplService implements DistrictExtPt {
                 currentMonth.get(i).setHbScale(DistrictBigDataConstants.DEFAULT_STR);
             }
             else {
-             Integer lastNumber = lastMonth.get(i).getNumber();
+                Integer lastYearNumber = lastYear.get(i).getNumber();
 
-            // 前一天的数据
-            Integer beforeNumber = currentMonth.get(i - 1).getNumber();
-            String beforeDay = MathUtil.calPercent(new BigDecimal(currentNumber - beforeNumber), new BigDecimal(currentNumber), 1).toString();
-            currentMonth.get(i).setHbScale(beforeDay);
+                // 前一天的数据
+                Integer beforeNumber = currentMonth.get(i - 1).getNumber();
+                String beforeDay = MathUtil.calPercent(new BigDecimal(currentNumber - beforeNumber), new BigDecimal(currentNumber), 1).toString();
+                currentMonth.get(i).setHbScale(beforeDay);
 
-            String LastYearDay = MathUtil.calPercent(new BigDecimal(currentNumber - lastNumber), new BigDecimal(currentNumber), 1).toString();
-            currentMonth.get(i).setTbScale(LastYearDay);
+                String LastYearDay = MathUtil.calPercent(new BigDecimal(currentNumber - lastYearNumber), new BigDecimal(currentNumber), 1).toString();
+                currentMonth.get(i).setTbScale(LastYearDay);
 
-            // 设置去年 数量
-            currentMonth.get(i).setTbNumber(lastMonth.get(i).getNumber());
+                // 设置去年 数量
+                currentMonth.get(i).setTbNumber(lastYear.get(i).getNumber());
             }
             // 设置去年 日期
-            currentMonth.get(i).setTbDate(lastMonth.get(i).getDate());
+            currentMonth.get(i).setTbDate(lastYear.get(i).getDate());
 
             resultList.add(currentMonth.get(i));
         }
