@@ -117,3 +117,7 @@ message:
 decision:
   dictType:
     missConclusionTextKey: miss_conclusion_text
+
+mybatis-plus:
+  configuration:
+        log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #开启sql日志

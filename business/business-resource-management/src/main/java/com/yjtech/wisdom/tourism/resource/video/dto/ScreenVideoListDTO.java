@@ -50,5 +50,10 @@ public class ScreenVideoListDTO implements Serializable {
      */
     private String emergencyContactPhone;
 
+    /**
+     * 视频封面图片url
+     */
+    private String coverUrl;
+
 
 }

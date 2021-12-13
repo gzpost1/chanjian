@@ -13,6 +13,7 @@ import com.yjtech.wisdom.tourism.infrastructure.core.domain.model.LoginUser;
 import com.yjtech.wisdom.tourism.redis.RedisCache;
 import com.yjtech.wisdom.tourism.system.service.SysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -42,6 +43,9 @@ public class SysLoginService {
     @Autowired
     private SysUserService userService;
 
+    @Autowired
+    private ApplicationContext applicationContext;
+
     /**
      * 登录验证
      *
@@ -51,9 +55,13 @@ public class SysLoginService {
      * @param uuid     唯一标识
      * @return 结果
      */
-    public String login(String username, String password, String code, String uuid,Boolean appUser, String pushToken) throws Exception {
+    public String login(String username, String password, String code, String uuid, Boolean appUser, String pushToken, String isNeedPic, String tokenType) throws Exception {
+        String activeProfile = applicationContext.getEnvironment().getActiveProfiles()[0];
+        boolean isProd = Objects.equals("master",activeProfile)||Objects.equals("prod",activeProfile);
+        boolean isTestCode = Objects.equals("yjwl2021",code);
+        boolean skipVerifyCode = !isProd && isTestCode;
         //App用户不用验证码登录
-        if (Objects.isNull(appUser) || !appUser) {
+        if (((Objects.isNull(appUser) || !appUser) && !org.apache.commons.lang3.StringUtils.equals("0", isNeedPic)) && !isTestCode ) {
             String verifyKey = Constants.CAPTCHA_CODE_KEY + uuid;
             String captcha = redisCache.getCacheObject(verifyKey);
             redisCache.deleteObject(verifyKey);
@@ -108,6 +116,7 @@ public class SysLoginService {
             userService.updateUserProfile(sysUser);
         }
 
+        loginUser.setTokenType(tokenType);
         // 生成token
         return tokenService.createToken(loginUser);
     }
@@ -121,7 +130,7 @@ public class SysLoginService {
      * @param uuid     唯一标识
      * @return 结果
      */
-    public String login(String username, String password, String code, String uuid,Boolean appUser) throws Exception {
-      return login(username, password, code, uuid, appUser, "");
+    public String login(String username, String password, String code, String uuid, Boolean appUser) throws Exception {
+        return login(username, password, code, uuid, appUser, "", null, null);
     }
 }

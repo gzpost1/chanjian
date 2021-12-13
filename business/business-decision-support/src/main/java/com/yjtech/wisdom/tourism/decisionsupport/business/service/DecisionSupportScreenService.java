@@ -184,7 +184,7 @@ public class DecisionSupportScreenService extends ServiceImpl<DecisionWarnMapper
     public void analyzeDecisionWarn (AnalyzeDecisionWarnVo vo) {
 
         // 是否模拟数据
-        Integer isSimulation = vo.getIsSimulation();
+        Byte isSimulation = Byte.parseByte(String.valueOf(vo.getIsSimulation()));
 
         // 查询所有 决策数据
         List<DecisionEntity> decisionList = decisionMapper.selectList(null);
@@ -251,7 +251,7 @@ public class DecisionSupportScreenService extends ServiceImpl<DecisionWarnMapper
      * @param list
      * @return
      */
-    private List<DecisionWarnEntity> warnHandle(List<DecisionEntity> list, Integer isSimulation) {
+    private List<DecisionWarnEntity> warnHandle(List<DecisionEntity> list, Byte isSimulation) {
 
         ArrayList<DecisionWarnEntity> decisionWarnList = Lists.newArrayList();
         List<FutureTask<DecisionWarnEntity>> task = Lists.newArrayList();
@@ -288,7 +288,7 @@ public class DecisionSupportScreenService extends ServiceImpl<DecisionWarnMapper
      * @param entity
      * @return
      */
-    private DecisionWarnEntity dealWarnConfigAndCompute(DecisionEntity entity, Integer isSimulation) {
+    private DecisionWarnEntity dealWarnConfigAndCompute(DecisionEntity entity, Byte isSimulation) {
         // 基础属性 设置
         DecisionWarnEntity result = null;
 
@@ -483,7 +483,7 @@ public class DecisionSupportScreenService extends ServiceImpl<DecisionWarnMapper
      * @return
      */
     private Integer findRiskNumber (Integer type, String beginTime, String endTime, Integer isSimulation) {
-        if (DecisionSupportConstants.MOCK.equals(isSimulation)) {
+        if (DecisionSupportConstants.MOCK.equals(Byte.parseByte(String.valueOf(isSimulation)))) {
             return decisionWarnMockMapper.selectCount(new LambdaQueryWrapper<DecisionWarnMockEntity>()
                     .eq(DecisionWarnMockEntity::getAlarmType, type)
                     .between(DecisionWarnMockEntity::getCreateTime, beginTime, endTime)
@@ -531,7 +531,7 @@ public class DecisionSupportScreenService extends ServiceImpl<DecisionWarnMapper
                     .eq(DecisionWarnEntity::getTargetId, DecisionSupportTargetConstants.ZHGK)
                     .between(DecisionWarnEntity::getCreateTime, beginTime, endTime));
             // 概况是否使用缺失话术
-            if (!DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT.equals(comprehensive.getIsUseMissConclusionText())) {
+            if (!ObjectUtils.isEmpty(comprehensive) && !DecisionSupportConstants.USE_MISS_CONCLUSION_TEXT.equals(comprehensive.getIsUseMissConclusionText())) {
                 conclusionText = comprehensive.getConclusionText();
             }
         }
@@ -554,7 +554,7 @@ public class DecisionSupportScreenService extends ServiceImpl<DecisionWarnMapper
                 .lowRiskNum(lowRiskNum)
                 .mediumRiskNum(mediumRiskNum)
                 .highRiskNum(highRiskNum)
-                .analyzeDate(DateTimeUtil.getCurrentYearAndMonth())
+                .analyzeDate(DateTimeUtil.getCurrentLastMonthStr())
                 .lastAnalyzeDate(lastAnalyzeDate)
                 .build();
     }

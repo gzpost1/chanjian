@@ -82,6 +82,7 @@ public class ImplHotelQryExtPt implements HotelQryExtPt {
 
     /**
      * 查询评价类型分布-酒店民宿大数据
+     *
      * @param vo
      * @return
      */
@@ -103,6 +104,7 @@ public class ImplHotelQryExtPt implements HotelQryExtPt {
 
     /**
      * 查询评价热词排行-酒店民宿大数据
+     *
      * @param vo
      * @return
      */
@@ -146,6 +148,7 @@ public class ImplHotelQryExtPt implements HotelQryExtPt {
 
     /**
      * 查询房型价格趋势-酒店民宿大数据
+     *
      * @param vo
      * @return
      */
@@ -177,7 +180,29 @@ public class ImplHotelQryExtPt implements HotelQryExtPt {
     }
 
     /**
-     * 查询评价量趋势、同比、环比
+     * 查询评价量趋势、同比、环比-酒店民宿大数据
+     *
+     * @param vo
+     * @return
+     */
+    @Override
+    public List<AnalysisBaseInfo> queryEvaluateAnalysisBigData(EvaluateQueryVO vo) {
+        return marketingEvaluateService.queryEvaluateAnalysis(vo);
+    }
+
+    /**
+     * 查询评价满意度趋势、同比、环比-酒店民宿大数据
+     *
+     * @param vo
+     * @return
+     */
+    @Override
+    public List<AnalysisBaseInfo> queryEvaluateSatisfactionAnalysisBigData(EvaluateQueryVO vo) {
+        return marketingEvaluateService.queryEvaluateSatisfactionAnalysis(vo);
+    }
+
+    /**
+     * 查询评价量趋势、同比、环比-评价分析
      *
      * @param vo
      * @return
@@ -188,7 +213,7 @@ public class ImplHotelQryExtPt implements HotelQryExtPt {
     }
 
     /**
-     * 查询评价满意度趋势、同比、环比
+     * 查询评价满意度趋势、同比、环比-评价分析
      *
      * @param vo
      * @return
@@ -196,6 +221,28 @@ public class ImplHotelQryExtPt implements HotelQryExtPt {
     @Override
     public List<AnalysisBaseInfo> queryEvaluateSatisfactionAnalysis(EvaluateQueryVO vo) {
         return marketingEvaluateService.queryEvaluateSatisfactionAnalysis(vo);
+    }
+
+    /**
+     * 查询酒店均价排行-经济效益
+     *
+     * @param vo
+     * @return
+     */
+    @Override
+    public List<BaseVO> queryRoomPriceRank(RoomScreenQueryVO vo) {
+        return marketingHotelRoomService.queryRoomPriceRank(vo);
+    }
+
+    /**
+     * 查询房型价格分布-经济效益
+     *
+     * @param vo
+     * @return
+     */
+    @Override
+    public List<BaseVO> queryRoomTypePriceDistribution(RoomScreenQueryVO vo) {
+        return marketingHotelRoomService.queryRoomTypePriceDistribution(vo);
     }
 
 }

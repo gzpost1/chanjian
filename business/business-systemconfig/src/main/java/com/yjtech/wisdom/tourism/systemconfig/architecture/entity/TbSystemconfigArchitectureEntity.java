@@ -47,6 +47,12 @@ public class TbSystemconfigArchitectureEntity extends BaseEntity {
     private Long threeId;
 
     /**
+     * 第四级菜单id
+     */
+    @TableField(value = "four_id")
+    private Long fourId;
+
+    /**
      * 显示顺序
      */
     @TableField(value = "page_id", updateStrategy = FieldStrategy.IGNORED)
@@ -69,4 +75,12 @@ public class TbSystemconfigArchitectureEntity extends BaseEntity {
      */
     @TableField(value = "sort_num")
     private Integer sortNum;
+
+    /**
+     * 类型 0.大屏 1.H5
+     */
+    @TableField(value = "type")
+    private Integer type;
+
+
 }

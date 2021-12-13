@@ -19,7 +19,6 @@ import com.yjtech.wisdom.tourism.extension.Extension;
 import com.yjtech.wisdom.tourism.extension.ExtensionConstant;
 import com.yjtech.wisdom.tourism.marketing.pojo.dto.MarketingEvaluateStatisticsDTO;
 import com.yjtech.wisdom.tourism.marketing.pojo.vo.EvaluateQueryVO;
-import com.yjtech.wisdom.tourism.marketing.service.MarketingEvaluateService;
 import com.yjtech.wisdom.tourism.mybatis.utils.AnalysisUtils;
 import com.yjtech.wisdom.tourism.redis.RedisCache;
 import com.yjtech.wisdom.tourism.resource.scenic.entity.ScenicEntity;
@@ -30,13 +29,11 @@ import com.yjtech.wisdom.tourism.resource.scenic.extensionpoint.ScenicQryExtPt;
 import com.yjtech.wisdom.tourism.resource.scenic.query.ScenicScreenQuery;
 import com.yjtech.wisdom.tourism.resource.scenic.service.ScenicService;
 import com.yjtech.wisdom.tourism.resource.ticket.vo.SaleTrendVO;
-import com.yjtech.wisdom.tourism.systemconfig.menu.dto.SystemconfigChartsListDatavDto;
 import com.yjtech.wisdom.tourism.systemconfig.simulation.dto.scenic.SimulationScenicDto;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -95,13 +92,13 @@ public class MockScenicQryExtPt implements ScenicQryExtPt {
             //累计游客人次=日累计客流量*筛选时段天数
             total = total.add(dailylyQuantity.multiply(timeInterval));
 
-            //承载度=今日接待人次/单个景区承载量*100%，结果保留2位小数
+            //承载度=今日接待人次/单个景区承载量*100%，结果保留1位小数
             bearCapacity = bearCapacity + entity.getBearCapacity();
 
 
         }
         double BearingRate = Objects.isNull(bearCapacity) || bearCapacity == 0 ? 0D : MathUtil.calPercent(new BigDecimal(String.valueOf(dailylyQuantity)),
-                new BigDecimal(String.valueOf(bearCapacity)), 3).doubleValue();
+                new BigDecimal(String.valueOf(bearCapacity)), 2).doubleValue();
 
         List<BaseVO> vos = new ArrayList<>();
         vos.add(BaseVO.builder().name("todayCheckNum").value(String.valueOf(dailylyQuantity)).build());
@@ -129,26 +126,25 @@ public class MockScenicQryExtPt implements ScenicQryExtPt {
 
             //评分 + 评分初始数+随机数/10
             BigDecimal randomForCache3 = getRandomForCache(SimulationConstants.SCENIC, String.valueOf(query.getScenicId()), "score:");
-            score = score.add(dto.getInitialScore().add(randomForCache3.divide(new BigDecimal(10))));
+            score = score.add(dto.getInitialScore().add(randomForCache3.divide(new BigDecimal(10), 1, BigDecimal.ROUND_HALF_UP)));
         }
 
-        BigDecimal satisfaction = new BigDecimal(0);
+        BigDecimal satisfaction;
         if (Objects.nonNull(query.getScenicId())) {
             //评价类型分布-好评 = 好评占比初始值+随机数/5+随机数/100
             //满意度=评价类型分布-好评。
             DateTimeFormatter dateTimeFormatter1 = DateTimeFormatter.ofPattern("yyyy-MM");
             BigDecimal good_evaluate = getRandomForCache(SimulationConstants.SCENIC, String.valueOf(query.getScenicId()), "good_evaluate:");
-            satisfaction = dto.getInitialPraiseRate().add(good_evaluate.divide(new BigDecimal(5))).add(good_evaluate.divide(new BigDecimal(100)));
+            satisfaction = dto.getInitialPraiseRate().add(good_evaluate.divide(new BigDecimal(5),1,BigDecimal.ROUND_HALF_UP)).add(good_evaluate.divide(new BigDecimal(100),1,BigDecimal.ROUND_HALF_UP));
 
         } else {
-            //通过统计筛选时段各个景区评价数量*好评占比，结果保留整数，汇总各个景区好评数量，满意度=好评数量/收获评价数量*100%，结果保留2位小数。
-            BigDecimal goodEvaluate = evaluate.multiply(dto.getInitialPraiseRate()).divide(new BigDecimal(100), 0);
-            satisfaction = MathUtil.calPercent(goodEvaluate, evaluate, 3);
+            //通过统计筛选时段各个景区评价数量*好评占比，结果保留整数，汇总各个景区好评数量，满意度=好评数量/收获评价数量*100%，结果保留1位小数。
+            BigDecimal goodEvaluate = evaluate.multiply(dto.getInitialPraiseRate()).divide(new BigDecimal(100), 1, BigDecimal.ROUND_HALF_UP);
+            satisfaction = goodEvaluate.multiply(new BigDecimal(100)).divide(evaluate, 1, BigDecimal.ROUND_HALF_UP);
 
-
-            //评分：汇总所有景区评分/有评分值的景区数量，结果保留2位小数
+            //评分：汇总所有景区评分/有评分值的景区数量，结果保留1位小数
             if (CollectionUtils.isNotEmpty(list)) {
-                score = score.divide(new BigDecimal(list.size()), 3);
+                score = score.divide(new BigDecimal(list.size()), 1, BigDecimal.ROUND_HALF_UP);
             }
         }
 
@@ -173,12 +169,12 @@ public class MockScenicQryExtPt implements ScenicQryExtPt {
             //评价类型分布-好评	好评占比初始值+随机数/5+随机数/100
             // 好评占比=评价类型分布-好评
             BigDecimal good_evaluate = getRandomForCache(SimulationConstants.SCENIC, String.valueOf(entity.getId()), "good_evaluate");
-            BigDecimal satisfaction = dto.getInitialPraiseRate().add(good_evaluate.divide(new BigDecimal(5))).add(good_evaluate.divide(new BigDecimal(100)));
+            BigDecimal satisfaction = dto.getInitialPraiseRate().add(good_evaluate.divide(new BigDecimal(5), 1, BigDecimal.ROUND_HALF_UP)).add(good_evaluate.divide(new BigDecimal(100), 1, BigDecimal.ROUND_HALF_UP));
             satisfactionTotal = satisfactionTotal.add(satisfaction);
 
             //评价类型分布-中评 =（100-好评占比）/5
             // 中评占比=评价类型分布-中评
-            BigDecimal normal = (new BigDecimal(100).subtract(satisfaction)).divide(new BigDecimal(5));
+            BigDecimal normal = (new BigDecimal(100).subtract(satisfaction)).divide(new BigDecimal(5), 1, BigDecimal.ROUND_HALF_UP);
             normalTotal = normalTotal.add(normal);
 
             //评价类型分布-差评	100-好评占比-差评占比
@@ -188,11 +184,11 @@ public class MockScenicQryExtPt implements ScenicQryExtPt {
         }
         BigDecimal size = new BigDecimal(list.size());
 
-        result.add(BasePercentVO.builder().name("好评").rate(size.compareTo(new BigDecimal(0)) == 0 ? 0d : satisfactionTotal.divide(size, 3).doubleValue()).build());
+        result.add(BasePercentVO.builder().name(SimulationConstants.GOOD_EVALUATE_DESCRIBE).rate(size.compareTo(new BigDecimal(0)) == 0 ? 0d : satisfactionTotal.divide(size, 1, BigDecimal.ROUND_HALF_UP).doubleValue()).build());
 
-        result.add(BasePercentVO.builder().name("中评").rate(size.compareTo(new BigDecimal(0)) == 0 ? 0d : normalTotal.divide(size, 3).doubleValue()).build());
+        result.add(BasePercentVO.builder().name(SimulationConstants.MEDIUM_EVALUATE_DESCRIBE).rate(size.compareTo(new BigDecimal(0)) == 0 ? 0d : normalTotal.divide(size, 1, BigDecimal.ROUND_HALF_UP).doubleValue()).build());
 
-        result.add(BasePercentVO.builder().name("差评").rate(size.compareTo(new BigDecimal(0)) == 0 ? 0d : badTotal.divide(size, 3).doubleValue()).build());
+        result.add(BasePercentVO.builder().name(SimulationConstants.BAD_EVALUATE_DESCRIBE).rate(size.compareTo(new BigDecimal(0)) == 0 ? 0d : badTotal.divide(size, 1, BigDecimal.ROUND_HALF_UP).doubleValue()).build());
         return result;
     }
 
@@ -323,16 +319,18 @@ public class MockScenicQryExtPt implements ScenicQryExtPt {
         queryVO.setBeginTime(trendDto.getHbBeginDate());
         queryVO.setEndTime(trendDto.getHbEndDate());
         Map<String, String> hbMap = querySatisfaction(queryVO);
-        int curNum, tbNum, hbNum;
+        BigDecimal curNum, tbNum, hbNum;
         for (String date : trendDto.getAbscissa()) {
-            curNum = StringUtils.isNotBlank(curMap.get(date)) ? Integer.parseInt(curMap.get(date)) : 0;
+            curNum = StringUtils.isNotBlank(curMap.get(date)) ? new BigDecimal(curMap.get(date)) : BigDecimal.ZERO;
             String tbDate = scenicService.dateToDateFormat(date, "year");
-            tbNum = StringUtils.isNotBlank(tbMap.get(tbDate)) ? Integer.parseInt(tbMap.get(tbDate)) : 0;
+            tbNum = StringUtils.isNotBlank(tbMap.get(tbDate)) ? new BigDecimal(tbMap.get(tbDate)) : BigDecimal.ZERO;
             String hbDate = scenicService.dateToDateFormat(date, "month");
-            hbNum = StringUtils.isNotBlank(hbMap.get(hbDate)) ? Integer.parseInt(hbMap.get(hbDate)) : 0;
-            String tbRate = tbNum == 0 ? "-" : String.valueOf(MathUtil.calPercent(new BigDecimal(curNum - tbNum), new BigDecimal(tbNum), 3).doubleValue());
-            String hbRate = hbNum == 0 ? "-" : String.valueOf(MathUtil.calPercent(new BigDecimal(curNum - hbNum), new BigDecimal(hbNum), 3).doubleValue());
-            resultList.add(MonthPassengerFlowDto.builder().date(date.substring(0, 7)).number(curNum).tbNumber(tbNum).tbScale(tbRate).hbScale(hbRate).build());
+            hbNum = StringUtils.isNotBlank(hbMap.get(hbDate)) ? new BigDecimal(hbMap.get(hbDate)) : BigDecimal.ZERO;
+            String tbRate = BigDecimal.ZERO.compareTo(tbNum) == 0 ? "-"
+                    : String.valueOf(MathUtil.calPercent(curNum.subtract(tbNum), tbNum, 3).doubleValue());
+            String hbRate = BigDecimal.ZERO.compareTo(hbNum) == 0 ? "-"
+                    : String.valueOf(MathUtil.calPercent(curNum.subtract(hbNum), hbNum, 3).doubleValue());
+            resultList.add(MonthPassengerFlowDto.builder().date(date.substring(0, 7)).number(curNum.intValue()).tbNumber(tbNum.intValue()).rate(curNum).tbRate(tbNum).tbScale(tbRate).hbScale(hbRate).build());
         }
         if (CollectionUtils.isNotEmpty(resultList)) {
             resultList.forEach(item -> item.setTime(item.getDate()));
@@ -412,12 +410,12 @@ public class MockScenicQryExtPt implements ScenicQryExtPt {
     }
 
     @Override
-    public IPage<BaseVO> queryEvaluateTop5(ScenicScreenQuery query) {
+    public IPage<BasePercentVO> queryEvaluateTop5(ScenicScreenQuery query) {
         SimulationScenicDto dto = redisCache.getCacheObject(Constants.SIMULATION_KEY + SimulationConstants.SCENIC);
 
         BigDecimal timeInterval = getTimeInterval(query);
         List<ScenicEntity> list = queryScenicList(query.getScenicId());
-        List<BaseVO> result = Lists.newArrayList();
+        List<BasePercentVO> result = Lists.newArrayList();
         BigDecimal evaluate = new BigDecimal(0);
         for (ScenicEntity entity : list) {
 
@@ -426,7 +424,7 @@ public class MockScenicQryExtPt implements ScenicQryExtPt {
             BigDecimal dailyEvaluate = dto.getInitialDailyEvaluate().add(randomForCache1);
             //收获评价=日累计评价量*筛选时段天数。
             evaluate = evaluate.add(dailyEvaluate.multiply(timeInterval));
-            result.add(BaseVO.builder().name(entity.getName()).value(String.valueOf(evaluate)).build());
+            result.add(BasePercentVO.builder().name(entity.getName()).value(String.valueOf(evaluate)).build());
         }
         result = result.stream().sorted(Comparator.comparing(BaseVO::getValue,(x ,y) ->{
             if(StringUtils.isBlank(x) && StringUtils.isNotBlank(y)){
@@ -438,8 +436,8 @@ public class MockScenicQryExtPt implements ScenicQryExtPt {
             }
             return Integer.valueOf(x).compareTo(Integer.valueOf(y));
             }).reversed()).collect(Collectors.toList());
-        List<List<BaseVO>> partition = Lists.partition(result, query.getPageSize().intValue());
-        Page<BaseVO> page = new Page<>();
+        List<List<BasePercentVO>> partition = Lists.partition(result, query.getPageSize().intValue());
+        Page<BasePercentVO> page = new Page<>();
         page.setRecords(partition.get(query.getPageNo().intValue() -1));
         page.setTotal(result.size());
         page.setSize(query.getPageSize());
@@ -702,10 +700,10 @@ public class MockScenicQryExtPt implements ScenicQryExtPt {
                 }
                 //● 各月满意度：汇总各个景区该月的评价数量得到评价总数，通过各个景区评价数量*好评占比得到好评数量，汇总好评数量/评价总数得到该月满意度。
                 BigDecimal goodEvaluate = evaluate.multiply(satisfaction).divide(new BigDecimal(100));
-                satisfaction = MathUtil.calPercent(goodEvaluate, evaluate, 3);
+                satisfaction = MathUtil.calPercent(goodEvaluate, evaluate, 1);
             }
             BaseVO vo = new BaseVO();
-            vo.setValue(String.valueOf(satisfaction.intValue()));
+            vo.setValue(satisfaction.toString());
             vo.setName(beginTime.format(dateTimeFormatter1) + "-01");
             curBaseVOS.add(vo);
             beginTime = beginTime.plusMonths(1);

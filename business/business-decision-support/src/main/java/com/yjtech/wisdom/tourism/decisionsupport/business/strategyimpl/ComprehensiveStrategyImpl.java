@@ -62,7 +62,7 @@ public class ComprehensiveStrategyImpl extends BaseStrategy {
         // 本月报警数据
         ComprehensiveAlarmDataDto currentAlarmData = this.computeAlarmData(list);
 
-        ComprehensiveAlarmDataDto lastMonthAlarmData = null;
+        ComprehensiveAlarmDataDto lastMonthAlarmData = new ComprehensiveAlarmDataDto();
 
         // 统计年月
         String currentLastMonthStr = DateTimeUtil.getCurrentLastMonthStr();
@@ -125,7 +125,7 @@ public class ComprehensiveStrategyImpl extends BaseStrategy {
                 // 进行对象非空判断
                 if (!ObjectUtils.isEmpty(currentAlarmData)){
                     result.setWarnNum(String.valueOf(currentAlarmData.getTotalRiskNumber()));
-                    alarm(lastMonthAlarmData.getTotalRiskNumber(), result);
+                    alarm(currentAlarmData.getTotalRiskNumber(), result);
                 }
                 break;
 
@@ -135,7 +135,7 @@ public class ComprehensiveStrategyImpl extends BaseStrategy {
                 if (!ObjectUtils.isEmpty(currentAlarmData)){
                     // 设置预警值
                     result.setWarnNum(String.valueOf(currentAlarmData.getHighRiskNumber()));
-                    alarm(lastMonthAlarmData.getHighRiskNumber(), result);
+                    alarm(currentAlarmData.getHighRiskNumber(), result);
                 }
                 break;
 
@@ -145,7 +145,7 @@ public class ComprehensiveStrategyImpl extends BaseStrategy {
                 if (!ObjectUtils.isEmpty(currentAlarmData)){
                     // 设置预警值
                     result.setWarnNum(String.valueOf(currentAlarmData.getMediumRiskNumber()));
-                    alarm(lastMonthAlarmData.getMediumRiskNumber(), result);
+                    alarm(currentAlarmData.getMediumRiskNumber(), result);
                 }
                 break;
 
@@ -153,9 +153,9 @@ public class ComprehensiveStrategyImpl extends BaseStrategy {
             case DecisionSupportConstants.ZHGK_DFXXSL :
                 // 进行对象非空判断
                 if (!ObjectUtils.isEmpty(currentAlarmData)){
-                // 设置预警值
-                result.setWarnNum(String.valueOf(currentAlarmData.getLowRiskNumber()));
-                alarm(lastMonthAlarmData.getMediumRiskNumber(), result);
+                    // 设置预警值
+                    result.setWarnNum(String.valueOf(currentAlarmData.getLowRiskNumber()));
+                    alarm(currentAlarmData.getMediumRiskNumber(), result);
                 }
                 break;
 

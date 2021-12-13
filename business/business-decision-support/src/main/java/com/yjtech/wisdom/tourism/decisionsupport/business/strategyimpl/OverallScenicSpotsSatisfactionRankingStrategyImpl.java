@@ -51,7 +51,7 @@ public class OverallScenicSpotsSatisfactionRankingStrategyImpl extends BaseStrat
      * @return
      */
     @Override
-    public DecisionWarnEntity init(DecisionEntity entity, Integer isSimulation) {
+    public DecisionWarnEntity init(DecisionEntity entity, Byte isSimulation) {
         DecisionWarnEntity result = JSONObject.parseObject(JSONObject.toJSONString(entity), DecisionWarnEntity.class);
 
         int configId = entity.getConfigId().intValue();
@@ -266,7 +266,7 @@ public class OverallScenicSpotsSatisfactionRankingStrategyImpl extends BaseStrat
      * @param endDate
      * @return
      */
-    private List<ScenicBaseVo> getSatisfaction (LocalDateTime startDate, LocalDateTime endDate, Integer isSimulation) {
+    private List<ScenicBaseVo> getSatisfaction (LocalDateTime startDate, LocalDateTime endDate, Byte isSimulation) {
         // 整体景区评价数量、好评数量、整体景区满意度
         ScenicScreenQuery vo = new ScenicScreenQuery();
         vo.setIsSimulation(isSimulation);
@@ -284,7 +284,7 @@ public class OverallScenicSpotsSatisfactionRankingStrategyImpl extends BaseStrat
      *
      * @return
      */
-    private List<RankingDto> getSatisfactionDownMax(Integer isSimulation) {
+    private List<RankingDto> getSatisfactionDownMax(Byte isSimulation) {
 
         // 当年 上月
         LocalDateTime startDate = DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentLastMonthStr() + DecisionSupportConstants.START_DAY_STR);

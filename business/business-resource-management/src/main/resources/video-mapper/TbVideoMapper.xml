@@ -23,6 +23,7 @@
         <result column="status" property="status"/>
         <result column="address" property="address"/>
         <result column="equip_status" property="equipStatus"/>
+        <result column="cover_url" property="coverUrl"/>
         <association property="scenic" column="secenic_id"
                      select="com.yjtech.wisdom.tourism.resource.video.mapper.TbVideoMapper.querySecenicInfoById"
         />
@@ -54,7 +55,8 @@
         video.url as url,
         scenic.name as scenicName,
         scenic.emergency_contact as emergencyContact,
-        scenic.emergency_contact_phone as emergencyContactPhone
+        scenic.emergency_contact_phone as emergencyContactPhone,
+        video.cover_url as coverUrl
         from
         tb_video video
         INNER JOIN tb_scenic scenic ON video.secenic_id = scenic.id
@@ -69,6 +71,9 @@
                 <if test="params.equipStatus != null">
                     video.equip_status = #{params.equipStatus} and
                 </if>
+                <if test="params.id != null">
+                    video.id = #{params.id} and
+                </if>
             </if>
             video.deleted = 0 and
             scenic.deleted = 0
@@ -79,7 +84,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        v.id, v.device_id, v.name, v.location, v.longitude, v.secenic_id, v.secenic_name, v.latitude, v.url, v.sort, v.create_time, v.create_user, v.update_time, v.update_user, v.deleted, v.status, v.address, v.equip_status,s.name secenic_name
+        v.id, v.device_id, v.name, v.location, v.longitude, v.secenic_id, v.secenic_name, v.latitude, v.url, v.sort, v.create_time, v.create_user, v.update_time, v.update_user, v.deleted, v.status, v.address, v.equip_status, v.cover_url, s.name secenic_name
     </sql>
 
     <sql id="dynamic_where">

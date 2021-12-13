@@ -1,7 +1,9 @@
 package com.yjtech.wisdom.tourism.resource.video.vo;
 
 import com.yjtech.wisdom.tourism.mybatis.entity.TimeBaseQuery;
+import lombok.Builder;
 import lombok.Data;
+import lombok.experimental.SuperBuilder;
 
 /**
  * 大屏监控 查询VO
@@ -23,5 +25,10 @@ public class ScreenVideoQueryVO extends TimeBaseQuery {
      * 状态(0:离线,1:在线)
      */
     private Byte equipStatus;
+
+    /**
+     * 监控ID
+     */
+    private Long id;
 
 }

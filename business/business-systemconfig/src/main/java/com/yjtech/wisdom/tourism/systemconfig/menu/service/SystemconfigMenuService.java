@@ -141,4 +141,8 @@ public class SystemconfigMenuService extends ServiceImpl<SystemconfigMenuMapper,
     public List<SystemconfigChartsListDatavDto> getMenuChartListByIds(List<Long> chartId) {
         return this.baseMapper.getMenuChartListByIds(chartId);
     }
+
+    public List<BaseVO> queryAppRedirectPages() {
+        return this.baseMapper.queryAppRedirectPages();
+    }
 }

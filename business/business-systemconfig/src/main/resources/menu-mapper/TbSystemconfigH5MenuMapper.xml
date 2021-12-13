@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjtech.wisdom.tourism.systemconfig.menu.mapper.TbSystemconfigH5MenuMapper">
+
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.yjtech.wisdom.tourism.systemconfig.menu.entity.TbSystemconfigH5MenuEntity">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="menu_type" property="menuType" />
+        <result column="is_showdate" property="isShowdate" />
+        <result column="sort_num" property="sortNum" />
+        <result column="img_url" property="imgUrl" />
+        <result column="is_show" property="isShow" />
+        <result column="is_simulation" property="isSimulation" />
+        <result column="has_backdrop" property="hasBackdrop" />
+        <result column="point_data" jdbcType="LONGVARCHAR" property="pointData"
+                typeHandler="com.yjtech.wisdom.tourism.mybatis.typehandler.JacksonTypeHandler"/>
+        <result column="chart_data" jdbcType="LONGVARCHAR" property="chartData"
+                typeHandler="com.yjtech.wisdom.tourism.mybatis.typehandler.JacksonTypeHandler"/>
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="create_user" property="createUser" />
+        <result column="update_user" property="updateUser" />
+        <result column="deleted" property="deleted" />
+        <result column="route_path" property="routePath" />
+        <result column="mapsize_type" property="mapsizeType" />
+        <result column="iS_showreturn" property="isShowreturn" />
+    </resultMap>
+
+<!--<select id="list" resultMap="BaseResultMap" parameterType="com.yjtech.wisdom.tourism.systemconfig.menu.entity.TbSystemconfigH5MenuEntity" >
+    select
+    <include refid="Base_Column_List" />
+    from tb_systemconfig_h5_menu
+    <where>
+      <include refid="dynamic_where" />
+  </where>
+</select>-->
+
+    <select id="list" parameterType="com.yjtech.wisdom.tourism.systemconfig.menu.entity.TbSystemconfigH5MenuEntity" resultMap="BaseResultMap">
+        select
+        a.*
+        from tb_systemconfig_h5_menu a
+        inner join sys_dict_data c on a.menu_type = c.dict_value
+        where a.deleted = 0
+        and c.status = 0
+        and c.dict_type = 'config_menu_type'
+        <if test="params != null and params.tempName != null and params.tempName != ''">
+            and c.dict_label like concat('%', #{params.tempName,jdbcType=VARCHAR}, '%')
+        </if>
+        <if test="params != null and params.name != null and params.name != ''">
+            and a.name like concat('%', #{params.name,jdbcType=VARCHAR}, '%')
+        </if>
+        order by a.sort_num asc,a.create_time desc
+    </select>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, name, menu_type, is_showdate, sort_num, img_url, is_show, is_simulation, has_backdrop, point_data, chart_data, create_time, update_time, create_user, update_user, deleted, route_path, mapsize_type, iS_showreturn
+    </sql>
+
+<sql id="dynamic_where">
+    <if test="params!=null">
+    <if test=" params.id != null" >
+             and  id = #{params.id}
+    </if>
+    <if test=" params.name != null and params.name.trim() != ''" >
+             and name like CONCAT('%','${params.name}','%' )
+    </if>
+    <if test=" params.menuType != null and params.menuType.trim() != ''" >
+             and menu_type like CONCAT('%','${params.menuType}','%' )
+    </if>
+    <if test=" params.isShowdate != null" >
+             and  is_showdate = #{params.isShowdate}
+    </if>
+    <if test=" params.sortNum != null" >
+             and  sort_num = #{params.sortNum}
+    </if>
+    <if test=" params.imgUrl != null and params.imgUrl.trim() != ''" >
+             and img_url like CONCAT('%','${params.imgUrl}','%' )
+    </if>
+    <if test=" params.isShow != null" >
+             and  is_show = #{params.isShow}
+    </if>
+    <if test=" params.isSimulation != null" >
+             and  is_simulation = #{params.isSimulation}
+    </if>
+    <if test=" params.hasBackdrop != null" >
+             and  has_backdrop = #{params.hasBackdrop}
+    </if>
+    <if test=" params.pointData != null" >
+             and  point_data = #{params.pointData}
+    </if>
+    <if test=" params.chartData != null" >
+             and  chart_data = #{params.chartData}
+    </if>
+    <if test=" params.createTime != null" >
+            <!--  and  create_time between #{params.beginDate} and #{params.endDate}  -->
+             and  create_time = #{params.createTime}
+    </if>
+    <if test=" params.updateTime != null" >
+            <!--  and  update_time between #{params.beginDate} and #{params.endDate}  -->
+             and  update_time = #{params.updateTime}
+    </if>
+    <if test=" params.createUser != null" >
+             and  create_user = #{params.createUser}
+    </if>
+    <if test=" params.updateUser != null" >
+             and  update_user = #{params.updateUser}
+    </if>
+    <if test=" params.deleted != null" >
+             and  deleted = #{params.deleted}
+    </if>
+    <if test=" params.routePath != null and params.routePath.trim() != ''" >
+             and route_path like CONCAT('%','${params.routePath}','%' )
+    </if>
+    <if test=" params.mapsizeType != null" >
+             and  mapsize_type = #{params.mapsizeType}
+    </if>
+    <if test=" params.isShowreturn != null" >
+             and  iS_showreturn = #{params.isShowreturn}
+    </if>
+    </if>
+</sql>
+
+</mapper>

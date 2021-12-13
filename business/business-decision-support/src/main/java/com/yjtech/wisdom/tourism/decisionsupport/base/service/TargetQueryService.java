@@ -93,7 +93,7 @@ public class TargetQueryService {
     /**
      * 省外客流数据查询
      */
-    public DataOverviewDto queryProvinceNumber(String statisticsType, Integer isSimulation) {
+    public DataOverviewDto queryProvinceNumber(String statisticsType, Byte isSimulation) {
         String beginDate = DateTimeUtil.getCurrentLastMonthFirstDayStr();
         String endTime = DateTimeUtil.getCurrentLastMonthLastDayStr();
 
@@ -117,7 +117,7 @@ public class TargetQueryService {
      *
      * @param sign
      */
-    public String queryProvinceScale(String sign, String statisticsType, Integer isSimulation) {
+    public String queryProvinceScale(String sign, String statisticsType, Byte isSimulation) {
         PassengerFlowVo passengerFlowVo = new PassengerFlowVo();
         passengerFlowVo.setStatisticsType(statisticsType);
         passengerFlowVo.setBeginTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentYearStr() + TargetQueryConstants.FIRST_STRING));

@@ -122,17 +122,47 @@ public interface HotelQryExtPt extends ExtensionPointI {
     IPage<EvaluateSatisfactionRankDTO> queryEvaluateSatisfactionRank(EvaluateQueryVO vo);
 
     /**
-     * 查询评价量趋势、同比、环比
+     * 查询评价量趋势、同比、环比-酒店民宿大数据
+     * @param vo
+     * @return
+     */
+    List<AnalysisBaseInfo> queryEvaluateAnalysisBigData(EvaluateQueryVO vo);
+
+    /**
+     * 查询评价满意度趋势、同比、环比-酒店民宿大数据
+     * @param vo
+     * @return
+     */
+    List<AnalysisBaseInfo> queryEvaluateSatisfactionAnalysisBigData(EvaluateQueryVO vo);
+
+    /**
+     * 查询评价量趋势、同比、环比-评价分析
      * @param vo
      * @return
      */
     List<AnalysisBaseInfo> queryEvaluateAnalysis(EvaluateQueryVO vo);
 
     /**
-     * 查询评价满意度趋势、同比、环比
+     * 查询评价满意度趋势、同比、环比-评价分析
      * @param vo
      * @return
      */
     List<AnalysisBaseInfo> queryEvaluateSatisfactionAnalysis(EvaluateQueryVO vo);
+
+    /**
+     * 查询酒店均价排行-经济效益
+     *
+     * @param vo
+     * @return
+     */
+    List<BaseVO> queryRoomPriceRank(RoomScreenQueryVO vo);
+
+    /**
+     * 查询房型价格分布-经济效益
+     *
+     * @param vo
+     * @return
+     */
+    List<BaseVO> queryRoomTypePriceDistribution(RoomScreenQueryVO vo);
 
 }

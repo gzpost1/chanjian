@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.yjtech.wisdom.tourism.common.bean.BasePercentVO;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
 import com.yjtech.wisdom.tourism.common.bean.BaseValueVO;
+import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.common.exception.CustomException;
+import com.yjtech.wisdom.tourism.common.utils.MathUtil;
 import com.yjtech.wisdom.tourism.extension.BizScenario;
 import com.yjtech.wisdom.tourism.extension.ExtensionConstant;
 import com.yjtech.wisdom.tourism.extension.ExtensionExecutor;
@@ -27,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.math.BigDecimal;
 import java.util.List;
 
 import static com.baomidou.mybatisplus.core.toolkit.ObjectUtils.isNull;
@@ -194,6 +197,13 @@ public class ScenicScreenController {
         IPage<ScenicBaseVo> page = extensionExecutor.execute(ScenicQryExtPt.class,
                 buildBizScenario(ScenicExtensionConstant.SCENIC_QUANTITY, query.getIsSimulation()),
                 extension -> extension.queryPassengerFlowTop5(query));
+        List<ScenicBaseVo> records = page.getRecords();
+        double sum = records.stream().mapToDouble(value -> Double.parseDouble(value.getValue())).sum();
+        records.forEach(scenicBaseVo -> {
+            double value = Double.parseDouble(scenicBaseVo.getValue());
+            BigDecimal percent = MathUtil.divide(BigDecimal.valueOf(value), BigDecimal.valueOf(sum));
+            scenicBaseVo.setPercent(percent.doubleValue());
+        });
         return JsonResult.success(page);
     }
 
@@ -204,10 +214,16 @@ public class ScenicScreenController {
      * @return:
      */
     @PostMapping("/queryEvaluateTop5")
-    public JsonResult<IPage<BaseVO>> queryEvaluateTop5(@RequestBody @Valid ScenicScreenQuery query) {
-        IPage<BaseVO> page = extensionExecutor.execute(ScenicQryExtPt.class,
+    public JsonResult<IPage<BasePercentVO>> queryEvaluateTop5(@RequestBody @Valid ScenicScreenQuery query) {
+        IPage<BasePercentVO> page = extensionExecutor.execute(ScenicQryExtPt.class,
                 buildBizScenario(ScenicExtensionConstant.SCENIC_QUANTITY, query.getIsSimulation()),
                 extension -> extension.queryEvaluateTop5(query));
+        List<BasePercentVO> records = page.getRecords();
+        double sum = records.stream().mapToDouble(value -> Double.parseDouble(value.getValue())).sum();
+        records.forEach(baseVO -> {
+            BigDecimal value = BigDecimal.valueOf(Double.parseDouble(baseVO.getValue()));
+            baseVO.setRate(MathUtil.divide(value,BigDecimal.valueOf(sum)).doubleValue());
+        });
         return JsonResult.success(page);
     }
 
@@ -253,8 +269,8 @@ public class ScenicScreenController {
         return JsonResult.success(execute);
     }
 
-    private BizScenario buildBizScenario(String useCasePraiseType, Integer isSimulation) {
-        return BizScenario.valueOf(ExtensionConstant.SCENIC, useCasePraiseType
-                , isSimulation == 0 ? ExtensionConstant.SCENARIO_IMPL : ExtensionConstant.SCENARIO_MOCK);
+    private BizScenario buildBizScenario(String useCasePraiseType, Byte isSimulation) {
+        return BizScenario.valueOf(ExtensionConstant.SCENIC, useCasePraiseType,
+                EntityConstants.NO.equals(isSimulation) ? ExtensionConstant.SCENARIO_IMPL : ExtensionConstant.SCENARIO_MOCK);
     }
 }

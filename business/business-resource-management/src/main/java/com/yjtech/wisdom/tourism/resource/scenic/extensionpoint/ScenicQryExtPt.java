@@ -67,7 +67,7 @@ public interface ScenicQryExtPt extends ExtensionPointI {
      *
      * @Param: query
      */
-    IPage<BaseVO> queryEvaluateTop5(ScenicScreenQuery query);
+    IPage<BasePercentVO> queryEvaluateTop5(ScenicScreenQuery query);
 
     /**
      * 景区大数据——满意度排行

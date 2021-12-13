@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
+import com.yjtech.wisdom.tourism.common.bean.BaseVO;
 import com.yjtech.wisdom.tourism.common.constant.DecisionSupportConstants;
 import com.yjtech.wisdom.tourism.common.constant.DistrictBigDataConstants;
 import com.yjtech.wisdom.tourism.common.constant.SimulationConstants;
@@ -39,6 +40,9 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
+import static com.yjtech.wisdom.tourism.common.utils.StringUtils.isNotNull;
 
 /**
  * 游客结构-调用区县大数据-模拟数据
@@ -524,4 +528,21 @@ public class DistrictTourMockService implements SimulationFactory<DistrictMockRu
         redisTemplate.opsForValue().set(getCacheKey(SimulationConstants.TOURIST), obj);
     }
 
+    @Override
+    public String syncPlatformToJSONBytes(Object object, List<String> levelCityNameList) {
+        DistrictMockRuleDTO depotDto = (DistrictMockRuleDTO) object;
+        if(isNotNull(depotDto)){
+            List<String> dtoCityList = depotDto.getProvinceInsideDistributed().stream().map(OriginDistributedProvinceInsideDTO::getName).collect(Collectors.toList());
+            boolean compare = compare(dtoCityList, levelCityNameList);
+            if(!compare){
+                List<OriginDistributedProvinceInsideDTO> list = levelCityNameList.stream().map(item -> {
+                    OriginDistributedProvinceInsideDTO vo = OriginDistributedProvinceInsideDTO.builder().name(item).value("0").build();
+                    return vo;
+                }).collect(Collectors.toList());
+                depotDto.setProvinceInsideDistributed(list);
+                return JSONObject.toJSONString(depotDto);
+            }
+        }
+        return null;
+    }
 }

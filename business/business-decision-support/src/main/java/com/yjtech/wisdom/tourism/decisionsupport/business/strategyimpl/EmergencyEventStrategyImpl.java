@@ -1,6 +1,7 @@
 package com.yjtech.wisdom.tourism.decisionsupport.business.strategyimpl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Lists;
 import com.yjtech.wisdom.tourism.command.query.event.EventSumaryQuery;
 import com.yjtech.wisdom.tourism.command.service.screen.EmergencyEvenScreenService;
 import com.yjtech.wisdom.tourism.common.bean.AnalysisBaseInfo;
@@ -40,7 +41,7 @@ public class EmergencyEventStrategyImpl extends BaseStrategy {
      * @return
      */
     @Override
-    public DecisionWarnEntity init(DecisionEntity entity, Integer isSimulation) {
+    public DecisionWarnEntity init(DecisionEntity entity, Byte isSimulation) {
         DecisionWarnEntity result = JSONObject.parseObject(JSONObject.toJSONString(entity), DecisionWarnEntity.class);
 
         int configId = entity.getConfigId().intValue();
@@ -54,7 +55,14 @@ public class EmergencyEventStrategyImpl extends BaseStrategy {
         eventSumaryQuery.setIsSimulation(isSimulation);
         eventSumaryQuery.setBeginTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentLastMonthStr() + DecisionSupportConstants.START_DAY_STR));
         eventSumaryQuery.setEndTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentLastMonthStr() + DecisionSupportConstants.END_DAY_STR));
-        List<BaseVO> totalList = emergencyEvenScreenService.queryEventQuantity(eventSumaryQuery);
+
+        List<BaseVO> totalList = Lists.newArrayList();
+        try {
+            totalList = emergencyEvenScreenService.queryEventQuantity(eventSumaryQuery);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
         for (BaseVO v : totalList) {
             if (DecisionSupportConstants.TOTAL_STR.equals(v.getName())) {
                 total = v.getValue();
@@ -65,7 +73,12 @@ public class EmergencyEventStrategyImpl extends BaseStrategy {
         eventSumaryQuery.setBeginTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentYearStr() + DecisionSupportConstants.START_DATE_STR));
         eventSumaryQuery.setEndTime(DateTimeUtil.getLocalDateTime(DateTimeUtil.getCurrentYearStr() + DecisionSupportConstants.END_DATE_STR));
         eventSumaryQuery.setType(DecisionSupportConstants.YEAR_MONTH);
-        List<BaseValueVO> baseValueList = emergencyEvenScreenService.querySaleTrend(eventSumaryQuery);
+        List<BaseValueVO> baseValueList = Lists.newArrayList();
+        try {
+            baseValueList = emergencyEvenScreenService.querySaleTrend(eventSumaryQuery);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
         String lastMonth = DateTimeUtil.getLastMonthStr();
 

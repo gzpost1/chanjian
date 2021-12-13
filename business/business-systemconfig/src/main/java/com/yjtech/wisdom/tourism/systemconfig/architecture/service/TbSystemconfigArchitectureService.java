@@ -1,9 +1,12 @@
 package com.yjtech.wisdom.tourism.systemconfig.architecture.service;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
+import com.yjtech.wisdom.tourism.common.constant.Constants;
 import com.yjtech.wisdom.tourism.common.core.domain.UpdateStatusParam;
 import com.yjtech.wisdom.tourism.common.utils.IdWorker;
 import com.yjtech.wisdom.tourism.infrastructure.utils.TreeUtil;
@@ -16,11 +19,15 @@ import com.yjtech.wisdom.tourism.systemconfig.architecture.dto.SystemconfigArchi
 import com.yjtech.wisdom.tourism.systemconfig.architecture.dto.SystemconfigArchitecturePageQuery;
 import com.yjtech.wisdom.tourism.systemconfig.architecture.entity.TbSystemconfigArchitectureEntity;
 import com.yjtech.wisdom.tourism.systemconfig.architecture.mapper.TbSystemconfigArchitectureMapper;
+import com.yjtech.wisdom.tourism.systemconfig.chart.entity.SystemconfigChartsEntity;
 import com.yjtech.wisdom.tourism.systemconfig.menu.dto.MenuChartDetailDatavDto;
 import com.yjtech.wisdom.tourism.systemconfig.menu.dto.MenuChartDetailDto;
+import com.yjtech.wisdom.tourism.systemconfig.menu.dto.MenuPointDetalDto;
 import com.yjtech.wisdom.tourism.systemconfig.menu.dto.SystemconfigChartsListDatavDto;
 import com.yjtech.wisdom.tourism.systemconfig.menu.entity.SystemconfigMenuEntity;
+import com.yjtech.wisdom.tourism.systemconfig.menu.entity.TbSystemconfigH5MenuEntity;
 import com.yjtech.wisdom.tourism.systemconfig.menu.service.SystemconfigMenuService;
+import com.yjtech.wisdom.tourism.systemconfig.menu.service.TbSystemconfigH5MenuService;
 import com.yjtech.wisdom.tourism.systemconfig.menu.vo.SystemconfigMenuDatavlDto;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -40,6 +47,8 @@ public class TbSystemconfigArchitectureService extends ServiceImpl<TbSystemconfi
     private SysDictTypeService dictTypeService;
     @Autowired
     private SystemconfigMenuService systemconfigMenuService;
+    @Autowired
+    private TbSystemconfigH5MenuService systemconfigH5MenuService;
 
     public IPage<SystemconfigArchitectureDto> queryForPage(SystemconfigArchitecturePageQuery query) {
         if (Objects.isNull(query.getMenuId())) {
@@ -70,8 +79,8 @@ public class TbSystemconfigArchitectureService extends ServiceImpl<TbSystemconfi
         return baseMapper.queryForPage(new Page(query.getPageNo(), query.getPageSize()), query);
     }
 
-    public List<MenuTreeNode> getAreaTree(int i) {
-        return this.baseMapper.getAreaTree(i);
+    public List<MenuTreeNode> getAreaTree(int i, Integer type) {
+        return this.baseMapper.getAreaTree(i, type);
     }
 
     private TbSystemconfigArchitectureEntity getFirstByParent(int parentId) {
@@ -92,7 +101,7 @@ public class TbSystemconfigArchitectureService extends ServiceImpl<TbSystemconfi
 
     }
 
-    public String getPintaiName(){
+    public String getPintaiName() {
         return Optional.ofNullable(this.baseMapper.queryNameByPingtai()).orElse("产业监测平台");
     }
 
@@ -121,6 +130,42 @@ public class TbSystemconfigArchitectureService extends ServiceImpl<TbSystemconfi
                 entity.setFirstId(byId.getFirstId());
                 entity.setSeconId(byId.getSeconId());
                 entity.setThreeId(entity.getMenuId());
+            }
+        }
+
+        entity.setSortNum(sortNum + 1);
+        this.save(entity);
+    }
+    public void createH5(SystemconfigArchitectureCreateDto createDto) {
+        //查询当前的序号
+        Integer sortNum = getChildMaxNumByParendId(createDto.getParentId());
+
+        TbSystemconfigArchitectureEntity entity = new TbSystemconfigArchitectureEntity();
+        BeanUtils.copyProperties(createDto, entity);
+        entity.setMenuId(IdWorker.getInstance().nextId());
+        entity.setDeleted((byte) 0);
+        entity.setIsShow(Byte.valueOf("1"));
+        entity.setIsSimulation(Byte.valueOf("0"));
+
+        //查询自己现在是第几级
+        TbSystemconfigArchitectureEntity parentEntity = this.getById(createDto.getParentId());
+        if (Objects.isNull(parentEntity)) {
+            //现在新增的是第一级
+            entity.setFirstId(entity.getMenuId());
+        } else {
+            if (parentEntity.getMenuId().equals(parentEntity.getFirstId())) {
+                //如果父级是第一级
+                entity.setFirstId(parentEntity.getFirstId());
+                entity.setSeconId(entity.getMenuId());
+            } else if (parentEntity.getMenuId().equals(parentEntity.getSeconId())) {
+                entity.setFirstId(parentEntity.getFirstId());
+                entity.setSeconId(parentEntity.getSeconId());
+                entity.setThreeId(entity.getMenuId());
+            }else if(parentEntity.getMenuId().equals(parentEntity.getThreeId())){
+                entity.setFirstId(parentEntity.getFirstId());
+                entity.setSeconId(parentEntity.getSeconId());
+                entity.setThreeId(parentEntity.getThreeId());
+                entity.setFourId(entity.getMenuId());
             }
         }
 
@@ -164,15 +209,19 @@ public class TbSystemconfigArchitectureService extends ServiceImpl<TbSystemconfi
     }
 
     /**
-     * 	        第二级（有子节点，子节点有展示）	第二级（有子节点，子节点无展示）	第二级（无节点）	最后一级
+     * 第二级（有子节点，子节点有展示）	第二级（有子节点，子节点无展示）	第二级（无节点）	最后一级
      * 展示	       展示	                            展示	                  展示	          展示
      * 不展示	   展示	                            展示	                  不展示	          不展示
+     *
      * @return
      */
-    public List<MenuTreeNode> getDatavMenu() {
-        //查找所有菜单
-
-        List<MenuTreeNode> treeNodeList = this.getAreaTree(0);
+    public List<MenuTreeNode> getDatavMenu(Integer type) {
+        int parentId = 0;
+        //查找所有菜单  h5菜单根节点的parentid为1 大屏为0
+        if (Objects.equals(Constants.TYPE_H5_SCREEN, type)) {
+            parentId = 1;
+        }
+        List<MenuTreeNode> treeNodeList = this.getAreaTree(parentId, type);
 
         if (CollectionUtils.isEmpty(treeNodeList)) {
             return new ArrayList<>();
@@ -180,21 +229,31 @@ public class TbSystemconfigArchitectureService extends ServiceImpl<TbSystemconfi
         //查找所有点位图标
         List<Icon> icons = iconService.querMenuIconList();
 
-        List<SystemconfigMenuEntity> pages = systemconfigMenuService.queryMenusByIds(null);
-        Map<Long, List<SystemconfigMenuDatavlDto>> allMenuPage = null;
 
-        if (CollectionUtils.isNotEmpty(pages)) {
-            allMenuPage = pages.stream()
-                    .map(e -> processMenuData(icons, pages, e))
-                    .collect(Collectors.groupingBy(SystemconfigMenuDatavlDto::getId));
+        Map<Long, List<SystemconfigMenuDatavlDto>> allMenuPage = null;
+        if (Objects.equals(Constants.TYPE_BIG_SCREEN, type)) {
+            List<SystemconfigMenuEntity> pages = systemconfigMenuService.queryMenusByIds(null);
+            if (CollectionUtils.isNotEmpty(pages)) {
+                allMenuPage = pages.stream()
+                        .map(e -> processMenuData(icons, pages, e))
+                        .collect(Collectors.groupingBy(SystemconfigMenuDatavlDto::getId));
+            }
+        } else {
+            List<TbSystemconfigH5MenuEntity> h5pages = systemconfigH5MenuService.list();
+            if (CollectionUtils.isNotEmpty(h5pages)) {
+                allMenuPage = h5pages.stream()
+                        .map(e -> processH5MenuData(icons, h5pages, e))
+                        .collect(Collectors.groupingBy(SystemconfigMenuDatavlDto::getId));
+            }
         }
+
 
         Map<Long, List<SystemconfigMenuDatavlDto>> finalAllMenuPage = allMenuPage;
         //已经存在的跳转url，用于跳出循坏依赖
         List<String> constantRedirectUrl = new ArrayList<>();
 
         treeNodeList = treeNodeList.stream()
-                .filter(e -> !StringUtils.equals(e.getParentId(),"0"))
+                .filter(e -> !StringUtils.equals(e.getParentId(), "0")  ).filter(e->!StringUtils.equals(e.getParentId(), "1"))
                 .map(e -> {
 
                     if (finalAllMenuPage != null && finalAllMenuPage.containsKey(e.getPageId())) {
@@ -209,6 +268,7 @@ public class TbSystemconfigArchitectureService extends ServiceImpl<TbSystemconfi
         processMenuIsShow(menuTreeNodes);
         return menuTreeNodes;
     }
+
     public SystemconfigMenuDatavlDto getRedirectPageData(Long id) {
         //查找所有点位图标
         List<Icon> icons = iconService.querMenuIconList();
@@ -220,26 +280,44 @@ public class TbSystemconfigArchitectureService extends ServiceImpl<TbSystemconfi
             allMenuPage = pages.stream()
                     .map(e -> processMenuData(icons, pages, e))
                     .collect(Collectors.groupingBy(SystemconfigMenuDatavlDto::getId));
-        }else {
+        } else {
             return null;
         }
         return allMenuPage.get(id).get(0);
     }
 
+    public SystemconfigMenuDatavlDto getH5RedirectPageData(Long id) {
+        //查找所有点位图标
+        List<Icon> icons = iconService.querMenuIconList();
+
+        List<TbSystemconfigH5MenuEntity> pages = systemconfigH5MenuService.list();
+        Map<Long, List<SystemconfigMenuDatavlDto>> allMenuPage = null;
+
+        if (CollectionUtils.isNotEmpty(pages)) {
+            allMenuPage = pages.stream()
+                    .map(e -> processH5MenuData(icons, pages, e))
+                    .collect(Collectors.groupingBy(SystemconfigMenuDatavlDto::getId));
+        } else {
+            return null;
+        }
+        List<SystemconfigMenuDatavlDto> menuDatavlDtos = allMenuPage.get(id);
+        if(Objects.isNull(menuDatavlDtos)){
+            return null;
+        }
+        return menuDatavlDtos.get(0);
+    }
+
     /**
      * 处理节点是否显示
+     *
      * @param makeTree
      */
     private void processMenuIsShow(List<MenuTreeNode> makeTree) {
-        if(CollectionUtils.isNotEmpty(makeTree)){
+        if (CollectionUtils.isNotEmpty(makeTree)) {
             Iterator<MenuTreeNode> iterator = makeTree.iterator();
             while (iterator.hasNext()) {
                 MenuTreeNode next = iterator.next();
-
-                if(Objects.isNull(next.getPageId()) && StringUtils.equals("0",next.getIsShow()+"")){
-                    iterator.remove();
-                }
-                if(CollectionUtils.isEmpty(next.getChildren()) && Objects.isNull(next.getPageId())){
+                if (CollectionUtils.isEmpty(next.getChildren()) && Objects.isNull(next.getPageId())) {
                     iterator.remove();
                 }
             }
@@ -248,6 +326,7 @@ public class TbSystemconfigArchitectureService extends ServiceImpl<TbSystemconfi
 
     /**
      * 跳转添加页面
+     *
      * @param constantRedirectUrl
      * @param dto
      * @param allMenuPage
@@ -258,7 +337,7 @@ public class TbSystemconfigArchitectureService extends ServiceImpl<TbSystemconfi
                 if (Objects.nonNull(chartDatum.getRedirectId()) &&
                         !constantRedirectUrl.contains(StringUtils.join(chartDatum.getId(), "&", chartDatum.getRedirectId())) &&
                         allMenuPage.containsKey(Long.valueOf(chartDatum.getRedirectId()))
-                ) {
+                        ) {
                     //跳转的菜单
                     SystemconfigMenuDatavlDto redirectMenu = allMenuPage.get(Long.valueOf(chartDatum.getRedirectId())).get(0);
                     chartDatum.setRedirectMenuData(redirectMenu);
@@ -325,6 +404,77 @@ public class TbSystemconfigArchitectureService extends ServiceImpl<TbSystemconfi
                     if (CollectionUtils.isNotEmpty(pages)) {
                         for (SystemconfigMenuEntity page : pages) {
                             if (StringUtils.equals("1", chart.getIsRedirect() + "") && StringUtils.equals(chart.getRedirectId(), page.getId() + "")) {
+                                chart.setRedirectPath(page.getRoutePath());
+                                break;
+                            }
+                        }
+                    }
+                }
+            } else {
+                dto.setChartData(new ArrayList<>());
+            }
+        }
+        return dto;
+    }
+
+    /**
+     * 处理页面数据
+     *
+     * @param icons 图标
+     * @param pages 所有页面
+     */
+    private SystemconfigMenuDatavlDto processH5MenuData(List<Icon> icons, List<TbSystemconfigH5MenuEntity> pages, TbSystemconfigH5MenuEntity nowPage) {
+        SystemconfigMenuDatavlDto dto = new SystemconfigMenuDatavlDto();
+        BeanUtils.copyProperties(nowPage, dto);
+        JSONArray chartsEntities = nowPage.getChartData();
+
+
+
+        //查找地图标的相关信息
+        if (Objects.nonNull(nowPage) && CollectionUtils.isNotEmpty(chartsEntities)) {
+            List<SystemconfigChartsEntity> chartData = JSONObject.parseArray(chartsEntities.toJSONString(), SystemconfigChartsEntity.class);
+            List<Long> chartId = chartData.stream().filter(chart -> Objects.nonNull(chart.getId())).map(chart -> chart.getId()).collect(Collectors.toList());
+            if (CollectionUtils.isNotEmpty(chartId)) {
+                //查找所有图表
+                List<MenuChartDetailDatavDto> charts = this.systemconfigMenuService.getMenuChartByIds(chartId);
+                dto.setChartData(charts);
+                //图表的列表
+                List<SystemconfigChartsListDatavDto> chartLists = this.systemconfigMenuService.getMenuChartListByIds(chartId);
+                Map<Long, List<SystemconfigChartsListDatavDto>> cahrtListMaps = new LinkedHashMap<>();
+                if (CollectionUtils.isNotEmpty(chartLists)) {
+                    cahrtListMaps = chartLists.stream().collect(Collectors.groupingBy(SystemconfigChartsListDatavDto::getChartId));
+
+                }
+
+                //更新为大屏的名称和坐标
+                for (MenuChartDetailDatavDto chart : charts) {
+                    for (SystemconfigChartsEntity chartDatum : chartData) {
+                        if (chart.getId().equals(chartDatum.getId())) {
+                            chart.setName(chartDatum.getName());
+                            chart.setIsSimulation(nowPage.getIsSimulation());
+                        }
+                    }
+                    //设置列表
+                    List<SystemconfigChartsListDatavDto> systemconfigChartsListDatavDtos = cahrtListMaps.get(chart.getId());
+                    List<SystemconfigChartsListDatavDto> chartList = new ArrayList<>();
+                    if (CollectionUtils.isNotEmpty(systemconfigChartsListDatavDtos)) {
+                        chartList = systemconfigChartsListDatavDtos.stream().sorted(Comparator.comparing(SystemconfigChartsListDatavDto::getSortNum)).collect(Collectors.toList());
+                    }
+                    chart.setListDatas(chartList);
+
+                    //设置点位图表
+                    if (StringUtils.isNotBlank(chart.getPointType()) && CollectionUtils.isNotEmpty(icons)) {
+                        for (Icon icon : icons) {
+                            if (StringUtils.equals(icon.getType(), chart.getPointType())) {
+                                chart.setPointImgUrl(icon.getUrl());
+                            }
+                        }
+                    }
+
+                    //设置图表跳转路径
+                    if (CollectionUtils.isNotEmpty(pages)) {
+                        for (TbSystemconfigH5MenuEntity page : pages) {
+                            if (StringUtils.equals("1", chart.getIsRedirect() + "") && StringUtils.equals(chart.getH5RedirectId(), page.getId() + "")) {
                                 chart.setRedirectPath(page.getRoutePath());
                                 break;
                             }

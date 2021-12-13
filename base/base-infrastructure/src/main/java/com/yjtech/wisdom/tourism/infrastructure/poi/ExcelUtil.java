@@ -1,11 +1,14 @@
 package com.yjtech.wisdom.tourism.infrastructure.poi;
 
+import com.google.common.collect.Lists;
 import com.yjtech.wisdom.tourism.common.annotation.Excel;
 import com.yjtech.wisdom.tourism.common.annotation.Excels;
 import com.yjtech.wisdom.tourism.common.config.AppConfig;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
+import com.yjtech.wisdom.tourism.common.core.domain.ValidateExcelEntity;
 import com.yjtech.wisdom.tourism.common.core.text.Convert;
 import com.yjtech.wisdom.tourism.common.exception.CustomException;
+import com.yjtech.wisdom.tourism.common.utils.DateTimeUtil;
 import com.yjtech.wisdom.tourism.common.utils.DateUtils;
 import com.yjtech.wisdom.tourism.common.utils.StringUtils;
 import com.yjtech.wisdom.tourism.common.utils.reflect.ReflectUtils;
@@ -22,10 +25,16 @@ import java.io.*;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-/**
+import static com.baomidou.mybatisplus.core.toolkit.ObjectUtils.isNull;
+
+/***
  * Excel相关处理
  *
  * @author liuhong
@@ -247,6 +256,140 @@ public class ExcelUtil<T> {
     public JsonResult exportExcel(List<T> list, String sheetName, String fileName) {
         this.init(list, sheetName, Excel.Type.EXPORT, fileName);
         return exportExcel();
+    }
+
+    /**
+     * 对excel表单指定表格索引名转换成list
+     *
+     * @param sheetName 表格索引名
+     * @param is 输入流
+     * @param rowNum 表头所在行数
+     * @param dataRowNum 数据所在行数
+     * @return 转换后集合
+     */
+    public List<T> importExcel(String sheetName, InputStream is, Integer rowNum, Integer dataRowNum)
+            throws Exception {
+        this.type = Excel.Type.IMPORT;
+        this.wb = WorkbookFactory.create(is);
+        List<T> list = new ArrayList<>();
+        Sheet sheet = null;
+        if (StringUtils.isNotEmpty(sheetName)) {
+            // 如果指定sheet名,则取指定sheet中的内容.
+            sheet = wb.getSheet(sheetName);
+        } else {
+            // 如果传入的sheet名不存在则默认指向第1个sheet.
+            sheet = wb.getSheetAt(0);
+        }
+
+        if (sheet == null) {
+            throw new IOException("文件sheet不存在");
+        }
+
+        int rows = sheet.getLastRowNum()+1;
+
+        if (rows > 0) {
+            // 定义一个map用于存放excel列的序号和field.
+            Map<String, Integer> cellMap = new HashMap<>();
+            // 获取表头
+            Row heard = sheet.getRow(rowNum);
+            for (int i = 0; i < heard.getPhysicalNumberOfCells(); i++) {
+                Cell cell = heard.getCell(i);
+                if (StringUtils.isNotNull(cell)) {
+                    String value = this.getCellValue(heard, i).toString();
+                    cellMap.put(value, i);
+                } else {
+                    cellMap.put(null, i);
+                }
+            }
+            // 有数据时才处理 得到类的所有field.
+            Field[] allFields = clazz.getDeclaredFields();
+            // 定义一个map用于存放列的序号和field.
+            Map<Integer, Field> fieldsMap = new HashMap<>();
+            for (int col = 0; col < allFields.length; col++) {
+                Field field = allFields[col];
+                Excel attr = field.getAnnotation(Excel.class);
+                if (attr != null && (attr.type() == Excel.Type.ALL || attr.type() == type)) {
+                    // 设置类的私有字段属性可访问.
+                    field.setAccessible(true);
+                    Integer column = cellMap.get(attr.name());
+                    if (column != null) {
+                        fieldsMap.put(column, field);
+                    }
+                }
+            }
+            for (int i = dataRowNum; i < rows; i++) {
+                // 默认从第2行开始取数据,第一行是表头.
+                Row row = sheet.getRow(i);
+                T entity = null;
+                for (Map.Entry<Integer, Field> entry : fieldsMap.entrySet()) {
+                    Object val = this.getCellValue(row, entry.getKey());
+                    if (Objects.isNull(val) || StringUtils.isEmpty(val.toString())) {
+                        continue;
+                    }
+                    // 如果不存在实例则新建.
+                    entity = (entity == null ? clazz.newInstance() : entity);
+                    // 从map中得到对应列的field.
+                    Field field = fieldsMap.get(entry.getKey());
+                    // 取得类型,并根据对象类型设置值.
+                    Class<?> fieldType = field.getType();
+                    if (String.class == fieldType) {
+                        String s = Convert.toStr(val);
+                        if (StringUtils.endsWith(s, ".0")) {
+                            val = StringUtils.substringBefore(s, ".0");
+                        } else {
+                            val = Convert.toStr(val);
+                        }
+                    } else if ((Integer.TYPE == fieldType) || (Integer.class == fieldType)) {
+                        val = Convert.toInt(val);
+                    } else if ((Long.TYPE == fieldType) || (Long.class == fieldType)) {
+                        val = Convert.toLong(val);
+                    } else if ((Double.TYPE == fieldType) || (Double.class == fieldType)) {
+                        val = Convert.toDouble(val);
+                    } else if ((Float.TYPE == fieldType) || (Float.class == fieldType)) {
+                        val = Convert.toFloat(val);
+                    } else if (BigDecimal.class == fieldType) {
+                        val = Convert.toBigDecimal(val);
+                    } else if (Date.class == fieldType) {
+                        if (val instanceof String) {
+                            val = DateUtils.parseDate(val);
+                        } else if (val instanceof Double) {
+                            val = DateUtil.getJavaDate((Double) val);
+                        }
+                    } else if (fieldType == LocalDate.class) {
+                        if (val instanceof String) {
+                            val = DateUtils.parseDate(val);
+                        } else if (val instanceof Double) {
+                            val = DateUtil.getJavaDate((Double) val);
+                        }
+                        val = DateTimeUtil.dateToLocalDate((Date) val);
+                    } else if (fieldType == LocalDateTime.class) {
+                        if (val instanceof String) {
+                            val = DateUtils.parseDate(val);
+                        } else if (val instanceof Double) {
+                            val = DateUtil.getJavaDate((Double) val);
+                        }
+                        val = DateTimeUtil.dateToLocalDateTime((Date) val);
+                    }
+                    if (StringUtils.isNotNull(fieldType)) {
+                        Excel attr = field.getAnnotation(Excel.class);
+                        String propertyName = field.getName();
+                        if (StringUtils.isNotEmpty(attr.targetAttr())) {
+                            propertyName = field.getName() + "." + attr.targetAttr();
+                        } else if (StringUtils.isNotEmpty(attr.readConverterExp())) {
+                            val = reverseByExp(Convert.toStr(val), attr.readConverterExp(), attr.separator());
+                        } else if (StringUtils.isNotEmpty(attr.dictType())) {
+                            val = reverseDictByExp(Convert.toStr(val), attr.dictType(), attr.separator());
+                        }
+                        ReflectUtils.invokeSetter(entity, propertyName, val);
+                    }
+                }
+                list.add(entity);
+//                if (Objects.nonNull(entity)) {
+//                    list.add(entity);
+//                }
+            }
+        }
+        return list;
     }
 
     /**
@@ -826,6 +969,73 @@ public class ExcelUtil<T> {
             desc.getParentFile().mkdirs();
         }
         return downloadPath;
+    }
+
+    public static ValidateExcelEntity validExcel(List excelList) {
+        ValidateExcelEntity validateExcelEntity = ValidateExcelEntity.builder().build();
+        List errorExcelList = Lists.newLinkedList();
+        List<String> errorMsgs = Lists.newLinkedList();
+        List<Object> uniquenessFiledVals = Lists.newLinkedList();
+        for (int i = 0; i < excelList.size(); i++) {
+            Object bean = excelList.get(i);
+            if(isNull(bean)){
+                continue;
+            }
+            int dataRow = i + 2;
+            String dataRowMsg = "第" + dataRow + "行:";
+            Field[] declaredFields = bean.getClass().getDeclaredFields();
+            for (Field declaredField : declaredFields) {
+                Excel annotation = declaredField.getAnnotation(Excel.class);
+                if (Objects.isNull(annotation)) {
+                    continue;
+                }
+                boolean notNull = annotation.notNull();
+                String regex = annotation.regex();
+                boolean uniqueness =
+                        Objects.isNull(annotation.uniqueness()) ? false : annotation.uniqueness();
+
+                // 都为空则不校验
+                if (!notNull && StringUtils.isEmpty(regex)) {
+                    continue;
+                }
+                try {
+                    declaredField.setAccessible(true);
+                    String name = annotation.name();
+                    Object val = declaredField.get(bean);
+                    if (notNull && Objects.isNull(val)) {
+                        errorExcelList.add(bean);
+                        errorMsgs.add(dataRowMsg + name + "不能为空!");
+                        continue;
+                    } else if (StringUtils.isNotEmpty(regex)) {
+                        //不是必填，有校验但是没有值的直接跳过
+                        if(!notNull && Objects.isNull(val)){
+                            continue;
+                        }
+                        String valStr = val.toString();
+                        Pattern pattern = Pattern.compile(regex);
+                        Matcher matcher = pattern.matcher(valStr);
+                        String regexMsg = annotation.regexMsg();
+                        if (!matcher.matches()) {
+                            errorExcelList.add(bean);
+                            errorMsgs.add(dataRowMsg + name + regexMsg);
+                            continue;
+                        }
+                    }
+                    if(uniqueness&uniquenessFiledVals.contains(val)){
+                        errorExcelList.add(bean);
+                        errorMsgs.add(dataRowMsg + name + "重复,此项不能重复!");
+                    }else if(uniqueness){
+                        uniquenessFiledVals.add(val);
+                    }
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        validateExcelEntity.setErrorExcelList(errorExcelList);
+        validateExcelEntity.setExcelList(excelList);
+        validateExcelEntity.setErrorMsg(errorMsgs);
+        return validateExcelEntity;
     }
 
     /**

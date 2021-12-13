@@ -46,7 +46,7 @@ public final class MathUtil {
             throw new IllegalArgumentException("精确度不能小于0");
         }
 
-        return v1.divide(v2, scale, BigDecimal.ROUND_HALF_UP);
+        return v1.divide(v2, DEF_DIV_SCALE, BigDecimal.ROUND_HALF_UP).multiply(BIG_DECIMAL_100).setScale(scale, BigDecimal.ROUND_HALF_UP);
     }
 
     /**
@@ -57,7 +57,7 @@ public final class MathUtil {
      * @return 两个参数的商(BigDecimal)
      */
     public static BigDecimal calPercent(BigDecimal v1, BigDecimal v2, Integer scale) {
-        return divide(v1, v2, scale).multiply(BIG_DECIMAL_100);
+        return divide(v1, v2, scale);
     }
 
     /**

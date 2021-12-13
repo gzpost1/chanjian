@@ -1,6 +1,7 @@
 package com.yjtech.wisdom.tourism.decisionsupport.business.strategyimpl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSONPObject;
 import com.google.common.collect.Lists;
 import com.yjtech.wisdom.tourism.command.query.event.EventSumaryQuery;
 import com.yjtech.wisdom.tourism.command.service.screen.EmergencyEvenScreenService;
@@ -16,6 +17,7 @@ import com.yjtech.wisdom.tourism.decisionsupport.common.strategy.BaseStrategy;
 import com.yjtech.wisdom.tourism.decisionsupport.common.util.PlaceholderUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
@@ -35,6 +37,8 @@ public class HighIncidenceEmergencyEventStrategyImpl extends BaseStrategy {
     @Autowired
     private EmergencyEvenScreenService emergencyEvenScreenService;
 
+    private static HighIncidenceEventTypeDto e = new HighIncidenceEventTypeDto();
+
     /**
      * 高发应急事件
      *
@@ -42,7 +46,7 @@ public class HighIncidenceEmergencyEventStrategyImpl extends BaseStrategy {
      * @return
      */
     @Override
-    public DecisionWarnEntity init(DecisionEntity entity, Integer isSimulation) {
+    public DecisionWarnEntity init(DecisionEntity entity, Byte isSimulation) {
         DecisionWarnEntity result = JSONObject.parseObject(JSONObject.toJSONString(entity), DecisionWarnEntity.class);
 
         int configId = entity.getConfigId().intValue();
@@ -55,7 +59,13 @@ public class HighIncidenceEmergencyEventStrategyImpl extends BaseStrategy {
         EventSumaryQuery eventSumaryQuery = new EventSumaryQuery();
         //eventSumaryQuery.setType();
         eventSumaryQuery.setIsSimulation(isSimulation);
-        List<BaseVO> totalList = emergencyEvenScreenService.queryEventQuantity(eventSumaryQuery);
+        List<BaseVO> totalList = Lists.newArrayList();
+        try {
+            totalList = emergencyEvenScreenService.queryEventQuantity(eventSumaryQuery);
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+
         for (BaseVO v : totalList) {
             if (DecisionSupportConstants.TOTAL_STR.equals(v.getName())) {
                 total = v.getValue();
@@ -93,24 +103,33 @@ public class HighIncidenceEmergencyEventStrategyImpl extends BaseStrategy {
         lastYearLastMonth.setBeginTime(startLastYearDate);
         lastYearLastMonth.setEndTime(endLastYearDate);
 
-        List<BaseVO> lastMonthTypeData = emergencyEvenScreenService.queryEventType(lastMonth);
-        List<BaseVO> lastLastMonthTypeData = emergencyEvenScreenService.queryEventType(lastLastMonth);
-        List<BaseVO> lastYearLastMonthTypeData = emergencyEvenScreenService.queryEventType(lastYearLastMonth);
 
-        // 高发事件类型
-        HighIncidenceEventTypeDto maxEventType = findMaxObject(lastMonthTypeData, lastLastMonthTypeData, lastYearLastMonthTypeData);
+        HighIncidenceEventTypeDto maxEventType = new HighIncidenceEventTypeDto();
+        HighIncidenceEventTypeDto maxEventLevel = new HighIncidenceEventTypeDto();
+        try {
+            List<BaseVO> lastMonthTypeData = emergencyEvenScreenService.queryEventType(lastMonth);
+            List<BaseVO> lastLastMonthTypeData = emergencyEvenScreenService.queryEventType(lastLastMonth);
+            List<BaseVO> lastYearLastMonthTypeData = emergencyEvenScreenService.queryEventType(lastYearLastMonth);
+
+            // 高发事件类型
+            maxEventType = findMaxObject(lastMonthTypeData, lastLastMonthTypeData, lastYearLastMonthTypeData);
 
 
-        // 高发事件等级
-        List<BaseVO> lastMonthLevelData = emergencyEvenScreenService.queryEventLevel(lastMonth);
-        List<BaseVO> lastLastMonthLevelData = emergencyEvenScreenService.queryEventLevel(lastLastMonth);
-        List<BaseVO> lastYearLastMonthLevelData = emergencyEvenScreenService.queryEventLevel(lastYearLastMonth);
+            // 高发事件等级
+            List<BaseVO> lastMonthLevelData = emergencyEvenScreenService.queryEventLevel(lastMonth);
+            List<BaseVO> lastLastMonthLevelData = emergencyEvenScreenService.queryEventLevel(lastLastMonth);
+            List<BaseVO> lastYearLastMonthLevelData = emergencyEvenScreenService.queryEventLevel(lastYearLastMonth);
 
-        // 高发事件等级
-        HighIncidenceEventTypeDto maxEventLevel = findMaxObject(lastMonthLevelData, lastLastMonthLevelData, lastYearLastMonthLevelData);
+            // 高发事件等级
+            maxEventLevel = findMaxObject(lastMonthLevelData, lastLastMonthLevelData, lastYearLastMonthLevelData);
 
-        // 图表数据：
-        result.setChartData(getCharData(maxEventType, maxEventLevel));
+
+        }catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            // 图表数据：
+            result.setChartData(getCharData(maxEventType, maxEventLevel));
+        }
 
         // 处理指标报警
         switch (configId) {
@@ -123,7 +142,7 @@ public class HighIncidenceEmergencyEventStrategyImpl extends BaseStrategy {
 
             // 高并发应急事件_高发事件类型 （文本）
             case DecisionSupportConstants.GBFYJSJ_GBFSJLX :
-                String typeName = maxEventType.getName();
+                String typeName = StringUtils.isEmpty(maxEventType.getName()) ? "-" : maxEventType.getName();
                 result.setWarnNum(typeName);
                 textAlarmDeal(entity, result, typeName, isSimulation);
                 // 判断是否使用缺失话术
@@ -134,7 +153,7 @@ public class HighIncidenceEmergencyEventStrategyImpl extends BaseStrategy {
 
             // 高并发应急事件_高发事件等级 （文本）
             case DecisionSupportConstants.GBFYJSJ_GBFSJDJ :
-                String levelName = maxEventLevel.getName();
+                String levelName = StringUtils.isEmpty(maxEventLevel.getName()) ? "-" : maxEventLevel.getName();
                 result.setWarnNum(levelName);
                 textAlarmDeal(entity, result, levelName, isSimulation);
                 // 判断是否使用缺失话术
@@ -201,13 +220,13 @@ public class HighIncidenceEmergencyEventStrategyImpl extends BaseStrategy {
         String conclusionText = entity.getConclusionText();
         if (!StringUtils.isEmpty(conclusionText)) {
             conclusionText = PlaceholderUtils.replace(conclusionText,
-                    DecisionSupportConfigEnum.HIGH_INCIDENCE_EMERGENCIES_TYPE.getKey(), maxEventType.getName(),
+                    DecisionSupportConfigEnum.HIGH_INCIDENCE_EMERGENCIES_TYPE.getKey(), StringUtils.isEmpty(maxEventType.getName()) ? "" : maxEventType.getName(),
                     DecisionSupportConfigEnum.HIGH_INCIDENCE_EMERGENCIES_TYPE_HB.getKey(), getScale(maxEventType.getHb()),
                     DecisionSupportConfigEnum.HIGH_INCIDENCE_EMERGENCIES_TYPE_TB.getKey(), getScale(maxEventType.getTb()),
 
-                    DecisionSupportConfigEnum.HIGH_INCIDENCE_EVENT_GRADE.getKey(), maxEventLevel.getName(),
-                    DecisionSupportConfigEnum.HIGH_INCIDENCE_EVENT_GRADE_HB.getKey(), maxEventLevel.getHb() + DecisionSupportConstants.PERCENT,
-                    DecisionSupportConfigEnum.HIGH_INCIDENCE_EVENT_GRADE_TB.getKey(), maxEventLevel.getTb() + DecisionSupportConstants.PERCENT,
+                    DecisionSupportConfigEnum.HIGH_INCIDENCE_EVENT_GRADE.getKey(), StringUtils.isEmpty(maxEventLevel.getName()) ? "" : maxEventLevel.getName(),
+                    DecisionSupportConfigEnum.HIGH_INCIDENCE_EVENT_GRADE_HB.getKey(), (StringUtils.isEmpty(maxEventLevel.getHb()) ? "0" : maxEventLevel.getHb()) + DecisionSupportConstants.PERCENT,
+                    DecisionSupportConfigEnum.HIGH_INCIDENCE_EVENT_GRADE_TB.getKey(), (StringUtils.isEmpty(maxEventLevel.getTb()) ? "0" : maxEventLevel.getTb()) + DecisionSupportConstants.PERCENT,
 
                     DecisionSupportConfigEnum.HIGH_INCIDENCE_EMERGENCIES_NUMBER.getKey(), String.valueOf(total),
                     DecisionSupportConfigEnum.YEAR_MONTH_STATISTICAL.getKey(), currentLastMonthStr + DecisionSupportConstants.MONTH);
@@ -215,7 +234,7 @@ public class HighIncidenceEmergencyEventStrategyImpl extends BaseStrategy {
         }
 
         // 设置月环比
-        result.setMonthHbScale(maxEventType.getHb());
+        result.setMonthHbScale(StringUtils.isEmpty(maxEventType.getHb()) ? "-" : maxEventType.getHb());
         return result;
     }
 
@@ -228,8 +247,15 @@ public class HighIncidenceEmergencyEventStrategyImpl extends BaseStrategy {
      */
     private List getCharData(HighIncidenceEventTypeDto maxEventType, HighIncidenceEventTypeDto maxEventLevel) {
         ArrayList<Object> result = Lists.newArrayList();
-        result.add(maxEventType);
-        result.add(maxEventLevel);
+
+        if (!e.equals(maxEventType)) {
+            result.add(maxEventType);
+        }
+
+        if (!e.equals(maxEventLevel)) {
+            result.add(maxEventLevel);
+        }
+
         return result;
     }
 

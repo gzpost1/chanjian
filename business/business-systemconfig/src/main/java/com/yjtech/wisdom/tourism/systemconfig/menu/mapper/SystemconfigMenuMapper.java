@@ -35,4 +35,7 @@ public interface SystemconfigMenuMapper extends BaseMapper<SystemconfigMenuEntit
     Integer findMenuIsExistJiagou(Long id);
 
     List<SystemconfigMenuEntity> queryMenusByIds(@Param("ids") List<Long> pageIds);
+
+    List<BaseVO> queryAppRedirectPages();
+
 }

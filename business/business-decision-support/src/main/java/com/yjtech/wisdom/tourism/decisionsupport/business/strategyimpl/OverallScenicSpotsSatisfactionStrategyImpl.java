@@ -44,7 +44,7 @@ public class OverallScenicSpotsSatisfactionStrategyImpl extends BaseStrategy {
      * @return
      */
     @Override
-    public DecisionWarnEntity init(DecisionEntity entity, Integer isSimulation) {
+    public DecisionWarnEntity init(DecisionEntity entity, Byte isSimulation) {
 
         DecisionWarnEntity result = JSONObject.parseObject(JSONObject.toJSONString(entity), DecisionWarnEntity.class);
 
@@ -185,7 +185,7 @@ public class OverallScenicSpotsSatisfactionStrategyImpl extends BaseStrategy {
      * @param startDate
      * @return
      */
-    private List getCharData(LocalDateTime startDate, LocalDateTime endDate, Integer isSimulation) {
+    private List getCharData(LocalDateTime startDate, LocalDateTime endDate, Byte isSimulation) {
         ScenicScreenQuery vo = new ScenicScreenQuery();
         vo.setIsSimulation(isSimulation);
         vo.setBeginTime(startDate);
@@ -208,7 +208,7 @@ public class OverallScenicSpotsSatisfactionStrategyImpl extends BaseStrategy {
      * @param endDate
      * @return
      */
-    private StatisticsDto getSatisfaction (LocalDateTime startDate, LocalDateTime endDate, Integer isSimulation) {
+    private StatisticsDto getSatisfaction (LocalDateTime startDate, LocalDateTime endDate, Byte isSimulation) {
        return getSatisfaction(startDate, endDate, null, isSimulation);
     }
 
@@ -220,7 +220,7 @@ public class OverallScenicSpotsSatisfactionStrategyImpl extends BaseStrategy {
      * @param type
      * @return
      */
-    private StatisticsDto getSatisfaction (LocalDateTime startDate, LocalDateTime endDate, Byte type, Integer isSimulation) {
+    private StatisticsDto getSatisfaction (LocalDateTime startDate, LocalDateTime endDate, Byte type, Byte isSimulation) {
         // 整体景区评价数量、好评数量、整体景区满意度
         ScenicScreenQuery vo = new ScenicScreenQuery();
         vo.setIsSimulation(isSimulation);

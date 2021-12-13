@@ -31,14 +31,14 @@ public class DecisionExecute extends StrategyExecute {
          * @return
          */
     @Override
-    public DecisionWarnEntity execute(Enum strategyEnum, DecisionEntity entity, Integer isSimulation) {
+    public DecisionWarnEntity execute(Enum strategyEnum, DecisionEntity entity, Byte isSimulation) {
         // 使用工厂，创建出需要的对象实例
         Object obj = DecisionStrategyFactory.getInstance().execute(strategyEnum);
 
         // 拿到对象后 通过反射执行 init 方法，获得结果对象
         try {
-            Method initMethod = obj.getClass().getMethod("init", DecisionEntity.class, Integer.class);
-            Object invoke = initMethod.invoke(obj, entity, isSimulation);
+            Method initMethod = obj.getClass().getMethod("init", DecisionEntity.class, Byte.class);
+            Object invoke = initMethod.invoke(obj, entity, Byte.parseByte(String.valueOf(isSimulation)));
             return (DecisionWarnEntity) invoke;
         } catch (Exception e) {
             e.printStackTrace();
@@ -74,7 +74,7 @@ public class DecisionExecute extends StrategyExecute {
      * @param strategyEnum
      * @return
      */
-    public static DecisionWarnEntity get(DecisionStrategyEnum strategyEnum, DecisionEntity entity, Integer isSimulation) {
+    public static DecisionWarnEntity get(DecisionStrategyEnum strategyEnum, DecisionEntity entity, Byte isSimulation) {
         return instance.execute(strategyEnum, entity, isSimulation);
     }
 

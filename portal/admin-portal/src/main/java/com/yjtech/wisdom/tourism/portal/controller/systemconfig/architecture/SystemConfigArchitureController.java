@@ -2,6 +2,7 @@ package com.yjtech.wisdom.tourism.portal.controller.systemconfig.architecture;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
+import com.yjtech.wisdom.tourism.common.constant.Constants;
 import com.yjtech.wisdom.tourism.common.core.domain.IdParam;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.common.core.domain.UpdateStatusParam;
@@ -44,7 +45,7 @@ public class SystemConfigArchitureController {
      */
     @PostMapping("/getMenuTree")
     public JsonResult getMenuTree() {
-        List<MenuTreeNode> treeNodeList = service.getAreaTree(0);
+        List<MenuTreeNode> treeNodeList = service.getAreaTree(0,Constants.TYPE_BIG_SCREEN);
         List<MenuTreeNode> menuTreeNodes = TreeUtil.makeTree(treeNodeList);
         String pintaiName = service.getPintaiName();
         menuTreeNodes.get(0).setLabel(pintaiName);

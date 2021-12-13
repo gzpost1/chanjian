@@ -114,6 +114,7 @@ public class SysDictTypeService {
     int count = dictTypeMapper.deleteDictTypeByIds(dictIds);
     if (count > 0) {
       DictUtils.clearDictCache();
+      init();
     }
     return count;
   }
@@ -121,6 +122,7 @@ public class SysDictTypeService {
   /** 清空缓存数据 */
   public void clearCache() {
     DictUtils.clearDictCache();
+    init();
   }
 
   /**
@@ -133,6 +135,7 @@ public class SysDictTypeService {
     int row = dictTypeMapper.insertDictType(dictType);
     if (row > 0) {
       DictUtils.clearDictCache();
+      init();
     }
     return row;
   }
@@ -150,6 +153,7 @@ public class SysDictTypeService {
     int row = dictTypeMapper.updateDictType(dictType);
     if (row > 0) {
       DictUtils.clearDictCache();
+      init();
     }
     return row;
   }

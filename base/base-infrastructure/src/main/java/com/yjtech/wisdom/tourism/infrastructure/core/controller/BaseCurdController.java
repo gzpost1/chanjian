@@ -62,7 +62,7 @@ public abstract class BaseCurdController<S extends BaseService<T>,T,P extends Pa
      */
     @PostMapping("/create")
     public JsonResult  create(
-            @RequestBody @Valid T entity) {
+            @RequestBody @Validated(BeanValidationGroup.Create.class) T entity) {
         return JsonResult.success(service.save(entity));
     }
     /**

@@ -11,6 +11,8 @@ public class ScenicScreenQuery extends TimeBaseQuery {
 
     /**景区名称*/
     private String name;
+    /**景区名称*/
+    private String videoName;
 
     /**景区id*/
     private Long scenicId;
@@ -34,7 +36,7 @@ public class ScenicScreenQuery extends TimeBaseQuery {
     /**
      * is_simulation 是否有模拟数据 1有 0无
      */
-    private Integer isSimulation = 0;
+    private Byte isSimulation = 0;
 
     /**起停用状态*/
     private Byte status;
