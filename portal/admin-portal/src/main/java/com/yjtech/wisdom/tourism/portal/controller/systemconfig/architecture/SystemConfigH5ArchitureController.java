@@ -93,9 +93,9 @@ public class SystemConfigH5ArchitureController {
         //如果不是第一次添加
         if (Objects.nonNull(byId)) {
             //选择节点是否为最末级，若该菜单有页面关联，则认为是最末级，提示：该页面已是最末级，不可增加子节点。若无页面关联，显示新增弹窗
-            if (Objects.nonNull(byId.getPageId())) {
-                return JsonResult.error(ErrorCode.BUSINESS_EXCEPTION.code(), "该页面已是最末级，不可增加子节点！");
-            }
+//            if (Objects.nonNull(byId.getPageId())) {
+//                return JsonResult.error(ErrorCode.BUSINESS_EXCEPTION.code(), "该页面已是最末级，不可增加子节点！");
+//            }
 
             //包含根节点在内，当前新增层级是否超过第3级，若是，提示：最多只能创建二级菜单
             if (Objects.nonNull(byId.getFourId())) {
