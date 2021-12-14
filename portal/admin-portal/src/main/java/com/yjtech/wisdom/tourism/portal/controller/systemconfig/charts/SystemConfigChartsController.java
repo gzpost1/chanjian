@@ -146,14 +146,8 @@ public class SystemConfigChartsController {
 
         //首先校验模板是否被使用，如果已经被使用则不可删除
         int existnums = Optional.ofNullable(systemconfigChartsService.findChartMenusNum(idParam.getId())).orElse(0);
-        //模板是否被app页面配置所使用
-        int existAppnums = Optional.ofNullable(systemconfigChartsService.findChartAppMenusNum(idParam.getId())).orElse(0);
-
         if (existnums > 0) {
-            return JsonResult.error(ErrorCode.BUSINESS_EXCEPTION.code(), "已有大屏菜单关联该模板，请取消关联后删除！");
-        } else if (existAppnums > 0) {
-            return JsonResult.error(ErrorCode.BUSINESS_EXCEPTION.code(), "已有H5菜单关联该模板，请取消关联后删除！");
-
+            return JsonResult.error(ErrorCode.BUSINESS_EXCEPTION.code(), "已有大屏或H5页面关联，请取消关联后删除！");
         } else {
             systemconfigChartsService.removeById(idParam.getId());
         }
