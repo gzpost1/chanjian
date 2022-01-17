@@ -68,7 +68,6 @@ public class SystemconfigChartsCreateDto {
     /**
      * 是否有页面跳转 0-否,1-是
      */
-    @NotNull(message = "是否有页面跳转不能为空")
     private Byte isRedirect;
 
     /**
