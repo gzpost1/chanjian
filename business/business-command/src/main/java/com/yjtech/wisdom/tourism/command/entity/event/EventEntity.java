@@ -166,4 +166,9 @@ public class EventEntity extends BaseEntity {
      * 状态(0:禁用,1:正常)
      */
     private Byte status;
+
+    /**
+     * 事件视频url
+     */
+    private String eventVideoUrl;
 }
