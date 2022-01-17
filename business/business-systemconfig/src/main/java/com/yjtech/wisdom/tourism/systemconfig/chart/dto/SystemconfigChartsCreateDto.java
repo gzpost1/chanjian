@@ -52,7 +52,6 @@ public class SystemconfigChartsCreateDto {
     /**
      * commponent_type 组件类型
      */
-    @NotBlank(message = "组件类型不能为空")
     private String commponentType;
 
     /**
@@ -64,7 +63,6 @@ public class SystemconfigChartsCreateDto {
     /**
      * sample_img 示例图
      */
-    @NotBlank(message = "示例图不能为空")
     private String sampleImg;
 
     /**

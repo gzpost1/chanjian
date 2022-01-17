@@ -156,4 +156,9 @@ public class AppEventDetail implements Serializable {
      * 实际处理人员名称
      */
     private String actualHandlePersonnelName;
+
+    /**
+     * 事件视频url
+     */
+    private String eventVideoUrl;
 }

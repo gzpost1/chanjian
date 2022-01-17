@@ -67,6 +67,9 @@ public class EmergencyPlanEntity extends BaseEntity {
      */
     private String content;
 
-
+    /**
+     * 事件视频url
+     */
+    private String eventVideoUrl;
 
 }

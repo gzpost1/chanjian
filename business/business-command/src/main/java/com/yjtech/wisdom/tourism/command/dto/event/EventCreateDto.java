@@ -10,7 +10,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -76,4 +75,18 @@ public class EventCreateDto implements Serializable {
     @Size(max = 10)
     private List<String> imagePath;
 
+    /**
+     * 事件视频url
+     */
+    @Pattern(regexp = "(.*?)\\.(mp4|avi|mov)$", message = "视频格式只支持mp4、avi、mov")
+    @NotBlank(message = "事件视频url不能为空")
+    private String eventVideoUrl;
+
+    /*public void setEventVideoUrl(String eventVideoUrl) {
+        if (eventVideoUrl.contains(".mp4") || eventVideoUrl.contains(".avi") || eventVideoUrl.contains(".mov")) {
+            this.eventVideoUrl = eventVideoUrl;
+            return;
+        }
+        throw new CustomException("视频格式只支持mp4、avi、mov");
+    }*/
 }

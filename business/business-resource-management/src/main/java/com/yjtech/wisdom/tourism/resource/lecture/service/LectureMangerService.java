@@ -130,6 +130,12 @@ public class LectureMangerService extends BaseMybatisServiceImpl<LectureMapper, 
                 new LambdaQueryWrapper<LectureEntity>()
                         .eq(LectureEntity::getStatus, 1)
                         .eq(LectureEntity::getVenueId, vo.getVenueId())
-        ).convert(v -> JSONObject.parseObject(JSONObject.toJSONString(v), LectureDto.class));
+        ).convert(v -> {
+            LectureDto lectureDto = JSONObject.parseObject(JSONObject.toJSONString(v), LectureDto.class);
+            // 字典获取
+            String name = sysDictDataService.selectDictLabel(lectureDto.getLectureType(), lectureDto.getLectureValue());
+            lectureDto.setDictName(name);
+            return lectureDto;
+        });
     }
 }
