@@ -1,5 +1,6 @@
 amap:
-  key: dfb15654d9f87f93e2d4b9deb5af72f3
+  # key: dfb15654d9f87f93e2d4b9deb5af72f3
+  key: e878ff752766d80079c31928cc3ca109
   offset: 20
   page: 1
   extensions: all
