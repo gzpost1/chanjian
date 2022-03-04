@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjtech.wisdom.tourism.bigscreen.mapper.TbRegisterInfoMapper">
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.yjtech.wisdom.tourism.bigscreen.entity.TbRegisterInfoEntity">
+        <id column="id" property="id"/>
+        <result column="company_name" property="companyName"/>
+        <result column="company_type" property="companyType"/>
+        <result column="company_name_en" property="companyNameEn"/>
+        <result column="phone" property="phone"/>
+        <result column="pwd" property="pwd"/>
+        <result column="address" property="address"/>
+        <result column="email" property="email"/>
+        <result column="longtitude" property="longtitude"/>
+        <result column="latitude" property="latitude"/>
+        <result column="label" property="label"/>
+        <result column="registered_capital" property="registeredCapital"/>
+        <result column="registered_year" property="registeredYear"/>
+        <result column="main_business" property="mainBusiness"/>
+        <result column="business_scope" property="businessScope"/>
+        <result column="investment_direction" property="investmentDirection"/>
+        <result column="investment_project" property="investmentProject"/>
+        <result column="qualification_imgs" property="qualificationImgs"/>
+        <result column="commercial_direction" property="commercialDirection"/>
+        <result column="operation_direction" property="operationDirection"/>
+        <result column="type" property="type"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="status" property="status"/>
+        <result column="deleted" property="deleted"/>
+        <result column="audit_status" property="auditStatus"/>
+        <result column="blacklist" property="blacklist"/>
+    </resultMap>
+
+    <select id="list" resultMap="BaseResultMap"
+            parameterType="com.yjtech.wisdom.tourism.bigscreen.entity.TbRegisterInfoEntity">
+        select
+        <include refid="Base_Column_List"/>
+        from tb_register_info
+        <where>
+            <include refid="dynamic_where"/>
+        </where>
+    </select>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id
+                , company_name
+                , company_type
+                , company_name_en
+                , phone
+                , pwd
+                , address
+                , email
+                , longtitude
+                , latitude
+                , label
+                , registered_capital
+                , registered_year
+                , main_business
+                , business_scope
+                , investment_direction
+                , investment_project
+                , qualification_imgs
+                , commercial_direction
+                , operation_direction
+                , type
+                , create_user
+                , update_user
+                , create_time
+                , update_time
+                , status
+                , deleted
+                , audit_status
+                , blacklist
+    </sql>
+
+    <sql id="dynamic_where">
+        <if test="params != null">
+            <if test="params.id != null">
+                and id = #{params.id}
+            </if>
+            <if test="params.companyName != null and params.companyName.trim() != ''">
+                and company_name like CONCAT('%','${params.companyName}','%' )
+            </if>
+            <if test="params.companyType != null and params.companyType.trim() != ''">
+                and company_type like CONCAT('%','${params.companyType}','%' )
+            </if>
+            <if test="params.companyNameEn != null and params.companyNameEn.trim() != ''">
+                and company_name_en like CONCAT('%','${params.companyNameEn}','%' )
+            </if>
+            <if test="params.phone != null and params.phone.trim() != ''">
+                and phone like CONCAT('%','${params.phone}','%' )
+            </if>
+            <if test="params.pwd != null and params.pwd.trim() != ''">
+                and pwd like CONCAT('%','${params.pwd}','%' )
+            </if>
+            <if test="params.address != null and params.address.trim() != ''">
+                and address like CONCAT('%','${params.address}','%' )
+            </if>
+            <if test="params.email != null and params.email.trim() != ''">
+                and email like CONCAT('%','${params.email}','%' )
+            </if>
+            <if test="params.longtitude != null">
+                and longtitude = #{params.longtitude}
+            </if>
+            <if test="params.latitude != null">
+                and latitude = #{params.latitude}
+            </if>
+            <if test="params.label != null">
+                and label = #{params.label}
+            </if>
+            <if test="params.registeredCapital != null">
+                and registered_capital = #{params.registeredCapital}
+            </if>
+            <if test="params.registeredYear != null">
+                and registered_year = #{params.registeredYear}
+            </if>
+            <if test="params.mainBusiness != null and params.mainBusiness.trim() != ''">
+                and main_business like CONCAT('%','${params.mainBusiness}','%' )
+            </if>
+            <if test="params.businessScope != null">
+                and business_scope = #{params.businessScope}
+            </if>
+            <if test="params.investmentDirection != null">
+                and investment_direction = #{params.investmentDirection}
+            </if>
+            <if test="params.investmentProject != null">
+                and investment_project = #{params.investmentProject}
+            </if>
+            <if test="params.qualificationImgs != null">
+                and qualification_imgs = #{params.qualificationImgs}
+            </if>
+            <if test="params.commercialDirection != null">
+                and commercial_direction = #{params.commercialDirection}
+            </if>
+            <if test="params.operationDirection != null">
+                and operation_direction = #{params.operationDirection}
+            </if>
+            <if test="params.type != null">
+                and type = #{params.type}
+            </if>
+            <if test="params.createUser != null">
+                and create_user = #{params.createUser}
+            </if>
+            <if test="params.updateUser != null">
+                and update_user = #{params.updateUser}
+            </if>
+            <if test="params.createTime != null">
+                <!--  and  create_time between #{params.beginDate} and #{params.endDate}  -->
+                and create_time = #{params.createTime}
+            </if>
+            <if test="params.updateTime != null">
+                <!--  and  update_time between #{params.beginDate} and #{params.endDate}  -->
+                and update_time = #{params.updateTime}
+            </if>
+            <if test="params.status != null">
+                and status = #{params.status}
+            </if>
+            <if test="params.deleted != null">
+                and deleted = #{params.deleted}
+            </if>
+            <if test="params.auditStatus != null">
+                and audit_status = #{params.auditStatus}
+            </if>
+            <if test="params.blacklist != null">
+                and blacklist = #{params.blacklist}
+            </if>
+        </if>
+    </sql>
+</mapper>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjtech.wisdom.tourism.bigscreen.mapper.TbAuditInfoMapper">
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.yjtech.wisdom.tourism.bigscreen.entity.TbAuditInfoEntity">
+        <result column="id" property="id"/>
+        <result column="company_id" property="companyId"/>
+        <result column="audit_comment" property="auditComment"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="audit_status" property="auditStatus"/>
+    </resultMap>
+
+    <select id="list" resultMap="BaseResultMap"
+            parameterType="com.yjtech.wisdom.tourism.bigscreen.entity.TbAuditInfoEntity">
+        select
+        <include refid="Base_Column_List"/>
+        from tb_audit_info
+        <where>
+            <include refid="dynamic_where"/>
+        </where>
+    </select>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id,
+        company_id,
+        audit_comment,
+        create_user,
+        update_user,
+        create_time,
+        update_time,
+        audit_status
+    </sql>
+
+    <sql id="dynamic_where">
+        <if test="params != null">
+            <if test="params.id != null">
+                and id = #{params.id}
+            </if>
+            <if test="params.companyId != null">
+                and company_id = #{params.companyId}
+            </if>
+            <if test="params.auditStatus != null">
+                and audit_status = #{params.auditStatus}
+            </if>
+            <if test="params.auditComment != null">
+                and audit_comment = #{params.auditComment}
+            </if>
+            <if test="params.createUser != null">
+                and create_user = #{params.createUser}
+            </if>
+            <if test="params.updateUser != null">
+                and update_user = #{params.updateUser}
+            </if>
+            <if test="params.createTime != null">
+                <!--  and  create_time between #{params.beginDate} and #{params.endDate}  -->
+                and create_time = #{params.createTime}
+            </if>
+            <if test="params.updateTime != null">
+                <!--  and  update_time between #{params.beginDate} and #{params.endDate}  -->
+                and update_time = #{params.updateTime}
+            </if>
+        </if>
+    </sql>
+</mapper>

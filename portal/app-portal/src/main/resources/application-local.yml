@@ -6,7 +6,7 @@ spring:
       datasource:
         # 标准产监-开发
         industryMonitoringStandard:
-          url: jdbc:mysql://42.193.2.246:31907/industry_monitoring_standard?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+          url: jdbc:mysql://42.193.2.246:31907/industry_monitoring_standard_wlcy?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
           username: root
           password: yjwl2019!@#
           driver-class-name: com.mysql.cj.jdbc.Driver
@@ -74,12 +74,20 @@ spring:
           wall:
             config:
               multi-statement-allow: true
+#  redis:
+#    database: 9
+#    # 地址
+#    host: 42.193.2.246
+#    # 端口，默认为6379
+#    port: 30206
+#    # 密码
+#    password:
   redis:
     database: 9
     # 地址
-    host: 42.193.2.246
+    host: 1.14.103.148
     # 端口，默认为6379
-    port: 30206
+    port: 31857
     # 密码
     password:
 

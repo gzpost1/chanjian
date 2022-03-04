@@ -9,7 +9,7 @@ spring:
       datasource:
         # 标准产监-开发
         industryMonitoringStandard:
-          url: jdbc:mysql://42.193.2.246:31907/industry_monitoring_standard?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+          url: jdbc:mysql://42.193.2.246:31907/industry_monitoring_standard_wlcy?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
           username: root
           password: yjwl2019!@#
           driver-class-name: com.mysql.cj.jdbc.Driver
