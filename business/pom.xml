@@ -27,6 +27,7 @@
         <module>business-hotel</module>
         <module>business-marketing</module>
         <module>business-bigscreen</module>
+        <module>business-project</module>
     </modules>
 
     <dependencies>
