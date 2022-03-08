@@ -21,47 +21,55 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  */
 @Configuration
 public class ResourcesConfig implements WebMvcConfigurer {
-  @Autowired private RepeatSubmitInterceptor repeatSubmitInterceptor;
-  @Autowired private ScreenLoginInterceptor screenLoginInterceptor;
+    @Autowired
+    private RepeatSubmitInterceptor repeatSubmitInterceptor;
+    @Autowired
+    private ScreenLoginInterceptor screenLoginInterceptor;
 
 
-  @Override
-  public void addResourceHandlers(ResourceHandlerRegistry registry) {
-    /** 本地文件上传路径 */
-    registry
-        .addResourceHandler(Constants.RESOURCE_PREFIX + "/**")
-        .addResourceLocations("file:" + AppConfig.getProfile() + "/");
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        /** 本地文件上传路径 */
+        registry
+                .addResourceHandler(Constants.RESOURCE_PREFIX + "/**")
+                .addResourceLocations("file:" + AppConfig.getProfile() + "/");
 
-    /** swagger配置 */
-    registry
-        .addResourceHandler("swagger-ui.html")
-        .addResourceLocations("classpath:/META-INF/resources/");
-    registry
-        .addResourceHandler("/webjars/**")
-        .addResourceLocations("classpath:/META-INF/resources/webjars/");
-  }
+        /** swagger配置 */
+        registry
+                .addResourceHandler("swagger-ui.html")
+                .addResourceLocations("classpath:/META-INF/resources/");
+        registry
+                .addResourceHandler("/webjars/**")
+                .addResourceLocations("classpath:/META-INF/resources/webjars/");
+    }
 
-  /** 自定义拦截规则 */
-  @Override
-  public void addInterceptors(InterceptorRegistry registry) {
-    registry.addInterceptor(repeatSubmitInterceptor).addPathPatterns("/**");
-    registry.addInterceptor(screenLoginInterceptor).addPathPatterns("/screen/**");
-  }
+    /**
+     * 自定义拦截规则
+     */
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(repeatSubmitInterceptor).addPathPatterns("/**");
+        registry.addInterceptor(screenLoginInterceptor).addPathPatterns("/screen/**")
+                .excludePathPatterns("/screen/auth/login")
+                .excludePathPatterns("/screen/sms/sendScreenLoginPhoneCode");
+    }
 
-  /** 跨域配置 */
-  @Bean
-  public CorsFilter corsFilter() {
-    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-    CorsConfiguration config = new CorsConfiguration();
-    config.setAllowCredentials(true);
-    // 设置访问源地址
-    config.addAllowedOrigin("*");
-    // 设置访问源请求头
-    config.addAllowedHeader("*");
-    // 设置访问源请求方法
-    config.addAllowedMethod("*");
-    // 对接口配置跨域设置
-    source.registerCorsConfiguration("/**", config);
-    return new CorsFilter(source);
-  }
+    /**
+     * 跨域配置
+     */
+    @Bean
+    public CorsFilter corsFilter() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        // 设置访问源地址
+        config.addAllowedOrigin("*");
+        // 设置访问源请求头
+        config.addAllowedHeader("*");
+        // 设置访问源请求方法
+        config.addAllowedMethod("*");
+        // 对接口配置跨域设置
+        source.registerCorsConfiguration("/**", config);
+        return new CorsFilter(source);
+    }
 }

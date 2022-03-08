@@ -15,12 +15,15 @@ import com.yjtech.wisdom.tourism.common.constant.Constants;
 import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.common.constant.PhoneCodeEnum;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
+import com.yjtech.wisdom.tourism.common.exception.ErrorCode;
 import com.yjtech.wisdom.tourism.common.utils.AssertUtil;
 import com.yjtech.wisdom.tourism.common.utils.JsonUtil;
+import com.yjtech.wisdom.tourism.common.utils.ServletUtils;
 import com.yjtech.wisdom.tourism.dto.sms.PhoneCodeParam;
 import com.yjtech.wisdom.tourism.dto.sms.SmsSendVo;
 import com.yjtech.wisdom.tourism.framework.web.service.ScreenTokenService;
 import com.yjtech.wisdom.tourism.framework.web.service.TokenService;
+import com.yjtech.wisdom.tourism.infrastructure.core.domain.model.LoginUser;
 import com.yjtech.wisdom.tourism.infrastructure.core.domain.model.ScreenLoginBody;
 import com.yjtech.wisdom.tourism.infrastructure.core.domain.model.ScreenLoginUser;
 import com.yjtech.wisdom.tourism.infrastructure.utils.IpUtil;
@@ -33,6 +36,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -63,26 +67,60 @@ public class BigScreenLoginController {
     @Autowired
     private ScreenTokenService tokenService;
 
-    @PostMapping("smsLogin")
+    /**
+     * 大屏用户登录
+     * @param loginBody
+     * @return
+     */
+    @PostMapping("login")
     public JsonResult<String> smsLogin(@RequestBody @Validated ScreenLoginBody loginBody) {
         //校验手机验证码
         String funcName =
                 appConfig.getVersion() + "_" + PhoneCodeEnum.SYS_APP_LOGIN.getType();
         String phoneCode = loginBody.getPhoneCode();
         String phone = loginBody.getPhone();
-
+        String loginPwd = loginBody.getPassword();
+        TbRegisterInfoEntity companyInfo = companyInfoService.queryByPhone(phone);
+        AssertUtil.isFalse(Objects.isNull(companyInfo), "该公司不存在");
+        AssertUtil.isFalse(Objects.equals(companyInfo.getStatus(), EntityConstants.DISABLED), "该公司状态不正常");
         if (Objects.nonNull(phoneCode)) {
             AssertUtil.isTrue(smsService
                             .validPhoneCode(phone, funcName, phoneCode),
                     "短信验证码输入有误");
+        }else if(Objects.nonNull(loginPwd)){
+            AssertUtil.isFalse(!Objects.equals(EncryptTypeHandler.AES.encrypt(loginPwd),companyInfo.getPwd()),"输入密码不正确");
+        }else{
+            return JsonResult.error("请输入手机验证码或者登录密码");
         }
-
-        TbRegisterInfoEntity companyInfo = companyInfoService.queryByPhone(phone);
         ScreenLoginUser loginUser = new ScreenLoginUser();
-        AssertUtil.isFalse(Objects.isNull(companyInfo), "该公司不存在");
-        AssertUtil.isFalse(Objects.equals(companyInfo.getStatus(), EntityConstants.DISABLED), "该公司状态不正常");
         BeanUtils.copyProperties(companyInfo,loginUser);
         return JsonResult.success(tokenService.createToken(loginUser));
     }
+
+    /**
+     * 退出登录
+     * @param
+     * @return
+     */
+    @PostMapping("loginout")
+    public JsonResult loginout() {
+        //获取当前用户信息
+        ScreenLoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
+        Assert.notNull(loginUser, ErrorCode.NO_PERMISSION.getMessage());
+        //登出
+        tokenService.delLoginUser(loginUser.getToken());
+        return JsonResult.success();
+    }
+    /**
+     * 查询登陆用户信息
+     * @param
+     * @return
+     */
+    @PostMapping("queryLoginInfo")
+    public JsonResult queryLoginInfo() {
+        ScreenLoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
+        return JsonResult.success(loginUser);
+    }
+
 
 }

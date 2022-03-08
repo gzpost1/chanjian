@@ -19,11 +19,6 @@
     <dependencies>
         <dependency>
             <groupId>com.yjtech.wisdom.tourism</groupId>
-            <artifactId>business-command</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>com.yjtech.wisdom.tourism</groupId>
             <artifactId>business-systemconfig</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
@@ -57,11 +52,6 @@
             <version>1.0-SNAPSHOT</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.yjtech.wisdom.tourism</groupId>
-            <artifactId>business-country-tour</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
 
         <dependency>
             <groupId>com.yjtech.wisdom.tourism</groupId>

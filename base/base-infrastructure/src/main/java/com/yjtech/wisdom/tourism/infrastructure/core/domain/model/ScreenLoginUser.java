@@ -3,6 +3,7 @@ package com.yjtech.wisdom.tourism.infrastructure.core.domain.model;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysUser;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,6 +27,7 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ScreenLoginUser {
     private static final long serialVersionUID = 1L;
     private Long id;

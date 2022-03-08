@@ -35,6 +35,8 @@
         <result column="audit_time" property="auditTime"/>
     </resultMap>
 
+
+
     <select id="list" resultMap="BaseResultMap"
             parameterType="com.yjtech.wisdom.tourism.bigscreen.entity.TbRegisterInfoEntity">
         select
