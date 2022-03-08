@@ -32,6 +32,7 @@
         <result column="deleted" property="deleted"/>
         <result column="audit_status" property="auditStatus"/>
         <result column="blacklist" property="blacklist"/>
+        <result column="audit_time" property="auditTime"/>
     </resultMap>
 
     <select id="list" resultMap="BaseResultMap"
@@ -75,6 +76,7 @@
                 , deleted
                 , audit_status
                 , blacklist
+                , audit_time
     </sql>
 
     <sql id="dynamic_where">
@@ -167,6 +169,9 @@
             </if>
             <if test="params.blacklist != null">
                 and blacklist = #{params.blacklist}
+            </if>
+            <if test="params.auditTime != null">
+                and audit_time = #{params.auditTime}
             </if>
         </if>
     </sql>

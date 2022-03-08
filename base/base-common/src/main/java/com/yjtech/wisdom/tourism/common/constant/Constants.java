@@ -60,6 +60,10 @@ public class Constants {
      * 登录用户 redis key
      */
     public static final String LOGIN_TOKEN_KEY = "login_tokens:";
+    /**
+     * 登录用户 redis key
+     */
+    public static final String LOGIN_SCREEN_TOKEN_KEY = "screen_login_tokens:";
 
     /**
      * 防重提交 redis key
@@ -85,6 +89,10 @@ public class Constants {
      * 令牌前缀
      */
     public static final String LOGIN_USER_KEY = "login_user_key";
+    /**
+     * 令牌前缀
+     */
+    public static final String SCREEN_LOGIN_USER_KEY = "screen_login_user_key";
 
     /**
      * 用户ID

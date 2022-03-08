@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -82,7 +83,7 @@ public class CompanyManagerController {
     }
 
     /**
-     * 加入黑名单
+     * 审核
      *
      * @param params
      * @return
@@ -93,6 +94,7 @@ public class CompanyManagerController {
         TbRegisterInfoEntity queryRegisterInfoEntity = registerInfoService.getById(params.getId());
         AssertUtil.isFalse(Objects.isNull(queryRegisterInfoEntity), "该企业不存在");
         queryRegisterInfoEntity.setAuditStatus(params.getAuditStatus());
+        queryRegisterInfoEntity.setAuditTime(LocalDateTime.now());
         TbAuditInfoEntity auditInfoEntity = TbAuditInfoEntity.builder().companyId(queryRegisterInfoEntity.getId()).auditStatus(params.getAuditStatus()).auditComment(params.getAuditComment()).build();
         registerInfoService.updateById(queryRegisterInfoEntity);
         auditInfoService.save(auditInfoEntity);

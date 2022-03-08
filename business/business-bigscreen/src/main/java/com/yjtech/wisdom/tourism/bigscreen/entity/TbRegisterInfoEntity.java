@@ -163,6 +163,11 @@ public class TbRegisterInfoEntity extends Model<TbRegisterInfoEntity> {
      */
     private Boolean blacklist;
 
+    /**
+     * 审核时间
+     */
+    private LocalDateTime auditTime;
+
     @TableField(fill = FieldFill.INSERT)
     private Long createUser;
 

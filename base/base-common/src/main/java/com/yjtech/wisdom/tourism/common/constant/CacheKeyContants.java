@@ -41,6 +41,8 @@ public class CacheKeyContants {
      */
     public static final String ZC_TOKEN_KEY = "zc:token:";
 
+    public static final String SCREEN_LOGIN_CACHE = "SCREEN:LOGIN:";
+
 
 }
 

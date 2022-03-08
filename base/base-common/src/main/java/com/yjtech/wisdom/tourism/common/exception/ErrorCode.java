@@ -109,6 +109,7 @@ public enum ErrorCode implements IExceptionType {
   ERROR_API_VALIAUTH_ADCODE_FAILD("20005", "apiId没有查询该区域的权限"),
   ERROR_API_NO_ADCODE_PARAM("20006", "api请求参数没有携带区域adcode参数,请携带参数"),
   TOKEN_NULL("20007", "token is null"),
+  ERROR_NO_LOGIN("20010", "大屏用户未登录"),
   ERROR_API_GET_TOKEN_FAILD("20008", "获取token失败,请检查appid是否正确"),
   ERROR_API_REDIS_GET_TOKEN_FAILD("20009", "token获取失败,请检查是否正确获取token"),
 

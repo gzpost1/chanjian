@@ -1,42 +1,37 @@
-package com.yjtech.wisdom.tourism.bigscreen.dto;
+package com.yjtech.wisdom.tourism.infrastructure.core.domain.model;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.yjtech.wisdom.tourism.mybatis.entity.PageQuery;
-import lombok.*;
-import lombok.experimental.Accessors;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysUser;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.Set;
 
 /**
- * 注册信息
+ * 大屏登陆用户
  *
- * @author MJ~
- * @since 2022-03-02
+ * @author Mujun
  */
 @Data
-@Builder(toBuilder = true)
-@NoArgsConstructor
+@Builder
 @AllArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@EqualsAndHashCode(callSuper = false)
-@Accessors(chain = true)
-public class TbRegisterInfoParam extends PageQuery implements Serializable {
-
+@NoArgsConstructor
+public class ScreenLoginUser {
     private static final long serialVersionUID = 1L;
-
-    @TableId(value = "id", type = IdType.ID_WORKER)
     private Long id;
 
     /**
      * 公司名称
-
      */
     private String companyName;
 
@@ -79,7 +74,6 @@ public class TbRegisterInfoParam extends PageQuery implements Serializable {
 
     /**
      * 标签
-
      */
     private String label;
 
@@ -124,7 +118,7 @@ public class TbRegisterInfoParam extends PageQuery implements Serializable {
     private String commercialDirection;
 
     /**
-     * 运营方向 
+     * 运营方向
      */
     private String operationDirection;
 
@@ -142,12 +136,12 @@ public class TbRegisterInfoParam extends PageQuery implements Serializable {
      */
     private LocalDateTime auditTime;
 
-	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;
 
-	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updateTime;
 
     private Byte status;
@@ -157,15 +151,37 @@ public class TbRegisterInfoParam extends PageQuery implements Serializable {
     private Byte deleted = 0;
 
 
-    /**
-     * 审核状态 0.待审核 1.通过 2.驳回
-     */
-    private Integer auditStatus;
+    /** 用户唯一标识 */
+    private String token;
+
+    /** 登陆时间 */
+    private Long loginTime;
+
+    /** 过期时间 */
+    private Long expireTime;
+
+    /** 登录IP地址 */
+    private String ipaddr;
+
+    /** 登录地点 */
+    private String loginLocation;
+
+    /** 浏览器类型 */
+    private String browser;
+
+    /** 操作系统 */
+    private String os;
+
+    /** 权限列表 */
+    private Set<String> permissions;
+
+    /** 用户信息 */
+    private SysUser user;
 
     /**
-     * 是否是加入黑名单
+     * 0正常 1长时间token
      */
-    private Boolean blacklist;
+    private String tokenType;
 
 
 }

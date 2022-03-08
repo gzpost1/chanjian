@@ -3,6 +3,7 @@ package com.yjtech.wisdom.tourism.framework.config;
 import com.yjtech.wisdom.tourism.common.config.AppConfig;
 import com.yjtech.wisdom.tourism.common.constant.Constants;
 import com.yjtech.wisdom.tourism.framework.interceptor.RepeatSubmitInterceptor;
+import com.yjtech.wisdom.tourism.framework.interceptor.impl.ScreenLoginInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +22,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class ResourcesConfig implements WebMvcConfigurer {
   @Autowired private RepeatSubmitInterceptor repeatSubmitInterceptor;
+  @Autowired private ScreenLoginInterceptor screenLoginInterceptor;
+
 
   @Override
   public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -42,6 +45,7 @@ public class ResourcesConfig implements WebMvcConfigurer {
   @Override
   public void addInterceptors(InterceptorRegistry registry) {
     registry.addInterceptor(repeatSubmitInterceptor).addPathPatterns("/**");
+    registry.addInterceptor(screenLoginInterceptor).addPathPatterns("/screen/**");
   }
 
   /** 跨域配置 */
