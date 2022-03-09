@@ -7,9 +7,12 @@ import com.yjtech.wisdom.tourism.bigscreen.dto.TbRegisterInfoParam;
 import com.yjtech.wisdom.tourism.bigscreen.entity.TbRegisterInfoEntity;
 import com.yjtech.wisdom.tourism.bigscreen.service.TbRegisterInfoService;
 import com.yjtech.wisdom.tourism.bigscreen.validate.RegisterValidationGroup;
+import com.yjtech.wisdom.tourism.common.config.AppConfig;
 import com.yjtech.wisdom.tourism.common.constant.AuditStatusConstants;
 import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
+import com.yjtech.wisdom.tourism.common.constant.PhoneCodeEnum;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
+import com.yjtech.wisdom.tourism.common.utils.AssertUtil;
 import com.yjtech.wisdom.tourism.infrastructure.core.controller.BaseCurdController;
 import com.yjtech.wisdom.tourism.mybatis.typehandler.EncryptTypeHandler;
 import lombok.extern.slf4j.Slf4j;
@@ -36,13 +39,25 @@ public class TbRegisterInfoController extends BaseCurdController<TbRegisterInfoS
     @Autowired
     private SmsService smsService;
 
+    @Autowired
+    private AppConfig appConfig;
     /**
      * 投资方注册
      */
     @PostMapping("investor")
     public void investor(@RequestBody @Validated(RegisterValidationGroup.investor.class) TbRegisterInfoEntity registerInfoEntity) {
+        validateSms(registerInfoEntity);
         encodepwd(registerInfoEntity);
         super.create(registerInfoEntity);
+    }
+
+    private void validateSms(TbRegisterInfoEntity registerInfoEntity) {
+        //校验手机验证码
+        String funcName =
+                appConfig.getVersion() + "_" + PhoneCodeEnum.SYS_APP_LOGIN.getType();
+        AssertUtil.isTrue(smsService
+                        .validPhoneCode(registerInfoEntity.getPhone(), funcName, registerInfoEntity.getPhoneCode()),
+                "短信验证码输入有误");
     }
 
     private void encodepwd(@Validated(RegisterValidationGroup.investor.class) @RequestBody TbRegisterInfoEntity registerInfoEntity) {
@@ -55,6 +70,7 @@ public class TbRegisterInfoController extends BaseCurdController<TbRegisterInfoS
      */
     @PostMapping("commercial")
     public void commercial(@RequestBody @Validated(RegisterValidationGroup.commercial.class) TbRegisterInfoEntity registerInfoEntity) {
+        validateSms(registerInfoEntity);
         encodepwd(registerInfoEntity);
         super.create(registerInfoEntity);
     }
@@ -64,6 +80,7 @@ public class TbRegisterInfoController extends BaseCurdController<TbRegisterInfoS
      */
     @PostMapping("operator")
     public void operator(@RequestBody @Validated(RegisterValidationGroup.operator.class) TbRegisterInfoEntity registerInfoEntity) {
+        validateSms(registerInfoEntity);
         encodepwd(registerInfoEntity);
         super.create(registerInfoEntity);
     }

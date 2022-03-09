@@ -249,6 +249,12 @@ public class TbRegisterInfoEntity extends Model<TbRegisterInfoEntity> {
 
     public static final String AUDIT_TIME = "audit_time";
 
+    /**
+     * 注册验证码
+     */
+    @TableField(exist = false)
+    private String phoneCode;
+
     @Override
     protected Serializable pkVal() {
         return this.id;
