@@ -192,6 +192,11 @@ public class TbRegisterInfoEntity extends Model<TbRegisterInfoEntity> {
     @TableField(fill = FieldFill.INSERT)
     private Byte deleted = EntityConstants.NOT_DELETED;
 
+    /**
+     * 所在地区域编码
+     */
+    private String areaCode;
+
 
     public static final String ID = "id";
 

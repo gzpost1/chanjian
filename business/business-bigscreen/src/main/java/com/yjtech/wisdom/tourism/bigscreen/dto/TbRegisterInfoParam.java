@@ -138,6 +138,11 @@ public class TbRegisterInfoParam extends PageQuery implements Serializable {
     private Long updateUser;
 
     /**
+     * 所在地区域编码
+     */
+    private String areaCode;
+
+    /**
      * 审核时间
      */
     private LocalDateTime auditTime;

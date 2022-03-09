@@ -51,7 +51,8 @@ public class ResourcesConfig implements WebMvcConfigurer {
         registry.addInterceptor(repeatSubmitInterceptor).addPathPatterns("/**");
         registry.addInterceptor(screenLoginInterceptor).addPathPatterns("/screen/**")
                 .excludePathPatterns("/screen/auth/login")
-                .excludePathPatterns("/screen/sms/sendScreenLoginPhoneCode");
+                .excludePathPatterns("/screen/sms/sendScreenLoginPhoneCode")
+                .excludePathPatterns("/system/dict/data/**");
     }
 
     /**

@@ -117,6 +117,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .anonymous()
                 .antMatchers("/screen/**")
                 .anonymous()
+                .antMatchers("/system/dict/data/**")
+                .anonymous()
                 //zlmedia相关调用，不参与鉴权
                 .antMatchers("/index/hook/on_stream_not_found", "/index/hook/on_stream_none_reader")
                 .anonymous()

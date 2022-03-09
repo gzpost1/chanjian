@@ -44,7 +44,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String servletPath = request.getServletPath();
-        if (servletPath.contains("/screen")) {
+        if (servletPath.contains("/screen")||(servletPath.contains("/system/dict/data"))) {
             return true;
         }
         return false;
