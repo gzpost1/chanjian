@@ -73,7 +73,7 @@ public class BigScreenLoginController {
      * @return
      */
     @PostMapping("login")
-    public JsonResult<String> smsLogin(@RequestBody @Validated ScreenLoginBody loginBody) {
+    public JsonResult<String> login(@RequestBody @Validated ScreenLoginBody loginBody) {
         //校验手机验证码
         String funcName =
                 appConfig.getVersion() + "_" + PhoneCodeEnum.SYS_APP_LOGIN.getType();
