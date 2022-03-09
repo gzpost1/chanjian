@@ -247,6 +247,8 @@ public class TbRegisterInfoEntity extends Model<TbRegisterInfoEntity> {
 
     public static final String DELETED = "deleted";
 
+    public static final String AUDIT_TIME = "audit_time";
+
     @Override
     protected Serializable pkVal() {
         return this.id;

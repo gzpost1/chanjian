@@ -77,6 +77,10 @@ public class TbFavoriteEntity extends Model<TbFavoriteEntity> {
     @TableField(fill = FieldFill.INSERT)
     private Byte status;
 
+    /**
+     * 1.收藏 2.点赞
+     */
+    private Integer favoriteType;
 
     public static final String ID = "id";
 
@@ -93,6 +97,8 @@ public class TbFavoriteEntity extends Model<TbFavoriteEntity> {
     public static final String DELETED = "deleted";
 
     public static final String STATUS = "status";
+    
+    public static final String FAVORITE_TYPE = "favorite_type";
 
     @Override
     protected Serializable pkVal() {

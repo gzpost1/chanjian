@@ -1,6 +1,7 @@
 package com.yjtech.wisdom.tourism.portal.controller.bigscreen;
 
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chinaunicom.yunjingtech.sms.service.SmsService;
 import com.yjtech.wisdom.tourism.bigscreen.dto.TbRegisterInfoParam;
 import com.yjtech.wisdom.tourism.bigscreen.entity.TbRegisterInfoEntity;
@@ -85,10 +86,12 @@ public class TbRegisterInfoController extends BaseCurdController<TbRegisterInfoS
      * @return
      */
     @PostMapping("queryForPageByType")
-    public JsonResult<List<TbRegisterInfoEntity>> listCompany(@RequestBody @Validated TbRegisterInfoEntity tbRegisterInfoEntity) {
-//        TbRegisterInfoEntity tbRegisterInfoEntity = TbRegisterInfoEntity.builder().blacklist(false).status(EntityConstants.ENABLED).auditStatus(AuditStatusConstants.SUCCESS).build();
-        JsonResult<List<TbRegisterInfoEntity>> list = super.list(tbRegisterInfoEntity);
-        return list;
+    public JsonResult<Page<TbRegisterInfoEntity>> queryForPageByType(@RequestBody @Validated TbRegisterInfoParam param) {
+        param.setAuditStatus(1);
+        param.setBlacklist(false);
+        param.setDescs(new String[]{TbRegisterInfoEntity.AUDIT_TIME});
+        JsonResult<Page<TbRegisterInfoEntity>> pageJsonResult = super.queryForPage(param);
+        return pageJsonResult;
     }
 
 

@@ -25,19 +25,13 @@ import java.time.LocalDateTime;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class FavoriteParam extends PageQuery implements Serializable {
+public class FavoriteIsCheckParam extends PageQuery implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private Long id;
-
-//    /**
-//     * 注册企业的id
-//     */
-//    private Long companyId;
 
     /**
-     * 收藏id
+     * 收藏id (即项目id或者公司id)
      */
     @NotNull(message = "id不能为空")
     private Long favoriteId;
@@ -53,24 +47,6 @@ public class FavoriteParam extends PageQuery implements Serializable {
      */
     @NotNull(message = "点赞或收藏选项不能为空")
     private Integer favoriteType;
-
-    /**
-     * 收藏时间
-
-     */
-	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime createTime;
-
-	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime updateTime;
-
-    @TableLogic
-    @Builder.Default
-    private Byte deleted = 0;
-
-    private Byte status;
 
 
 }

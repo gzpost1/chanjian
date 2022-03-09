@@ -1,6 +1,7 @@
 package com.yjtech.wisdom.tourism.portal.controller.bigscreen;
 
 
+import com.yjtech.wisdom.tourism.bigscreen.dto.FavoriteIsCheckParam;
 import com.yjtech.wisdom.tourism.bigscreen.dto.FavoriteParam;
 import com.yjtech.wisdom.tourism.bigscreen.dto.MyFavoritesVo;
 import com.yjtech.wisdom.tourism.bigscreen.dto.TbFavoriteParam;
@@ -37,22 +38,40 @@ public class TbFavoriteController extends BaseCurdController<TbFavoriteService, 
     @Autowired
     ScreenTokenService tokenService;
 
+    /**
+     * 收藏或点赞
+     * @param param
+     * @return
+     */
     @PostMapping("collect")
     public JsonResult collect(@RequestBody @Validated FavoriteParam param) {
         ScreenLoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
-        boolean exist = service.checkExist(loginUser.getId(), param.getFavoriteId(), param.getType());
-        AssertUtil.isFalse(exist,"不能重复收藏相同内容");
+        boolean exist = service.checkExist(loginUser.getId(), param.getFavoriteId(), param.getType(),param.getFavoriteType());
+        AssertUtil.isFalse(exist,"不能重复收藏或者点赞相同内容");
         TbFavoriteEntity favoriteEntity = new TbFavoriteEntity();
         BeanUtils.copyProperties(param, favoriteEntity);
         favoriteEntity.setCompanyId(loginUser.getId());
         return JsonResult.success(service.save(favoriteEntity));
     }
 
-    @PostMapping("myFavorites")
-    public JsonResult<List<MyFavoritesVo>> myFavorites() {
+    /**
+     * 我的收藏
+     * @return
+     */
+    @PostMapping("queryMyFavorites")
+    public JsonResult<List<MyFavoritesVo>> queryMyFavorites() {
         ScreenLoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
-        return JsonResult.success(service.myFavorites(loginUser.getId()));
+        return JsonResult.success(service.queryMyfavorites(loginUser.getId()));
     }
 
-
+    /**
+     * 是否已经收藏或者点赞
+     * @return
+     */
+    @PostMapping("isCheck")
+    public JsonResult<Boolean> isCheck(@RequestBody @Validated FavoriteIsCheckParam param) {
+        ScreenLoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
+        boolean exist = service.checkExist(loginUser.getId(), param.getFavoriteId(), param.getType(),param.getFavoriteType());
+        return JsonResult.success(exist);
+    }
 }

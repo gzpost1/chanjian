@@ -19,15 +19,16 @@ import java.util.Objects;
  */
 @Service
 public class TbFavoriteService extends BaseMybatisServiceImpl<TbFavoriteMapper, TbFavoriteEntity>  {
-    public List<MyFavoritesVo> myFavorites(@Param("companyId") Long companyId) {
+    public List<MyFavoritesVo> queryMyfavorites(@Param("companyId") Long companyId) {
         return baseMapper.queryMyfavorites(companyId);
     }
 
-    public boolean checkExist(Long companyId,Long favoriteId,Integer type){
+    public boolean checkExist(Long companyId,Long favoriteId,Integer type,Integer favoriteType){
         QueryWrapper<TbFavoriteEntity> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq(TbFavoriteEntity.COMPANY_ID,companyId);
         queryWrapper.eq(TbFavoriteEntity.FAVORITE_ID,favoriteId);
         queryWrapper.eq(TbFavoriteEntity.TYPE,type);
+        queryWrapper.eq(TbFavoriteEntity.FAVORITE_TYPE,favoriteType);
         TbFavoriteEntity favoriteEntity = baseMapper.selectOne(queryWrapper);
         if(Objects.nonNull(favoriteEntity)){
             return true;

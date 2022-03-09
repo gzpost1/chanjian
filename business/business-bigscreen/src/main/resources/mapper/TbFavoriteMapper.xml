@@ -84,7 +84,7 @@
         left join tb_register_info ri on f.favorite_id = ri.id
         <where>
             f.type = 1
-            and ri.deleted = 0
+            and ri.deleted = 0 and f.favorite_type =1
             <if test="companyId != null">
                 and f.company_id = #{companyId}
             </if>
@@ -100,7 +100,7 @@
         left join tb_project_info ri on f.favorite_id = ri.id
         <where>
             f.type = 2
-            and ri.deleted = 0
+            and ri.deleted = 0 and f.favorite_type =1
             <if test="companyId != null">
                 and f.company_id = #{companyId}
             </if>
