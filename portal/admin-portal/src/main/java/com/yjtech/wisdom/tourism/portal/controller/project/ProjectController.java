@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yjtech.wisdom.tourism.common.core.domain.IdParam;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.common.core.domain.UpdateStatusParam;
+import com.yjtech.wisdom.tourism.common.exception.CustomException;
 import com.yjtech.wisdom.tourism.common.utils.IdWorker;
 import com.yjtech.wisdom.tourism.project.dto.ProjectQuery;
 import com.yjtech.wisdom.tourism.project.dto.ProjectResourceQuery;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -128,12 +130,26 @@ public class ProjectController {
     public JsonResult create(@RequestBody @Valid TbProjectInfoEntity entity) {
         entity.setDeleted(Byte.valueOf("0"));
         entity.setStatus(Byte.valueOf("0"));
+        validateProjectName(null,entity.getProjectName());
         entity.setId(IdWorker.getInstance().nextId());
+
         projectInfoService.save(entity);
 
         return JsonResult.ok();
     }
 
+    public void validateProjectName(Long id ,String name){
+        LambdaQueryWrapper<TbProjectInfoEntity> wrapper = new LambdaQueryWrapper<>();
+        if(Objects.nonNull(id)){
+            wrapper.ne(TbProjectInfoEntity::getId,id);
+        }
+        wrapper.eq(TbProjectInfoEntity::getProjectName,name);
+
+        List<TbProjectInfoEntity> list = projectInfoService.list(wrapper);
+        if(CollectionUtils.isNotEmpty(list)){
+            throw new CustomException("项目名称重复");
+        }
+    }
     /**
      * 更新
      *
@@ -144,6 +160,8 @@ public class ProjectController {
      */
     @PostMapping("/update")
     public JsonResult update(@RequestBody @Valid TbProjectInfoEntity entity) {
+
+        validateProjectName(entity.getId(),entity.getProjectName());
 
         projectInfoService.updateById(entity);
 

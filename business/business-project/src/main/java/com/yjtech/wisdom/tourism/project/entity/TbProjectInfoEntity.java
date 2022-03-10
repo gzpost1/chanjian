@@ -186,7 +186,6 @@ public class TbProjectInfoEntity extends BaseEntity {
     /**
      * 联系邮箱
      */
-    @NotBlank(message = "联系邮箱不能为空")
     @Length(max = 30, message = "联系邮箱最长30位")
     @TableField(value = "contact_email")
     private String contactEmail;
@@ -194,7 +193,6 @@ public class TbProjectInfoEntity extends BaseEntity {
     /**
      * 联系传真
      */
-    @NotBlank(message = "联系传真不能为空")
     @Length(max = 13, message = "联系传真最长13位")
     @TableField(value = "contact_fax")
     private String contactFax;
@@ -202,7 +200,6 @@ public class TbProjectInfoEntity extends BaseEntity {
     /**
      * 联系QQ
      */
-    @NotBlank(message = "联系QQ不能为空")
     @Length(max = 18, message = "联系QQ最长18位")
     @TableField(value = "concat_qq")
     private String concatQq;
