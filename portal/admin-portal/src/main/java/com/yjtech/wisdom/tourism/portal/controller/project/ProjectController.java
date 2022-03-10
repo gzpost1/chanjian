@@ -4,11 +4,18 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.common.base.Preconditions;
+import com.yjtech.wisdom.tourism.common.constant.Constants;
 import com.yjtech.wisdom.tourism.common.core.domain.IdParam;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.common.core.domain.UpdateStatusParam;
+import com.yjtech.wisdom.tourism.common.core.domain.ValidateExcelEntity;
+import com.yjtech.wisdom.tourism.common.enums.ImportInfoTypeEnum;
 import com.yjtech.wisdom.tourism.common.exception.CustomException;
+import com.yjtech.wisdom.tourism.common.exception.ErrorCode;
 import com.yjtech.wisdom.tourism.common.utils.IdWorker;
+import com.yjtech.wisdom.tourism.infrastructure.poi.ExcelUtil;
+import com.yjtech.wisdom.tourism.portal.controller.common.BusinessCommonController;
 import com.yjtech.wisdom.tourism.project.dto.ProjectQuery;
 import com.yjtech.wisdom.tourism.project.dto.ProjectResourceQuery;
 import com.yjtech.wisdom.tourism.project.entity.TbProjectInfoEntity;
@@ -18,11 +25,11 @@ import com.yjtech.wisdom.tourism.project.service.TbProjectResourceService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,11 +41,13 @@ import java.util.Optional;
  */
 @RestController
 @RequestMapping("/project")
-public class ProjectController {
+public class ProjectController extends BusinessCommonController {
     @Autowired
     private TbProjectInfoService projectInfoService;
     @Autowired
     private TbProjectResourceService projectResourceService;
+//    @Autowired
+//    private ImportRecordService importRecordService;
 
     /**
      * 分页列表
@@ -199,5 +208,37 @@ public class ProjectController {
         return JsonResult.ok();
     }
 
+    /**
+     * 下载模板
+     * @param request
+     * @param response
+     */
+    @GetMapping("getTemplate")
+    public void getTemplate(HttpServletRequest request, HttpServletResponse response) {
+        getTemplate(ImportInfoTypeEnum.PROJECT, request, response);
+    }
+
+//    /**
+//     * 招商引资数据导入
+//     * @param file
+//     * @return
+//     */
+//    @PostMapping("info/importExcel")
+//    public JsonResult importExcel(@RequestParam("file") MultipartFile file) {
+//        //构建信息数据
+//        List<TbInvestmentEntity> entityList = importRecordService.analysisExcel(ImportInfoTypeEnum.TYPE_INVESTMENT, TbInvestmentEntity.class, file, Constants.NumberConstants.NUMBER_TWO, Constants.NumberConstants.NUMBER_THREE, null);
+//        //校验文档数据合法性
+//        ValidateExcelEntity validateExcelEntity = ExcelUtil.validExcel(entityList, Constants.NumberConstants.NUMBER_FOUR);
+//        if(!validateExcelEntity.isPass()){
+//            //异步添加导入失败记录
+//            importRecordService.createFailRecord(file.getOriginalFilename(), entityList.size(), ImportInfoTypeEnum.TYPE_INVESTMENT);
+//            return JsonResult.error(ErrorCode.EXCEL_IMPORT_ERROR.getCode(), "招商引资导入失败：文档模板数据异常", validateExcelEntity);
+//        }
+//
+//        //插入
+//        investmentService.insertByImport(entityList, file.getOriginalFilename(), statisticsTime);
+//
+//        return JsonResult.success();
+//    }
 
 }

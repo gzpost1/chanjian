@@ -40,6 +40,7 @@
     <result column="support_desc" jdbcType="VARCHAR" property="supportDesc" />
     <result column="status" jdbcType="TINYINT" property="status" />
     <result column="company_id" jdbcType="VARCHAR" property="companyId" />
+    <result column="view_num" jdbcType="INTEGER" property="viewNum" />
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
@@ -49,6 +50,6 @@
     project_investment_content, investment_total, funding_amount, private_capital, payback_period, 
     company_name, company_address, project_concat, project_phone, post_code, contact_landline, 
     contact_email, contact_fax, concat_qq, service_unit_name, project_service_concat, 
-    project_service_phone, project_service_landline, support_desc, `status`, company_id
+    project_service_phone, project_service_landline, support_desc, `status`, company_id,view_num
   </sql>
 </mapper>
