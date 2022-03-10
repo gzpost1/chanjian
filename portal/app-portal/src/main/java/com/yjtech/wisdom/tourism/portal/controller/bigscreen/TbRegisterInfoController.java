@@ -1,6 +1,7 @@
 package com.yjtech.wisdom.tourism.portal.controller.bigscreen;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chinaunicom.yunjingtech.sms.service.SmsService;
 import com.yjtech.wisdom.tourism.bigscreen.dto.TbRegisterInfoParam;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 注册信息
@@ -45,10 +47,15 @@ public class TbRegisterInfoController extends BaseCurdController<TbRegisterInfoS
      * 投资方注册
      */
     @PostMapping("investor")
-    public void investor(@RequestBody @Validated(RegisterValidationGroup.investor.class) TbRegisterInfoEntity registerInfoEntity) {
+    public JsonResult investor(@RequestBody @Validated(RegisterValidationGroup.investor.class) TbRegisterInfoEntity registerInfoEntity) {
+        validatePhone(registerInfoEntity.getPhone());
         validateSms(registerInfoEntity);
         encodepwd(registerInfoEntity);
-        super.create(registerInfoEntity);
+        return JsonResult.success(super.create(registerInfoEntity));
+    }
+
+    private void validatePhone(String phone) {
+        AssertUtil.isFalse(!service.checkPhone(phone), "改手机号已注册不能重复注册");
     }
 
     private void validateSms(TbRegisterInfoEntity registerInfoEntity) {
@@ -67,22 +74,26 @@ public class TbRegisterInfoController extends BaseCurdController<TbRegisterInfoS
 
     /**
      * 业态方注册
+     * @return
      */
     @PostMapping("commercial")
-    public void commercial(@RequestBody @Validated(RegisterValidationGroup.commercial.class) TbRegisterInfoEntity registerInfoEntity) {
+    public JsonResult<JsonResult> commercial(@RequestBody @Validated(RegisterValidationGroup.commercial.class) TbRegisterInfoEntity registerInfoEntity) {
+        validatePhone(registerInfoEntity.getPhone());
         validateSms(registerInfoEntity);
         encodepwd(registerInfoEntity);
-        super.create(registerInfoEntity);
+        return JsonResult.success(super.create(registerInfoEntity));
     }
 
     /**
      * 运营方注册
+     * @return
      */
     @PostMapping("operator")
-    public void operator(@RequestBody @Validated(RegisterValidationGroup.operator.class) TbRegisterInfoEntity registerInfoEntity) {
+    public JsonResult<JsonResult> operator(@RequestBody @Validated(RegisterValidationGroup.operator.class) TbRegisterInfoEntity registerInfoEntity) {
+        validatePhone(registerInfoEntity.getPhone());
         validateSms(registerInfoEntity);
         encodepwd(registerInfoEntity);
-        super.create(registerInfoEntity);
+        return JsonResult.success(super.create(registerInfoEntity));
     }
 
     /**
