@@ -129,7 +129,7 @@ public class TbRegisterInfoEntity extends Model<TbRegisterInfoEntity> {
     /**
      * 曾参与投资的项目
      */
-    @NotNull(message = "曾参与投资的项目不能为空")
+    @NotNull(message = "曾参与的项目不能为空")
     private String investmentProject;
 
     /**
