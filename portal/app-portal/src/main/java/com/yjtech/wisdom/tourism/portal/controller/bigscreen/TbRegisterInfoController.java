@@ -4,6 +4,7 @@ package com.yjtech.wisdom.tourism.portal.controller.bigscreen;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chinaunicom.yunjingtech.sms.service.SmsService;
+import com.yjtech.wisdom.tourism.bigscreen.dto.RecommendParam;
 import com.yjtech.wisdom.tourism.bigscreen.dto.TbRegisterInfoParam;
 import com.yjtech.wisdom.tourism.bigscreen.entity.TbRegisterInfoEntity;
 import com.yjtech.wisdom.tourism.bigscreen.service.TbRegisterInfoService;
@@ -14,7 +15,10 @@ import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.common.constant.PhoneCodeEnum;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.common.utils.AssertUtil;
+import com.yjtech.wisdom.tourism.common.utils.ServletUtils;
+import com.yjtech.wisdom.tourism.framework.web.service.ScreenTokenService;
 import com.yjtech.wisdom.tourism.infrastructure.core.controller.BaseCurdController;
+import com.yjtech.wisdom.tourism.infrastructure.core.domain.model.ScreenLoginUser;
 import com.yjtech.wisdom.tourism.mybatis.typehandler.EncryptTypeHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +29,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Objects;
 
 /**
  * 注册信息
@@ -43,6 +46,9 @@ public class TbRegisterInfoController extends BaseCurdController<TbRegisterInfoS
 
     @Autowired
     private AppConfig appConfig;
+
+    @Autowired
+    private ScreenTokenService tokenService;
     /**
      * 投资方注册
      */
@@ -122,5 +128,19 @@ public class TbRegisterInfoController extends BaseCurdController<TbRegisterInfoS
         return pageJsonResult;
     }
 
+    /**
+     * 根据登陆企业所在地推荐企业
+     * @return
+     */
+    @PostMapping("recommendCompany")
+    public List<TbRegisterInfoEntity> recommendCompany(@RequestBody @Validated RecommendParam param) {
+        ScreenLoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
+        String areaCode = loginUser.getAreaCode();
+        QueryWrapper<TbRegisterInfoEntity> queryWrapper = new QueryWrapper<>();
+        queryWrapper.likeRight(TbRegisterInfoEntity.AREA_CODE,areaCode);
+        queryWrapper.eq(TbRegisterInfoEntity.TYPE,param.getType());
+        List<TbRegisterInfoEntity> list = service.list(queryWrapper);
+        return list;
+    }
 
 }

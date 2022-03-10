@@ -185,5 +185,7 @@ public class ScreenLoginUser {
      */
     private String tokenType;
 
+    private String areaCode;
+
 
 }

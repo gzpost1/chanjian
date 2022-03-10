@@ -253,6 +253,7 @@ public class TbRegisterInfoEntity extends Model<TbRegisterInfoEntity> {
     public static final String DELETED = "deleted";
 
     public static final String AUDIT_TIME = "audit_time";
+    public static final String AREA_CODE = "area_code";
 
     /**
      * 注册验证码
