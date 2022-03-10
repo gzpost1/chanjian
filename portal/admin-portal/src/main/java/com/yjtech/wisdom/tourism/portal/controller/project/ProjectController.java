@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yjtech.wisdom.tourism.common.core.domain.IdParam;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.common.core.domain.UpdateStatusParam;
+import com.yjtech.wisdom.tourism.common.utils.IdWorker;
 import com.yjtech.wisdom.tourism.project.dto.ProjectQuery;
 import com.yjtech.wisdom.tourism.project.dto.ProjectResourceQuery;
 import com.yjtech.wisdom.tourism.project.entity.TbProjectInfoEntity;
@@ -112,10 +113,7 @@ public class ProjectController {
         LambdaUpdateWrapper<TbProjectResourceEntity> wrapper = new LambdaUpdateWrapper<TbProjectResourceEntity>();
         wrapper.eq(TbProjectResourceEntity::getProjectId, query.getProjectId());
         wrapper.eq(TbProjectResourceEntity::getResourceType, query.getResourceType());
-
-        projectResourceService.getOne(wrapper);
-
-        return JsonResult.ok();
+        return JsonResult.success(projectResourceService.getOne(wrapper));
     }
 
     /**
@@ -130,6 +128,7 @@ public class ProjectController {
     public JsonResult create(@RequestBody @Valid TbProjectInfoEntity entity) {
         entity.setDeleted(Byte.valueOf("0"));
         entity.setStatus(Byte.valueOf("0"));
+        entity.setId(IdWorker.getInstance().nextId());
         projectInfoService.save(entity);
 
         return JsonResult.ok();
