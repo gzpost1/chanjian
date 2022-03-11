@@ -3,6 +3,7 @@ package com.yjtech.wisdom.tourism.portal.controller.project;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.yjtech.wisdom.tourism.common.annotation.IgnoreAuth;
 import com.yjtech.wisdom.tourism.common.core.domain.IdParam;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.project.dto.ProjectQuery;
@@ -41,6 +42,7 @@ public class ProjectController {
      * @Author: zc
      * @Date: 2021-07-14
      */
+    @IgnoreAuth
     @PostMapping("/queryForPage")
     public JsonResult<IPage<TbProjectInfoEntity>> queryForPage(@RequestBody ProjectQuery query) {
         LambdaQueryWrapper<TbProjectInfoEntity> queryWrapper = new LambdaQueryWrapper<>();
@@ -85,6 +87,7 @@ public class ProjectController {
      * @Author: zc
      * @Date: 2021-07-14
      */
+    @IgnoreAuth
     @PostMapping("/queryRecommendProject")
     public JsonResult<List<TbProjectInfoEntity>> queryRecommendProject() {
         LambdaQueryWrapper<TbProjectInfoEntity> queryWrapper = new LambdaQueryWrapper<>();
