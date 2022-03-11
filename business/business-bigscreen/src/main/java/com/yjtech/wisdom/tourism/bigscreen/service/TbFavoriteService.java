@@ -25,14 +25,19 @@ public class TbFavoriteService extends BaseMybatisServiceImpl<TbFavoriteMapper, 
         return baseMapper.queryMyfavorites(companyId);
     }
 
-    public boolean checkExist(Long companyId,Long favoriteId,Integer type,Integer favoriteType){
+    public TbFavoriteEntity getFavorite(Long companyId,Long favoriteId,Integer type,Integer favoriteType){
         QueryWrapper<TbFavoriteEntity> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq(TbFavoriteEntity.COMPANY_ID,companyId);
         queryWrapper.eq(TbFavoriteEntity.FAVORITE_ID,favoriteId);
         queryWrapper.eq(TbFavoriteEntity.TYPE,type);
         queryWrapper.eq(TbFavoriteEntity.FAVORITE_TYPE,favoriteType);
         TbFavoriteEntity favoriteEntity = baseMapper.selectOne(queryWrapper);
-        if(Objects.nonNull(favoriteEntity)){
+        return favoriteEntity;
+    }
+
+    public boolean  exist(Long companyId,Long favoriteId,Integer type,Integer favoriteType){
+        TbFavoriteEntity favorite = getFavorite(companyId, favoriteId, type, favoriteType);
+        if(Objects.nonNull(favorite)){
             return true;
         }
         return false;

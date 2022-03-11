@@ -260,6 +260,21 @@ public class TbRegisterInfoEntity extends Model<TbRegisterInfoEntity> {
      */
     @TableField(exist = false)
     private String phoneCode;
+    /**
+     * 省
+     */
+    @TableField(exist = false)
+    private String provinceName;
+    /**
+     * 市
+     */
+    @TableField(exist = false)
+    private String cityName;
+    /**
+     * 县或区
+     */
+    @TableField(exist = false)
+    private String countyName;
 
     @Override
     protected Serializable pkVal() {

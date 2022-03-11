@@ -5,6 +5,7 @@ import com.chinaunicom.yunjingtech.sms.config.SmsProperties;
 import com.chinaunicom.yunjingtech.sms.exception.SmsException;
 import com.chinaunicom.yunjingtech.sms.service.SmsService;
 import com.google.common.collect.Lists;
+import com.yjtech.wisdom.tourism.common.annotation.IgnoreAuth;
 import com.yjtech.wisdom.tourism.common.config.AppConfig;
 import com.yjtech.wisdom.tourism.common.constant.PhoneCodeEnum;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
@@ -44,6 +45,7 @@ public class SmsController {
      * @return
      */
     @PostMapping("/sendScreenLoginPhoneCode")
+    @IgnoreAuth
     public JsonResult<SmsSendVo> sendScreenLoginPhoneCode(@RequestBody @Valid PhoneCodeParam phoneCodeParam,
                                                HttpServletRequest request) {
         String ip = IpUtil.getIpAddr(request);

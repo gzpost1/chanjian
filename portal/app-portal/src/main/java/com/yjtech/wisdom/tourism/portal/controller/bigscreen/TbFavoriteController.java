@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 企业的收藏
@@ -39,15 +40,19 @@ public class TbFavoriteController extends BaseCurdController<TbFavoriteService, 
     ScreenTokenService tokenService;
 
     /**
-     * 收藏或点赞
+     * 收藏或点赞  如果存在则取消
+     *
      * @param param
      * @return
      */
     @PostMapping("collect")
     public JsonResult collect(@RequestBody @Validated FavoriteParam param) {
         ScreenLoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
-        boolean exist = service.checkExist(loginUser.getId(), param.getFavoriteId(), param.getType(),param.getFavoriteType());
-        AssertUtil.isFalse(exist,"不能重复收藏或者点赞相同内容");
+        TbFavoriteEntity favorite = service.getFavorite(loginUser.getId(), param.getFavoriteId(), param.getType(), param.getFavoriteType());
+//        AssertUtil.isFalse(exist,"不能重复收藏或者点赞相同内容");
+        if (Objects.nonNull(favorite)) {
+            return JsonResult.success(service.removeById(favorite.getId()));
+        }
         TbFavoriteEntity favoriteEntity = new TbFavoriteEntity();
         BeanUtils.copyProperties(param, favoriteEntity);
         favoriteEntity.setCompanyId(loginUser.getId());
@@ -56,6 +61,7 @@ public class TbFavoriteController extends BaseCurdController<TbFavoriteService, 
 
     /**
      * 我的收藏
+     *
      * @return
      */
     @PostMapping("queryMyFavorites")
@@ -66,17 +72,18 @@ public class TbFavoriteController extends BaseCurdController<TbFavoriteService, 
 
     /**
      * 是否已经收藏或者点赞
+     *
      * @return
      */
     @PostMapping("isCheck")
     public JsonResult<Boolean> isCheck(@RequestBody @Validated FavoriteIsCheckParam param) {
         ScreenLoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
-        boolean exist = service.checkExist(loginUser.getId(), param.getFavoriteId(), param.getType(),param.getFavoriteType());
-        return JsonResult.success(exist);
+        return JsonResult.success(service.exist(loginUser.getId(), param.getFavoriteId(), param.getType(), param.getFavoriteType()));
     }
 
     /**
      * 获取点赞数
+     *
      * @return
      */
     @PostMapping("queryTHumbsUp")

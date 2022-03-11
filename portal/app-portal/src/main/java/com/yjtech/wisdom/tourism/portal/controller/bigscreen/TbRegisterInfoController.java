@@ -9,10 +9,12 @@ import com.yjtech.wisdom.tourism.bigscreen.dto.TbRegisterInfoParam;
 import com.yjtech.wisdom.tourism.bigscreen.entity.TbRegisterInfoEntity;
 import com.yjtech.wisdom.tourism.bigscreen.service.TbRegisterInfoService;
 import com.yjtech.wisdom.tourism.bigscreen.validate.RegisterValidationGroup;
+import com.yjtech.wisdom.tourism.common.annotation.IgnoreAuth;
 import com.yjtech.wisdom.tourism.common.config.AppConfig;
 import com.yjtech.wisdom.tourism.common.constant.AuditStatusConstants;
 import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.common.constant.PhoneCodeEnum;
+import com.yjtech.wisdom.tourism.common.core.domain.IdParam;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.common.utils.AssertUtil;
 import com.yjtech.wisdom.tourism.common.utils.ServletUtils;
@@ -20,6 +22,7 @@ import com.yjtech.wisdom.tourism.framework.web.service.ScreenTokenService;
 import com.yjtech.wisdom.tourism.infrastructure.core.controller.BaseCurdController;
 import com.yjtech.wisdom.tourism.infrastructure.core.domain.model.ScreenLoginUser;
 import com.yjtech.wisdom.tourism.mybatis.typehandler.EncryptTypeHandler;
+import jdk.nashorn.internal.ir.annotations.Ignore;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -28,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -49,10 +53,12 @@ public class TbRegisterInfoController extends BaseCurdController<TbRegisterInfoS
 
     @Autowired
     private ScreenTokenService tokenService;
+
     /**
      * 投资方注册
      */
     @PostMapping("investor")
+    @IgnoreAuth
     public JsonResult investor(@RequestBody @Validated(RegisterValidationGroup.investor.class) TbRegisterInfoEntity registerInfoEntity) {
         validatePhone(registerInfoEntity.getPhone());
         validateSms(registerInfoEntity);
@@ -80,9 +86,11 @@ public class TbRegisterInfoController extends BaseCurdController<TbRegisterInfoS
 
     /**
      * 业态方注册
+     *
      * @return
      */
     @PostMapping("commercial")
+    @IgnoreAuth
     public JsonResult<JsonResult> commercial(@RequestBody @Validated(RegisterValidationGroup.commercial.class) TbRegisterInfoEntity registerInfoEntity) {
         validatePhone(registerInfoEntity.getPhone());
         validateSms(registerInfoEntity);
@@ -92,9 +100,11 @@ public class TbRegisterInfoController extends BaseCurdController<TbRegisterInfoS
 
     /**
      * 运营方注册
+     *
      * @return
      */
     @PostMapping("operator")
+    @IgnoreAuth
     public JsonResult<JsonResult> operator(@RequestBody @Validated(RegisterValidationGroup.operator.class) TbRegisterInfoEntity registerInfoEntity) {
         validatePhone(registerInfoEntity.getPhone());
         validateSms(registerInfoEntity);
@@ -120,6 +130,7 @@ public class TbRegisterInfoController extends BaseCurdController<TbRegisterInfoS
      * @return
      */
     @PostMapping("queryForPageByType")
+    @IgnoreAuth
     public JsonResult<Page<TbRegisterInfoEntity>> queryForPageByType(@RequestBody @Validated TbRegisterInfoParam param) {
         param.setAuditStatus(1);
         param.setBlacklist(false);
@@ -130,17 +141,28 @@ public class TbRegisterInfoController extends BaseCurdController<TbRegisterInfoS
 
     /**
      * 根据登陆企业所在地推荐企业
+     *
      * @return
      */
     @PostMapping("recommendCompany")
     public List<TbRegisterInfoEntity> recommendCompany(@RequestBody @Validated RecommendParam param) {
         ScreenLoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
         String areaCode = loginUser.getAreaCode();
-        QueryWrapper<TbRegisterInfoEntity> queryWrapper = new QueryWrapper<>();
-        queryWrapper.likeRight(TbRegisterInfoEntity.AREA_CODE,areaCode);
-        queryWrapper.eq(TbRegisterInfoEntity.TYPE,param.getType());
-        List<TbRegisterInfoEntity> list = service.list(queryWrapper);
+        TbRegisterInfoEntity queryRegisterInfoEntity = TbRegisterInfoEntity.builder().areaCode(areaCode).type(param.getType()).build();
+        List<TbRegisterInfoEntity> list = service.list(queryRegisterInfoEntity);
         return list;
     }
+
+//    /**
+//     * 详细信息查询
+//     * @param idParam
+//     * @return
+//     */
+//    @Override
+//    @PostMapping("/queryForDetail")
+//    public JsonResult<TbRegisterInfoEntity> queryForDetail(
+//            @RequestBody @Valid IdParam idParam) {
+//        return JsonResult.success(service.getById(idParam.getId()));
+//    }
 
 }

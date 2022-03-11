@@ -1,5 +1,6 @@
 package com.yjtech.wisdom.tourism.infrastructure.core.domain.model;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -186,6 +187,20 @@ public class ScreenLoginUser {
     private String tokenType;
 
     private String areaCode;
+
+
+    /**
+     * 省
+     */
+    private String provinceName;
+    /**
+     * 市
+     */
+    private String cityName;
+    /**
+     * 县或区
+     */
+    private String countyName;
 
 
 }

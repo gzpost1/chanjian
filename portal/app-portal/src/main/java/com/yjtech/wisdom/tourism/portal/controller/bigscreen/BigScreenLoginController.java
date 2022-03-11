@@ -9,6 +9,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.yjtech.wisdom.tourism.bigscreen.entity.TbRegisterInfoEntity;
 import com.yjtech.wisdom.tourism.bigscreen.service.TbRegisterInfoService;
+import com.yjtech.wisdom.tourism.common.annotation.IgnoreAuth;
 import com.yjtech.wisdom.tourism.common.config.AppConfig;
 import com.yjtech.wisdom.tourism.common.constant.CacheKeyContants;
 import com.yjtech.wisdom.tourism.common.constant.Constants;
@@ -73,6 +74,7 @@ public class BigScreenLoginController {
      * @return
      */
     @PostMapping("login")
+    @IgnoreAuth
     public JsonResult<String> login(@RequestBody @Validated ScreenLoginBody loginBody) {
         //校验手机验证码
         String funcName =
