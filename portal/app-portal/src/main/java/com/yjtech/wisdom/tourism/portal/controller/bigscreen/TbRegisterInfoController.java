@@ -9,6 +9,7 @@ import com.yjtech.wisdom.tourism.bigscreen.dto.TbRegisterInfoParam;
 import com.yjtech.wisdom.tourism.bigscreen.entity.TbRegisterInfoEntity;
 import com.yjtech.wisdom.tourism.bigscreen.service.TbRegisterInfoService;
 import com.yjtech.wisdom.tourism.bigscreen.validate.RegisterValidationGroup;
+import com.yjtech.wisdom.tourism.common.annotation.IgnoreAuth;
 import com.yjtech.wisdom.tourism.common.config.AppConfig;
 import com.yjtech.wisdom.tourism.common.constant.AuditStatusConstants;
 import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
@@ -20,6 +21,7 @@ import com.yjtech.wisdom.tourism.framework.web.service.ScreenTokenService;
 import com.yjtech.wisdom.tourism.infrastructure.core.controller.BaseCurdController;
 import com.yjtech.wisdom.tourism.infrastructure.core.domain.model.ScreenLoginUser;
 import com.yjtech.wisdom.tourism.mybatis.typehandler.EncryptTypeHandler;
+import jdk.nashorn.internal.ir.annotations.Ignore;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -53,6 +55,7 @@ public class TbRegisterInfoController extends BaseCurdController<TbRegisterInfoS
      * 投资方注册
      */
     @PostMapping("investor")
+    @IgnoreAuth
     public JsonResult investor(@RequestBody @Validated(RegisterValidationGroup.investor.class) TbRegisterInfoEntity registerInfoEntity) {
         validatePhone(registerInfoEntity.getPhone());
         validateSms(registerInfoEntity);
@@ -83,6 +86,7 @@ public class TbRegisterInfoController extends BaseCurdController<TbRegisterInfoS
      * @return
      */
     @PostMapping("commercial")
+    @IgnoreAuth
     public JsonResult<JsonResult> commercial(@RequestBody @Validated(RegisterValidationGroup.commercial.class) TbRegisterInfoEntity registerInfoEntity) {
         validatePhone(registerInfoEntity.getPhone());
         validateSms(registerInfoEntity);
@@ -95,6 +99,7 @@ public class TbRegisterInfoController extends BaseCurdController<TbRegisterInfoS
      * @return
      */
     @PostMapping("operator")
+    @IgnoreAuth
     public JsonResult<JsonResult> operator(@RequestBody @Validated(RegisterValidationGroup.operator.class) TbRegisterInfoEntity registerInfoEntity) {
         validatePhone(registerInfoEntity.getPhone());
         validateSms(registerInfoEntity);
@@ -120,6 +125,7 @@ public class TbRegisterInfoController extends BaseCurdController<TbRegisterInfoS
      * @return
      */
     @PostMapping("queryForPageByType")
+    @IgnoreAuth
     public JsonResult<Page<TbRegisterInfoEntity>> queryForPageByType(@RequestBody @Validated TbRegisterInfoParam param) {
         param.setAuditStatus(1);
         param.setBlacklist(false);

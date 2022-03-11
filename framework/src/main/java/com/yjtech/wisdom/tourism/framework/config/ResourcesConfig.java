@@ -49,12 +49,13 @@ public class ResourcesConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(repeatSubmitInterceptor).addPathPatterns("/**");
-        registry.addInterceptor(screenLoginInterceptor).addPathPatterns("/screen/**")
-                .excludePathPatterns("/screen/auth/login")
-                .excludePathPatterns("/screen/sms/sendScreenLoginPhoneCode")
-                .excludePathPatterns("/screen/register/investor")
-                .excludePathPatterns("/screen/register/commercial")
-                .excludePathPatterns("/screen/register/operator");
+        registry.addInterceptor(screenLoginInterceptor).addPathPatterns("/screen/**");
+//                .excludePathPatterns("/screen/auth/login")
+//                .excludePathPatterns("/screen/sms/sendScreenLoginPhoneCode")
+//                .excludePathPatterns("/screen/register/investor")
+//                .excludePathPatterns("/screen/register/commercial")
+//                .excludePathPatterns("/screen/register/operator");
+//                .excludePathPatterns("/screen/register/queryForPageByType");
     }
 
     /**
