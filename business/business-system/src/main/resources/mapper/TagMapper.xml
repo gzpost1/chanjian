@@ -20,10 +20,10 @@
         (id,create_time,update_time,create_user,update_user,status,deleted,enterprise_role,tag_info)
         values
         <foreach collection="params" item="item" index="index" separator=",">
-            (#{item.id},now(),null,-1,null,1,0,#{item.enterpriseRole},#{item.tagInfo})
+            (#{item.id},now(),null,-1,null,1,0,#{item.enterpriseRole},#{item.tagInfo,jdbcType=VARCHAR,typeHandler=com.yjtech.wisdom.tourism.mybatis.typehandler.JsonTypeHandler})
         </foreach>
         ON DUPLICATE KEY UPDATE enterprise_role = values(enterprise_role),
-        update_time = now(),
+        update_time = now()
     </insert>
 
     <!-- 查询列表 -->
