@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjtech.wisdom.tourism.system.mapper.TagMapper">
+    <resultMap id="BaseResultMap" type="com.yjtech.wisdom.tourism.system.domain.TagEntity">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="create_user" jdbcType="BIGINT" property="createUser" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="update_user" jdbcType="BIGINT" property="updateUser" />
+        <result column="status" jdbcType="TINYINT" property="status" />
+        <result column="deleted" jdbcType="TINYINT" property="deleted" />
+        <result column="enterprise_role" jdbcType="VARCHAR" property="enterpriseRole" />
+        <result column="tag_info" jdbcType="VARCHAR" property="tagInfo" typeHandler="com.yjtech.wisdom.tourism.mybatis.typehandler.JsonTypeHandler"/>
+    </resultMap>
+
+    <!-- 批量新增更新 -->
+    <insert id="insertUpdateBatch" parameterType="list">
+        insert into tb_tag
+        (id,create_time,update_time,create_user,update_user,status,deleted,enterprise_role,tag_info)
+        values
+        <foreach collection="params" item="item" index="index" separator=",">
+            (#{item.id},now(),null,-1,null,1,0,#{item.enterpriseRole},#{item.tagInfo})
+        </foreach>
+        ON DUPLICATE KEY UPDATE enterprise_role = values(enterprise_role),
+        update_time = now(),
+    </insert>
+
+    <!-- 查询列表 -->
+    <select id="queryForList" resultMap="BaseResultMap"
+            parameterType="com.yjtech.wisdom.tourism.system.vo.TagQueryVO">
+        select id,create_time,update_time,create_user,update_user,status,deleted,enterprise_role,tag_info
+        from tb_tag
+        <where>
+            deleted = 0
+            <if test="params != null">
+                <if test="params.enterpriseRole != null and params.enterpriseRole != ''">
+                    and enterprise_role = #{params.enterpriseRole}
+                </if>
+                <choose>
+                    <when test="params.status != null">
+                        and status = #{params.status}
+                    </when>
+                    <otherwise>
+                        and status = 1
+                    </otherwise>
+                </choose>
+            </if>
+        </where>
+    </select>
+
+    <!-- 根据id查询信息 -->
+    <select id="queryById" resultMap="BaseResultMap">
+        select id,create_time,update_time,create_user,update_user,status,deleted,enterprise_role,tag_info
+        from tb_tag
+        <where>
+            deleted = 0 and id = #{id}
+        </where>
+    </select>
+
+</mapper>
