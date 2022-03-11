@@ -14,6 +14,7 @@ import com.yjtech.wisdom.tourism.common.config.AppConfig;
 import com.yjtech.wisdom.tourism.common.constant.AuditStatusConstants;
 import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.common.constant.PhoneCodeEnum;
+import com.yjtech.wisdom.tourism.common.core.domain.IdParam;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.common.utils.AssertUtil;
 import com.yjtech.wisdom.tourism.common.utils.ServletUtils;
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -51,6 +53,7 @@ public class TbRegisterInfoController extends BaseCurdController<TbRegisterInfoS
 
     @Autowired
     private ScreenTokenService tokenService;
+
     /**
      * 投资方注册
      */
@@ -83,6 +86,7 @@ public class TbRegisterInfoController extends BaseCurdController<TbRegisterInfoS
 
     /**
      * 业态方注册
+     *
      * @return
      */
     @PostMapping("commercial")
@@ -96,6 +100,7 @@ public class TbRegisterInfoController extends BaseCurdController<TbRegisterInfoS
 
     /**
      * 运营方注册
+     *
      * @return
      */
     @PostMapping("operator")
@@ -136,17 +141,28 @@ public class TbRegisterInfoController extends BaseCurdController<TbRegisterInfoS
 
     /**
      * 根据登陆企业所在地推荐企业
+     *
      * @return
      */
     @PostMapping("recommendCompany")
     public List<TbRegisterInfoEntity> recommendCompany(@RequestBody @Validated RecommendParam param) {
         ScreenLoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
         String areaCode = loginUser.getAreaCode();
-        QueryWrapper<TbRegisterInfoEntity> queryWrapper = new QueryWrapper<>();
-        queryWrapper.likeRight(TbRegisterInfoEntity.AREA_CODE,areaCode);
-        queryWrapper.eq(TbRegisterInfoEntity.TYPE,param.getType());
-        List<TbRegisterInfoEntity> list = service.list(queryWrapper);
+        TbRegisterInfoEntity queryRegisterInfoEntity = TbRegisterInfoEntity.builder().areaCode(areaCode).type(param.getType()).build();
+        List<TbRegisterInfoEntity> list = service.list(queryRegisterInfoEntity);
         return list;
     }
+
+//    /**
+//     * 详细信息查询
+//     * @param idParam
+//     * @return
+//     */
+//    @Override
+//    @PostMapping("/queryForDetail")
+//    public JsonResult<TbRegisterInfoEntity> queryForDetail(
+//            @RequestBody @Valid IdParam idParam) {
+//        return JsonResult.success(service.getById(idParam.getId()));
+//    }
 
 }
