@@ -1,6 +1,7 @@
 package com.yjtech.wisdom.tourism.portal.controller.bigscreen;
 
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yjtech.wisdom.tourism.bigscreen.dto.FavoriteIsCheckParam;
 import com.yjtech.wisdom.tourism.bigscreen.dto.FavoriteParam;
 import com.yjtech.wisdom.tourism.bigscreen.dto.MyFavoritesVo;
@@ -13,6 +14,7 @@ import com.yjtech.wisdom.tourism.common.utils.ServletUtils;
 import com.yjtech.wisdom.tourism.framework.web.service.ScreenTokenService;
 import com.yjtech.wisdom.tourism.infrastructure.core.controller.BaseCurdController;
 import com.yjtech.wisdom.tourism.infrastructure.core.domain.model.ScreenLoginUser;
+import com.yjtech.wisdom.tourism.mybatis.entity.PageQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +58,14 @@ public class TbFavoriteController extends BaseCurdController<TbFavoriteService, 
         TbFavoriteEntity favoriteEntity = new TbFavoriteEntity();
         BeanUtils.copyProperties(param, favoriteEntity);
         favoriteEntity.setCompanyId(loginUser.getId());
-        return JsonResult.success(service.save(favoriteEntity));
+        service.save(favoriteEntity);
+        if(Objects.equals(param.getFavoriteType(),2)){
+            FavoriteIsCheckParam favoriteIsCheckParam = new FavoriteIsCheckParam();
+            BeanUtils.copyProperties(param,favoriteIsCheckParam);
+            return JsonResult.success(service.queryTHumbsUp(favoriteIsCheckParam));
+
+        }
+        return JsonResult.success();
     }
 
     /**
@@ -65,9 +74,9 @@ public class TbFavoriteController extends BaseCurdController<TbFavoriteService, 
      * @return
      */
     @PostMapping("queryMyFavorites")
-    public JsonResult<List<MyFavoritesVo>> queryMyFavorites() {
+    public JsonResult<Page<MyFavoritesVo>> queryMyFavorites(@RequestBody PageQuery query) {
         ScreenLoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
-        return JsonResult.success(service.queryMyfavorites(loginUser.getId()));
+        return JsonResult.success(service.queryMyfavorites(query,loginUser.getId()));
     }
 
     /**

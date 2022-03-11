@@ -1,11 +1,13 @@
 package com.yjtech.wisdom.tourism.bigscreen.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yjtech.wisdom.tourism.bigscreen.dto.FavoriteIsCheckParam;
 import com.yjtech.wisdom.tourism.bigscreen.dto.MyFavoritesVo;
 import com.yjtech.wisdom.tourism.bigscreen.entity.TbFavoriteEntity;
 import com.yjtech.wisdom.tourism.bigscreen.mapper.TbFavoriteMapper;
 import com.yjtech.wisdom.tourism.mybatis.base.BaseMybatisServiceImpl;
+import com.yjtech.wisdom.tourism.mybatis.entity.PageQuery;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
 
@@ -21,8 +23,9 @@ import java.util.Optional;
  */
 @Service
 public class TbFavoriteService extends BaseMybatisServiceImpl<TbFavoriteMapper, TbFavoriteEntity>  {
-    public List<MyFavoritesVo> queryMyfavorites(@Param("companyId") Long companyId) {
-        return baseMapper.queryMyfavorites(companyId);
+    public Page<MyFavoritesVo> queryMyfavorites(PageQuery param, @Param("companyId") Long companyId) {
+        Page<MyFavoritesVo> page = new Page<MyFavoritesVo>(param.getPageNo(), param.getPageSize());
+        return baseMapper.queryMyfavorites(page,companyId);
     }
 
     public TbFavoriteEntity getFavorite(Long companyId,Long favoriteId,Integer type,Integer favoriteType){
