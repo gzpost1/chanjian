@@ -1,11 +1,10 @@
 package com.yjtech.wisdom.tourism.bigscreen.mapper;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yjtech.wisdom.tourism.bigscreen.dto.MyFavoritesVo;
 import com.yjtech.wisdom.tourism.bigscreen.entity.TbFavoriteEntity;
 import com.yjtech.wisdom.tourism.mybatis.base.BaseMybatisMapper;
 import org.apache.ibatis.annotations.Param;
-
-import java.util.List;
 
 /**
  * <p>
@@ -16,5 +15,5 @@ import java.util.List;
  * @since 2022-03-08
  */
 public interface TbFavoriteMapper extends BaseMybatisMapper<TbFavoriteEntity> {
-    List<MyFavoritesVo> queryMyfavorites(@Param("companyId") Long companyId);
+    Page<MyFavoritesVo> queryMyfavorites(Page<MyFavoritesVo> page, @Param("companyId") Long companyId);
 }
