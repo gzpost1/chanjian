@@ -11,7 +11,12 @@ public enum ImportInfoTypeEnum {
     /**
      * 监控
      */
-    TYPE_SUPERVISION(1, "监控导入", "video");
+    TYPE_SUPERVISION(1, "监控导入", "video"),
+
+    /**
+     * 项目
+     */
+    PROJECT(2, "招商平台项目信息登记表（模板）（试行）.xlsx", "project");
 
     private Integer value;
     private String describe;

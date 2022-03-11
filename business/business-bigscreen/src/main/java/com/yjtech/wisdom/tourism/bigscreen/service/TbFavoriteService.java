@@ -1,6 +1,7 @@
 package com.yjtech.wisdom.tourism.bigscreen.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.yjtech.wisdom.tourism.bigscreen.dto.FavoriteIsCheckParam;
 import com.yjtech.wisdom.tourism.bigscreen.dto.MyFavoritesVo;
 import com.yjtech.wisdom.tourism.bigscreen.entity.TbFavoriteEntity;
 import com.yjtech.wisdom.tourism.bigscreen.mapper.TbFavoriteMapper;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * 企业的收藏 服务实现类
@@ -36,4 +38,11 @@ public class TbFavoriteService extends BaseMybatisServiceImpl<TbFavoriteMapper, 
         return false;
     }
 
+    public Integer queryTHumbsUp(FavoriteIsCheckParam param) {
+        QueryWrapper<TbFavoriteEntity> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq(TbFavoriteEntity.FAVORITE_ID,param.getFavoriteId());
+        queryWrapper.eq(TbFavoriteEntity.TYPE,param.getType());
+        queryWrapper.eq(TbFavoriteEntity.FAVORITE_TYPE,param.getFavoriteType());
+        return Optional.ofNullable(this.baseMapper.selectCount(queryWrapper)).orElse(0);
+    }
 }

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.yjtech.wisdom.tourism.common.serializer.LongTypeJsonSerializer;
 import com.yjtech.wisdom.tourism.mybatis.entity.BaseEntity;
@@ -262,4 +263,8 @@ public class TbProjectInfoEntity extends BaseEntity {
     @TableField(exist = false)
     private List<TbProjectResourceEntity> resource;
 
+    /**
+     * 浏览次数
+     */
+    private Integer viewNum = 0;
 }

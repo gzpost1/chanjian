@@ -74,4 +74,14 @@ public class TbFavoriteController extends BaseCurdController<TbFavoriteService, 
         boolean exist = service.checkExist(loginUser.getId(), param.getFavoriteId(), param.getType(),param.getFavoriteType());
         return JsonResult.success(exist);
     }
+
+    /**
+     * 获取点赞数
+     * @return
+     */
+    @PostMapping("queryTHumbsUp")
+    public JsonResult<Integer> queryTHumbsUp(@RequestBody @Validated FavoriteIsCheckParam param) {
+        return JsonResult.success(service.queryTHumbsUp(param));
+    }
+
 }
