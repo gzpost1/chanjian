@@ -5,9 +5,11 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.yjtech.wisdom.tourism.common.annotation.ExcelRead;
 import com.yjtech.wisdom.tourism.common.serializer.LongTypeJsonSerializer;
 import com.yjtech.wisdom.tourism.mybatis.entity.BaseEntity;
 import lombok.Data;
+import lombok.ToString;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotBlank;
@@ -17,6 +19,7 @@ import javax.validation.constraints.NotNull;
  * 项目信息表-资源
  */
 @Data
+@ToString
 @TableName(value = "tb_project_resource")
 public class TbProjectResourceEntity extends BaseEntity {
 

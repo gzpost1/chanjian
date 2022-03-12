@@ -1,20 +1,20 @@
 package com.yjtech.wisdom.tourism.portal.controller.project;
 
+import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.enums.CellExtraTypeEnum;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.google.common.base.Preconditions;
-import com.yjtech.wisdom.tourism.common.constant.Constants;
+import com.yjtech.wisdom.tourism.common.bean.DemoExtraData;
+import com.yjtech.wisdom.tourism.common.bean.DemoExtraListener;
 import com.yjtech.wisdom.tourism.common.core.domain.IdParam;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.common.core.domain.UpdateStatusParam;
-import com.yjtech.wisdom.tourism.common.core.domain.ValidateExcelEntity;
 import com.yjtech.wisdom.tourism.common.enums.ImportInfoTypeEnum;
 import com.yjtech.wisdom.tourism.common.exception.CustomException;
-import com.yjtech.wisdom.tourism.common.exception.ErrorCode;
+import com.yjtech.wisdom.tourism.common.utils.ExcelFormReadUtil;
 import com.yjtech.wisdom.tourism.common.utils.IdWorker;
-import com.yjtech.wisdom.tourism.infrastructure.poi.ExcelUtil;
 import com.yjtech.wisdom.tourism.portal.controller.common.BusinessCommonController;
 import com.yjtech.wisdom.tourism.project.dto.ProjectQuery;
 import com.yjtech.wisdom.tourism.project.dto.ProjectResourceQuery;
@@ -22,6 +22,7 @@ import com.yjtech.wisdom.tourism.project.entity.TbProjectInfoEntity;
 import com.yjtech.wisdom.tourism.project.entity.TbProjectResourceEntity;
 import com.yjtech.wisdom.tourism.project.service.TbProjectInfoService;
 import com.yjtech.wisdom.tourism.project.service.TbProjectResourceService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -39,6 +42,7 @@ import java.util.Optional;
 /**
  * 后台管理-项目
  */
+@Slf4j
 @RestController
 @RequestMapping("/project")
 public class ProjectController extends BusinessCommonController {
@@ -46,8 +50,6 @@ public class ProjectController extends BusinessCommonController {
     private TbProjectInfoService projectInfoService;
     @Autowired
     private TbProjectResourceService projectResourceService;
-//    @Autowired
-//    private ImportRecordService importRecordService;
 
     /**
      * 分页列表
@@ -139,7 +141,7 @@ public class ProjectController extends BusinessCommonController {
     public JsonResult create(@RequestBody @Valid TbProjectInfoEntity entity) {
         entity.setDeleted(Byte.valueOf("0"));
         entity.setStatus(Byte.valueOf("0"));
-        validateProjectName(null,entity.getProjectName());
+        validateProjectName(null, entity.getProjectName());
         entity.setId(IdWorker.getInstance().nextId());
 
         projectInfoService.save(entity);
@@ -147,18 +149,19 @@ public class ProjectController extends BusinessCommonController {
         return JsonResult.ok();
     }
 
-    public void validateProjectName(Long id ,String name){
+    public void validateProjectName(Long id, String name) {
         LambdaQueryWrapper<TbProjectInfoEntity> wrapper = new LambdaQueryWrapper<>();
-        if(Objects.nonNull(id)){
-            wrapper.ne(TbProjectInfoEntity::getId,id);
+        if (Objects.nonNull(id)) {
+            wrapper.ne(TbProjectInfoEntity::getId, id);
         }
-        wrapper.eq(TbProjectInfoEntity::getProjectName,name);
+        wrapper.eq(TbProjectInfoEntity::getProjectName, name);
 
         List<TbProjectInfoEntity> list = projectInfoService.list(wrapper);
-        if(CollectionUtils.isNotEmpty(list)){
+        if (CollectionUtils.isNotEmpty(list)) {
             throw new CustomException("项目名称重复");
         }
     }
+
     /**
      * 更新
      *
@@ -170,7 +173,7 @@ public class ProjectController extends BusinessCommonController {
     @PostMapping("/update")
     public JsonResult update(@RequestBody @Valid TbProjectInfoEntity entity) {
 
-        validateProjectName(entity.getId(),entity.getProjectName());
+        validateProjectName(entity.getId(), entity.getProjectName());
 
         projectInfoService.updateById(entity);
 
@@ -210,6 +213,7 @@ public class ProjectController extends BusinessCommonController {
 
     /**
      * 下载模板
+     *
      * @param request
      * @param response
      */
@@ -218,27 +222,39 @@ public class ProjectController extends BusinessCommonController {
         getTemplate(ImportInfoTypeEnum.PROJECT, request, response);
     }
 
-//    /**
-//     * 招商引资数据导入
-//     * @param file
-//     * @return
-//     */
-//    @PostMapping("info/importExcel")
-//    public JsonResult importExcel(@RequestParam("file") MultipartFile file) {
-//        //构建信息数据
-//        List<TbInvestmentEntity> entityList = importRecordService.analysisExcel(ImportInfoTypeEnum.TYPE_INVESTMENT, TbInvestmentEntity.class, file, Constants.NumberConstants.NUMBER_TWO, Constants.NumberConstants.NUMBER_THREE, null);
-//        //校验文档数据合法性
-//        ValidateExcelEntity validateExcelEntity = ExcelUtil.validExcel(entityList, Constants.NumberConstants.NUMBER_FOUR);
-//        if(!validateExcelEntity.isPass()){
-//            //异步添加导入失败记录
-//            importRecordService.createFailRecord(file.getOriginalFilename(), entityList.size(), ImportInfoTypeEnum.TYPE_INVESTMENT);
-//            return JsonResult.error(ErrorCode.EXCEL_IMPORT_ERROR.getCode(), "招商引资导入失败：文档模板数据异常", validateExcelEntity);
-//        }
-//
-//        //插入
-//        investmentService.insertByImport(entityList, file.getOriginalFilename(), statisticsTime);
-//
-//        return JsonResult.success();
-//    }
+    /**
+     * 招商引资数据导入
+     *
+     * @param
+     * @return
+     */
+    @RequestMapping("info/importExcel")
+    public JsonResult<TbProjectInfoEntity> importExcel(@RequestParam("file") MultipartFile file) throws IOException {
+//        InputStream fileIs = this.getClass().getClassLoader().getResourceAsStream("files/excel/招商平台项目信息登记表（模板）（试行）.xlsx");
+
+        if(Objects.isNull(file)){
+            throw new CustomException("上传附件不能为空");
+
+        }
+        // 这里 需要指定读用哪个class去读，然后读取第一个sheet
+        List<DemoExtraData> list = EasyExcel.read(file.getInputStream(), DemoExtraData.class, new DemoExtraListener())
+                // 需要读取合并单元格信息 默认不读取
+                .extraRead(CellExtraTypeEnum.MERGE).sheet().doReadSync();
+
+        TbProjectInfoEntity entity = new ExcelFormReadUtil<TbProjectInfoEntity>().readExcel(list, TbProjectInfoEntity.class, 1);
+        if (Objects.isNull(entity)) {
+            throw new CustomException("导入excel格式有误");
+        }
+
+        //校验项目名称是否重复
+        if(StringUtils.isNotBlank(entity.getProjectName())){
+            validateProjectName(null, entity.getProjectName());
+        }
+
+        //校验参数的合法性
+        new ExcelFormReadUtil<TbProjectInfoEntity>().validateExcelReadData(entity,"entity");
+
+        return JsonResult.success(entity);
+    }
 
 }
