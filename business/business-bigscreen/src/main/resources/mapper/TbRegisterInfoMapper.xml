@@ -37,6 +37,7 @@
         <result column="province_name" property="provinceName"/>
         <result column="city_name" property="cityName"/>
         <result column="county_name" property="countyName"/>
+        <result column="contact" property="contact"/>
     </resultMap>
 
     <select id="selectOne" resultMap="BaseResultMap">

@@ -281,4 +281,9 @@ public class TbRegisterInfoEntity extends Model<TbRegisterInfoEntity> {
         return this.id;
     }
 
+    /**
+     * 联系人
+     */
+    private String contact;
+
 }

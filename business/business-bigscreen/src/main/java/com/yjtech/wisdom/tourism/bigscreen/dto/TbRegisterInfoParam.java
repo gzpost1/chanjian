@@ -172,5 +172,10 @@ public class TbRegisterInfoParam extends PageQuery implements Serializable {
      */
     private Boolean blacklist;
 
+    /**
+     * 联系人
+     */
+    private String contact;
+
 
 }
