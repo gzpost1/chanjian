@@ -114,8 +114,9 @@ public class TbProjectInfoEntity extends BaseEntity {
     /**
      * 项目招商内容
      */
-//    @NotBlank(message = "项目招商内容不能为空")
-//    @Length(max = 999, message = "项目招商内容最长999位")
+    @ExcelRead(rowNum = 15,cellNum = 2)
+    @NotBlank(message = "项目招商内容不能为空")
+    @Length(max = 999, message = "项目招商内容最长999位")
     @TableField(value = "project_investment_content")
     private String projectInvestmentContent;
 
