@@ -117,6 +117,7 @@ public class TbRegisterInfoController extends BaseCurdController<TbRegisterInfoS
      *
      * @return
      */
+    @IgnoreAuth
     @PostMapping("listCompany")
     public JsonResult<List<TbRegisterInfoEntity>> listCompany() {
         TbRegisterInfoEntity tbRegisterInfoEntity = TbRegisterInfoEntity.builder().blacklist(false).status(EntityConstants.ENABLED).auditStatus(AuditStatusConstants.SUCCESS).build();
