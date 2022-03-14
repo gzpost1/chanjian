@@ -41,4 +41,6 @@ public class MyFavoritesVo {
      */
     private Integer type;
 
+    private String companyType;
+
 }
