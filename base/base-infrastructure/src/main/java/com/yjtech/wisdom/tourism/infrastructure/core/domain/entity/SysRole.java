@@ -60,6 +60,9 @@ public class SysRole extends BaseEntity {
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   private Date createTime;
 
+  /** 权限类型 (详见字典account_authority_type)*/
+  private Byte permissionType;
+
   public SysRole() {}
 
   public SysRole(Long roleId) {
