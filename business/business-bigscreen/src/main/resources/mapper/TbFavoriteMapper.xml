@@ -79,7 +79,7 @@
         when ri.type = 3 then operation_direction end direction,
         null                                                  requirement,
         null                                                  cooperation,
-        ri.create_time,f.type,ri.type companyType
+        ri.create_time,f.type,ri.type companyType,ri.id
         from tb_favorite f
         left join tb_register_info ri on f.favorite_id = ri.id
         <where>
@@ -95,7 +95,7 @@
         null                        direction,
         ri.construction_requirement requirement,
         ri.cooperation_method       cooperation,
-        ri.create_time,f.type,null companyType
+        ri.create_time,f.type,null companyType,ri.id
         from tb_favorite f
         left join tb_project_info ri on f.favorite_id = ri.id
         <where>
