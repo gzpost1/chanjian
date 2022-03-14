@@ -73,7 +73,7 @@ public class SysDictDataController extends BaseController {
     @Log(title = "字典数据", businessType = BusinessType.INSERT)
     @PostMapping
     public JsonResult add(@Validated @RequestBody SysDictData dict) {
-        dict.setCreateUser(SecurityUtils.getUserId());
+//        dict.setCreateUser(SecurityUtils.getUserId());
         return success(dictDataService.insertDictData(dict));
     }
 
@@ -84,7 +84,7 @@ public class SysDictDataController extends BaseController {
     @Log(title = "字典数据", businessType = BusinessType.UPDATE)
     @PutMapping
     public JsonResult edit(@Validated @RequestBody SysDictData dict) {
-        dict.setUpdateUser(SecurityUtils.getUserId());
+//        dict.setUpdateUser(SecurityUtils.getUserId());
         return success(dictDataService.updateDictData(dict));
     }
 
