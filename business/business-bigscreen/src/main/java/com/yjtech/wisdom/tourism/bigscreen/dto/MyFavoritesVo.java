@@ -43,4 +43,5 @@ public class MyFavoritesVo {
 
     private String companyType;
 
+    private Long id;
 }
