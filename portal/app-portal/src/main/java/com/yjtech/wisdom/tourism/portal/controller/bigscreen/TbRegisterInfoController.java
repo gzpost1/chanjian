@@ -67,7 +67,7 @@ public class TbRegisterInfoController extends BaseCurdController<TbRegisterInfoS
     }
 
     private void validatePhone(String phone) {
-        AssertUtil.isFalse(!service.checkPhone(phone), "改手机号已注册不能重复注册");
+        AssertUtil.isFalse(!service.checkPhone(phone), "该手机号已注册不能重复注册");
     }
 
     private void validateSms(TbRegisterInfoEntity registerInfoEntity) {
