@@ -202,5 +202,10 @@ public class ScreenLoginUser {
      */
     private String countyName;
 
+    /**
+     * 联系人
+     */
+    private String contact;
+
 
 }
