@@ -135,6 +135,11 @@ public class ScreenLoginUser {
     private Long updateUser;
 
     /**
+     * 审核状态 0.待审核 1.通过 2.驳回
+     */
+    private Integer auditStatus;
+
+    /**
      * 审核时间
      */
     private LocalDateTime auditTime;
