@@ -268,7 +268,6 @@ public class TbProjectInfoEntity extends BaseEntity {
      * 优惠政策及扶持条件描述
      */
     @ExcelRead(rowNum = 21,cellNum = 1)
-    @NotBlank(message = "优惠政策及扶持条件描述不能为空")
     @Length(max = 999, message = "优惠政策及扶持条件描述最长999位")
     @TableField(value = "support_desc")
     private String supportDesc;
