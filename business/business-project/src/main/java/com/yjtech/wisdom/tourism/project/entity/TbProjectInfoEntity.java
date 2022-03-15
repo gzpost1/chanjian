@@ -149,7 +149,6 @@ public class TbProjectInfoEntity extends BaseEntity {
      */
     @ExcelRead(rowNum = 19,cellNum = 2)
     @NotBlank(message = "投资回收期不能为空")
-    @Max(value = 999L, message = "投资回收期最大999")
     @TableField(value = "payback_period")
     private String paybackPeriod;
 
@@ -186,7 +185,6 @@ public class TbProjectInfoEntity extends BaseEntity {
     @ExcelRead(rowNum = 28,cellNum = 2)
     @NotBlank(message = "联系电话不能为空")
     @Length(max = 13, message = "联系电话最长13位")
-    @Max(value = 9999999999999L, message = "联系电话最大9999999999999")
     @TableField(value = "project_phone")
     private String projectPhone;
 
@@ -196,7 +194,6 @@ public class TbProjectInfoEntity extends BaseEntity {
     @ExcelRead(rowNum = 25,cellNum = 2)
     @NotBlank(message = "邮编不能为空")
     @Length(max = 6, message = "邮编最长6位")
-    @Max(value = 999999L, message = "邮编最大999999")
     @TableField(value = "post_code")
     private String postCode;
 
@@ -206,7 +203,6 @@ public class TbProjectInfoEntity extends BaseEntity {
     @ExcelRead(rowNum = 29,cellNum = 2)
     @NotBlank(message = "联系座机不能为空")
     @Length(max = 13, message = "联系座机最长13位")
-    @Max(value = 9999999999999L, message = "联系座机最大9999999999999")
     @TableField(value = "contact_landline")
     private String contactLandline;
 
@@ -224,7 +220,6 @@ public class TbProjectInfoEntity extends BaseEntity {
      */
     @ExcelRead(rowNum = 30,cellNum = 2)
     @Length(max = 13, message = "联系传真最长13位")
-    @Max(value = 9999999999999L, message = "联系传真9999999999999")
     @TableField(value = "contact_fax")
     private String contactFax;
 
@@ -232,7 +227,6 @@ public class TbProjectInfoEntity extends BaseEntity {
      * 联系QQ
      */
     @ExcelRead(rowNum = 31,cellNum = 2)
-    @Max(value = 9999999999999990L, message = "联系QQ最大9999999999999990")
     @TableField(value = "concat_qq")
     private String concatQq;
 
@@ -259,7 +253,6 @@ public class TbProjectInfoEntity extends BaseEntity {
      */
     @ExcelRead(rowNum = 37,cellNum = 2)
     @NotBlank(message = "联系电话（项目服务单位）不能为空")
-    @Max(value = 99999999999L, message = "联系电话（项目服务单位）最大99999999999")
     @TableField(value = "project_service_phone")
     private String projectServicePhone;
 
@@ -268,7 +261,6 @@ public class TbProjectInfoEntity extends BaseEntity {
      */
     @ExcelRead(rowNum = 36,cellNum = 2)
     @NotBlank(message = "联系座机（项目服务单位）不能为空")
-    @Max(value = 9999999999999L, message = "联系座机（项目服务单位）最大9999999999999")
     @TableField(value = "project_service_landline")
     private String projectServiceLandline;
 
@@ -277,7 +269,7 @@ public class TbProjectInfoEntity extends BaseEntity {
      */
     @ExcelRead(rowNum = 21,cellNum = 1)
     @NotBlank(message = "优惠政策及扶持条件描述不能为空")
-    @Length(max = 999, message = "优惠政策及扶持条件描述最长13位")
+    @Length(max = 999, message = "优惠政策及扶持条件描述最长999位")
     @TableField(value = "support_desc")
     private String supportDesc;
 
