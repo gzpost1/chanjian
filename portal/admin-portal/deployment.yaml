@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: admin-portal
-  namespace: test-standard-industry-monitor
+  namespace: test-guiyang-wenlvzhaoshang
   labels:
     app: admin-portal
 spec:
@@ -31,9 +31,9 @@ metadata:
   annotations:
     field.cattle.io/ipAddresses: "null"
     field.cattle.io/targetDnsRecordIds: "null"
-    field.cattle.io/targetWorkloadIds: '["deployment:test-standard-industry-monitor:admin-portal"]'
+    field.cattle.io/targetWorkloadIds: '["deployment:test-guiyang-wenlvzhaoshang:admin-portal"]'
   name: admin-portal
-  namespace: test-standard-industry-monitor
+  namespace: test-guiyang-wenlvzhaoshang
 spec:
   type: ClusterIP
   ports:
