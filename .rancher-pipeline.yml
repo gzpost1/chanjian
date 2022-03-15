@@ -11,7 +11,7 @@ stages:
   - publishImageConfig:
       dockerfilePath: portal/admin-portal/Dockerfile
       buildContext: portal/admin-portal/
-      tag: test-standard-industry-monitor/test-admin-portal:${CICD_EXECUTION_SEQUENCE}
+      tag: test-guiyang-wenlvzhaoshang/test-admin-portal:${CICD_EXECUTION_SEQUENCE}
       pushRemote: true
       registry: harbor.yunjingtech.cn:30002
     env:
@@ -35,7 +35,7 @@ stages:
   - publishImageConfig:
       dockerfilePath: portal/app-portal/Dockerfile
       buildContext: portal/app-portal/
-      tag: test-standard-industry-monitor/test-app-portal:${CICD_EXECUTION_SEQUENCE}
+      tag: test-guiyang-wenlvzhaoshang/test-app-portal:${CICD_EXECUTION_SEQUENCE}
       pushRemote: true
       registry: harbor.yunjingtech.cn:30002
     env:
