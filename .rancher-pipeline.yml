@@ -1,5 +1,5 @@
 stages:
-- name: Build-test
+- name: Build-test_wlcy_v1.0
   steps:
   - runScriptConfig:
       image: harbor.yunjingtech.cn:30002/yj-base/maven:nexus3
@@ -21,7 +21,7 @@ stages:
   when:
     branch:
       include:
-      - test
+      - test_wlcy_v1.0
 - name: Deploy-test-admin-portal
   steps:
   - applyYamlConfig:
@@ -29,7 +29,7 @@ stages:
   when:
     branch:
       include:
-      - test
+      - test_wlcy_v1.0
 - name: Publish-test-app-portal
   steps:
   - publishImageConfig:
@@ -45,7 +45,7 @@ stages:
   when:
     branch:
       include:
-      - test
+      - test_wlcy_v1.0
 - name: Deploy-test-app-portal
   steps:
   - applyYamlConfig:
@@ -53,7 +53,7 @@ stages:
   when:
     branch:
       include:
-      - test
+      - test_wlcy_v1.0
 notification:
   recipients:
   - recipient: mr.|LanYue|ouDingDang|hsingwang
