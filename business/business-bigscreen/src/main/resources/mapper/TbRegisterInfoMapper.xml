@@ -110,7 +110,7 @@
                 and latitude = #{params.latitude}
             </if>
             <if test="params.label != null and params.label.trim() != ''">
-                and label = #{params.label}
+                and label like CONCAT('%','${params.label}','%' )
             </if>
             <if test="params.registeredCapital != null">
                 and registered_capital = #{params.registeredCapital}
