@@ -16,7 +16,7 @@ public enum ImportInfoTypeEnum {
     /**
      * 项目
      */
-    PROJECT(2, "招商平台项目信息登记表（模板）（试行）.xlsx", "project");
+    PROJECT(2, "招商平台项目信息登记表（模板）（试行）.xls", "project");
 
     private Integer value;
     private String describe;
