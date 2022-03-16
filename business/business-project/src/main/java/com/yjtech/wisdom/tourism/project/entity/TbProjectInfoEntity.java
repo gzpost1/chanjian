@@ -1,9 +1,7 @@
 package com.yjtech.wisdom.tourism.project.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.yjtech.wisdom.tourism.common.annotation.ExcelRead;
@@ -14,6 +12,7 @@ import org.hibernate.validator.constraints.Length;
 
 import javax.annotation.RegEx;
 import javax.validation.constraints.*;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -294,4 +293,30 @@ public class TbProjectInfoEntity extends BaseEntity {
      * 浏览次数
      */
     private Integer viewNum = 0;
+
+    /** 创建时间 */
+    @TableField(fill = FieldFill.INSERT)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date createTime;
+
+    /** 修改时间 */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date updateTime;
+
+    /** 创建人ID */
+    @JsonIgnore
+    @TableField(fill = FieldFill.INSERT)
+    private Long createUser;
+
+    /** 修改人ID */
+    @JsonIgnore
+    @TableField(fill = FieldFill.UPDATE)
+    private Long updateUser;
+
+    /** 是否删除, 0:否, 1:是 */
+    @TableField(fill = FieldFill.INSERT)
+    @TableLogic
+    @JsonIgnore
+    private Byte deleted;
+
 }
