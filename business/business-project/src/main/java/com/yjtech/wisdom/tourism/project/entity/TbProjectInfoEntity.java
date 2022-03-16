@@ -6,12 +6,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.yjtech.wisdom.tourism.common.annotation.ExcelRead;
 import com.yjtech.wisdom.tourism.common.serializer.LongTypeJsonSerializer;
-import com.yjtech.wisdom.tourism.mybatis.entity.BaseEntity;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
-import javax.annotation.RegEx;
-import javax.validation.constraints.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import java.util.Date;
 import java.util.List;
 
@@ -20,7 +19,7 @@ import java.util.List;
  */
 @Data
 @TableName(value = "tb_project_info")
-public class TbProjectInfoEntity extends BaseEntity {
+public class TbProjectInfoEntity {
 
     /**
      * 主键
@@ -34,7 +33,7 @@ public class TbProjectInfoEntity extends BaseEntity {
      */
     @NotBlank(message = "资源名称不能为空")
     @Length(max = 30, message = "资源名称最长30位")
-    @ExcelRead(rowNum = 4,cellNum = 2)
+    @ExcelRead(rowNum = 4, cellNum = 2)
     @TableField(value = "project_name")
     private String projectName;
 
@@ -43,7 +42,7 @@ public class TbProjectInfoEntity extends BaseEntity {
      */
     @NotBlank(message = "建设要求不能为空")
     @Length(max = 30, message = "建设要求最长30位")
-    @ExcelRead(rowNum = 5,cellNum = 2)
+    @ExcelRead(rowNum = 5, cellNum = 2)
     @TableField(value = "construction_requirement")
     private String constructionRequirement;
 
@@ -52,7 +51,7 @@ public class TbProjectInfoEntity extends BaseEntity {
      */
     @NotBlank(message = "合作方式不能为空")
     @Length(max = 30, message = "合作方式最长30位")
-    @ExcelRead(rowNum = 6,cellNum = 2)
+    @ExcelRead(rowNum = 6, cellNum = 2)
     @TableField(value = "cooperation_method")
     private String cooperationMethod;
 
@@ -61,7 +60,7 @@ public class TbProjectInfoEntity extends BaseEntity {
      */
     @NotBlank(message = "项目选址以及规模不能为空")
     @Length(max = 99, message = "项目选址以及规模最长99位")
-    @ExcelRead(rowNum = 8,cellNum = 2)
+    @ExcelRead(rowNum = 8, cellNum = 2)
     @TableField(value = "project_site_scale")
     private String projectSiteScale;
 
@@ -70,14 +69,14 @@ public class TbProjectInfoEntity extends BaseEntity {
      */
     @NotBlank(message = "项目规划占地面不能为空")
     @Length(max = 15, message = "项目规划占地面最长15位")
-    @ExcelRead(rowNum = 12,cellNum = 2)
+    @ExcelRead(rowNum = 12, cellNum = 2)
     @TableField(value = "project_plan_footprint")
     private String projectPlanFootprint;
 
     /**
      * 项目可建设用地面积
      */
-    @ExcelRead(rowNum = 13,cellNum = 2)
+    @ExcelRead(rowNum = 13, cellNum = 2)
     @NotBlank(message = "项目可建设用地面积不能为空")
     @Length(max = 15, message = "项目可建设用地面积最长15位")
     @TableField(value = "project_build_area")
@@ -86,7 +85,7 @@ public class TbProjectInfoEntity extends BaseEntity {
     /**
      * 建设条件
      */
-    @ExcelRead(rowNum = 9,cellNum = 2)
+    @ExcelRead(rowNum = 9, cellNum = 2)
     @NotBlank(message = "建设条件不能为空")
     @Length(max = 999, message = "建设条件最长999位")
     @TableField(value = "construction_condition")
@@ -95,7 +94,7 @@ public class TbProjectInfoEntity extends BaseEntity {
     /**
      * 产业条件
      */
-    @ExcelRead(rowNum = 10,cellNum = 2)
+    @ExcelRead(rowNum = 10, cellNum = 2)
     @NotBlank(message = "产业条件不能为空")
     @Length(max = 999, message = "产业条件最长999位")
     @TableField(value = "industrial_condition")
@@ -104,7 +103,7 @@ public class TbProjectInfoEntity extends BaseEntity {
     /**
      * 市场前景预测
      */
-    @ExcelRead(rowNum = 11,cellNum = 2)
+    @ExcelRead(rowNum = 11, cellNum = 2)
     @NotBlank(message = "市场前景预测不能为空")
     @Length(max = 999, message = "市场前景预测最长999位")
     @TableField(value = "market_outlook_forecast")
@@ -113,7 +112,7 @@ public class TbProjectInfoEntity extends BaseEntity {
     /**
      * 项目招商内容
      */
-    @ExcelRead(rowNum = 15,cellNum = 2)
+    @ExcelRead(rowNum = 15, cellNum = 2)
     @NotBlank(message = "项目招商内容不能为空")
     @Length(max = 999, message = "项目招商内容最长999位")
     @TableField(value = "project_investment_content")
@@ -122,7 +121,7 @@ public class TbProjectInfoEntity extends BaseEntity {
     /**
      * 总投资额
      */
-    @ExcelRead(rowNum = 16,cellNum = 2)
+    @ExcelRead(rowNum = 16, cellNum = 2)
     @NotBlank(message = "总投资额不能为空")
     @TableField(value = "investment_total")
     private String investmentTotal;
@@ -130,7 +129,7 @@ public class TbProjectInfoEntity extends BaseEntity {
     /**
      * 引资金额
      */
-    @ExcelRead(rowNum = 17,cellNum = 2)
+    @ExcelRead(rowNum = 17, cellNum = 2)
     @NotBlank(message = "引资金额不能为空")
     @TableField(value = "funding_amount")
     private String fundingAmount;
@@ -138,7 +137,7 @@ public class TbProjectInfoEntity extends BaseEntity {
     /**
      * 自有资金
      */
-    @ExcelRead(rowNum = 18,cellNum = 2)
+    @ExcelRead(rowNum = 18, cellNum = 2)
     @NotBlank(message = "自有资金不能为空")
     @TableField(value = "private_capital")
     private String privateCapital;
@@ -146,7 +145,7 @@ public class TbProjectInfoEntity extends BaseEntity {
     /**
      * 投资回收期
      */
-    @ExcelRead(rowNum = 19,cellNum = 2)
+    @ExcelRead(rowNum = 19, cellNum = 2)
     @NotBlank(message = "投资回收期不能为空")
     @TableField(value = "payback_period")
     private String paybackPeriod;
@@ -154,7 +153,7 @@ public class TbProjectInfoEntity extends BaseEntity {
     /**
      * 企业名称
      */
-    @ExcelRead(rowNum = 23,cellNum = 2)
+    @ExcelRead(rowNum = 23, cellNum = 2)
     @NotBlank(message = "企业名称不能为空")
     @Length(max = 30, message = "企业名称最长30位")
     @TableField(value = "company_name")
@@ -163,7 +162,7 @@ public class TbProjectInfoEntity extends BaseEntity {
     /**
      * 企业地址
      */
-    @ExcelRead(rowNum = 24,cellNum = 2)
+    @ExcelRead(rowNum = 24, cellNum = 2)
     @NotBlank(message = "企业地址不能为空")
     @Length(max = 99, message = "企业地址最长99位")
     @TableField(value = "company_address")
@@ -172,7 +171,7 @@ public class TbProjectInfoEntity extends BaseEntity {
     /**
      * 联系人（项目业主单位）
      */
-    @ExcelRead(rowNum = 27,cellNum = 2)
+    @ExcelRead(rowNum = 27, cellNum = 2)
     @NotBlank(message = "联系人不能为空")
     @Length(max = 6, message = "联系人最长6位")
     @TableField(value = "project_concat")
@@ -181,7 +180,7 @@ public class TbProjectInfoEntity extends BaseEntity {
     /**
      * 联系电话（项目业主单位）
      */
-    @ExcelRead(rowNum = 28,cellNum = 2)
+    @ExcelRead(rowNum = 28, cellNum = 2)
     @NotBlank(message = "联系电话不能为空")
     @Length(max = 13, message = "联系电话最长13位")
     @TableField(value = "project_phone")
@@ -190,7 +189,7 @@ public class TbProjectInfoEntity extends BaseEntity {
     /**
      * 邮编
      */
-    @ExcelRead(rowNum = 25,cellNum = 2)
+    @ExcelRead(rowNum = 25, cellNum = 2)
     @NotBlank(message = "邮编不能为空")
     @Length(max = 6, message = "邮编最长6位")
     @TableField(value = "post_code")
@@ -199,7 +198,7 @@ public class TbProjectInfoEntity extends BaseEntity {
     /**
      * 联系座机（项目业主单位）
      */
-    @ExcelRead(rowNum = 29,cellNum = 2)
+    @ExcelRead(rowNum = 29, cellNum = 2)
     @NotBlank(message = "联系座机不能为空")
     @Length(max = 13, message = "联系座机最长13位")
     @TableField(value = "contact_landline")
@@ -208,7 +207,7 @@ public class TbProjectInfoEntity extends BaseEntity {
     /**
      * 联系邮箱
      */
-    @ExcelRead(rowNum = 32,cellNum = 2)
+    @ExcelRead(rowNum = 32, cellNum = 2)
     @Length(max = 30, message = "联系邮箱最长30位")
     @Email(message = "联系邮箱格式不正确")
     @TableField(value = "contact_email")
@@ -217,7 +216,7 @@ public class TbProjectInfoEntity extends BaseEntity {
     /**
      * 联系传真
      */
-    @ExcelRead(rowNum = 30,cellNum = 2)
+    @ExcelRead(rowNum = 30, cellNum = 2)
     @Length(max = 13, message = "联系传真最长13位")
     @TableField(value = "contact_fax")
     private String contactFax;
@@ -225,14 +224,14 @@ public class TbProjectInfoEntity extends BaseEntity {
     /**
      * 联系QQ
      */
-    @ExcelRead(rowNum = 31,cellNum = 2)
+    @ExcelRead(rowNum = 31, cellNum = 2)
     @TableField(value = "concat_qq")
     private String concatQq;
 
     /**
      * 服务单位名称
      */
-    @ExcelRead(rowNum = 34,cellNum = 2)
+    @ExcelRead(rowNum = 34, cellNum = 2)
     @NotBlank(message = "服务单位名称不能为空")
     @Length(max = 30, message = "服务单位名称最长30位")
     @TableField(value = "service_unit_name")
@@ -241,7 +240,7 @@ public class TbProjectInfoEntity extends BaseEntity {
     /**
      * 联系人（项目服务单位）
      */
-    @ExcelRead(rowNum = 35,cellNum = 2)
+    @ExcelRead(rowNum = 35, cellNum = 2)
     @NotBlank(message = "联系人（项目服务单位）不能为空")
     @Length(max = 6, message = "联系人（项目服务单位）最长6位")
     @TableField(value = "project_service_concat")
@@ -250,7 +249,7 @@ public class TbProjectInfoEntity extends BaseEntity {
     /**
      * 联系电话（项目服务单位）
      */
-    @ExcelRead(rowNum = 37,cellNum = 2)
+    @ExcelRead(rowNum = 37, cellNum = 2)
     @NotBlank(message = "联系电话（项目服务单位）不能为空")
     @TableField(value = "project_service_phone")
     private String projectServicePhone;
@@ -258,7 +257,7 @@ public class TbProjectInfoEntity extends BaseEntity {
     /**
      * 联系座机（项目服务单位）
      */
-    @ExcelRead(rowNum = 36,cellNum = 2)
+    @ExcelRead(rowNum = 36, cellNum = 2)
     @NotBlank(message = "联系座机（项目服务单位）不能为空")
     @TableField(value = "project_service_landline")
     private String projectServiceLandline;
@@ -266,7 +265,7 @@ public class TbProjectInfoEntity extends BaseEntity {
     /**
      * 优惠政策及扶持条件描述
      */
-    @ExcelRead(rowNum = 21,cellNum = 1)
+    @ExcelRead(rowNum = 21, cellNum = 1)
     @Length(max = 999, message = "优惠政策及扶持条件描述最长999位")
     @TableField(value = "support_desc")
     private String supportDesc;
@@ -294,26 +293,36 @@ public class TbProjectInfoEntity extends BaseEntity {
      */
     private Integer viewNum = 0;
 
-    /** 创建时间 */
+    /**
+     * 创建时间
+     */
     @TableField(fill = FieldFill.INSERT)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
-    /** 修改时间 */
+    /**
+     * 修改时间
+     */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 
-    /** 创建人ID */
+    /**
+     * 创建人ID
+     */
     @JsonIgnore
     @TableField(fill = FieldFill.INSERT)
     private Long createUser;
 
-    /** 修改人ID */
+    /**
+     * 修改人ID
+     */
     @JsonIgnore
     @TableField(fill = FieldFill.UPDATE)
     private Long updateUser;
 
-    /** 是否删除, 0:否, 1:是 */
+    /**
+     * 是否删除, 0:否, 1:是
+     */
     @TableField(fill = FieldFill.INSERT)
     @TableLogic
     @JsonIgnore
