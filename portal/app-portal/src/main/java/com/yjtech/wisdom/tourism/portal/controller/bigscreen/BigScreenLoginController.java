@@ -84,6 +84,7 @@ public class BigScreenLoginController {
         String loginPwd = loginBody.getPassword();
         TbRegisterInfoEntity companyInfo = companyInfoService.queryByPhone(phone);
         AssertUtil.isFalse(Objects.isNull(companyInfo), "该公司不存在");
+        AssertUtil.isFalse(!Objects.equals(companyInfo.getAuditStatus(),1), "该企业尚未完成注册！");
         AssertUtil.isFalse(Objects.equals(companyInfo.getStatus(), EntityConstants.DISABLED), "该公司状态不正常");
         if (Objects.nonNull(phoneCode)) {
             AssertUtil.isTrue(smsService
