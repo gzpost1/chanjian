@@ -175,6 +175,7 @@ public class ProjectController extends BusinessCommonController {
     public JsonResult update(@RequestBody @Valid TbProjectInfoEntity entity) {
 
         validateProjectName(entity.getId(), entity.getProjectName());
+        entity.setUpdateTime(new Date());
 
         projectInfoService.updateById(entity);
 
@@ -208,6 +209,7 @@ public class ProjectController extends BusinessCommonController {
     public JsonResult updateStatus(@RequestBody @Valid ProjectUpdateStatusParam param) {
         TbProjectInfoEntity entity = projectInfoService.getById(param.getId());
         entity.setStatus(param.getStatus());
+        entity.setUpdateTime(new Date());
         projectInfoService.updateById(entity);
         return JsonResult.ok();
     }
