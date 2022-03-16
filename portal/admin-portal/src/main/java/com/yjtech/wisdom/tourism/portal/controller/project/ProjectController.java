@@ -34,10 +34,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * 后台管理-项目
@@ -64,7 +61,7 @@ public class ProjectController extends BusinessCommonController {
         LambdaQueryWrapper<TbProjectInfoEntity> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.like(StringUtils.isNotBlank(query.getProjectName()), TbProjectInfoEntity::getProjectName, query.getProjectName());
         queryWrapper.in(CollectionUtils.isNotEmpty(query.getStatus()), TbProjectInfoEntity::getStatus, query.getStatus());
-        queryWrapper.orderByDesc(TbProjectInfoEntity::getCreateTime);
+        queryWrapper.last(" order by ifnull(update_time,create_time) desc");
         IPage<TbProjectInfoEntity> pageResult = projectInfoService.page(new Page<>(query.getPageNo(), query.getPageSize()), queryWrapper);
         return JsonResult.success(pageResult);
     }
@@ -109,6 +106,9 @@ public class ProjectController extends BusinessCommonController {
 
         projectResourceService.saveOrUpdate(entity);
 
+        TbProjectInfoEntity byId = projectInfoService.getById(entity.getProjectId());
+        byId.setUpdateTime(new Date());
+        projectInfoService.saveOrUpdate(byId);
         return JsonResult.ok();
     }
 
