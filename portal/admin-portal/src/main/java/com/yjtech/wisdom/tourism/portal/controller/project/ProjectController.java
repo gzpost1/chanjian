@@ -18,6 +18,7 @@ import com.yjtech.wisdom.tourism.common.utils.IdWorker;
 import com.yjtech.wisdom.tourism.portal.controller.common.BusinessCommonController;
 import com.yjtech.wisdom.tourism.project.dto.ProjectQuery;
 import com.yjtech.wisdom.tourism.project.dto.ProjectResourceQuery;
+import com.yjtech.wisdom.tourism.project.dto.ProjectUpdateStatusParam;
 import com.yjtech.wisdom.tourism.project.entity.TbProjectInfoEntity;
 import com.yjtech.wisdom.tourism.project.entity.TbProjectResourceEntity;
 import com.yjtech.wisdom.tourism.project.service.TbProjectInfoService;
@@ -204,7 +205,7 @@ public class ProjectController extends BusinessCommonController {
      * @Date: 2021-07-14
      */
     @PostMapping("/updateStatus")
-    public JsonResult updateStatus(@RequestBody @Valid UpdateStatusParam param) {
+    public JsonResult updateStatus(@RequestBody @Valid ProjectUpdateStatusParam param) {
         TbProjectInfoEntity entity = projectInfoService.getById(param.getId());
         entity.setStatus(param.getStatus());
         projectInfoService.updateById(entity);
