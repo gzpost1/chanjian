@@ -241,7 +241,6 @@ public class TbProjectInfoEntity {
      * 联系人（项目服务单位）
      */
     @ExcelRead(rowNum = 35, cellNum = 2)
-    @NotBlank(message = "联系人（项目服务单位）不能为空")
     @Length(max = 6, message = "联系人（项目服务单位）最长6位")
     @TableField(value = "project_service_concat")
     private String projectServiceConcat;
@@ -250,7 +249,6 @@ public class TbProjectInfoEntity {
      * 联系电话（项目服务单位）
      */
     @ExcelRead(rowNum = 37, cellNum = 2)
-    @NotBlank(message = "联系电话（项目服务单位）不能为空")
     @TableField(value = "project_service_phone")
     private String projectServicePhone;
 
@@ -258,7 +256,6 @@ public class TbProjectInfoEntity {
      * 联系座机（项目服务单位）
      */
     @ExcelRead(rowNum = 36, cellNum = 2)
-    @NotBlank(message = "联系座机（项目服务单位）不能为空")
     @TableField(value = "project_service_landline")
     private String projectServiceLandline;
 
