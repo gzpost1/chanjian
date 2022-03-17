@@ -79,7 +79,7 @@
         when ri.type = 3 then operation_direction end direction,
         null                                                  requirement,
         null                                                  cooperation,
-        ri.create_time,f.type,ri.type companyType,ri.id
+        f.create_time,f.type,ri.type companyType,ri.id
         from tb_favorite f
         left join tb_register_info ri on f.favorite_id = ri.id
         <where>
@@ -90,15 +90,16 @@
             </if>
         </where>
         union
-        select ri.company_name             name,
+        select ri.project_name             name,
         '项目'                        label,
         null                        direction,
         ri.construction_requirement requirement,
         ri.cooperation_method       cooperation,
-        ri.create_time,f.type,null companyType,ri.id
+        f.create_time,f.type,null companyType,ri.id
         from tb_favorite f
         left join tb_project_info ri on f.favorite_id = ri.id
         <where>
+
             f.type = 2
             and ri.deleted = 0 and f.deleted=0 and f.favorite_type =1
             <if test="companyId != null">
