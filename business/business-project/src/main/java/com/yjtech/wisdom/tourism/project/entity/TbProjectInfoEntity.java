@@ -238,7 +238,6 @@ public class TbProjectInfoEntity {
      * 联系人（项目服务单位）
      */
     @ExcelRead(rowNum = 35, cellNum = 2)
-    @Length(max = 6, message = "联系人（项目服务单位）最长6位")
     @TableField(value = "project_service_concat")
     private String projectServiceConcat;
 
