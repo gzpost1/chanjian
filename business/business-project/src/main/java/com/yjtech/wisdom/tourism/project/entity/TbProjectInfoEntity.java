@@ -190,7 +190,6 @@ public class TbProjectInfoEntity {
      * 邮编
      */
     @ExcelRead(rowNum = 25, cellNum = 2)
-    @NotBlank(message = "邮编不能为空")
     @Length(max = 6, message = "邮编最长6位")
     @TableField(value = "post_code")
     private String postCode;
@@ -199,7 +198,6 @@ public class TbProjectInfoEntity {
      * 联系座机（项目业主单位）
      */
     @ExcelRead(rowNum = 29, cellNum = 2)
-    @NotBlank(message = "联系座机不能为空")
     @Length(max = 13, message = "联系座机最长13位")
     @TableField(value = "contact_landline")
     private String contactLandline;
@@ -232,7 +230,6 @@ public class TbProjectInfoEntity {
      * 服务单位名称
      */
     @ExcelRead(rowNum = 34, cellNum = 2)
-    @NotBlank(message = "服务单位名称不能为空")
     @Length(max = 30, message = "服务单位名称最长30位")
     @TableField(value = "service_unit_name")
     private String serviceUnitName;
