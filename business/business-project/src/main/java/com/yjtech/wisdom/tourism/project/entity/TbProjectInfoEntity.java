@@ -173,7 +173,7 @@ public class TbProjectInfoEntity {
      */
     @ExcelRead(rowNum = 27, cellNum = 2)
     @NotBlank(message = "联系人不能为空")
-    @Length(max = 6, message = "联系人最长6位")
+    @Length(max = 13, message = "联系人最长13位")
     @TableField(value = "project_concat")
     private String projectConcat;
 
@@ -238,6 +238,7 @@ public class TbProjectInfoEntity {
      * 联系人（项目服务单位）
      */
     @ExcelRead(rowNum = 35, cellNum = 2)
+    @Length(max = 13, message = "联系人（项目服务单位）最长13位")
     @TableField(value = "project_service_concat")
     private String projectServiceConcat;
 
