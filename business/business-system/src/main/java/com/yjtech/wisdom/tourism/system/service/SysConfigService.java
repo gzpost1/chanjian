@@ -14,6 +14,7 @@ import com.yjtech.wisdom.tourism.redis.RedisCache;
 import com.yjtech.wisdom.tourism.system.domain.SysConfig;
 import com.yjtech.wisdom.tourism.system.mapper.SysConfigMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -24,6 +25,7 @@ import java.util.Collection;
  *
  * @author liuhong
  */
+//@DependsOn("FlywayConfig")
 @Service
 public class SysConfigService {
   @Autowired private SysConfigMapper configMapper;
@@ -31,7 +33,7 @@ public class SysConfigService {
   @Autowired private RedisCache redisCache;
 
   /** 项目启动时，初始化参数到缓存 */
-  @PostConstruct
+//  @PostConstruct
   public void init() {
     IPage<SysConfig> configsList =
         configMapper.selectConfigList(new Page<>(1, Integer.MAX_VALUE), new SysConfig());

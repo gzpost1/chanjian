@@ -39,6 +39,14 @@ logging:
 
 # Spring配置
 spring:
+  # flyway数据库管理
+  flyway:
+    enabled: true
+    check-location: false
+    baseline-on-migrate: true
+    locations: classpath:db/wlcy
+    baseline-version: 0
+    placeholderReplacement: false
   # 资源信息
   messages:
     # 国际化资源文件路径

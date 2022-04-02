@@ -5,6 +5,7 @@ import com.yjtech.wisdom.tourism.extension.ExtensionPointI;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -17,6 +18,7 @@ import java.util.Map;
  * @author Frank Zhang
  * @date 2020-06-18 7:55 PM
  */
+//@DependsOn("FlywayConfig")
 @Component
 public class ExtensionBootstrap implements ApplicationContextAware {
 
@@ -25,7 +27,7 @@ public class ExtensionBootstrap implements ApplicationContextAware {
 
     private ApplicationContext applicationContext;
 
-    @PostConstruct
+//    @PostConstruct
     public void init(){
         Map<String, Object> extensionBeans = applicationContext.getBeansWithAnnotation(Extension.class);
         extensionBeans.values().forEach(

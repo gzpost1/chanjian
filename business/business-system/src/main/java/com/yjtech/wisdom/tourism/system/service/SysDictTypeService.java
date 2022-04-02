@@ -11,6 +11,7 @@ import com.yjtech.wisdom.tourism.infrastructure.utils.DictUtils;
 import com.yjtech.wisdom.tourism.system.mapper.SysDictDataMapper;
 import com.yjtech.wisdom.tourism.system.mapper.SysDictTypeMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +23,7 @@ import java.util.List;
  *
  * @author liuhong
  */
+//@DependsOn("FlywayConfig")
 @Service
 public class SysDictTypeService {
   @Autowired private SysDictTypeMapper dictTypeMapper;
@@ -29,7 +31,7 @@ public class SysDictTypeService {
   @Autowired private SysDictDataMapper dictDataMapper;
 
   /** 项目启动时，初始化字典到缓存 */
-  @PostConstruct
+//  @PostConstruct
   public void init() {
     List<SysDictType> dictTypeList = dictTypeMapper.selectDictTypeAll();
     for (SysDictType dictType : dictTypeList) {

@@ -23,6 +23,7 @@
     </modules>
 
     <properties>
+        <spring-boot-starter.version>2.2.6.RELEASE</spring-boot-starter.version>
         <spring-cloud.version>2020.0.2</spring-cloud.version>
         <java.version>1.8</java.version>
         <mybatis-plus.version>3.1.2</mybatis-plus.version>
@@ -48,8 +49,8 @@
         <javadoc.disabled>false</javadoc.disabled>
         <dynamic-datasource.version>2.5.6</dynamic-datasource.version>
         <easypoi.version>3.0.3</easypoi.version>
-
         <log4j2.version>2.15.0</log4j2.version>
+        <flyway-core.version>6.0.8</flyway-core.version>
     </properties>
 
     <dependencyManagement>
@@ -167,6 +168,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
+            <version>${spring-boot-starter.version}</version>
         </dependency>
 
         <dependency>
