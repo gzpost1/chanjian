@@ -10,6 +10,7 @@ import com.yjtech.wisdom.tourism.system.domain.TagEntity;
 import com.yjtech.wisdom.tourism.system.mapper.TagMapper;
 import com.yjtech.wisdom.tourism.system.vo.TagQueryVO;
 import com.yjtech.wisdom.tourism.system.vo.TagUpdateVO;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +23,7 @@ import java.util.List;
  * @author horadirm
  * @since 2022-03-11 09:59:08
  */
+//@DependsOn("FlywayConfig")
 @Service
 public class TagService extends ServiceImpl<TagMapper, TagEntity> {
 
@@ -29,7 +31,7 @@ public class TagService extends ServiceImpl<TagMapper, TagEntity> {
     /**
      * 初始化信息
      */
-    @PostConstruct
+//    @PostConstruct
     public void init(){
         //构建信息
         List<TagEntity> entityList = Lists.newArrayList(

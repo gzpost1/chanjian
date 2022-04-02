@@ -15,6 +15,7 @@ import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +27,7 @@ import java.util.List;
  *
  * @author liuhong
  */
+//@DependsOn("FlywayConfig")
 @Service
 public class SysJobService {
   @Autowired private Scheduler scheduler;
@@ -33,7 +35,7 @@ public class SysJobService {
   @Autowired private SysJobMapper jobMapper;
 
   /** 项目启动时，初始化定时器 主要是防止手动修改数据库导致未同步到定时任务处理（注：不能手动修改数据库ID和任务组名，否则会导致脏数据） */
-  @PostConstruct
+//  @PostConstruct
   public void init() throws SchedulerException, TaskException {
     scheduler.clear();
     List<SysJob> jobList = jobMapper.selectJobAll();
