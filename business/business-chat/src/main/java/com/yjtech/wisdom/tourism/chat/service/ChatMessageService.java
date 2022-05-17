@@ -78,7 +78,7 @@ public class ChatMessageService extends ServiceImpl<ChatMessageMapper, ChatMessa
     public Page<ChatMessageVo> querySendMessage(MessageRecordQuery messageRecordQuery) {
         Page<ChatMessageEntity> page = new Page<>(messageRecordQuery.getPageNo(), messageRecordQuery.getPageSize());
         LambdaQueryWrapper<ChatMessageEntity> queryWrapper = new LambdaQueryWrapper<ChatMessageEntity>();
-        queryWrapper.eq(CollectionUtil.isNotEmpty(messageRecordQuery.getIds()), ChatMessageEntity::getId, messageRecordQuery.getId())
+        queryWrapper.in(CollectionUtil.isNotEmpty(messageRecordQuery.getIds()), ChatMessageEntity::getId, messageRecordQuery.getIds())
                 .in(CollectionUtil.isNotEmpty(messageRecordQuery.getFromUserIdList()), ChatMessageEntity::getFromUserId, messageRecordQuery.getFromUserIdList())
                 .between(messageRecordQuery.getStartTime() != null && messageRecordQuery.getEndTime() != null
                         , ChatMessageEntity::getSendTime, messageRecordQuery.getStartTime(), messageRecordQuery.getEndTime())

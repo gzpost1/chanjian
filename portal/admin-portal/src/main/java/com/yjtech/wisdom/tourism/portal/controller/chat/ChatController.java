@@ -9,14 +9,14 @@ import com.yjtech.wisdom.tourism.infrastructure.poi.ExcelUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
- * @author han
+ * 管理端-留言
  * @createTime 2022/5/16 19:49
  * @description
  */
-@ResponseBody
+@RestController
 @RequestMapping("chat")
 public class ChatController {
 

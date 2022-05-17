@@ -9,7 +9,6 @@ import com.yjtech.wisdom.tourism.chat.vo.ChatMessageVo;
 import com.yjtech.wisdom.tourism.chat.vo.EnterpriseVo;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.common.exception.CustomException;
-import com.yjtech.wisdom.tourism.framework.web.service.ScreenTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,7 +20,7 @@ import java.util.List;
  * @createTime 2022/5/12 17:30
  * @description
  */
-@ResponseBody
+@RestController
 @RequestMapping("chat")
 public class ChatController {
 
