@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjtech.wisdom.tourism.chat.mapper.ChatMessageMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.yjtech.wisdom.tourism.chat.entity.ChatMessageEntity">
+        <id column="id" property="id" />
+        <result column="from_user_id" property="fromUserId" />
+        <result column="to_user_id" property="toUserId" />
+        <result column="send_time" property="sendTime" />
+        <result column="content" property="content" />
+        <result column="read_status" property="readStatus" />
+        <result column="log_del" property="logDel" />
+        <result column="md5_user_id" property="md5UserId" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, from_user_id, to_user_id, send_time, content, read_status, log_del, md5_user_id
+    </sql>
+    <select id="selectMessageHistory" resultMap="BaseResultMap">
+        select * from chat_message where md5_user_id =#{md5Userid} and send_time > #{delTime}
+        limit #{dataLimit.limit} offset #{dataLimit.offset}
+    </select>
+
+
+</mapper>

@@ -23,6 +23,7 @@
         <module>business-position</module>
         <module>business-bigscreen</module>
         <module>business-project</module>
+        <module>business-chat</module>
     </modules>
 
     <dependencies>

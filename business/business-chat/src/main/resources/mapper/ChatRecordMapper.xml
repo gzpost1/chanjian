@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjtech.wisdom.tourism.chat.mapper.ChatRecordMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.yjtech.wisdom.tourism.chat.entity.ChatRecordEntity">
+        <id column="id" property="id" />
+        <result column="initiator_id" property="initiatorId" />
+        <result column="session_id" property="sessionId" />
+        <result column="log_del" property="logDel" />
+        <result column="del_time" property="delTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, initiator_id, session_id, log_del, del_time
+    </sql>
+
+</mapper>

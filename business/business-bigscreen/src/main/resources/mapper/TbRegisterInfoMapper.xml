@@ -68,6 +68,9 @@
             <include refid="dynamic_where"/>
         </where>
     </select>
+    <select id="selectMap" resultType="com.yjtech.wisdom.tourism.bigscreen.entity.TbRegisterInfoEntity">
+        select id,company_name as companyName from tb_register_info
+    </select>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
