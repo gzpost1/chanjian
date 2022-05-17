@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  *  大屏 -留言
@@ -97,5 +98,16 @@ public class ChatController {
     public JsonResult<Boolean> sendMessage(@RequestBody Message message){
         Boolean result = chatMessageService.sendMessage(message);
         return JsonResult.success(result);
+    }
+
+    /**
+     *  定时刷新未读状态
+     * @param initiatorId
+     * @return
+     */
+    @GetMapping("/queryHasUnread")
+    public JsonResult<Set<Long>> queryHasUnread(@RequestParam("initiatorId") Long initiatorId){
+        Set<Long> longSet = chatRecordService.queryHasUnread(initiatorId);
+        return JsonResult.success(longSet);
     }
 }
