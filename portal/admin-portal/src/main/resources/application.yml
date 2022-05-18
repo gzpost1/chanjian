@@ -41,7 +41,7 @@ logging:
 spring:
   # flyway数据库管理
   flyway:
-    enabled: true
+    enabled: false
     check-location: false
     baseline-on-migrate: true
     locations: classpath:db/wlcy
