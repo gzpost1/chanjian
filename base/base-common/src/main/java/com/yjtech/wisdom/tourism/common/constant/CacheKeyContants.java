@@ -35,6 +35,11 @@ public class CacheKeyContants {
      */
     public static final String ONE_TRAVEL_SIMULATION_PREFIX = "one_travel_simulation:";
 
+    /**
+     * 项目标签信息 key前缀
+     */
+    public static final String PROJECT_LABEL_INFO_PREFIX = "project_label_info:";
+
     /** ********** 中测 第三方信息缓存 key ********** */
     /**
      * 中测 token

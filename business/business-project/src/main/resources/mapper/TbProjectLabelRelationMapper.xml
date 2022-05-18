@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjtech.wisdom.tourism.project.mapper.TbProjectLabelRelationMapper">
+
+    <resultMap id="BaseResultMap" type="com.yjtech.wisdom.tourism.project.entity.TbProjectLabelRelationEntity">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="project_id" jdbcType="BIGINT" property="projectId"/>
+        <result column="label_id" jdbcType="BIGINT" property="labelId"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        <!--@mbg.generated-->
+        id, create_time, project_id, label_id
+    </sql>
+
+    <!-- 根据项目id获取标签id列表 -->
+    <select id="queryForLabelIdListByProjectId" parameterType="long" resultType="long">
+        select label_id from tb_project_label_relation where project_id = #{projectId}
+    </select>
+
+</mapper>

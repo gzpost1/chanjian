@@ -17,4 +17,9 @@ public class ProjectQuery extends PageQuery {
      * 状态 0待审核 1审核中 2已发布 3不予发布 4下架
      */
     private List<String> status;
+
+    /**
+     * 区域编码
+     */
+    private String areaCode;
 }
