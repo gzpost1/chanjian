@@ -1,5 +1,6 @@
 package com.yjtech.wisdom.tourism.project.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
@@ -24,7 +25,7 @@ public class TbProjectLabelEntity extends BaseEntity {
     /**
      * 主键，序号
      */
-    @TableId
+    @TableId(type = IdType.AUTO)
     private Long id;
 
     /**
