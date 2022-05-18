@@ -15,6 +15,9 @@ import com.yjtech.wisdom.tourism.common.enums.ImportInfoTypeEnum;
 import com.yjtech.wisdom.tourism.common.exception.CustomException;
 import com.yjtech.wisdom.tourism.common.utils.ExcelFormReadUtil;
 import com.yjtech.wisdom.tourism.common.utils.IdWorker;
+import com.yjtech.wisdom.tourism.common.utils.ServletUtils;
+import com.yjtech.wisdom.tourism.framework.web.service.TokenService;
+import com.yjtech.wisdom.tourism.infrastructure.core.domain.model.LoginUser;
 import com.yjtech.wisdom.tourism.portal.controller.common.BusinessCommonController;
 import com.yjtech.wisdom.tourism.project.dto.ProjectQuery;
 import com.yjtech.wisdom.tourism.project.dto.ProjectResourceQuery;
@@ -48,6 +51,8 @@ public class ProjectController extends BusinessCommonController {
     private TbProjectInfoService projectInfoService;
     @Autowired
     private TbProjectResourceService projectResourceService;
+    @Autowired
+    private TokenService tokenService;
 
     /**
      * 分页列表
@@ -140,11 +145,12 @@ public class ProjectController extends BusinessCommonController {
      */
     @PostMapping("/create")
     public JsonResult create(@RequestBody @Valid TbProjectInfoEntity entity) {
+        LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
         entity.setDeleted(Byte.valueOf("0"));
         entity.setStatus(Byte.valueOf("0"));
         validateProjectName(null, entity.getProjectName());
         entity.setId(IdWorker.getInstance().nextId());
-
+        entity.setCreateUser(loginUser.getUser().getUserId());
         projectInfoService.save(entity);
 
         return JsonResult.ok();
