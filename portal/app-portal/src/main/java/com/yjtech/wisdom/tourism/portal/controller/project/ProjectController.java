@@ -59,7 +59,7 @@ public class ProjectController {
             }
             page.setRecords(records);
         }
-        return JsonResult.success();
+        return JsonResult.success(page);
     }
 
     /**
@@ -80,7 +80,7 @@ public class ProjectController {
                 entity.setPitchOnLabelIdList(tbProjectLabelRelationService.queryForLabelIdListByProjectId(entity.getId()));
             }
         }
-        return JsonResult.success();
+        return JsonResult.success(list);
     }
 
     /**
