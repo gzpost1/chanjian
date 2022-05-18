@@ -145,12 +145,12 @@ public class ProjectController extends BusinessCommonController {
      */
     @PostMapping("/create")
     public JsonResult create(@RequestBody @Valid TbProjectInfoEntity entity) {
-        LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
+//        LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
         entity.setDeleted(Byte.valueOf("0"));
         entity.setStatus(Byte.valueOf("0"));
         validateProjectName(null, entity.getProjectName());
         entity.setId(IdWorker.getInstance().nextId());
-        entity.setCreateUser(loginUser.getUser().getUserId());
+//        entity.setCreateUser(loginUser.getUser().getUserId());
         projectInfoService.save(entity);
 
         return JsonResult.ok();
