@@ -22,7 +22,7 @@ import java.util.Set;
  * @description
  */
 @RestController
-@RequestMapping("chat")
+@RequestMapping("/screen/chat")
 public class ChatController {
 
     @Autowired
