@@ -78,13 +78,13 @@ public class ChatRecordService extends ServiceImpl<ChatRecordMapper, ChatRecordE
      * @param toId
      */
     @Transactional(rollbackFor = Exception.class)
-    public int insertRecord(Long fromId, Long toId,Date sendTime) {
+    public ChatRecordEntity insertRecord(Long fromId, Long toId,Date sendTime) {
         ChatRecordEntity initiatorEntity = getRecord(fromId, toId);
         int insertNum = 0;
         if (initiatorEntity == null) {
             //插入
-            ChatRecordEntity chatRecordEntity = buildeRecordEntity(fromId, toId,sendTime);
-            this.save(chatRecordEntity);
+            initiatorEntity = buildeRecordEntity(fromId, toId,sendTime);
+            this.save(initiatorEntity);
             this.initLocalCache();
             insertNum += 1;
         }
@@ -96,7 +96,7 @@ public class ChatRecordService extends ServiceImpl<ChatRecordMapper, ChatRecordE
             this.initLocalCache();
             insertNum += 1;
         }
-        return insertNum;
+        return initiatorEntity;
     }
 
     public ChatRecordEntity getRecord(Long fromId, Long toId) {

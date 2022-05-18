@@ -19,14 +19,14 @@ public class ChatRecordRedisDao {
     @Resource
     private RedisTemplate redisTemplate;
 
-    public void add(Long initiatorId, Long sessionId) {
+    public void add(Long initiatorId, Long id) {
         String redisKey = formatKey(initiatorId);
-        redisTemplate.opsForSet().add(redisKey, sessionId);
+        redisTemplate.opsForSet().add(redisKey, id);
     }
 
-    public void remove(Long initiatorId, Long sessionId) {
+    public void remove(Long initiatorId, Long id) {
         String redisKey = formatKey(initiatorId);
-        redisTemplate.opsForSet().remove(redisKey, sessionId);
+        redisTemplate.opsForSet().remove(redisKey, id);
     }
 
     public Set<Long> getAll(Long initiatorId) {

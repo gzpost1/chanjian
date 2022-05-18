@@ -125,7 +125,7 @@ public class ChatMessageService extends ServiceImpl<ChatMessageMapper, ChatMessa
         updateEntity.setHasUnread("N");
         chatRecordMapper.updateById(updateEntity);
 
-        chatRecordRedisDao.remove(recordEntity.getInitiatorId(),recordEntity.getSessionId());
+        chatRecordRedisDao.remove(recordEntity.getInitiatorId(),id);
     }
 
     /**
@@ -147,14 +147,14 @@ public class ChatMessageService extends ServiceImpl<ChatMessageMapper, ChatMessa
     public Boolean sendMessage(Message message){
         Date sendTime = new Date();
         //插入互聊记录
-        chatRecordService.insertRecord(message.getFromId(), message.getToId(),sendTime);
+        ChatRecordEntity chatRecordEntity = chatRecordService.insertRecord(message.getFromId(), message.getToId(), sendTime);
         //更新最新聊天时间,消息未读
         chatRecordService.updateLastChatTime(message.getFromId(), message.getToId(),sendTime);
         //消息入库
         ChatMessageEntity chatMessageEntity = buildChatMessageEntity(message,sendTime);
         save(chatMessageEntity);
         //未读状态插入redis
-        chatRecordRedisDao.add(message.getToId(),message.getFromId());
+        chatRecordRedisDao.add(message.getToId(),chatRecordEntity.getId());
         return true;
     }
 
