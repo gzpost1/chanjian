@@ -1,6 +1,7 @@
 package com.yjtech.wisdom.tourism.chat.service;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
@@ -23,10 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -46,7 +45,7 @@ public class ChatRecordService extends ServiceImpl<ChatRecordMapper, ChatRecordE
 
     @Autowired
     private TbRegisterInfoMapper tbRegisterInfoMapper;
-    
+
     @Autowired
     private ChatMessageService chatMessageService;
 
@@ -78,12 +77,12 @@ public class ChatRecordService extends ServiceImpl<ChatRecordMapper, ChatRecordE
      * @param toId
      */
     @Transactional(rollbackFor = Exception.class)
-    public ChatRecordEntity insertRecord(Long fromId, Long toId,Date sendTime) {
+    public ChatRecordEntity insertRecord(Long fromId, Long toId, Date sendTime) {
         ChatRecordEntity initiatorEntity = getRecord(fromId, toId);
         int insertNum = 0;
         if (initiatorEntity == null) {
             //插入
-            initiatorEntity = buildeRecordEntity(fromId, toId,sendTime);
+            initiatorEntity = buildeRecordEntity(fromId, toId, sendTime);
             this.save(initiatorEntity);
             this.initLocalCache();
             insertNum += 1;
@@ -91,7 +90,7 @@ public class ChatRecordService extends ServiceImpl<ChatRecordMapper, ChatRecordE
         ChatRecordEntity sessionEntity = getRecord(toId, fromId);
         if (sessionEntity == null) {
             //插入
-            sessionEntity = buildeRecordEntity(toId, fromId,sendTime);
+            sessionEntity = buildeRecordEntity(toId, fromId, sendTime);
             this.save(sessionEntity);
             this.initLocalCache();
             insertNum += 1;
@@ -115,7 +114,7 @@ public class ChatRecordService extends ServiceImpl<ChatRecordMapper, ChatRecordE
         return chatRecordEntity;
     }
 
-    private ChatRecordEntity buildeRecordEntity(Long fromId, Long toId,Date sendTime) {
+    private ChatRecordEntity buildeRecordEntity(Long fromId, Long toId, Date sendTime) {
         ChatRecordEntity chatRecordEntity = new ChatRecordEntity();
         chatRecordEntity.setInitiatorId(fromId);
         chatRecordEntity.setSessionId(toId);
@@ -143,10 +142,21 @@ public class ChatRecordService extends ServiceImpl<ChatRecordMapper, ChatRecordE
         return new Page<EnterpriseVo>().setRecords(enterpriseVos);
     }
 
-    public List<EnterpriseVo> queryChatObject(Long initiatorId) {
+    public List<EnterpriseVo> queryChatObject(Long initiatorId, String companyName) {
+        Set<Long> ids = new HashSet<>();
+        if (StrUtil.isNotEmpty(companyName)) {
+            LambdaQueryWrapper<TbRegisterInfoEntity> registerInfoQueryWrapper = new LambdaQueryWrapper<TbRegisterInfoEntity>();
+            registerInfoQueryWrapper.like(TbRegisterInfoEntity::getCompanyName, companyName);
+            List<TbRegisterInfoEntity> registerInfoEntities = tbRegisterInfoMapper.selectList(registerInfoQueryWrapper);
+            if (CollUtil.isEmpty(registerInfoEntities)){
+                return null;
+            }
+            ids = registerInfoEntities.stream().map(tbRegisterInfoEntity -> tbRegisterInfoEntity.getId()).collect(Collectors.toSet());
+        }
         //查数据库
         LambdaQueryWrapper<ChatRecordEntity> queryWrapper = new LambdaQueryWrapper<ChatRecordEntity>().eq(ChatRecordEntity::getInitiatorId, initiatorId)
-                .eq(ChatRecordEntity::getLogDel, "N").orderByDesc(ChatRecordEntity::getLastChatTime);
+                .eq(ChatRecordEntity::getLogDel, "N").in(CollUtil.isNotEmpty(ids), ChatRecordEntity::getId, ids)
+                .orderByDesc(ChatRecordEntity::getLastChatTime);
         List<ChatRecordEntity> entityList = this.baseMapper.selectList(queryWrapper);
         //走缓存
 //        List<ChatRecordEntity> entityList = new ArrayList<>(chatObjectCache.get(initiatorId));
@@ -158,7 +168,7 @@ public class ChatRecordService extends ServiceImpl<ChatRecordMapper, ChatRecordE
     public ChatRecordEntity getChatRecordEntity(Long fromUserId, Long toUserId) {
 //        LambdaQueryWrapper<ChatRecordEntity> queryWrapper = this.buildeQueryWrapper(fromUserId, toUserId);
 //        ChatRecordEntity chatRecordEntity = this.baseMapper.selectOne(queryWrapper);
-        return localCache.get(fromUserId,toUserId);
+        return localCache.get(fromUserId, toUserId);
     }
 
     private LambdaQueryWrapper<ChatRecordEntity> buildeQueryWrapper(Long fromUserId, Long toUserId) {
@@ -182,16 +192,17 @@ public class ChatRecordService extends ServiceImpl<ChatRecordMapper, ChatRecordE
         UpdateWrapper<ChatRecordEntity> updateWrapper = new UpdateWrapper<ChatRecordEntity>();
         updateWrapper.lambda().eq(ChatRecordEntity::getInitiatorId, fromUserId)
                 .eq(ChatRecordEntity::getSessionId, toId).eq(ChatRecordEntity::getLogDel, "N")
-                .set(ChatRecordEntity::getLastChatTime,sendTime)
-                .set(ChatRecordEntity::getHasUnread,"Y");
+                .set(ChatRecordEntity::getLastChatTime, sendTime)
+                .set(ChatRecordEntity::getHasUnread, "Y");
         update(updateWrapper);
     }
 
     /**
      * 查询当前用户是否有未读
+     *
      * @return
      */
-    public Set<Long> queryHasUnread(Long initiatorId){
+    public Set<Long> queryHasUnread(Long initiatorId) {
         return chatRecordRedisDao.getAll(initiatorId);
     }
 }

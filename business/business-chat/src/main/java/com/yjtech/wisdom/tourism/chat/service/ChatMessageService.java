@@ -125,7 +125,7 @@ public class ChatMessageService extends ServiceImpl<ChatMessageMapper, ChatMessa
         updateEntity.setHasUnread("N");
         chatRecordMapper.updateById(updateEntity);
 
-        chatRecordRedisDao.remove(recordEntity.getInitiatorId(),id);
+        chatRecordRedisDao.remove(recordEntity.getInitiatorId(), id);
     }
 
     /**
@@ -144,21 +144,22 @@ public class ChatMessageService extends ServiceImpl<ChatMessageMapper, ChatMessa
     }
 
     @Transactional
-    public Boolean sendMessage(Message message){
+    public Boolean sendMessage(Message message) {
         Date sendTime = new Date();
         //插入互聊记录
         ChatRecordEntity chatRecordEntity = chatRecordService.insertRecord(message.getFromId(), message.getToId(), sendTime);
         //更新最新聊天时间,消息未读
-        chatRecordService.updateLastChatTime(message.getFromId(), message.getToId(),sendTime);
+        chatRecordService.updateLastChatTime(message.getFromId(), message.getToId(), sendTime);
+        chatRecordService.updateLastChatTime(message.getToId(), message.getFromId(), sendTime);
         //消息入库
-        ChatMessageEntity chatMessageEntity = buildChatMessageEntity(message,sendTime);
+        ChatMessageEntity chatMessageEntity = buildChatMessageEntity(message, sendTime);
         save(chatMessageEntity);
         //未读状态插入redis
-        chatRecordRedisDao.add(message.getToId(),chatRecordEntity.getId());
+        chatRecordRedisDao.add(message.getToId(), chatRecordEntity.getId());
         return true;
     }
 
-    private ChatMessageEntity buildChatMessageEntity(Message message,Date sendTime) {
+    private ChatMessageEntity buildChatMessageEntity(Message message, Date sendTime) {
         String md5Userid = MessageUtil.getMd5Userid(message.getFromId(), message.getToId(), redisCache);
         return ChatMessageEntity.builder().fromUserId(message.getFromId()).toUserId(message.getToId())
                 .sendTime(sendTime).content(message.getContent()).logDel("N").md5UserId(md5Userid)
