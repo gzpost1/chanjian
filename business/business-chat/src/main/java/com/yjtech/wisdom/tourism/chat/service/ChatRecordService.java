@@ -91,12 +91,12 @@ public class ChatRecordService extends ServiceImpl<ChatRecordMapper, ChatRecordE
         ChatRecordEntity sessionEntity = getRecord(toId, fromId);
         if (sessionEntity == null) {
             //插入
-            ChatRecordEntity chatRecordEntity = buildeRecordEntity(toId, fromId,sendTime);
-            this.save(chatRecordEntity);
+            sessionEntity = buildeRecordEntity(toId, fromId,sendTime);
+            this.save(sessionEntity);
             this.initLocalCache();
             insertNum += 1;
         }
-        return initiatorEntity;
+        return sessionEntity;
     }
 
     public ChatRecordEntity getRecord(Long fromId, Long toId) {
