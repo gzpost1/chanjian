@@ -177,5 +177,10 @@ public class TbRegisterInfoParam extends PageQuery implements Serializable {
      */
     private String contact;
 
+    /**
+     * 模糊所在地区域编码
+     */
+    private String likeAreaCode;
+
 
 }

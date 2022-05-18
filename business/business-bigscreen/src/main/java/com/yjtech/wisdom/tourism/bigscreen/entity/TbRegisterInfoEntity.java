@@ -286,4 +286,10 @@ public class TbRegisterInfoEntity extends Model<TbRegisterInfoEntity> {
      */
     private String contact;
 
+    /**
+     * 模糊所在地区域编码
+     */
+    @TableField(exist = false)
+    private String likeAreaCode;
+
 }

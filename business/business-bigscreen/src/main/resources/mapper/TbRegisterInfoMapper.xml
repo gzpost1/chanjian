@@ -177,6 +177,9 @@
             <if test="params.areaCode != null">
                 and ri.area_code = #{params.areaCode}
             </if>
+            <if test="params.likeAreaCode != null">
+                and ri.area_code LIKE CONCAT(#{params.likeAreaCode},'%')
+            </if>
         </if>
     </sql>
 </mapper>

@@ -1,7 +1,6 @@
 package com.yjtech.wisdom.tourism.portal.controller.bigscreen;
 
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.chinaunicom.yunjingtech.sms.service.SmsService;
 import com.yjtech.wisdom.tourism.bigscreen.dto.RecommendParam;
@@ -14,15 +13,14 @@ import com.yjtech.wisdom.tourism.common.config.AppConfig;
 import com.yjtech.wisdom.tourism.common.constant.AuditStatusConstants;
 import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.common.constant.PhoneCodeEnum;
-import com.yjtech.wisdom.tourism.common.core.domain.IdParam;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
+import com.yjtech.wisdom.tourism.common.utils.AreaUtils;
 import com.yjtech.wisdom.tourism.common.utils.AssertUtil;
 import com.yjtech.wisdom.tourism.common.utils.ServletUtils;
 import com.yjtech.wisdom.tourism.framework.web.service.ScreenTokenService;
 import com.yjtech.wisdom.tourism.infrastructure.core.controller.BaseCurdController;
 import com.yjtech.wisdom.tourism.infrastructure.core.domain.model.ScreenLoginUser;
 import com.yjtech.wisdom.tourism.mybatis.typehandler.EncryptTypeHandler;
-import jdk.nashorn.internal.ir.annotations.Ignore;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -31,7 +29,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -119,8 +116,13 @@ public class TbRegisterInfoController extends BaseCurdController<TbRegisterInfoS
      */
     @IgnoreAuth
     @PostMapping("listCompany")
-    public JsonResult<List<TbRegisterInfoEntity>> listCompany() {
-        TbRegisterInfoEntity tbRegisterInfoEntity = TbRegisterInfoEntity.builder().blacklist(false).status(EntityConstants.ENABLED).auditStatus(AuditStatusConstants.SUCCESS).build();
+    public JsonResult<List<TbRegisterInfoEntity>> listCompany(@RequestBody TbRegisterInfoParam param) {
+        TbRegisterInfoEntity tbRegisterInfoEntity = TbRegisterInfoEntity.builder()
+                .blacklist(false)
+                .status(EntityConstants.ENABLED)
+                .auditStatus(AuditStatusConstants.SUCCESS)
+                .likeAreaCode(AreaUtils.trimCode(param.getLikeAreaCode()))
+                .build();
         JsonResult<List<TbRegisterInfoEntity>> list = super.list(tbRegisterInfoEntity);
         return list;
     }
