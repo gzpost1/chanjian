@@ -10,7 +10,6 @@ import com.yjtech.wisdom.tourism.common.bean.DemoExtraData;
 import com.yjtech.wisdom.tourism.common.bean.DemoExtraListener;
 import com.yjtech.wisdom.tourism.common.core.domain.IdParam;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
-import com.yjtech.wisdom.tourism.common.core.domain.UpdateStatusParam;
 import com.yjtech.wisdom.tourism.common.enums.ImportInfoTypeEnum;
 import com.yjtech.wisdom.tourism.common.exception.CustomException;
 import com.yjtech.wisdom.tourism.common.utils.ExcelFormReadUtil;
@@ -22,6 +21,7 @@ import com.yjtech.wisdom.tourism.project.dto.ProjectUpdateStatusParam;
 import com.yjtech.wisdom.tourism.project.entity.TbProjectInfoEntity;
 import com.yjtech.wisdom.tourism.project.entity.TbProjectResourceEntity;
 import com.yjtech.wisdom.tourism.project.service.TbProjectInfoService;
+import com.yjtech.wisdom.tourism.project.service.TbProjectLabelRelationService;
 import com.yjtech.wisdom.tourism.project.service.TbProjectResourceService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -34,7 +34,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.*;
 
 /**
@@ -48,6 +47,8 @@ public class ProjectController extends BusinessCommonController {
     private TbProjectInfoService projectInfoService;
     @Autowired
     private TbProjectResourceService projectResourceService;
+    @Autowired
+    private TbProjectLabelRelationService tbProjectLabelRelationService;
 
     /**
      * 分页列表
@@ -64,6 +65,14 @@ public class ProjectController extends BusinessCommonController {
         queryWrapper.in(CollectionUtils.isNotEmpty(query.getStatus()), TbProjectInfoEntity::getStatus, query.getStatus());
         queryWrapper.last(" order by ifnull(update_time,create_time) desc");
         IPage<TbProjectInfoEntity> pageResult = projectInfoService.page(new Page<>(query.getPageNo(), query.getPageSize()), queryWrapper);
+        //构建已选中项目标签id列表
+        List<TbProjectInfoEntity> records = pageResult.getRecords();
+        if(CollectionUtils.isNotEmpty(records)){
+            for(TbProjectInfoEntity entity : records){
+                entity.setPitchOnLabelIdList(tbProjectLabelRelationService.queryForLabelIdListByProjectId(entity.getId()));
+            }
+            pageResult.setRecords(records);
+        }
         return JsonResult.success(pageResult);
     }
 
@@ -86,6 +95,8 @@ public class ProjectController extends BusinessCommonController {
                                     list(new LambdaQueryWrapper<TbProjectResourceEntity>().eq(TbProjectResourceEntity::getProjectId, entity.getId())))
                             .orElse(new ArrayList<TbProjectResourceEntity>())
             );
+            //构建已选中项目标签id列表
+            entity.setPitchOnLabelIdList(tbProjectLabelRelationService.queryForLabelIdListByProjectId(entity.getId()));
         }
         return JsonResult.success(entity);
     }
@@ -145,7 +156,8 @@ public class ProjectController extends BusinessCommonController {
         validateProjectName(null, entity.getProjectName());
         entity.setId(IdWorker.getInstance().nextId());
 
-        projectInfoService.save(entity);
+        //构建项目-标签关联
+        buildProjectLabelRelation(projectInfoService.save(entity), entity.getId(), entity.getPitchOnLabelIdList());
 
         return JsonResult.ok();
     }
@@ -177,7 +189,8 @@ public class ProjectController extends BusinessCommonController {
         validateProjectName(entity.getId(), entity.getProjectName());
         entity.setUpdateTime(new Date());
 
-        projectInfoService.updateById(entity);
+        //构建项目-标签关联
+        buildProjectLabelRelation(projectInfoService.updateById(entity), entity.getId(), entity.getPitchOnLabelIdList());
 
         return JsonResult.ok();
     }
@@ -257,7 +270,26 @@ public class ProjectController extends BusinessCommonController {
         //校验参数的合法性
         new ExcelFormReadUtil<TbProjectInfoEntity>().validateExcelReadData(entity,"entity");
 
+        //构建区域信息
+        String[] areaInfo = entity.getAreaCode().split("-");
+        entity.setAreaName(areaInfo[0]);
+        entity.setAreaCode(areaInfo[1]);
+
         return JsonResult.success(entity);
+    }
+
+    /**
+     * 构建项目-标签关联
+     *
+     * @param result
+     * @param projectId
+     * @param labelIdList
+     */
+    private void buildProjectLabelRelation(boolean result, Long projectId, List<Long> labelIdList){
+        //构建项目-标签关联
+        if(result){
+            tbProjectLabelRelationService.build(projectId, labelIdList);
+        }
     }
 
 }

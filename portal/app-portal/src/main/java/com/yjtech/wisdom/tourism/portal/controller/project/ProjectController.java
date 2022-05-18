@@ -6,11 +6,14 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yjtech.wisdom.tourism.common.annotation.IgnoreAuth;
 import com.yjtech.wisdom.tourism.common.core.domain.IdParam;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
+import com.yjtech.wisdom.tourism.common.utils.AreaUtils;
 import com.yjtech.wisdom.tourism.project.dto.ProjectQuery;
 import com.yjtech.wisdom.tourism.project.entity.TbProjectInfoEntity;
 import com.yjtech.wisdom.tourism.project.entity.TbProjectResourceEntity;
 import com.yjtech.wisdom.tourism.project.service.TbProjectInfoService;
+import com.yjtech.wisdom.tourism.project.service.TbProjectLabelRelationService;
 import com.yjtech.wisdom.tourism.project.service.TbProjectResourceService;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,6 +36,8 @@ public class ProjectController {
     private TbProjectInfoService projectInfoService;
     @Autowired
     private TbProjectResourceService projectResourceService;
+    @Autowired
+    private TbProjectLabelRelationService tbProjectLabelRelationService;
 
     /**
      * 分页列表
@@ -45,12 +50,37 @@ public class ProjectController {
     @IgnoreAuth
     @PostMapping("/queryForPage")
     public JsonResult<IPage<TbProjectInfoEntity>> queryForPage(@RequestBody ProjectQuery query) {
-        LambdaQueryWrapper<TbProjectInfoEntity> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.like(StringUtils.isNotBlank(query.getProjectName()), TbProjectInfoEntity::getProjectName, query.getProjectName());
-        queryWrapper.eq(TbProjectInfoEntity::getStatus, "2");
-        queryWrapper.orderByDesc(TbProjectInfoEntity::getCreateTime);
-        IPage<TbProjectInfoEntity> pageResult = projectInfoService.page(new Page<>(query.getPageNo(), query.getPageSize()), queryWrapper);
-        return JsonResult.success(pageResult);
+        IPage<TbProjectInfoEntity> page = projectInfoService.page(new Page<>(query.getPageNo(), query.getPageSize()), buildQueryWrapper(query));
+        //构建已选中项目标签id列表
+        List<TbProjectInfoEntity> records = page.getRecords();
+        if(CollectionUtils.isNotEmpty(records)){
+            for(TbProjectInfoEntity entity : records){
+                entity.setPitchOnLabelIdList(tbProjectLabelRelationService.queryForLabelIdListByProjectId(entity.getId()));
+            }
+            page.setRecords(records);
+        }
+        return JsonResult.success();
+    }
+
+    /**
+     * 查询列表
+     *
+     * @Param: query
+     * @return:
+     * @Author: zc
+     * @Date: 2021-07-14
+     */
+    @IgnoreAuth
+    @PostMapping("/queryForList")
+    public JsonResult<List<TbProjectInfoEntity>> queryForList(@RequestBody ProjectQuery query) {
+        List<TbProjectInfoEntity> list = projectInfoService.list(buildQueryWrapper(query));
+        //构建已选中项目标签id列表
+        if(CollectionUtils.isNotEmpty(list)){
+            for(TbProjectInfoEntity entity : list){
+                entity.setPitchOnLabelIdList(tbProjectLabelRelationService.queryForLabelIdListByProjectId(entity.getId()));
+            }
+        }
+        return JsonResult.success();
     }
 
     /**
@@ -71,8 +101,11 @@ public class ProjectController {
                 Optional.ofNullable(
                         projectResourceService.
                                 list(new LambdaQueryWrapper<TbProjectResourceEntity>().eq(TbProjectResourceEntity::getProjectId, entity.getId())))
-                        .orElse(new ArrayList<TbProjectResourceEntity>())
+                        .orElse(new ArrayList<>())
         );
+
+        //构建已选中项目标签id列表
+        entity.setPitchOnLabelIdList(tbProjectLabelRelationService.queryForLabelIdListByProjectId(entity.getId()));
 
         projectInfoService.saveOrUpdate(entity);
 
@@ -89,9 +122,10 @@ public class ProjectController {
      */
     @IgnoreAuth
     @PostMapping("/queryRecommendProject")
-    public JsonResult<List<TbProjectInfoEntity>> queryRecommendProject() {
+    public JsonResult<List<TbProjectInfoEntity>> queryRecommendProject(@RequestBody ProjectQuery query) {
         LambdaQueryWrapper<TbProjectInfoEntity> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(TbProjectInfoEntity::getStatus, "2");
+        queryWrapper.likeRight(StringUtils.isNotBlank(query.getAreaCode()), TbProjectInfoEntity::getAreaCode, AreaUtils.trimCode(query.getAreaCode()));
         queryWrapper.orderByDesc(TbProjectInfoEntity::getViewNum);
         queryWrapper.orderByDesc(TbProjectInfoEntity::getCreateTime);
         queryWrapper.last(" limit 10");
@@ -99,5 +133,24 @@ public class ProjectController {
         return JsonResult.success(projectInfoService.list(queryWrapper));
     }
 
+    /**
+     * 构建查询参数
+     *
+     * @param query
+     * @return
+     */
+    private LambdaQueryWrapper buildQueryWrapper(ProjectQuery query){
+        LambdaQueryWrapper<TbProjectInfoEntity> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.like(StringUtils.isNotBlank(query.getProjectName()), TbProjectInfoEntity::getProjectName, query.getProjectName());
+        if(CollectionUtils.isEmpty(query.getStatus())){
+            queryWrapper.eq(TbProjectInfoEntity::getStatus, "2");
+        }else {
+            queryWrapper.in(TbProjectInfoEntity::getStatus, query.getStatus());
+        }
+        queryWrapper.likeRight(StringUtils.isNotBlank(query.getAreaCode()), TbProjectInfoEntity::getAreaCode, AreaUtils.trimCode(query.getAreaCode()));
+        queryWrapper.orderByDesc(TbProjectInfoEntity::getCreateTime);
+
+        return queryWrapper;
+    }
 
 }
