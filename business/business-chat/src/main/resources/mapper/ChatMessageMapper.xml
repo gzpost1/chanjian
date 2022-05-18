@@ -19,7 +19,7 @@
         id, from_user_id, to_user_id, send_time, content, read_status, log_del, md5_user_id
     </sql>
     <select id="selectMessageHistory" resultMap="BaseResultMap">
-        select * from chat_message where md5_user_id =#{md5Userid} and send_time > #{delTime}
+        select * from chat_message where md5_user_id =#{md5Userid} and send_time >= #{delTime}
         limit #{dataLimit.limit} offset #{dataLimit.offset}
     </select>
 
