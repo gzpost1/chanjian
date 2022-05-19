@@ -99,24 +99,6 @@ public class TbProjectInfoEntity {
     private String latitude;
 
     /**
-     * 项目规划占地面
-     */
-    @NotBlank(message = "项目规划占地面不能为空")
-    @Length(max = 15, message = "项目规划占地面最长15位")
-    @ExcelRead(rowNum = 13, cellNum = 2)
-    @TableField(value = "project_plan_footprint")
-    private String projectPlanFootprint;
-
-    /**
-     * 项目可建设用地面积
-     */
-    @ExcelRead(rowNum = 14, cellNum = 2)
-    @NotBlank(message = "项目可建设用地面积不能为空")
-    @Length(max = 15, message = "项目可建设用地面积最长15位")
-    @TableField(value = "project_build_area")
-    private String projectBuildArea;
-
-    /**
      * 建设条件
      */
     @ExcelRead(rowNum = 10, cellNum = 2)
@@ -142,6 +124,24 @@ public class TbProjectInfoEntity {
     @Length(max = 999, message = "市场前景预测最长999位")
     @TableField(value = "market_outlook_forecast")
     private String marketOutlookForecast;
+
+    /**
+     * 项目规划占地面
+     */
+    @NotBlank(message = "项目规划占地面不能为空")
+    @Length(max = 15, message = "项目规划占地面最长15位")
+    @ExcelRead(rowNum = 13, cellNum = 2)
+    @TableField(value = "project_plan_footprint")
+    private String projectPlanFootprint;
+
+    /**
+     * 项目可建设用地面积
+     */
+    @ExcelRead(rowNum = 14, cellNum = 2)
+    @NotBlank(message = "项目可建设用地面积不能为空")
+    @Length(max = 15, message = "项目可建设用地面积最长15位")
+    @TableField(value = "project_build_area")
+    private String projectBuildArea;
 
     /**
      * 项目招商内容
@@ -187,7 +187,7 @@ public class TbProjectInfoEntity {
     /**
      * 企业名称
      */
-    @ExcelRead(rowNum = 22, cellNum = 2)
+//    @ExcelRead(rowNum = 22, cellNum = 2)
     @NotBlank(message = "企业名称不能为空")
     @Length(max = 30, message = "企业名称最长30位")
     @TableField(value = "company_name")
@@ -196,16 +196,24 @@ public class TbProjectInfoEntity {
     /**
      * 企业地址
      */
-    @ExcelRead(rowNum = 23, cellNum = 2)
+//    @ExcelRead(rowNum = 23, cellNum = 2)
     @NotBlank(message = "企业地址不能为空")
     @Length(max = 99, message = "企业地址最长99位")
     @TableField(value = "company_address")
     private String companyAddress;
 
     /**
+     * 邮编
+     */
+//    @ExcelRead(rowNum = 24, cellNum = 2)
+    @Length(max = 6, message = "邮编最长6位")
+    @TableField(value = "post_code")
+    private String postCode;
+
+    /**
      * 联系人（项目业主单位）
      */
-    @ExcelRead(rowNum = 26, cellNum = 2)
+//    @ExcelRead(rowNum = 26, cellNum = 2)
     @NotBlank(message = "联系人不能为空")
     @Length(max = 6, message = "联系人最长6位")
     @TableField(value = "project_concat")
@@ -214,41 +222,24 @@ public class TbProjectInfoEntity {
     /**
      * 联系电话（项目业主单位）
      */
-    @ExcelRead(rowNum = 27, cellNum = 2)
+//    @ExcelRead(rowNum = 27, cellNum = 2)
     @NotBlank(message = "联系电话不能为空")
     @Length(max = 13, message = "联系电话最长13位")
     @TableField(value = "project_phone")
     private String projectPhone;
 
     /**
-     * 邮编
-     */
-    @ExcelRead(rowNum = 24, cellNum = 2)
-    @Length(max = 6, message = "邮编最长6位")
-    @TableField(value = "post_code")
-    private String postCode;
-
-    /**
      * 联系座机（项目业主单位）
      */
-    @ExcelRead(rowNum = 28, cellNum = 2)
+//    @ExcelRead(rowNum = 28, cellNum = 2)
     @Length(max = 13, message = "联系座机最长13位")
     @TableField(value = "contact_landline")
     private String contactLandline;
 
     /**
-     * 联系邮箱
-     */
-    @ExcelRead(rowNum = 31, cellNum = 2)
-    @Length(max = 30, message = "联系邮箱最长30位")
-    @Email(message = "联系邮箱格式不正确")
-    @TableField(value = "contact_email")
-    private String contactEmail;
-
-    /**
      * 联系传真
      */
-    @ExcelRead(rowNum = 29, cellNum = 2)
+//    @ExcelRead(rowNum = 29, cellNum = 2)
     @Length(max = 13, message = "联系传真最长13位")
     @TableField(value = "contact_fax")
     private String contactFax;
@@ -256,14 +247,23 @@ public class TbProjectInfoEntity {
     /**
      * 联系QQ
      */
-    @ExcelRead(rowNum = 30, cellNum = 2)
+//    @ExcelRead(rowNum = 30, cellNum = 2)
     @TableField(value = "concat_qq")
     private String concatQq;
 
     /**
+     * 联系邮箱
+     */
+//    @ExcelRead(rowNum = 31, cellNum = 2)
+    @Length(max = 30, message = "联系邮箱最长30位")
+    @Email(message = "联系邮箱格式不正确")
+    @TableField(value = "contact_email")
+    private String contactEmail;
+
+    /**
      * 服务单位名称
      */
-    @ExcelRead(rowNum = 33, cellNum = 2)
+    @ExcelRead(rowNum = 22, cellNum = 2)
     @Length(max = 30, message = "服务单位名称最长30位")
     @TableField(value = "service_unit_name")
     private String serviceUnitName;
@@ -271,29 +271,29 @@ public class TbProjectInfoEntity {
     /**
      * 联系人（项目服务单位）
      */
-    @ExcelRead(rowNum = 34, cellNum = 2)
+    @ExcelRead(rowNum = 23, cellNum = 2)
     @Length(max = 6, message = "联系人（项目服务单位）最长6位")
     @TableField(value = "project_service_concat")
     private String projectServiceConcat;
 
     /**
-     * 联系电话（项目服务单位）
-     */
-    @ExcelRead(rowNum = 36, cellNum = 2)
-    @TableField(value = "project_service_phone")
-    private String projectServicePhone;
-
-    /**
      * 联系座机（项目服务单位）
      */
-    @ExcelRead(rowNum = 35, cellNum = 2)
+    @ExcelRead(rowNum = 24, cellNum = 2)
     @TableField(value = "project_service_landline")
     private String projectServiceLandline;
 
     /**
+     * 联系电话（项目服务单位）
+     */
+    @ExcelRead(rowNum = 25, cellNum = 2)
+    @TableField(value = "project_service_phone")
+    private String projectServicePhone;
+
+    /**
      * 优惠政策及扶持条件描述
      */
-    @ExcelRead(rowNum = 38, cellNum = 1)
+    @ExcelRead(rowNum = 27, cellNum = 1)
     @Length(max = 999, message = "优惠政策及扶持条件描述最长999位")
     @TableField(value = "support_desc")
     private String supportDesc;
