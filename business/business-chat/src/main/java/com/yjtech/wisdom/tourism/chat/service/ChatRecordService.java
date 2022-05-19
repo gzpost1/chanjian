@@ -57,6 +57,8 @@ public class ChatRecordService extends ServiceImpl<ChatRecordMapper, ChatRecordE
     public synchronized void initLocalCache() {
         List<ChatRecordEntity> recordEntities = this.baseMapper.selectList(new QueryWrapper<ChatRecordEntity>().lambda().eq(ChatRecordEntity::getLogDel, "N"));
         if (CollUtil.isEmpty(recordEntities)) {
+            ImmutableTable.Builder<Long, Long, ChatRecordEntity> localCacheBuilder = ImmutableTable.builder();
+            localCache = localCacheBuilder.build();
             return;
         }
         ImmutableTable.Builder<Long, Long, ChatRecordEntity> localCacheBuilder = ImmutableTable.builder();
