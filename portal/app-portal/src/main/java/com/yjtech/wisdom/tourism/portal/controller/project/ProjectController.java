@@ -2,7 +2,6 @@ package com.yjtech.wisdom.tourism.portal.controller.project;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yjtech.wisdom.tourism.common.annotation.IgnoreAuth;
 import com.yjtech.wisdom.tourism.common.core.domain.IdParam;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
@@ -50,16 +49,7 @@ public class ProjectController {
     @IgnoreAuth
     @PostMapping("/queryForPage")
     public JsonResult<IPage<TbProjectInfoEntity>> queryForPage(@RequestBody ProjectQuery query) {
-        IPage<TbProjectInfoEntity> page = projectInfoService.page(new Page<>(query.getPageNo(), query.getPageSize()), buildQueryWrapper(query));
-        //构建已选中项目标签id列表
-        List<TbProjectInfoEntity> records = page.getRecords();
-        if(CollectionUtils.isNotEmpty(records)){
-            for(TbProjectInfoEntity entity : records){
-                entity.setPitchOnLabelIdList(tbProjectLabelRelationService.queryForLabelIdListByProjectId(entity.getId()));
-            }
-            page.setRecords(records);
-        }
-        return JsonResult.success(page);
+        return JsonResult.success(projectInfoService.queryForPage(query));
     }
 
     /**
@@ -73,14 +63,7 @@ public class ProjectController {
     @IgnoreAuth
     @PostMapping("/queryForList")
     public JsonResult<List<TbProjectInfoEntity>> queryForList(@RequestBody ProjectQuery query) {
-        List<TbProjectInfoEntity> list = projectInfoService.list(buildQueryWrapper(query));
-        //构建已选中项目标签id列表
-        if(CollectionUtils.isNotEmpty(list)){
-            for(TbProjectInfoEntity entity : list){
-                entity.setPitchOnLabelIdList(tbProjectLabelRelationService.queryForLabelIdListByProjectId(entity.getId()));
-            }
-        }
-        return JsonResult.success(list);
+        return JsonResult.success(projectInfoService.queryForList(query));
     }
 
     /**
