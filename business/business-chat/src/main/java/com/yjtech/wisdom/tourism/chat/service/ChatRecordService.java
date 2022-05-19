@@ -82,6 +82,7 @@ public class ChatRecordService extends ServiceImpl<ChatRecordMapper, ChatRecordE
     @Transactional(rollbackFor = Exception.class)
     public ChatRecordEntity insertRecord(Long fromId, Long toId, Date sendTime) {
         ChatRecordEntity initiatorEntity = getRecord(fromId, toId);
+        Boolean hasUpdate = false;
         if (initiatorEntity == null) {
             //1.被删除
             Boolean delStatus = updateDelStatus(fromId, toId, sendTime);
@@ -90,17 +91,21 @@ public class ChatRecordService extends ServiceImpl<ChatRecordMapper, ChatRecordE
                 initiatorEntity = buildeRecordEntity(fromId, toId, sendTime);
                 this.save(initiatorEntity);
             }
-            this.initLocalCache();
+            hasUpdate = true;
         }
         ChatRecordEntity sessionEntity = getRecord(toId, fromId);
         if (sessionEntity == null) {
             //1.被删除
             Boolean delStatus = updateDelStatus(toId, fromId, sendTime);
+            sessionEntity = this.baseMapper.selectOne(buildeQueryWrapper(toId, fromId));
             if (false == delStatus) {
                 //2.不存在，插入
                 sessionEntity = buildeRecordEntity(toId, fromId, sendTime);
                 this.save(sessionEntity);
             }
+            hasUpdate = true;
+        }
+        if (hasUpdate) {
             this.initLocalCache();
         }
         return sessionEntity;
@@ -115,14 +120,12 @@ public class ChatRecordService extends ServiceImpl<ChatRecordMapper, ChatRecordE
     public ChatRecordEntity getRecord(Long fromId, Long toId) {
         ChatRecordEntity chatRecordEntity = localCache.get(fromId, toId);
         if (chatRecordEntity == null) {
-            synchronized (ChatRecordService.class) {
-                //再查一遍
-                LambdaQueryWrapper<ChatRecordEntity> queryWrapper = buildeQueryWrapper(fromId, toId);
-                chatRecordEntity = this.baseMapper.selectOne(queryWrapper);
-                if (chatRecordEntity != null) {
-                    //更新缓存
-                    this.initLocalCache();
-                }
+            //再查一遍
+            LambdaQueryWrapper<ChatRecordEntity> queryWrapper = buildeQueryWrapper(fromId, toId);
+            chatRecordEntity = this.baseMapper.selectOne(queryWrapper);
+            if (chatRecordEntity != null) {
+                //更新缓存
+                this.initLocalCache();
             }
         }
         return chatRecordEntity;
@@ -169,7 +172,7 @@ public class ChatRecordService extends ServiceImpl<ChatRecordMapper, ChatRecordE
         }
         //查数据库
         LambdaQueryWrapper<ChatRecordEntity> queryWrapper = new LambdaQueryWrapper<ChatRecordEntity>().eq(ChatRecordEntity::getInitiatorId, initiatorId)
-                .eq(ChatRecordEntity::getLogDel, "N").in(CollUtil.isNotEmpty(ids), ChatRecordEntity::getId, ids)
+                .eq(ChatRecordEntity::getLogDel, "N").in(CollUtil.isNotEmpty(ids), ChatRecordEntity::getSessionId, ids)
                 .orderByDesc(ChatRecordEntity::getLastChatTime);
         List<ChatRecordEntity> entityList = this.baseMapper.selectList(queryWrapper);
         //走缓存
