@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -79,23 +80,34 @@ public class ChatRecordService extends ServiceImpl<ChatRecordMapper, ChatRecordE
     @Transactional(rollbackFor = Exception.class)
     public ChatRecordEntity insertRecord(Long fromId, Long toId, Date sendTime) {
         ChatRecordEntity initiatorEntity = getRecord(fromId, toId);
-        int insertNum = 0;
         if (initiatorEntity == null) {
-            //插入
-            initiatorEntity = buildeRecordEntity(fromId, toId, sendTime);
-            this.save(initiatorEntity);
+            //1.被删除
+            Boolean delStatus = updateDelStatus(fromId, toId, sendTime);
+            if (false == delStatus) {
+                //2.不存在，插入
+                initiatorEntity = buildeRecordEntity(fromId, toId, sendTime);
+                this.save(initiatorEntity);
+            }
             this.initLocalCache();
-            insertNum += 1;
         }
         ChatRecordEntity sessionEntity = getRecord(toId, fromId);
         if (sessionEntity == null) {
-            //插入
-            sessionEntity = buildeRecordEntity(toId, fromId, sendTime);
-            this.save(sessionEntity);
+            //1.被删除
+            Boolean delStatus = updateDelStatus(toId, fromId, sendTime);
+            if (false == delStatus) {
+                //2.不存在，插入
+                sessionEntity = buildeRecordEntity(toId, fromId, sendTime);
+                this.save(sessionEntity);
+            }
             this.initLocalCache();
-            insertNum += 1;
         }
         return sessionEntity;
+    }
+
+    public Boolean updateDelStatus(Long fromId, Long toId, Date sendTime) {
+        LambdaUpdateWrapper<ChatRecordEntity> updateWrapper = new LambdaUpdateWrapper<ChatRecordEntity>().eq(ChatRecordEntity::getInitiatorId, fromId)
+                .eq(ChatRecordEntity::getSessionId, toId).set(ChatRecordEntity::getLogDel, "N").set(ChatRecordEntity::getDelTime, sendTime);
+        return update(updateWrapper);
     }
 
     public ChatRecordEntity getRecord(Long fromId, Long toId) {
@@ -148,7 +160,7 @@ public class ChatRecordService extends ServiceImpl<ChatRecordMapper, ChatRecordE
             LambdaQueryWrapper<TbRegisterInfoEntity> registerInfoQueryWrapper = new LambdaQueryWrapper<TbRegisterInfoEntity>();
             registerInfoQueryWrapper.like(TbRegisterInfoEntity::getCompanyName, companyName);
             List<TbRegisterInfoEntity> registerInfoEntities = tbRegisterInfoMapper.selectList(registerInfoQueryWrapper);
-            if (CollUtil.isEmpty(registerInfoEntities)){
+            if (CollUtil.isEmpty(registerInfoEntities)) {
                 return null;
             }
             ids = registerInfoEntities.stream().map(tbRegisterInfoEntity -> tbRegisterInfoEntity.getId()).collect(Collectors.toSet());
@@ -173,7 +185,7 @@ public class ChatRecordService extends ServiceImpl<ChatRecordMapper, ChatRecordE
 
     private LambdaQueryWrapper<ChatRecordEntity> buildeQueryWrapper(Long fromUserId, Long toUserId) {
         return new LambdaQueryWrapper<ChatRecordEntity>().eq(ChatRecordEntity::getInitiatorId, fromUserId)
-                .eq(ChatRecordEntity::getSessionId, toUserId).eq(ChatRecordEntity::getLogDel, "Y");
+                .eq(ChatRecordEntity::getSessionId, toUserId).eq(ChatRecordEntity::getLogDel, "N");
     }
 
     public Boolean deleteRecord(Long id) {
