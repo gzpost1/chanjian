@@ -1,61 +1,104 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yjtech.wisdom.tourism.project.mapper.TbProjectInfoMapper">
-  <resultMap id="BaseResultMap" type="com.yjtech.wisdom.tourism.project.entity.TbProjectInfoEntity">
-    <!--@mbg.generated-->
-    <!--@Table tb_project_info-->
-    <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="project_name" jdbcType="VARCHAR" property="projectName" />
-    <result column="construction_requirement" jdbcType="VARCHAR" property="constructionRequirement" />
-    <result column="cooperation_method" jdbcType="VARCHAR" property="cooperationMethod" />
-    <result column="project_site_scale" jdbcType="VARCHAR" property="projectSiteScale" />
-    <result column="project_plan_footprint" jdbcType="VARCHAR" property="projectPlanFootprint" />
-    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-    <result column="create_user" jdbcType="BIGINT" property="createUser" />
-    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
-    <result column="update_user" jdbcType="BIGINT" property="updateUser" />
-    <result column="deleted" jdbcType="TINYINT" property="deleted" />
-    <result column="project_build_area" jdbcType="VARCHAR" property="projectBuildArea" />
-    <result column="construction_condition" jdbcType="VARCHAR" property="constructionCondition" />
-    <result column="industrial_condition" jdbcType="VARCHAR" property="industrialCondition" />
-    <result column="market_outlook_forecast" jdbcType="VARCHAR" property="marketOutlookForecast" />
-    <result column="project_investment_content" jdbcType="VARCHAR" property="projectInvestmentContent" />
-    <result column="investment_total" jdbcType="VARCHAR" property="investmentTotal" />
-    <result column="funding_amount" jdbcType="VARCHAR" property="fundingAmount" />
-    <result column="private_capital" jdbcType="VARCHAR" property="privateCapital" />
-    <result column="payback_period" jdbcType="VARCHAR" property="paybackPeriod" />
-    <result column="company_name" jdbcType="VARCHAR" property="companyName" />
-    <result column="company_address" jdbcType="VARCHAR" property="companyAddress" />
-    <result column="project_concat" jdbcType="VARCHAR" property="projectConcat" />
-    <result column="project_phone" jdbcType="VARCHAR" property="projectPhone" />
-    <result column="post_code" jdbcType="VARCHAR" property="postCode" />
-    <result column="contact_landline" jdbcType="VARCHAR" property="contactLandline" />
-    <result column="contact_email" jdbcType="VARCHAR" property="contactEmail" />
-    <result column="contact_fax" jdbcType="VARCHAR" property="contactFax" />
-    <result column="concat_qq" jdbcType="VARCHAR" property="concatQq" />
-    <result column="service_unit_name" jdbcType="VARCHAR" property="serviceUnitName" />
-    <result column="project_service_concat" jdbcType="VARCHAR" property="projectServiceConcat" />
-    <result column="project_service_phone" jdbcType="VARCHAR" property="projectServicePhone" />
-    <result column="project_service_landline" jdbcType="VARCHAR" property="projectServiceLandline" />
-    <result column="support_desc" jdbcType="VARCHAR" property="supportDesc" />
-    <result column="status" jdbcType="TINYINT" property="status" />
-    <result column="company_id" jdbcType="VARCHAR" property="companyId" />
-    <result column="view_num" jdbcType="INTEGER" property="viewNum" />
-    <result column="area_code" jdbcType="VARCHAR" property="areaCode" />
-    <result column="area_name" jdbcType="VARCHAR" property="areaName" />
-    <result column="address" jdbcType="VARCHAR" property="address" />
-    <result column="longitude" jdbcType="VARCHAR" property="longitude" />
-    <result column="latitude" jdbcType="VARCHAR" property="latitude" />
-  </resultMap>
-  <sql id="Base_Column_List">
-    <!--@mbg.generated-->
-    id, project_name, construction_requirement, cooperation_method, project_site_scale, 
-    project_plan_footprint, create_time, create_user, update_time, update_user, deleted, 
-    project_build_area, construction_condition, industrial_condition, market_outlook_forecast, 
-    project_investment_content, investment_total, funding_amount, private_capital, payback_period, 
-    company_name, company_address, project_concat, project_phone, post_code, contact_landline, 
-    contact_email, contact_fax, concat_qq, service_unit_name, project_service_concat, 
-    project_service_phone, project_service_landline, support_desc, `status`, company_id,view_num,
-    area_code,area_name,address,longitude,latitude
-  </sql>
+    <resultMap id="BaseResultMap" type="com.yjtech.wisdom.tourism.project.entity.TbProjectInfoEntity">
+        <!--@mbg.generated-->
+        <!--@Table tb_project_info-->
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="project_name" jdbcType="VARCHAR" property="projectName"/>
+        <result column="construction_requirement" jdbcType="VARCHAR" property="constructionRequirement"/>
+        <result column="cooperation_method" jdbcType="VARCHAR" property="cooperationMethod"/>
+        <result column="project_site_scale" jdbcType="VARCHAR" property="projectSiteScale"/>
+        <result column="project_plan_footprint" jdbcType="VARCHAR" property="projectPlanFootprint"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="create_user" jdbcType="BIGINT" property="createUser"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="update_user" jdbcType="BIGINT" property="updateUser"/>
+        <result column="deleted" jdbcType="TINYINT" property="deleted"/>
+        <result column="project_build_area" jdbcType="VARCHAR" property="projectBuildArea"/>
+        <result column="construction_condition" jdbcType="VARCHAR" property="constructionCondition"/>
+        <result column="industrial_condition" jdbcType="VARCHAR" property="industrialCondition"/>
+        <result column="market_outlook_forecast" jdbcType="VARCHAR" property="marketOutlookForecast"/>
+        <result column="project_investment_content" jdbcType="VARCHAR" property="projectInvestmentContent"/>
+        <result column="investment_total" jdbcType="VARCHAR" property="investmentTotal"/>
+        <result column="funding_amount" jdbcType="VARCHAR" property="fundingAmount"/>
+        <result column="private_capital" jdbcType="VARCHAR" property="privateCapital"/>
+        <result column="payback_period" jdbcType="VARCHAR" property="paybackPeriod"/>
+        <result column="company_name" jdbcType="VARCHAR" property="companyName"/>
+        <result column="company_address" jdbcType="VARCHAR" property="companyAddress"/>
+        <result column="project_concat" jdbcType="VARCHAR" property="projectConcat"/>
+        <result column="project_phone" jdbcType="VARCHAR" property="projectPhone"/>
+        <result column="post_code" jdbcType="VARCHAR" property="postCode"/>
+        <result column="contact_landline" jdbcType="VARCHAR" property="contactLandline"/>
+        <result column="contact_email" jdbcType="VARCHAR" property="contactEmail"/>
+        <result column="contact_fax" jdbcType="VARCHAR" property="contactFax"/>
+        <result column="concat_qq" jdbcType="VARCHAR" property="concatQq"/>
+        <result column="service_unit_name" jdbcType="VARCHAR" property="serviceUnitName"/>
+        <result column="project_service_concat" jdbcType="VARCHAR" property="projectServiceConcat"/>
+        <result column="project_service_phone" jdbcType="VARCHAR" property="projectServicePhone"/>
+        <result column="project_service_landline" jdbcType="VARCHAR" property="projectServiceLandline"/>
+        <result column="support_desc" jdbcType="VARCHAR" property="supportDesc"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
+        <result column="company_id" jdbcType="VARCHAR" property="companyId"/>
+        <result column="view_num" jdbcType="INTEGER" property="viewNum"/>
+        <result column="area_code" jdbcType="VARCHAR" property="areaCode"/>
+        <result column="area_name" jdbcType="VARCHAR" property="areaName"/>
+        <result column="address" jdbcType="VARCHAR" property="address"/>
+        <result column="longitude" jdbcType="VARCHAR" property="longitude"/>
+        <result column="latitude" jdbcType="VARCHAR" property="latitude"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--@mbg.generated-->
+        id, project_name, construction_requirement, cooperation_method, project_site_scale,
+        project_plan_footprint, create_time, create_user, update_time, update_user, deleted,
+        project_build_area, construction_condition, industrial_condition, market_outlook_forecast,
+        project_investment_content, investment_total, funding_amount, private_capital, payback_period,
+        company_name, company_address, project_concat, project_phone, post_code, contact_landline,
+        contact_email, contact_fax, concat_qq, service_unit_name, project_service_concat,
+        project_service_phone, project_service_landline, support_desc, `status`, company_id,view_num,
+        area_code,area_name,address,longitude,latitude
+    </sql>
+
+    <!-- 查询列表 -->
+    <select id="queryForList" parameterType="com.yjtech.wisdom.tourism.project.dto.ProjectQuery" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from
+        tb_project_info
+        <where>
+            deleted = 0
+            <if test="params != null">
+                <if test="params.projectName != null and params.projectName != ''">
+                    and project_name LIKE CONCAT('%',#{params.projectName},'%')
+                </if>
+                <choose>
+                    <when test="params.status != null and params.status.size > 0">
+                        and status in
+                        <foreach collection="params.status" item="item" open="(" separator="," close=")">
+                            #{item}
+                        </foreach>
+                    </when>
+                    <otherwise>
+                        and status = 2
+                    </otherwise>
+                </choose>
+                <if test="params.areaCode != null and params.areaCode != ''">
+                    and area_code LIKE CONCAT(#{params.areaCode},'%')
+                </if>
+                <if test="params.labelIdList != null and params.labelIdList.size > 0">
+                    and id in
+                    (select project_id from tb_project_label_relation
+                    where
+                    label_id in
+                    <foreach collection="params.labelIdList" item="item" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                    GROUP BY project_id)
+                </if>
+            </if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+
 </mapper>

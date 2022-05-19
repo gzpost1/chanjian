@@ -22,4 +22,9 @@ public class ProjectQuery extends PageQuery {
      * 区域编码
      */
     private String areaCode;
+
+    /**
+     * 标签id列表
+     */
+    private List<Long> labelIdList;
 }
