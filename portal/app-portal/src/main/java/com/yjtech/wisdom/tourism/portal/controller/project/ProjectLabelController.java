@@ -1,5 +1,6 @@
 package com.yjtech.wisdom.tourism.portal.controller.project;
 
+import com.yjtech.wisdom.tourism.common.annotation.IgnoreAuth;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.project.entity.TbProjectLabelEntity;
 import com.yjtech.wisdom.tourism.project.service.TbProjectLabelService;
@@ -31,6 +32,7 @@ public class ProjectLabelController {
      *
      * @return
      */
+    @IgnoreAuth
     @PostMapping("queryEnableForList")
     public JsonResult<List<TbProjectLabelEntity>> queryEnableForList() {
         return JsonResult.success(tbProjectLabelService.queryEnableForList());
