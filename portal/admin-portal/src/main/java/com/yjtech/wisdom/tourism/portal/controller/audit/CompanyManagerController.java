@@ -1,7 +1,6 @@
 package com.yjtech.wisdom.tourism.portal.controller.audit;
 
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yjtech.wisdom.tourism.bigscreen.dto.AuditCompanyParam;
 import com.yjtech.wisdom.tourism.bigscreen.dto.TbRegisterInfoParam;
@@ -13,6 +12,7 @@ import com.yjtech.wisdom.tourism.bigscreen.service.TbRegisterInfoService;
 import com.yjtech.wisdom.tourism.common.core.domain.IdParam;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.common.utils.AssertUtil;
+import com.yjtech.wisdom.tourism.common.utils.bean.BeanMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -64,6 +64,19 @@ public class CompanyManagerController {
     public JsonResult<Page<TbRegisterInfoEntity>> queryForPage(
             @RequestBody @Valid TbRegisterInfoParam params) {
         return JsonResult.success(registerInfoService.page(params));
+    }
+
+    /**
+     * 企业管理 列表查询
+     *
+     * @param params
+     * @return
+     */
+    @PostMapping("/queryForList")
+    public JsonResult<List<TbRegisterInfoEntity>> queryForList(
+            @RequestBody @Valid TbRegisterInfoParam params) {
+        TbRegisterInfoEntity entity = BeanMapper.copyBean(params, TbRegisterInfoEntity.class);
+        return JsonResult.success(registerInfoService.list(entity));
     }
 
     /**
