@@ -60,8 +60,8 @@ public class ChatController {
      * 获取与当前企业聊天的企业
      */
     @GetMapping("/queryChatObject")
-    public JsonResult<List<EnterpriseVo>> queryChatObject(@RequestParam("initiatorId") Long initiatorId) {
-        List<EnterpriseVo> enterpriseVoList = chatRecordService.queryChatObject(initiatorId);
+    public JsonResult<List<EnterpriseVo>> queryChatObject(@RequestParam("initiatorId") Long initiatorId,@RequestParam("companyName")String companyName) {
+        List<EnterpriseVo> enterpriseVoList = chatRecordService.queryChatObject(initiatorId,companyName);
         return JsonResult.success(enterpriseVoList);
     }
 
