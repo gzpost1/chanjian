@@ -97,7 +97,7 @@ public class ChatRecordService extends ServiceImpl<ChatRecordMapper, ChatRecordE
         if (sessionEntity == null) {
             //1.被删除
             Boolean delStatus = updateDelStatus(toId, fromId, sendTime);
-            sessionEntity = this.baseMapper.selectOne(buildeQueryWrapper(toId, fromId));
+//            sessionEntity = this.baseMapper.selectOne(buildeQueryWrapper(toId, fromId));
             if (false == delStatus) {
                 //2.不存在，插入
                 sessionEntity = buildeRecordEntity(toId, fromId, sendTime);
