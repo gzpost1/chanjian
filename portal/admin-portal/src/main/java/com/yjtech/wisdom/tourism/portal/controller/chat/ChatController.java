@@ -36,8 +36,6 @@ public class ChatController {
      */
     @RequestMapping("/exportMesg")
     public JsonResult exportMesg(@RequestBody MessageRecordQuery messageRecordQuery, HttpServletResponse response) throws IOException {
-        messageRecordQuery.setPageNo(1L);
-        messageRecordQuery.setPageSize(999999L);
         List<ChatMessageExportVo> chatMessageExportVos = chatMessageService.querySendMessageList(messageRecordQuery);
         ExcelUtil<ChatMessageExportVo> util = new ExcelUtil<ChatMessageExportVo>(ChatMessageExportVo.class);
         return util.exportExcel(chatMessageExportVos, "留言记录");

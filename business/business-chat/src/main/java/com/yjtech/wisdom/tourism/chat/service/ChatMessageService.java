@@ -174,8 +174,9 @@ public class ChatMessageService extends ServiceImpl<ChatMessageMapper, ChatMessa
 
 
     public List<ChatMessageExportVo> querySendMessageList(MessageRecordQuery messageRecordQuery) {
-        LambdaQueryWrapper<ChatMessageEntity> queryWrapper = this.buildSendMsgQueryWrapper(messageRecordQuery);
-        List<ChatMessageEntity> chatMessageEntities = this.baseMapper.selectList(queryWrapper);
-        return ChatMessageCover.INSTANCE.cover2ChatMessageExportVo(chatMessageEntities, getRegisterInfoEntityMap());
+        Page<ChatMessageEntity> page = new Page<>(messageRecordQuery.getPageNo(), messageRecordQuery.getPageSize());
+        LambdaQueryWrapper<ChatMessageEntity> queryWrapper = buildSendMsgQueryWrapper(messageRecordQuery);
+        IPage<ChatMessageEntity> messageEntityIPage = this.baseMapper.selectPage(page, queryWrapper);
+        return ChatMessageCover.INSTANCE.cover2ChatMessageExportVo(messageEntityIPage.getRecords(), getRegisterInfoEntityMap());
     }
 }
