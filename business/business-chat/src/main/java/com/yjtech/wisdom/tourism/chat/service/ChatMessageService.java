@@ -85,7 +85,7 @@ public class ChatMessageService extends ServiceImpl<ChatMessageMapper, ChatMessa
                 .orderByDesc(ChatMessageEntity::getSendTime);
         IPage<ChatMessageEntity> messageEntityIPage = this.baseMapper.selectPage(page, queryWrapper);
         List<ChatMessageVo> chatMessageVoList = ChatMessageCover.INSTANCE.cover2ChatMessageVo(messageEntityIPage.getRecords(), getRegisterInfoEntityMap());
-        return new Page<ChatMessageVo>().setRecords(chatMessageVoList);
+        return new Page<ChatMessageVo>().setRecords(chatMessageVoList).setTotal(messageEntityIPage.getTotal());
     }
 
     private Map<Long, TbRegisterInfoEntity> getRegisterInfoEntityMap() {
