@@ -1,5 +1,6 @@
 package com.yjtech.wisdom.tourism.chat.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.yjtech.wisdom.tourism.common.annotation.Excel;
 import lombok.Data;
 
@@ -31,6 +32,7 @@ public class ChatMessageVo {
      * 发送时间
      */
     @Excel(name = "消息时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date sendTime;
 
     /**
