@@ -20,6 +20,7 @@ import com.yjtech.wisdom.tourism.chat.mapper.ChatMessageMapper;
 import com.yjtech.wisdom.tourism.chat.mapper.ChatRecordMapper;
 import com.yjtech.wisdom.tourism.chat.redis.ChatRecordRedisDao;
 import com.yjtech.wisdom.tourism.chat.uitl.MessageUtil;
+import com.yjtech.wisdom.tourism.chat.vo.ChatMessageExportVo;
 import com.yjtech.wisdom.tourism.chat.vo.ChatMessageVo;
 import com.yjtech.wisdom.tourism.chat.vo.EnterpriseVo;
 import com.yjtech.wisdom.tourism.common.utils.ServletUtils;
@@ -77,15 +78,20 @@ public class ChatMessageService extends ServiceImpl<ChatMessageMapper, ChatMessa
 
     public Page<ChatMessageVo> querySendMessage(MessageRecordQuery messageRecordQuery) {
         Page<ChatMessageEntity> page = new Page<>(messageRecordQuery.getPageNo(), messageRecordQuery.getPageSize());
+        LambdaQueryWrapper<ChatMessageEntity> queryWrapper = buildSendMsgQueryWrapper(messageRecordQuery);
+        IPage<ChatMessageEntity> messageEntityIPage = this.baseMapper.selectPage(page, queryWrapper);
+        List<ChatMessageVo> chatMessageVoList = ChatMessageCover.INSTANCE.cover2ChatMessageVo(messageEntityIPage.getRecords(), getRegisterInfoEntityMap());
+        return new Page<ChatMessageVo>().setRecords(chatMessageVoList).setTotal(messageEntityIPage.getTotal());
+    }
+
+    private LambdaQueryWrapper<ChatMessageEntity> buildSendMsgQueryWrapper(MessageRecordQuery messageRecordQuery) {
         LambdaQueryWrapper<ChatMessageEntity> queryWrapper = new LambdaQueryWrapper<ChatMessageEntity>();
         queryWrapper.in(CollectionUtil.isNotEmpty(messageRecordQuery.getIds()), ChatMessageEntity::getId, messageRecordQuery.getIds())
                 .in(CollectionUtil.isNotEmpty(messageRecordQuery.getFromUserIdList()), ChatMessageEntity::getFromUserId, messageRecordQuery.getFromUserIdList())
                 .between(messageRecordQuery.getStartTime() != null && messageRecordQuery.getEndTime() != null
                         , ChatMessageEntity::getSendTime, messageRecordQuery.getStartTime(), messageRecordQuery.getEndTime())
                 .orderByDesc(ChatMessageEntity::getSendTime);
-        IPage<ChatMessageEntity> messageEntityIPage = this.baseMapper.selectPage(page, queryWrapper);
-        List<ChatMessageVo> chatMessageVoList = ChatMessageCover.INSTANCE.cover2ChatMessageVo(messageEntityIPage.getRecords(), getRegisterInfoEntityMap());
-        return new Page<ChatMessageVo>().setRecords(chatMessageVoList).setTotal(messageEntityIPage.getTotal());
+        return queryWrapper;
     }
 
     private Map<Long, TbRegisterInfoEntity> getRegisterInfoEntityMap() {
@@ -167,4 +173,9 @@ public class ChatMessageService extends ServiceImpl<ChatMessageMapper, ChatMessa
     }
 
 
+    public List<ChatMessageExportVo> querySendMessageList(MessageRecordQuery messageRecordQuery) {
+        LambdaQueryWrapper<ChatMessageEntity> queryWrapper = this.buildSendMsgQueryWrapper(messageRecordQuery);
+        List<ChatMessageEntity> chatMessageEntities = this.baseMapper.selectList(queryWrapper);
+        return ChatMessageCover.INSTANCE.cover2ChatMessageExportVo(chatMessageEntities, getRegisterInfoEntityMap());
+    }
 }

@@ -253,6 +253,11 @@ public class ExcelUtil<T> {
         return exportExcel();
     }
 
+    public JsonResult exportExcel(List<T> list, String sheetName,OutputStream out) {
+        this.init(list, sheetName, Excel.Type.EXPORT);
+        return exportExcel(out);
+    }
+
     public JsonResult exportExcel(List<T> list, String sheetName, String fileName) {
         this.init(list, sheetName, Excel.Type.EXPORT, fileName);
         return exportExcel();
@@ -416,14 +421,20 @@ public class ExcelUtil<T> {
         return exportExcel();
     }
 
+    public JsonResult exportExcel() {
+        return exportExcel(null);
+    }
     /**
      * 对list数据源将其里面的数据导入到excel表单
      *
      * @return 结果
      */
-    public JsonResult exportExcel() {
-        OutputStream out = null;
+    public JsonResult exportExcel(OutputStream out) {
+        String filename = encodingFilename(sheetName);
         try {
+            if (out == null ){
+                out = new FileOutputStream(getAbsoluteFile(filename));
+            }
             // 取出一共有多少个sheet.
             double sheetNo = Math.ceil(list.size() / sheetSize);
             for (int index = 0; index <= sheetNo; index++) {
@@ -442,8 +453,6 @@ public class ExcelUtil<T> {
                     addStatisticsRow();
                 }
             }
-            String filename = encodingFilename(sheetName);
-            out = new FileOutputStream(getAbsoluteFile(filename));
             wb.write(out);
             return JsonResult.success(filename);
         } catch (Exception e) {
