@@ -40,7 +40,7 @@ public class ChatController {
         messageRecordQuery.setPageSize(999999L);
         List<ChatMessageExportVo> chatMessageExportVos = chatMessageService.querySendMessageList(messageRecordQuery);
         ExcelUtil<ChatMessageExportVo> util = new ExcelUtil<ChatMessageExportVo>(ChatMessageExportVo.class);
-        return util.exportExcel(chatMessageExportVos, "留言记录",response.getOutputStream());
+        return util.exportExcel(chatMessageExportVos, "留言记录");
     }
 
     /**
