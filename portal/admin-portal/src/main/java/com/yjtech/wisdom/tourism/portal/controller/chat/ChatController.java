@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -35,7 +35,7 @@ public class ChatController {
      * @return
      */
     @RequestMapping("/exportMesg")
-    public JsonResult exportMesg(@RequestBody MessageRecordQuery messageRecordQuery, HttpServletResponse response) throws IOException {
+    public JsonResult exportMesg(@RequestBody MessageRecordQuery messageRecordQuery, HttpServletResponse response) throws Exception {
         List<ChatMessageExportVo> chatMessageExportVos = chatMessageService.querySendMessageList(messageRecordQuery);
         ExcelUtil<ChatMessageExportVo> util = new ExcelUtil<ChatMessageExportVo>(ChatMessageExportVo.class);
         return util.exportExcel(chatMessageExportVos, "留言记录");
@@ -48,7 +48,7 @@ public class ChatController {
      * @return
      */
     @RequestMapping("/querySendMessage")
-    public JsonResult<Page<ChatMessageVo>> querySendMessage(@RequestBody MessageRecordQuery messageRecordQuery) {
+    public JsonResult<Page<ChatMessageVo>> querySendMessage(@RequestBody MessageRecordQuery messageRecordQuery) throws ParseException {
         Page<ChatMessageVo> chatMessageVoList = chatMessageService.querySendMessage(messageRecordQuery);
         return JsonResult.success(chatMessageVoList);
     }
