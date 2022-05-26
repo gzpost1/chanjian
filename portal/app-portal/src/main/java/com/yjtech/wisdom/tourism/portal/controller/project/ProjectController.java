@@ -49,6 +49,7 @@ public class ProjectController {
     @IgnoreAuth
     @PostMapping("/queryForPage")
     public JsonResult<IPage<TbProjectInfoEntity>> queryForPage(@RequestBody ProjectQuery query) {
+        query.setAreaCode(StringUtils.isBlank(query.getAreaCode()) ? query.getAreaCode() : AreaUtils.trimCode(query.getAreaCode()));
         return JsonResult.success(projectInfoService.queryForPage(query));
     }
 
@@ -63,6 +64,7 @@ public class ProjectController {
     @IgnoreAuth
     @PostMapping("/queryForList")
     public JsonResult<List<TbProjectInfoEntity>> queryForList(@RequestBody ProjectQuery query) {
+        query.setAreaCode(StringUtils.isBlank(query.getAreaCode()) ? query.getAreaCode() : AreaUtils.trimCode(query.getAreaCode()));
         return JsonResult.success(projectInfoService.queryForList(query));
     }
 
