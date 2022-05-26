@@ -27,11 +27,14 @@ import com.yjtech.wisdom.tourism.common.utils.ServletUtils;
 import com.yjtech.wisdom.tourism.infrastructure.core.domain.model.ScreenLoginUser;
 import com.yjtech.wisdom.tourism.redis.RedisCache;
 import com.yjtech.wisdom.tourism.system.domain.TagEntity;
+import org.apache.commons.lang3.time.DateFormatUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -76,12 +79,20 @@ public class ChatMessageService extends ServiceImpl<ChatMessageMapper, ChatMessa
         return ChatMessageCover.INSTANCE.cover2ChatMessageVo(chatMessageVoList, getRegisterInfoEntityMap());
     }
 
-    public Page<ChatMessageVo> querySendMessage(MessageRecordQuery messageRecordQuery) {
+    public Page<ChatMessageVo> querySendMessage(MessageRecordQuery messageRecordQuery) throws ParseException {
         Page<ChatMessageEntity> page = new Page<>(messageRecordQuery.getPageNo(), messageRecordQuery.getPageSize());
+        disQueryDate(messageRecordQuery);
         LambdaQueryWrapper<ChatMessageEntity> queryWrapper = buildSendMsgQueryWrapper(messageRecordQuery);
         IPage<ChatMessageEntity> messageEntityIPage = this.baseMapper.selectPage(page, queryWrapper);
         List<ChatMessageVo> chatMessageVoList = ChatMessageCover.INSTANCE.cover2ChatMessageVo(messageEntityIPage.getRecords(), getRegisterInfoEntityMap());
         return new Page<ChatMessageVo>().setRecords(chatMessageVoList).setTotal(messageEntityIPage.getTotal());
+    }
+
+    private void disQueryDate(MessageRecordQuery messageRecordQuery) throws ParseException {
+        Date startDate = DateUtils.parseDate(DateFormatUtils.format(messageRecordQuery.getStartTime(), "yy-MM-dd") + " 00:00:00", "yy-MM-dd HH:mm:ss");
+        messageRecordQuery.setStartTime(startDate);
+        Date endDate = DateUtils.parseDate(DateFormatUtils.format(messageRecordQuery.getEndTime(), "yy-MM-dd") + " 23:59:59", "yy-MM-dd HH:mm:ss");
+        messageRecordQuery.setEndTime(endDate);
     }
 
     private LambdaQueryWrapper<ChatMessageEntity> buildSendMsgQueryWrapper(MessageRecordQuery messageRecordQuery) {
@@ -173,7 +184,8 @@ public class ChatMessageService extends ServiceImpl<ChatMessageMapper, ChatMessa
     }
 
 
-    public List<ChatMessageExportVo> querySendMessageList(MessageRecordQuery messageRecordQuery) {
+    public List<ChatMessageExportVo> querySendMessageList(MessageRecordQuery messageRecordQuery) throws ParseException {
+        disQueryDate(messageRecordQuery);
         Page<ChatMessageEntity> page = new Page<>(messageRecordQuery.getPageNo(), messageRecordQuery.getPageSize());
         LambdaQueryWrapper<ChatMessageEntity> queryWrapper = buildSendMsgQueryWrapper(messageRecordQuery);
         IPage<ChatMessageEntity> messageEntityIPage = this.baseMapper.selectPage(page, queryWrapper);
