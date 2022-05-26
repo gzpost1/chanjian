@@ -89,10 +89,12 @@ public class ChatMessageService extends ServiceImpl<ChatMessageMapper, ChatMessa
     }
 
     private void disQueryDate(MessageRecordQuery messageRecordQuery) throws ParseException {
-        Date startDate = DateUtils.parseDate(DateFormatUtils.format(messageRecordQuery.getStartTime(), "yy-MM-dd") + " 00:00:00", "yy-MM-dd HH:mm:ss");
-        messageRecordQuery.setStartTime(startDate);
-        Date endDate = DateUtils.parseDate(DateFormatUtils.format(messageRecordQuery.getEndTime(), "yy-MM-dd") + " 23:59:59", "yy-MM-dd HH:mm:ss");
-        messageRecordQuery.setEndTime(endDate);
+        if (messageRecordQuery.getStartTime() !=null && messageRecordQuery.getEndTime() != null){
+            Date startDate = DateUtils.parseDate(DateFormatUtils.format(messageRecordQuery.getStartTime(), "yy-MM-dd") + " 00:00:00", "yy-MM-dd HH:mm:ss");
+            messageRecordQuery.setStartTime(startDate);
+            Date endDate = DateUtils.parseDate(DateFormatUtils.format(messageRecordQuery.getEndTime(), "yy-MM-dd") + " 23:59:59", "yy-MM-dd HH:mm:ss");
+            messageRecordQuery.setEndTime(endDate);
+        }
     }
 
     private LambdaQueryWrapper<ChatMessageEntity> buildSendMsgQueryWrapper(MessageRecordQuery messageRecordQuery) {
