@@ -121,7 +121,7 @@ public class TbRegisterInfoController extends BaseCurdController<TbRegisterInfoS
                 .blacklist(false)
                 .status(EntityConstants.ENABLED)
                 .auditStatus(AuditStatusConstants.SUCCESS)
-                .likeAreaCode(AreaUtils.trimCode(param.getLikeAreaCode()))
+                .likeAreaCode(AreaUtils.trimCode(param.getAreaCode()))
                 .build();
         JsonResult<List<TbRegisterInfoEntity>> list = super.list(tbRegisterInfoEntity);
         return list;
