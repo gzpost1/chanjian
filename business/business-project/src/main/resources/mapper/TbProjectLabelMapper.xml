@@ -19,4 +19,17 @@
     </sql>
 
 
+    <select id="queryProjectLabelTrend" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO">
+        SELECT
+            b.`name`,
+            COUNT( a.id ) `value`
+        FROM
+            tb_project_label_relation a
+            LEFT JOIN tb_project_label b ON a.label_id = b.id
+        GROUP BY
+            a.label_id
+        ORDER BY
+            `value` ASC
+        LIMIT 10
+    </select>
 </mapper>

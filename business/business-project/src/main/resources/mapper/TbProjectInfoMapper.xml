@@ -102,14 +102,88 @@
 
     <select id="queryProjectNumTrend" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO">
         SELECT
-            DATE_FORMAT( create_time, '%c' ) name,
+            DATE_FORMAT( create_time, '%c' ) `name`,
             COUNT( id ) `value`
         FROM
             tb_project_info
         WHERE
-            STATUS IN ( 0, 1, 2 )
+            status IN ( 0, 1, 2 )
             and create_time BETWEEN #{beginTime} AND #{endTime}
         GROUP BY
-            DATE_FORMAT(create_time,'%c')
+            `name`
+    </select>
+
+    <select id="queryAreaProjectNumPie" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO">
+        SELECT
+            area_name `name`,
+            COUNT( id ) `value`
+        FROM
+            tb_project_info
+        WHERE
+            `status` IN ( 0, 1, 2 )
+            and area_name is not null
+        GROUP BY
+            area_code
+        ORDER BY value DESC
+    </select>
+
+    <select id="queryProjectPlanFootprintPie" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO">
+        SELECT a.name,IFNULL(b.value ,0) value
+        FROM
+            ( SELECT '0-5亩' AS `name` UNION SELECT '5-10亩' AS `name` UNION SELECT '10-15亩' AS `name` UNION SELECT '15-20亩' AS `name` UNION SELECT '20亩以上' AS `name` ) a
+            LEFT JOIN
+            (SELECT name,COUNT(1) `value` FROM
+            (
+            SELECT
+            CASE
+            WHEN project_plan_footprint <![CDATA[>]]> 0 and project_plan_footprint <![CDATA[<]]> 5 THEN '0-5亩'
+            WHEN project_plan_footprint <![CDATA[>=]]> 5 and project_plan_footprint <![CDATA[<]]> 10  THEN '5-10亩'
+            WHEN project_plan_footprint <![CDATA[>=]]> 10 and project_plan_footprint <![CDATA[<]]> 15  THEN '10-15亩'
+            WHEN project_plan_footprint <![CDATA[>=]]> 15 and project_plan_footprint <![CDATA[<]]> 20  THEN '15-20亩'
+            WHEN project_plan_footprint <![CDATA[>=]]> 20 THEN '20亩以上' END `name`
+            FROM
+            tb_project_info
+            WHERE
+            project_plan_footprint IS NOT NULL
+            )t
+            GROUP BY name) b
+        ON a.name = b.name
+    </select>
+
+    <select id="queryInvestmentTotalTrend" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO">
+        SELECT
+            a.name,IFNULL(b.value,0)value
+        FROM
+            ( SELECT '百万级别' AS `name` UNION SELECT '千万级别' AS `name` UNION SELECT '亿级' AS `name` UNION SELECT '十亿级' AS `name` UNION SELECT '十亿级以上' AS `name` ) a
+            LEFT JOIN
+            (SELECT name,COUNT(1) `value` FROM
+            (
+            SELECT
+            CASE
+            WHEN investment_total <![CDATA[>=]]> 0.01 and investment_total <![CDATA[<]]> 0.1 THEN '百万级别'
+            WHEN investment_total <![CDATA[>=]]> 0.1 and investment_total <![CDATA[<]]> 1 THEN '千万级别'
+            WHEN investment_total <![CDATA[>=]]> 1 and investment_total <![CDATA[<]]> 10 THEN '亿级'
+            WHEN investment_total <![CDATA[=]]> 10 THEN '十亿级'
+            WHEN investment_total <![CDATA[>]]> 10 THEN '十亿级以上' END `name`
+            FROM
+            tb_project_info
+            WHERE
+            investment_total IS NOT NULL
+            )t
+            GROUP BY name) b
+        ON a.name = b.name
+    </select>
+
+    <select id="queryProjectAmountTrend" resultType="com.yjtech.wisdom.tourism.project.vo.ProjectAmountVo">
+        SELECT
+            DATE_FORMAT( create_time, '%c' ) `name`,
+            sum( investment_total ) investmentTotal,
+            sum(funding_amount) fundingAmount
+        FROM
+            tb_project_info
+        WHERE
+            create_time BETWEEN #{beginTime} AND #{endTime}
+        GROUP BY
+            `name`
     </select>
 </mapper>

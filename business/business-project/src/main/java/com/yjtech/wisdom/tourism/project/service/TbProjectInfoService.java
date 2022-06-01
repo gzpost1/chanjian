@@ -15,6 +15,7 @@ import com.yjtech.wisdom.tourism.project.entity.TbProjectInfoEntity;
 import com.yjtech.wisdom.tourism.project.entity.TbProjectLabelRelationEntity;
 import com.yjtech.wisdom.tourism.project.entity.TbProjectResourceEntity;
 import com.yjtech.wisdom.tourism.project.mapper.TbProjectInfoMapper;
+import com.yjtech.wisdom.tourism.project.vo.ProjectAmountVo;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -90,25 +91,57 @@ public class TbProjectInfoService extends ServiceImpl<TbProjectInfoMapper, TbPro
     }
 
     /**
-     * 大屏-平台项目累计总数
+     * 大屏-数据统计-平台项目累计总数
      * @Param:
      * @return:
      */
     public List<BaseValueVO> queryProjectNumTrend() {
         LocalDateTime endTime = LocalDateTime.now();
-        LocalDateTime beginTime = endTime.minusYears(1).with(TemporalAdjusters.firstDayOfMonth());
+        LocalDateTime beginTime = endTime.minusMonths(11).with(TemporalAdjusters.firstDayOfMonth());
         List<BaseVO> vos = baseMapper.queryProjectNumTrend(beginTime, endTime);
 
         List<String> nameList = Lists.newLinkedList();
         List<String> valueList = Lists.newLinkedList();
         Map<String, BaseVO> map = vos.stream().collect(Collectors.toMap(BaseVO::getName, e -> e));
-        for (int i = 1; i <= 12; i++) {
+
+        while (!endTime.isBefore(beginTime)){
+            int i = beginTime.getMonthValue();
             String month = Convert.numberToChinese(i, false);
             nameList.add((i < 10 ? month : StringUtils.substring(month, 1)) + "月");
             valueList.add(map.containsKey(i + "") ? map.get(i + "").getValue() : "0");
+            beginTime = beginTime.plusMonths(1);
         }
         List<BaseValueVO> list = Lists.newArrayList();
         list.add(BaseValueVO.builder().name("quantity").value(valueList).build());
+        list.add(BaseValueVO.builder().name("coordinate").value(nameList).build());
+        return list;
+    }
+
+    /**
+     * 大屏-数据统计-月度总投资额与引资金额需求趋势
+     * @Param:
+     * @return:
+     */
+    public List<BaseValueVO> queryProjectAmountTrend() {
+        LocalDateTime endTime = LocalDateTime.now();
+        LocalDateTime beginTime = endTime.minusMonths(11).with(TemporalAdjusters.firstDayOfMonth());
+        List<ProjectAmountVo> vos = baseMapper.queryProjectAmountTrend(beginTime, endTime);
+
+        List<String> nameList = Lists.newLinkedList();
+        List<String> investmentTotalList = Lists.newLinkedList();
+        List<String> fundingAmountList = Lists.newLinkedList();
+        Map<String, ProjectAmountVo> map = vos.stream().collect(Collectors.toMap(ProjectAmountVo::getName, e -> e));
+        while (!endTime.isBefore(beginTime)) {
+            int i = beginTime.getMonthValue();
+            String month = Convert.numberToChinese(i, false);
+            nameList.add((i < 10 ? month : StringUtils.substring(month, 1)) + "月");
+            investmentTotalList.add(map.containsKey(i + "") ? map.get(i + "").getInvestmentTotal() : "0");
+            fundingAmountList.add(map.containsKey(i + "") ? map.get(i + "").getFundingAmount() : "0");
+            beginTime = beginTime.plusMonths(1);
+        }
+        List<BaseValueVO> list = Lists.newArrayList();
+        list.add(BaseValueVO.builder().name("investmentTotalQuantity").value(investmentTotalList).build());
+        list.add(BaseValueVO.builder().name("fundingAmountQuantity").value(fundingAmountList).build());
         list.add(BaseValueVO.builder().name("coordinate").value(nameList).build());
         return list;
     }
