@@ -100,5 +100,16 @@
         ORDER BY create_time DESC
     </select>
 
-
+    <select id="queryProjectNumTrend" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO">
+        SELECT
+            DATE_FORMAT( create_time, '%c' ) name,
+            COUNT( id ) `value`
+        FROM
+            tb_project_info
+        WHERE
+            STATUS IN ( 0, 1, 2 )
+            and create_time BETWEEN #{beginTime} AND #{endTime}
+        GROUP BY
+            DATE_FORMAT(create_time,'%c')
+    </select>
 </mapper>

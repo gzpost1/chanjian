@@ -3,6 +3,7 @@ package com.yjtech.wisdom.tourism.portal.controller.audit;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yjtech.wisdom.tourism.bigscreen.dto.AuditCompanyParam;
+import com.yjtech.wisdom.tourism.bigscreen.dto.DataPermissionsParam;
 import com.yjtech.wisdom.tourism.bigscreen.dto.TbRegisterInfoParam;
 import com.yjtech.wisdom.tourism.bigscreen.dto.UpdateBlacklistParam;
 import com.yjtech.wisdom.tourism.bigscreen.entity.TbAuditInfoEntity;
@@ -11,6 +12,8 @@ import com.yjtech.wisdom.tourism.bigscreen.service.TbAuditInfoService;
 import com.yjtech.wisdom.tourism.bigscreen.service.TbRegisterInfoService;
 import com.yjtech.wisdom.tourism.common.core.domain.IdParam;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
+import com.yjtech.wisdom.tourism.common.exception.CustomException;
+import com.yjtech.wisdom.tourism.common.exception.ErrorCode;
 import com.yjtech.wisdom.tourism.common.utils.AssertUtil;
 import com.yjtech.wisdom.tourism.common.utils.bean.BeanMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +27,7 @@ import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * 客商库
@@ -129,5 +133,18 @@ public class CompanyManagerController {
         return JsonResult.success(list);
     }
 
-
+    /**
+     * 修改数据统计权限
+     *
+     * @param param
+     * @return
+     */
+    @PostMapping("/changeDataPermissions")
+    public JsonResult changeDataPermissions(@RequestBody @Valid DataPermissionsParam param) {
+        TbRegisterInfoEntity entity = Optional.ofNullable(registerInfoService.getById(param.getId()))
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND, "该企业不存在"));
+        entity.setDataPermissions(param.getDataPermissions());
+        registerInfoService.updateById(entity);
+        return JsonResult.success();
+    }
 }

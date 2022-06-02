@@ -1,10 +1,15 @@
 package com.yjtech.wisdom.tourism.project.service;
 
+import cn.hutool.core.convert.Convert;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.common.collect.Lists;
+import com.yjtech.wisdom.tourism.common.bean.BaseVO;
+import com.yjtech.wisdom.tourism.common.bean.BaseValueVO;
+import com.yjtech.wisdom.tourism.common.utils.StringUtils;
 import com.yjtech.wisdom.tourism.project.dto.ProjectQuery;
 import com.yjtech.wisdom.tourism.project.entity.TbProjectInfoEntity;
 import com.yjtech.wisdom.tourism.project.entity.TbProjectLabelRelationEntity;
@@ -15,7 +20,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class TbProjectInfoService extends ServiceImpl<TbProjectInfoMapper, TbProjectInfoEntity> {
@@ -80,4 +89,27 @@ public class TbProjectInfoService extends ServiceImpl<TbProjectInfoMapper, TbPro
         return page;
     }
 
+    /**
+     * 大屏-平台项目累计总数
+     * @Param:
+     * @return:
+     */
+    public List<BaseValueVO> queryProjectNumTrend() {
+        LocalDateTime endTime = LocalDateTime.now();
+        LocalDateTime beginTime = endTime.minusYears(1).with(TemporalAdjusters.firstDayOfMonth());
+        List<BaseVO> vos = baseMapper.queryProjectNumTrend(beginTime, endTime);
+
+        List<String> nameList = Lists.newLinkedList();
+        List<String> valueList = Lists.newLinkedList();
+        Map<String, BaseVO> map = vos.stream().collect(Collectors.toMap(BaseVO::getName, e -> e));
+        for (int i = 1; i <= 12; i++) {
+            String month = Convert.numberToChinese(i, false);
+            nameList.add((i < 10 ? month : StringUtils.substring(month, 1)) + "月");
+            valueList.add(map.containsKey(i + "") ? map.get(i + "").getValue() : "0");
+        }
+        List<BaseValueVO> list = Lists.newArrayList();
+        list.add(BaseValueVO.builder().name("quantity").value(valueList).build());
+        list.add(BaseValueVO.builder().name("coordinate").value(nameList).build());
+        return list;
+    }
 }

@@ -38,6 +38,7 @@
         <result column="city_name" property="cityName"/>
         <result column="county_name" property="countyName"/>
         <result column="contact" property="contact"/>
+        <result column="data_permissions" property="dataPermissions"/>
     </resultMap>
 
     <select id="selectOne" resultMap="BaseResultMap">
