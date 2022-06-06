@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.List;
@@ -97,7 +98,13 @@ public class TbProjectInfoService extends ServiceImpl<TbProjectInfoMapper, TbPro
      */
     public List<BaseValueVO> queryProjectNumTrend() {
         LocalDateTime endTime = LocalDateTime.now();
-        LocalDateTime beginTime = endTime.minusMonths(11).with(TemporalAdjusters.firstDayOfMonth());
+        LocalDateTime beginTime = endTime.minusMonths(11).with(TemporalAdjusters.firstDayOfMonth())
+                .withHour(0).withMinute(0).withSecond(0).withNano(0);
+        //上线时间为2022-05-01，仅展示2022年5月以后的月份及对应数据
+        LocalDateTime beginTime1 = LocalDate.of(2022, 5, 1).atStartOfDay();
+        if(beginTime.isBefore(beginTime1)){
+            beginTime = beginTime1;
+        }
         List<BaseVO> vos = baseMapper.queryProjectNumTrend(beginTime, endTime);
 
         List<String> nameList = Lists.newLinkedList();
@@ -124,7 +131,13 @@ public class TbProjectInfoService extends ServiceImpl<TbProjectInfoMapper, TbPro
      */
     public List<BaseValueVO> queryProjectAmountTrend() {
         LocalDateTime endTime = LocalDateTime.now();
-        LocalDateTime beginTime = endTime.minusMonths(11).with(TemporalAdjusters.firstDayOfMonth());
+        LocalDateTime beginTime = endTime.minusMonths(11).with(TemporalAdjusters.firstDayOfMonth())
+                .withHour(0).withMinute(0).withSecond(0).withNano(0);
+        //上线时间为2022-05-01，仅展示2022年5月以后的月份及对应数据
+        LocalDateTime beginTime1 = LocalDate.of(2022, 5, 1).atStartOfDay();
+        if(beginTime.isBefore(beginTime1)){
+            beginTime = beginTime1;
+        }
         List<ProjectAmountVo> vos = baseMapper.queryProjectAmountTrend(beginTime, endTime);
 
         List<String> nameList = Lists.newLinkedList();

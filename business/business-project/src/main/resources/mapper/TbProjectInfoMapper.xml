@@ -177,11 +177,12 @@
     <select id="queryProjectAmountTrend" resultType="com.yjtech.wisdom.tourism.project.vo.ProjectAmountVo">
         SELECT
             DATE_FORMAT( create_time, '%c' ) `name`,
-            sum( investment_total ) investmentTotal,
-            sum(funding_amount) fundingAmount
+            IFNULL(sum( investment_total ),0) investmentTotal,
+            IFNULL(sum( funding_amount ),0) fundingAmount
         FROM
             tb_project_info
         WHERE
+            `status` = 2 and
             create_time BETWEEN #{beginTime} AND #{endTime}
         GROUP BY
             `name`
