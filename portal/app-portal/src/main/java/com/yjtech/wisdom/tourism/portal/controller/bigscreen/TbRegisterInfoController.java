@@ -58,7 +58,7 @@ public class TbRegisterInfoController extends BaseCurdController<TbRegisterInfoS
     @IgnoreAuth
     public JsonResult investor(@RequestBody @Validated(RegisterValidationGroup.investor.class) TbRegisterInfoEntity registerInfoEntity) {
         validatePhone(registerInfoEntity.getPhone());
-        validateSms(registerInfoEntity);
+//        validateSms(registerInfoEntity);
         encodepwd(registerInfoEntity);
         return JsonResult.success(super.create(registerInfoEntity));
     }
@@ -90,7 +90,7 @@ public class TbRegisterInfoController extends BaseCurdController<TbRegisterInfoS
     @IgnoreAuth
     public JsonResult<JsonResult> commercial(@RequestBody @Validated(RegisterValidationGroup.commercial.class) TbRegisterInfoEntity registerInfoEntity) {
         validatePhone(registerInfoEntity.getPhone());
-        validateSms(registerInfoEntity);
+//        validateSms(registerInfoEntity);
         encodepwd(registerInfoEntity);
         return JsonResult.success(super.create(registerInfoEntity));
     }
@@ -104,7 +104,7 @@ public class TbRegisterInfoController extends BaseCurdController<TbRegisterInfoS
     @IgnoreAuth
     public JsonResult<JsonResult> operator(@RequestBody @Validated(RegisterValidationGroup.operator.class) TbRegisterInfoEntity registerInfoEntity) {
         validatePhone(registerInfoEntity.getPhone());
-        validateSms(registerInfoEntity);
+//        validateSms(registerInfoEntity);
         encodepwd(registerInfoEntity);
         return JsonResult.success(super.create(registerInfoEntity));
     }

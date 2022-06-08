@@ -212,5 +212,8 @@ public class ScreenLoginUser {
      */
     private String contact;
 
-
+    /**
+     * 数据统计权限（0正常 1停用）
+     */
+    private String dataPermissions;
 }

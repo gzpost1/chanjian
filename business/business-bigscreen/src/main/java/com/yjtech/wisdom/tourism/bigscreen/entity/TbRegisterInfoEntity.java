@@ -292,4 +292,6 @@ public class TbRegisterInfoEntity extends Model<TbRegisterInfoEntity> {
     @TableField(exist = false)
     private String likeAreaCode;
 
+    /** 数据统计权限（0正常 1停用） */
+    private String dataPermissions;
 }
