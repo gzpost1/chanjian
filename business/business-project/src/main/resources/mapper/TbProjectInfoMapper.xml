@@ -163,8 +163,8 @@
             WHEN investment_total <![CDATA[>=]]> 0.01 and investment_total <![CDATA[<]]> 0.1 THEN '百万级别'
             WHEN investment_total <![CDATA[>=]]> 0.1 and investment_total <![CDATA[<]]> 1 THEN '千万级别'
             WHEN investment_total <![CDATA[>=]]> 1 and investment_total <![CDATA[<]]> 10 THEN '亿级'
-            WHEN investment_total <![CDATA[=]]> 10 THEN '十亿级'
-            WHEN investment_total <![CDATA[>]]> 10 THEN '十亿级以上' END `name`
+            WHEN investment_total <![CDATA[>=]]> 10 and investment_total <![CDATA[<]]> 100 THEN '十亿级'
+            WHEN investment_total <![CDATA[>=]]> 100 THEN '十亿级以上' END `name`
             FROM
             tb_project_info
             WHERE
