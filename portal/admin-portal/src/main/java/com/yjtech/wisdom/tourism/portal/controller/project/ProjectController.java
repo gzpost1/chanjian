@@ -14,13 +14,12 @@ import com.yjtech.wisdom.tourism.common.enums.ImportInfoTypeEnum;
 import com.yjtech.wisdom.tourism.common.exception.CustomException;
 import com.yjtech.wisdom.tourism.common.utils.ExcelFormReadUtil;
 import com.yjtech.wisdom.tourism.common.utils.IdWorker;
-import com.yjtech.wisdom.tourism.common.utils.ServletUtils;
 import com.yjtech.wisdom.tourism.framework.web.service.TokenService;
-import com.yjtech.wisdom.tourism.infrastructure.core.domain.model.LoginUser;
 import com.yjtech.wisdom.tourism.portal.controller.common.BusinessCommonController;
 import com.yjtech.wisdom.tourism.project.dto.ProjectQuery;
 import com.yjtech.wisdom.tourism.project.dto.ProjectResourceQuery;
 import com.yjtech.wisdom.tourism.project.dto.ProjectUpdateStatusParam;
+import com.yjtech.wisdom.tourism.project.dto.ProjectUpdateTopParam;
 import com.yjtech.wisdom.tourism.project.entity.TbProjectInfoEntity;
 import com.yjtech.wisdom.tourism.project.entity.TbProjectResourceEntity;
 import com.yjtech.wisdom.tourism.project.service.TbProjectInfoService;
@@ -69,7 +68,7 @@ public class ProjectController extends BusinessCommonController {
         LambdaQueryWrapper<TbProjectInfoEntity> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.like(StringUtils.isNotBlank(query.getProjectName()), TbProjectInfoEntity::getProjectName, query.getProjectName());
         queryWrapper.in(CollectionUtils.isNotEmpty(query.getStatus()), TbProjectInfoEntity::getStatus, query.getStatus());
-        queryWrapper.last(" order by ifnull(update_time,create_time) desc");
+        queryWrapper.last(" order by is_top desc,ifnull(update_time,create_time) desc");
         IPage<TbProjectInfoEntity> pageResult = projectInfoService.page(new Page<>(query.getPageNo(), query.getPageSize()), queryWrapper);
         //构建已选中项目标签id列表
         List<TbProjectInfoEntity> records = pageResult.getRecords();
@@ -286,6 +285,20 @@ public class ProjectController extends BusinessCommonController {
     }
 
     /**
+     * 修改置顶状态
+     * @Param:
+     * @return:
+     */
+    @PostMapping("/updateTopStatus")
+    public JsonResult updateTopStatus(@RequestBody @Valid ProjectUpdateTopParam param) {
+        TbProjectInfoEntity entity = Optional.ofNullable(projectInfoService.getById(param.getId()))
+                .orElseThrow(() -> new CustomException("项目不存在"));
+        entity.setIsTop(param.getIsTop());
+        projectInfoService.updateById(entity);
+        return JsonResult.success();
+    }
+
+    /**
      * 构建项目-标签关联
      *
      * @param result
@@ -298,5 +311,4 @@ public class ProjectController extends BusinessCommonController {
             tbProjectLabelRelationService.build(projectId, labelIdList);
         }
     }
-
 }

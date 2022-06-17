@@ -111,11 +111,13 @@ public class TbProjectInfoService extends ServiceImpl<TbProjectInfoMapper, TbPro
         List<String> valueList = Lists.newLinkedList();
         Map<String, BaseVO> map = vos.stream().collect(Collectors.toMap(BaseVO::getName, e -> e));
 
+        long sum = 0; //项目总数
         while (!endTime.isBefore(beginTime)){
             int i = beginTime.getMonthValue();
             String month = Convert.numberToChinese(i, false);
             nameList.add((i < 10 ? month : StringUtils.substring(month, 1)) + "月");
-            valueList.add(map.containsKey(i + "") ? map.get(i + "").getValue() : "0");
+            sum += map.containsKey(i + "") ? Long.parseLong(map.get(i + "").getValue()) : 0;
+            valueList.add(sum + "");
             beginTime = beginTime.plusMonths(1);
         }
         List<BaseValueVO> list = Lists.newArrayList();
