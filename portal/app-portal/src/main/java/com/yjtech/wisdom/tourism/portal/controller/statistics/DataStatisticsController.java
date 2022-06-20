@@ -1,5 +1,6 @@
 package com.yjtech.wisdom.tourism.portal.controller.statistics;
 
+import com.yjtech.wisdom.tourism.common.annotation.IgnoreAuth;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
 import com.yjtech.wisdom.tourism.common.bean.BaseValueVO;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
@@ -28,6 +29,7 @@ public class DataStatisticsController {
      * 大屏-数据统计-平台项目累计总数
      */
     @GetMapping("/queryProjectNumTrend")
+    @IgnoreAuth
     public JsonResult<List<BaseValueVO>> queryProjectNumTrend() {
         return JsonResult.success(projectInfoService.queryProjectNumTrend());
     }
@@ -36,6 +38,7 @@ public class DataStatisticsController {
      * 大屏-数据统计-各区县招商项目数量分布
      */
     @GetMapping("/queryAreaProjectNumPie")
+    @IgnoreAuth
     public JsonResult<List<BaseVO>> queryAreaProjectNumPie() {
         return JsonResult.success(projectInfoService.getBaseMapper().queryAreaProjectNumPie());
     }
@@ -44,6 +47,7 @@ public class DataStatisticsController {
      * 大屏-数据统计-项目特色标签项目数占比
      */
     @GetMapping("/queryProjectLabelTrend")
+    @IgnoreAuth
     public JsonResult<List<BaseVO>> queryProjectLabelTrend() {
         return JsonResult.success(projectLabelService.getBaseMapper().queryProjectLabelTrend());
     }
@@ -52,6 +56,7 @@ public class DataStatisticsController {
      * 大屏-数据统计-项目规划占地面积项目数分布
      */
     @GetMapping("/queryProjectPlanFootprintPie")
+    @IgnoreAuth
     public JsonResult<List<BaseVO>> queryProjectPlanFootprintPie() {
         return JsonResult.success(projectInfoService.getBaseMapper().queryProjectPlanFootprintPie());
     }
@@ -60,6 +65,7 @@ public class DataStatisticsController {
      * 大屏-数据统计-总投资额量级项目分布
      */
     @GetMapping("/queryInvestmentTotalTrend")
+    @IgnoreAuth
     public JsonResult<List<BaseVO>> queryInvestmentTotalTrend() {
         return JsonResult.success(projectInfoService.getBaseMapper().queryInvestmentTotalTrend());
     }
@@ -68,6 +74,7 @@ public class DataStatisticsController {
      * 大屏-数据统计-月度总投资额与引资金额需求趋势
      */
     @GetMapping("/queryProjectAmountTrend")
+    @IgnoreAuth
     public JsonResult<List<BaseValueVO>> queryProjectAmountTrend() {
         return JsonResult.success(projectInfoService.queryProjectAmountTrend());
     }
