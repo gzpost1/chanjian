@@ -216,4 +216,9 @@ public class ScreenLoginUser {
      * 数据统计权限（0正常 1停用）
      */
     private String dataPermissions;
+
+    /**
+     * 企业信息是否完善 0-为完善 1-已完善
+     */
+    private Integer companyInfoFinishSign;
 }

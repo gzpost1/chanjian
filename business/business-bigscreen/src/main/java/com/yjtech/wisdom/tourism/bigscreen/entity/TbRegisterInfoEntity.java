@@ -70,11 +70,14 @@ public class TbRegisterInfoEntity extends Model<TbRegisterInfoEntity> {
     @NotNull(message = "密码不能为空")
     private String pwd;
 
-    @NotNull(message = "地址不能为空")
+    /**
+     * 地址 - 删除字段
+     */
+    //@NotNull(message = "地址不能为空")
     private String address;
 
     /**
-     * 联系邮箱
+     * 联系邮箱 - 删除字段
      */
     private String email;
 
@@ -87,12 +90,6 @@ public class TbRegisterInfoEntity extends Model<TbRegisterInfoEntity> {
      * 纬度
      */
     private BigDecimal latitude;
-
-    /**
-     * 标签
-     */
-    @NotNull(message = "标签不能为空")
-    private String label;
 
     /**
      * 注册资本
@@ -121,18 +118,6 @@ public class TbRegisterInfoEntity extends Model<TbRegisterInfoEntity> {
     private String businessScope;
 
     /**
-     * 投资方向
-     */
-    @NotNull(message = "投资方向不能为空", groups = {RegisterValidationGroup.investor.class})
-    private String investmentDirection;
-
-    /**
-     * 曾参与投资的项目
-     */
-    @NotNull(message = "曾参与的项目不能为空")
-    private String investmentProject;
-
-    /**
      * 资质
      */
     @NotNull(message = "资质资格不能为空")
@@ -149,15 +134,62 @@ public class TbRegisterInfoEntity extends Model<TbRegisterInfoEntity> {
      */
     @NotNull(message = "运营方向不能为空", groups = {RegisterValidationGroup.operator.class})
     private String operationDirection;
+    /**
+     * 投资方向
+     */
+    @NotNull(message = "投资方向不能为空", groups = {RegisterValidationGroup.investor.class})
+    private String investmentDirection;
+
+
+    /** ================》新增 Start 《================= */
+    /**
+     * 投资方标签
+     */
+    private String investmentLabel;
+    /**
+     * 运营方标签
+     */
+    private String operationLabel;
+    /**
+     * 业态方标签
+     */
+    private String commercialLabel;
+    /**
+     * 项目方标签
+     */
+    private String projectLabel;
 
     /**
-     * 1.投资方 2.业态方 3.运营方
+     * 曾参与的投资项目
      */
-    private Integer type;
+    private String investmentRemark;
+    /**
+     * 曾参与的业态项目
+     */
+    private String commercialRemark;
+    /**
+     * 曾参与的运营项目
+     */
+    private String operationRemark;
+
+    /**
+     * 企业信息是否完善 0-未完善 1-已完善
+     */
+    private Integer companyInfoFinishSign;
+
+    /**
+     * 微信注册用户id,管理后台不传
+     */
+    private Long weChatUserId;
+
+    /** ================》新增 End 《================= */
+
+
     /**
      * 审核状态 0.待审核 1.通过 2.驳回
      */
     private Integer auditStatus;
+
     /**
      * 是否是加入黑名单
      */
@@ -282,9 +314,9 @@ public class TbRegisterInfoEntity extends Model<TbRegisterInfoEntity> {
     }
 
     /**
-     * 联系人
+     * 联系人 - 删除字段
      */
-    private String contact;
+    // private String contact;
 
     /**
      * 模糊所在地区域编码
@@ -294,4 +326,23 @@ public class TbRegisterInfoEntity extends Model<TbRegisterInfoEntity> {
 
     /** 数据统计权限（0正常 1停用） */
     private String dataPermissions;
+
+
+
+    /**
+     * 废弃（由于加入多选，无法继续使用）：标签
+     */
+    //@NotNull(message = "标签不能为空")
+    private String label;
+    /**
+     * 废弃（由于加入多选，无法继续使用）:曾参与投资的项目
+     */
+    //@NotNull(message = "曾参与的项目不能为空")
+    private String investmentProject;
+
+    /**
+     * 废弃（由于加入多选，无法继续使用）:1.投资方 2.业态方 3.运营方 4.项目方
+     */
+    //@NotNull(message = "企业类型不能为空")
+    private Integer type;
 }

@@ -114,8 +114,13 @@ public class ProjectController {
         queryWrapper.orderByDesc(TbProjectInfoEntity::getViewNum);
         queryWrapper.orderByDesc(TbProjectInfoEntity::getCreateTime);
         queryWrapper.last(" limit 10");
-
-        return JsonResult.success(projectInfoService.list(queryWrapper));
+        List<TbProjectInfoEntity> list = projectInfoService.list(queryWrapper);
+        list.forEach(i -> i.setResource( Optional.ofNullable(
+                    projectResourceService.
+                            list(new LambdaQueryWrapper<TbProjectResourceEntity>().eq(TbProjectResourceEntity::getProjectId, i.getId())))
+                    .orElse(new ArrayList<>()))
+        );
+        return JsonResult.success(list);
     }
 
     /**

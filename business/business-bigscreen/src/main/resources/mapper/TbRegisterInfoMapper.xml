@@ -181,6 +181,35 @@
             <if test="params.likeAreaCode != null">
                 and ri.area_code LIKE CONCAT(#{params.likeAreaCode},'%')
             </if>
+
+
+            <if test="params.companyInfoFinishSign != null">
+                and ri.company_info_finish_sign = #{params.companyInfoFinishSign}
+            </if>
+            <if test="params.investmentLabel != null">
+                and ri.investment_label = #{params.investmentLabel}
+            </if>
+            <if test="params.operationLabel != null">
+                and ri.operation_label = #{params.operationLabel}
+            </if>
+            <if test="params.commercialLabel != null">
+                and ri.commercial_label = #{params.commercialLabel}
+            </if>
+            <if test="params.projectLabel != null">
+                and ri.project_label = #{params.projectLabel}
+            </if>
+            <if test="params.investmentRemark != null">
+                and ri.investment_remark = #{params.investmentRemark}
+            </if>
+            <if test="params.commercialRemark != null">
+                and ri.commercial_remark = #{params.commercialRemark}
+            </if>
+            <if test="params.operationRemark != null">
+                and ri.operation_remark = #{params.operationRemark}
+            </if>
+            <if test="params.weChatUserId != null">
+                and ri.we_chat_user_id = #{params.weChatUserId}
+            </if>
         </if>
     </sql>
 </mapper>

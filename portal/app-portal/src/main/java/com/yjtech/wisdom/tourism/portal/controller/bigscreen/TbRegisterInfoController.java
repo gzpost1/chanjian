@@ -1,8 +1,11 @@
 package com.yjtech.wisdom.tourism.portal.controller.bigscreen;
 
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.chinaunicom.yunjingtech.sms.service.SmsService;
+import com.yjtech.wisdom.tourism.bigscreen.dto.QuickRegisterVo;
 import com.yjtech.wisdom.tourism.bigscreen.dto.RecommendParam;
 import com.yjtech.wisdom.tourism.bigscreen.dto.TbRegisterInfoParam;
 import com.yjtech.wisdom.tourism.bigscreen.entity.TbRegisterInfoEntity;
@@ -13,6 +16,7 @@ import com.yjtech.wisdom.tourism.common.config.AppConfig;
 import com.yjtech.wisdom.tourism.common.constant.AuditStatusConstants;
 import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.common.constant.PhoneCodeEnum;
+import com.yjtech.wisdom.tourism.common.core.domain.IdParam;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.common.utils.AreaUtils;
 import com.yjtech.wisdom.tourism.common.utils.AssertUtil;
@@ -32,7 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
- * 注册信息
+ * v1.5_注册信息
  *
  * @author Mujun
  * @since 2022-03-01
@@ -50,6 +54,118 @@ public class TbRegisterInfoController extends BaseCurdController<TbRegisterInfoS
 
     @Autowired
     private ScreenTokenService tokenService;
+
+    @Autowired
+    private TbRegisterInfoService tbRegisterInfoService;
+
+    /**
+     * 快速注册
+     *
+     * @return
+     */
+    @PostMapping("/quickRegister")
+    @IgnoreAuth
+    public JsonResult quickRegister (@RequestBody @Validated QuickRegisterVo quickRegisterVo) {
+        TbRegisterInfoEntity tbRegisterInfoEntity = JSONObject.parseObject(JSONObject.toJSONString(quickRegisterVo), TbRegisterInfoEntity.class);
+        validatePhone(tbRegisterInfoEntity.getPhone());
+        encodepwd(tbRegisterInfoEntity);
+        return JsonResult.success(super.create(tbRegisterInfoEntity));
+    }
+
+    /**
+     * 注册/完善 企业信息
+     *
+     * @return
+     */
+    @PostMapping("/registerCompanyInfo")
+    @IgnoreAuth
+    public JsonResult registerCompanyInfo (@RequestBody @Validated TbRegisterInfoEntity registerInfoEntity) {
+        // 有id则代表 更新， 无id 则代表插入
+        if (null == registerInfoEntity.getId()) {
+            encodepwd(registerInfoEntity);
+            super.create(registerInfoEntity);
+        }else {
+            super.update(registerInfoEntity);
+        }
+        return JsonResult.success();
+    }
+
+    /**
+     * 详细信息查询
+     * @param idParam
+     * @return
+     */
+    @Override
+    @PostMapping("/queryForDetail")
+    public JsonResult<TbRegisterInfoEntity> queryForDetail(
+            @RequestBody @Validated IdParam idParam) {
+        return JsonResult.success(service.getById(idParam.getId()));
+    }
+
+    /**
+     * 查询微信注册用户状态
+     *
+     * @param idParam
+     * @return
+     */
+    @PostMapping("/queryWechatRegisterStatus")
+    public JsonResult<TbRegisterInfoEntity> queryWechatRegisterStatus (@RequestBody @Validated IdParam idParam) {
+        Object one = service.getOne(new LambdaQueryWrapper<TbRegisterInfoEntity>().eq(TbRegisterInfoEntity::getWeChatUserId, idParam));
+        TbRegisterInfoEntity tbRegisterInfoEntity = JSONObject.parseObject(JSONObject.toJSONString(one), TbRegisterInfoEntity.class);
+        return JsonResult.success(tbRegisterInfoEntity);
+    }
+
+
+    /**
+     * 大屏 企业分布
+     *
+     * @return
+     */
+    @IgnoreAuth
+    @PostMapping("listCompany")
+    public JsonResult<List<TbRegisterInfoEntity>> listCompany(@RequestBody TbRegisterInfoParam param) {
+        TbRegisterInfoEntity tbRegisterInfoEntity = TbRegisterInfoEntity.builder()
+                .blacklist(false)
+                .status(EntityConstants.ENABLED)
+                .auditStatus(AuditStatusConstants.SUCCESS)
+                .likeAreaCode(AreaUtils.trimCode(param.getAreaCode()))
+                .build();
+        JsonResult<List<TbRegisterInfoEntity>> list = super.list(tbRegisterInfoEntity);
+        return list;
+    }
+
+    /**
+     * 大屏 根据类型找 企业 1.投资方 2.业态方 3.运营方
+     *
+     * @return
+     */
+    @PostMapping("queryForPageByType")
+    @IgnoreAuth
+    public JsonResult<IPage<TbRegisterInfoEntity>> queryForPageByType(@RequestBody @Validated TbRegisterInfoParam param) {
+        return JsonResult.success(tbRegisterInfoService.queryForPageByType(param));
+    }
+
+    /**
+     * 根据登陆企业所在地推荐企业
+     *
+     * @return
+     */
+    @PostMapping("recommendCompany")
+    public List<TbRegisterInfoEntity> recommendCompany(@RequestBody @Validated RecommendParam param) {
+        ScreenLoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
+        String areaCode = loginUser.getAreaCode();
+        TbRegisterInfoEntity queryRegisterInfoEntity = TbRegisterInfoEntity.builder().areaCode(areaCode).type(param.getType()).build();
+        List<TbRegisterInfoEntity> list = service.list(queryRegisterInfoEntity);
+        return list;
+    }
+
+
+
+
+
+
+
+    //----------------- 废弃 ----------------------//
 
     /**
      * 投资方注册
@@ -109,63 +225,6 @@ public class TbRegisterInfoController extends BaseCurdController<TbRegisterInfoS
         return JsonResult.success(super.create(registerInfoEntity));
     }
 
-    /**
-     * 大屏 企业分布
-     *
-     * @return
-     */
-    @IgnoreAuth
-    @PostMapping("listCompany")
-    public JsonResult<List<TbRegisterInfoEntity>> listCompany(@RequestBody TbRegisterInfoParam param) {
-        TbRegisterInfoEntity tbRegisterInfoEntity = TbRegisterInfoEntity.builder()
-                .blacklist(false)
-                .status(EntityConstants.ENABLED)
-                .auditStatus(AuditStatusConstants.SUCCESS)
-                .likeAreaCode(AreaUtils.trimCode(param.getAreaCode()))
-                .build();
-        JsonResult<List<TbRegisterInfoEntity>> list = super.list(tbRegisterInfoEntity);
-        return list;
-    }
-
-    /**
-     * 大屏 根据类型找 企业 1.投资方 2.业态方 3.运营方
-     *
-     * @return
-     */
-    @PostMapping("queryForPageByType")
-    @IgnoreAuth
-    public JsonResult<Page<TbRegisterInfoEntity>> queryForPageByType(@RequestBody @Validated TbRegisterInfoParam param) {
-        param.setAuditStatus(1);
-        param.setBlacklist(false);
-        param.setDescs(new String[]{TbRegisterInfoEntity.AUDIT_TIME});
-        JsonResult<Page<TbRegisterInfoEntity>> pageJsonResult = super.queryForPage(param);
-        return pageJsonResult;
-    }
-
-    /**
-     * 根据登陆企业所在地推荐企业
-     *
-     * @return
-     */
-    @PostMapping("recommendCompany")
-    public List<TbRegisterInfoEntity> recommendCompany(@RequestBody @Validated RecommendParam param) {
-        ScreenLoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
-        String areaCode = loginUser.getAreaCode();
-        TbRegisterInfoEntity queryRegisterInfoEntity = TbRegisterInfoEntity.builder().areaCode(areaCode).type(param.getType()).build();
-        List<TbRegisterInfoEntity> list = service.list(queryRegisterInfoEntity);
-        return list;
-    }
-
-//    /**
-//     * 详细信息查询
-//     * @param idParam
-//     * @return
-//     */
-//    @Override
-//    @PostMapping("/queryForDetail")
-//    public JsonResult<TbRegisterInfoEntity> queryForDetail(
-//            @RequestBody @Valid IdParam idParam) {
-//        return JsonResult.success(service.getById(idParam.getId()));
-//    }
+    //----------------- 废弃 ----------------------//
 
 }
