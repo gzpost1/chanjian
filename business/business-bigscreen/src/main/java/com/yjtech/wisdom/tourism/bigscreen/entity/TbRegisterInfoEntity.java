@@ -186,7 +186,7 @@ public class TbRegisterInfoEntity extends Model<TbRegisterInfoEntity> {
 
 
     /**
-     * 审核状态 0.待审核 1.通过 2.驳回
+     * 审核状态 0.审核中 1.通过 2.驳回
      */
     private Integer auditStatus;
 
@@ -345,4 +345,25 @@ public class TbRegisterInfoEntity extends Model<TbRegisterInfoEntity> {
      */
     //@NotNull(message = "企业类型不能为空")
     private Integer type;
+
+    public void setInvestmentLabel(String investmentLabel) {
+        if ("[]".equals(investmentLabel)) {
+            investmentLabel = null;
+        }
+        this.investmentLabel = investmentLabel;
+    }
+
+    public void setOperationLabel(String operationLabel) {
+        if ("[]".equals(operationLabel)) {
+            operationLabel = null;
+        }
+        this.operationLabel = operationLabel;
+    }
+
+    public void setCommercialLabel(String commercialLabel) {
+        if ("[]".equals(commercialLabel)) {
+            commercialLabel = null;
+        }
+        this.commercialLabel = commercialLabel;
+    }
 }

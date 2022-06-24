@@ -9,6 +9,7 @@ import com.yjtech.wisdom.tourism.bigscreen.entity.TbRegisterInfoEntity;
 import com.yjtech.wisdom.tourism.bigscreen.mapper.TbRegisterInfoMapper;
 import com.yjtech.wisdom.tourism.mybatis.base.BaseMybatisServiceImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -48,14 +49,22 @@ public class TbRegisterInfoService extends BaseMybatisServiceImpl<TbRegisterInfo
 
         if (1 == param.getType()) {
             queryWrapper.isNotNull(TbRegisterInfoEntity::getInvestmentLabel);
+            queryWrapper.like(!StringUtils.isEmpty(param.getLabel()), TbRegisterInfoEntity::getInvestmentLabel, param.getLabel());
         }
         else if (2 == param.getType()) {
             queryWrapper.isNotNull(TbRegisterInfoEntity::getCommercialLabel);
+            queryWrapper.like(!StringUtils.isEmpty(param.getLabel()), TbRegisterInfoEntity::getCommercialLabel, param.getLabel());
         }
         else if (3 == param.getType()) {
             queryWrapper.isNotNull(TbRegisterInfoEntity::getOperationLabel);
+            queryWrapper.like(!StringUtils.isEmpty(param.getLabel()), TbRegisterInfoEntity::getOperationLabel, param.getLabel());
         }
+
+        queryWrapper.like(!StringUtils.isEmpty(param.getCompanyName()), TbRegisterInfoEntity::getCompanyName, param.getCompanyName());
+
         queryWrapper.eq(TbRegisterInfoEntity::getAuditStatus, 1);
+        queryWrapper.orderByDesc(TbRegisterInfoEntity::getAuditTime);
+        queryWrapper.eq(TbRegisterInfoEntity::getBlacklist, false);
 
         return super.baseMapper.selectPage(
                 new Page(param.getPageNo(), param.getPageSize()),
