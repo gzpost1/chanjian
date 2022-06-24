@@ -316,7 +316,7 @@ public class TbRegisterInfoEntity extends Model<TbRegisterInfoEntity> {
     /**
      * 联系人 - 删除字段
      */
-    // private String contact;
+     private String contact;
 
     /**
      * 模糊所在地区域编码
