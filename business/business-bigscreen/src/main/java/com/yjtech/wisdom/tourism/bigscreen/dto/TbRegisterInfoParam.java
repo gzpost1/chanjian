@@ -129,9 +129,9 @@ public class TbRegisterInfoParam extends PageQuery implements Serializable {
     private String operationDirection;
 
     /**
-     * 1.投资方 2.业态方 3.运营方
+     * 1.投资方 2.业态方 3.运营方 4.项目方
      */
-    private Integer type;
+    private String type;
 
     private Long createUser;
 

@@ -109,6 +109,7 @@ public class TbRegisterInfoController extends BaseCurdController<TbRegisterInfoS
      * @return
      */
     @PostMapping("/queryWechatRegisterStatus")
+    @IgnoreAuth
     public JsonResult<TbRegisterInfoEntity> queryWechatRegisterStatus (@RequestBody @Validated IdParam idParam) {
         Object one = service.getOne(new LambdaQueryWrapper<TbRegisterInfoEntity>().eq(TbRegisterInfoEntity::getWeChatUserId, idParam));
         TbRegisterInfoEntity tbRegisterInfoEntity = JSONObject.parseObject(JSONObject.toJSONString(one), TbRegisterInfoEntity.class);
@@ -154,9 +155,8 @@ public class TbRegisterInfoController extends BaseCurdController<TbRegisterInfoS
     public List<TbRegisterInfoEntity> recommendCompany(@RequestBody @Validated RecommendParam param) {
         ScreenLoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
         String areaCode = loginUser.getAreaCode();
-        TbRegisterInfoEntity queryRegisterInfoEntity = TbRegisterInfoEntity.builder().areaCode(areaCode).type(param.getType()).build();
-        List<TbRegisterInfoEntity> list = service.list(queryRegisterInfoEntity);
-        return list;
+        param.setAreaCode(areaCode);
+        return tbRegisterInfoService.recommendCompany(param);
     }
 
 

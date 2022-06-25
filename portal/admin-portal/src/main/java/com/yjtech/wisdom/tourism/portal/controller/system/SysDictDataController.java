@@ -2,6 +2,7 @@ package com.yjtech.wisdom.tourism.portal.controller.system;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.google.common.collect.Multimap;
+import com.yjtech.wisdom.tourism.common.annotation.IgnoreAuth;
 import com.yjtech.wisdom.tourism.common.annotation.Log;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.common.enums.BusinessType;

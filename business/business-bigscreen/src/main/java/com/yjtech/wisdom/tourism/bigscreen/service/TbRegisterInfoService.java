@@ -4,10 +4,12 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.yjtech.wisdom.tourism.bigscreen.dto.RecommendParam;
 import com.yjtech.wisdom.tourism.bigscreen.dto.TbRegisterInfoParam;
 import com.yjtech.wisdom.tourism.bigscreen.entity.TbRegisterInfoEntity;
 import com.yjtech.wisdom.tourism.bigscreen.mapper.TbRegisterInfoMapper;
 import com.yjtech.wisdom.tourism.mybatis.base.BaseMybatisServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -21,6 +23,9 @@ import java.util.List;
  */
 @Service
 public class TbRegisterInfoService extends BaseMybatisServiceImpl<TbRegisterInfoMapper, TbRegisterInfoEntity> {
+
+    @Autowired
+    private TbRegisterInfoMapper tbRegisterInfoMapper;
 
     public TbRegisterInfoEntity queryByPhone(String phone) {
         QueryWrapper<TbRegisterInfoEntity> queryWrapper = new QueryWrapper<>();
@@ -45,6 +50,9 @@ public class TbRegisterInfoService extends BaseMybatisServiceImpl<TbRegisterInfo
      * @return
      */
     public IPage<TbRegisterInfoEntity> queryForPageByType(TbRegisterInfoParam param) {
+
+        return tbRegisterInfoMapper.queryForPageByType(new Page<>(param.getPageNo(), param.getPageSize()), param);
+/*
         LambdaQueryWrapper<TbRegisterInfoEntity> queryWrapper = new LambdaQueryWrapper<>();
 
         if (1 == param.getType()) {
@@ -69,7 +77,7 @@ public class TbRegisterInfoService extends BaseMybatisServiceImpl<TbRegisterInfo
         return super.baseMapper.selectPage(
                 new Page(param.getPageNo(), param.getPageSize()),
                 queryWrapper
-        );
+        );*/
     }
 
     /**
@@ -83,6 +91,15 @@ public class TbRegisterInfoService extends BaseMybatisServiceImpl<TbRegisterInfo
                         .isNotNull(TbRegisterInfoEntity::getProjectLabel)
                         .eq(TbRegisterInfoEntity::getAuditStatus, 1)
         );
+    }
+
+    /**
+     * 根据类型查询推荐企业
+     *
+     * @return
+     */
+    public List<TbRegisterInfoEntity> recommendCompany(RecommendParam param) {
+        return tbRegisterInfoMapper.recommendCompany(param);
     }
 
 }
