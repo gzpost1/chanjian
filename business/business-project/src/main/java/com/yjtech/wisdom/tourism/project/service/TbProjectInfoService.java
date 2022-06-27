@@ -35,6 +35,8 @@ public class TbProjectInfoService extends ServiceImpl<TbProjectInfoMapper, TbPro
     private TbProjectResourceService projectResourceService;
     @Autowired
     private TbProjectLabelRelationService tbProjectLabelRelationService;
+    @Autowired
+    private TbProjectInfoMapper tbProjectInfoMapper;
 
     @Transactional(rollbackFor = Exception.class)
     public void delete(Long id) {
@@ -159,5 +161,18 @@ public class TbProjectInfoService extends ServiceImpl<TbProjectInfoMapper, TbPro
         list.add(BaseValueVO.builder().name("fundingAmountQuantity").value(fundingAmountList).build());
         list.add(BaseValueVO.builder().name("coordinate").value(nameList).build());
         return list;
+    }
+
+    /**
+     * 查询公司绑定的发布项目
+     *
+     * @param id
+     * @return
+     */
+    public TbProjectInfoEntity findBingProject(Long id) {
+        return tbProjectInfoMapper.selectOne(new LambdaQueryWrapper<TbProjectInfoEntity>()
+                .eq(TbProjectInfoEntity::getCompanyId, String.valueOf(id))
+                .eq(TbProjectInfoEntity::getStatus, Byte.valueOf("2"))
+        );
     }
 }

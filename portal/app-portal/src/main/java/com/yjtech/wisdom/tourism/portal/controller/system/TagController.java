@@ -1,5 +1,6 @@
 package com.yjtech.wisdom.tourism.portal.controller.system;
 
+import com.yjtech.wisdom.tourism.common.annotation.IgnoreAuth;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.system.domain.TagEntity;
 import com.yjtech.wisdom.tourism.system.service.TagService;
@@ -33,6 +34,7 @@ public class TagController {
      * @param vo
      * @return
      */
+    @IgnoreAuth
     @PostMapping("queryByRole")
     public JsonResult<TagEntity> queryByRole(@RequestBody @Valid TagQueryVO vo) {
         List<TagEntity> entityList = tagService.queryForList(vo);

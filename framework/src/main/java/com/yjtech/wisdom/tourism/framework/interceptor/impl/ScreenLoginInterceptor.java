@@ -54,7 +54,8 @@ public class ScreenLoginInterceptor extends HandlerInterceptorAdapter {
         }
         ScreenLoginUser loginUser = screenTokenService.getLoginUser(request);
         if(!Objects.equals(loginUser.getAuditStatus(),1)){
-            throw new CustomException("该企业尚未完成注册！");
+            //注册流程改变，快速注册直接成功，屏蔽该异常
+            //throw new CustomException("该企业尚未完成注册！");
         }
         if (loginUser == null) {
             throw new CustomException(ErrorCode.ERROR_NO_LOGIN);

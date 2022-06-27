@@ -23,7 +23,7 @@
         <result column="qualification_imgs" property="qualificationImgs"/>
         <result column="commercial_direction" property="commercialDirection"/>
         <result column="operation_direction" property="operationDirection"/>
-        <result column="type" property="type"/>
+        <result column="type" property="type" typeHandler="com.yjtech.wisdom.tourism.mybatis.typehandler.ListJsonTypeHandler"/>
         <result column="create_user" property="createUser"/>
         <result column="update_user" property="updateUser"/>
         <result column="create_time" property="createTime"/>
@@ -39,6 +39,17 @@
         <result column="county_name" property="countyName"/>
         <result column="contact" property="contact"/>
         <result column="data_permissions" property="dataPermissions"/>
+
+        <result column="company_info_finish_sign" property="companyInfoFinishSign"/>
+        <result column="investment_label" property="investmentLabel" typeHandler="com.yjtech.wisdom.tourism.mybatis.typehandler.ListJsonTypeHandler"/>
+        <result column="operation_label" property="operationLabel" typeHandler="com.yjtech.wisdom.tourism.mybatis.typehandler.ListJsonTypeHandler"/>
+        <result column="commercial_label" property="commercialLabel" typeHandler="com.yjtech.wisdom.tourism.mybatis.typehandler.ListJsonTypeHandler"/>
+        <result column="project_label" property="projectLabel" typeHandler="com.yjtech.wisdom.tourism.mybatis.typehandler.ListJsonTypeHandler"/>
+        <result column="investment_remark" property="investmentRemark"/>
+        <result column="commercial_remark" property="commercialRemark"/>
+        <result column="operation_remark" property="operationRemark"/>
+        <result column="we_chat_user_id" property="weChatUserId"/>
+
     </resultMap>
 
     <select id="selectOne" resultMap="BaseResultMap">
@@ -69,6 +80,85 @@
             <include refid="dynamic_where"/>
         </where>
     </select>
+
+    <select id="queryForPageByType" resultMap="BaseResultMap"
+            resultType="com.yjtech.wisdom.tourism.bigscreen.entity.TbRegisterInfoEntity"
+            parameterType="com.yjtech.wisdom.tourism.bigscreen.dto.TbRegisterInfoParam">
+        select
+        <include refid="Base_Column_List"/>
+        from tb_register_info ri
+                     left join tb_dict_area a on ri.area_code = left(a.code, 6)
+        <where>
+            1 = 1
+            <if test="params.areaCode != null">
+                and ri.area_code LIKE CONCAT(#{params.areaCode},'%')
+            </if>
+            <!-- 投资方 -->
+            <if test="params.type != null and params.type == 1">
+                and ri.investment_label is not null
+            </if>
+            <!-- 业态方 -->
+            <if test="params.type != null and params.type == 2">
+                and ri.commercial_label is not null
+            </if>
+            <!-- 运营方 -->
+            <if test="params.type != null and params.type == 3">
+                and ri.operation_label is not null
+            </if>
+            <!-- 项目方 -->
+            <if test="params.type != null and params.type == 4">
+                and ri.project_label is not null
+            </if>
+
+            <if test="params.companyName != null and params.companyName != ''">
+                and ri.company_name LIKE CONCAT('%', #{params.companyName},'%')
+            </if>
+
+            <if test="params.label != null and params.label != ''">
+                and ri.company_name LIKE CONCAT('%', #{params.label},'%')
+            </if>
+
+            and ri.audit_status = 1
+            and ri.blacklist = false
+            and ri.company_info_finish_sign = 1
+        </where>
+        order by ri.audit_time desc
+    </select>
+
+    <select id="recommendCompany" resultMap="BaseResultMap"
+            parameterType="com.yjtech.wisdom.tourism.bigscreen.dto.RecommendParam">
+        select
+        <include refid="Base_Column_List"/>
+        from tb_register_info ri
+                     left join tb_dict_area a on ri.area_code = left(a.code, 6)
+        <where>
+            1 = 1
+            <if test="params.areaCode != null">
+                and ri.area_code LIKE CONCAT(#{params.areaCode},'%')
+            </if>
+            <!-- 投资方 -->
+            <if test="params.type != null and params.type == 1">
+                and ri.investment_label is not null
+            </if>
+            <!-- 业态方 -->
+            <if test="params.type != null and params.type == 2">
+                and ri.commercial_label is not null
+            </if>
+            <!-- 运营方 -->
+            <if test="params.type != null and params.type == 3">
+                and ri.operation_label is not null
+            </if>
+            <!-- 项目方 -->
+            <if test="params.type != null and params.type == 4">
+                and ri.project_label is not null
+            </if>
+            and ri.audit_status = 1
+            and ri.blacklist = false
+            and ri.company_info_finish_sign = 1
+        </where>
+    </select>
+
+
     <select id="selectMap" resultType="com.yjtech.wisdom.tourism.bigscreen.entity.TbRegisterInfoEntity">
         select id,company_name as companyName from tb_register_info
     </select>
@@ -143,9 +233,6 @@
             <if test="params.operationDirection != null">
                 and operation_direction = #{params.operationDirection}
             </if>
-            <if test="params.type != null">
-                and ri.type = #{params.type}
-            </if>
             <if test="params.createUser != null">
                 and ri.create_user = #{params.createUser}
             </if>
@@ -180,6 +267,52 @@
             </if>
             <if test="params.likeAreaCode != null">
                 and ri.area_code LIKE CONCAT(#{params.likeAreaCode},'%')
+            </if>
+
+
+            <if test="params.companyInfoFinishSign != null">
+                and ri.company_info_finish_sign = #{params.companyInfoFinishSign}
+            </if>
+            <if test="params.investmentLabel != null">
+                and ri.investment_label = #{params.investmentLabel}
+            </if>
+            <if test="params.operationLabel != null">
+                and ri.operation_label = #{params.operationLabel}
+            </if>
+            <if test="params.commercialLabel != null">
+                and ri.commercial_label = #{params.commercialLabel}
+            </if>
+            <if test="params.projectLabel != null">
+                and ri.project_label = #{params.projectLabel}
+            </if>
+            <if test="params.investmentRemark != null">
+                and ri.investment_remark = #{params.investmentRemark}
+            </if>
+            <if test="params.commercialRemark != null">
+                and ri.commercial_remark = #{params.commercialRemark}
+            </if>
+            <if test="params.operationRemark != null">
+                and ri.operation_remark = #{params.operationRemark}
+            </if>
+            <if test="params.weChatUserId != null">
+                and ri.we_chat_user_id = #{params.weChatUserId}
+            </if>
+
+            <!-- 投资方 -->
+            <if test="params.typeSign != null and params.typeSign == 1">
+                and ri.investment_label is not null
+            </if>
+            <!-- 业态方 -->
+            <if test="params.typeSign != null and params.typeSign == 2">
+                and ri.commercial_label is not null
+            </if>
+            <!-- 运营方 -->
+            <if test="params.typeSign != null and params.typeSign == 3">
+                and ri.operation_label is not null
+            </if>
+            <!-- 项目方 -->
+            <if test="params.typeSign != null and params.typeSign == 4">
+                and ri.project_label is not null
             </if>
         </if>
     </sql>

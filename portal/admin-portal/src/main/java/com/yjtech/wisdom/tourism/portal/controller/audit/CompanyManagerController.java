@@ -16,8 +16,11 @@ import com.yjtech.wisdom.tourism.common.exception.CustomException;
 import com.yjtech.wisdom.tourism.common.exception.ErrorCode;
 import com.yjtech.wisdom.tourism.common.utils.AssertUtil;
 import com.yjtech.wisdom.tourism.common.utils.bean.BeanMapper;
+import com.yjtech.wisdom.tourism.project.entity.TbProjectInfoEntity;
+import com.yjtech.wisdom.tourism.project.service.TbProjectInfoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,7 +33,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * 客商库
+ * v1.5_客商库
  *
  * @author Mujun
  * @since 2022-03-04
@@ -44,6 +47,9 @@ public class CompanyManagerController {
 
     @Autowired
     private TbAuditInfoService auditInfoService;
+
+    @Autowired
+    private TbProjectInfoService tbProjectInfoService;
 
 
     /**
@@ -94,9 +100,15 @@ public class CompanyManagerController {
             @RequestBody @Valid UpdateBlacklistParam params) {
         TbRegisterInfoEntity queryRegisterInfoEntity = registerInfoService.getById(params.getId());
         AssertUtil.isFalse(Objects.isNull(queryRegisterInfoEntity), "该企业不存在");
-        queryRegisterInfoEntity.setBlacklist(params.getBlacklist());
-        registerInfoService.updateById(queryRegisterInfoEntity);
-        return JsonResult.success(registerInfoService.updateById(queryRegisterInfoEntity));
+
+        // 判断该企业 是否 绑定了已发布的项目；绑定则不能修改黑名单状态
+        TbProjectInfoEntity tb = tbProjectInfoService.findBingProject(queryRegisterInfoEntity.getId());
+        if (ObjectUtils.isEmpty(tb)) {
+            queryRegisterInfoEntity.setBlacklist(params.getBlacklist());
+            registerInfoService.updateById(queryRegisterInfoEntity);
+            return JsonResult.success();
+        }
+        return JsonResult.error("拉入黑名单失败，可能存在项目绑定了该企业");
     }
 
     /**
@@ -147,4 +159,16 @@ public class CompanyManagerController {
         registerInfoService.updateById(entity);
         return JsonResult.success();
     }
+
+    /**
+     * 查询项目方的所有企业
+     *
+     * @return
+     */
+    @PostMapping("/queryProjectCompany")
+    public JsonResult<List<TbRegisterInfoEntity>> queryProjectCompany() {
+        return JsonResult.success(registerInfoService.queryProjectCompany());
+    }
+
+
 }

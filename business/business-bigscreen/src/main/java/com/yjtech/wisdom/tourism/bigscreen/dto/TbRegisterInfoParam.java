@@ -129,9 +129,9 @@ public class TbRegisterInfoParam extends PageQuery implements Serializable {
     private String operationDirection;
 
     /**
-     * 1.投资方 2.业态方 3.运营方
+     * 1.投资方 2.业态方 3.运营方 4.项目方
      */
-    private Integer type;
+    private String type;
 
     private Long createUser;
 
@@ -163,7 +163,7 @@ public class TbRegisterInfoParam extends PageQuery implements Serializable {
 
 
     /**
-     * 审核状态 0.待审核 1.通过 2.驳回
+     * 审核状态 0.审核中 1.通过 2.驳回
      */
     private Integer auditStatus;
 
@@ -177,5 +177,18 @@ public class TbRegisterInfoParam extends PageQuery implements Serializable {
      */
     private String contact;
 
+    /**
+     * 企业信息是否完善 0-未完善 1-已完善
+     */
+    private Integer companyInfoFinishSign;
 
+    /**
+     * 类型标识
+     */
+    private String typeSign;
+
+    public void setType(String type) {
+        this.type = type;
+        this.typeSign = type;
+    }
 }
