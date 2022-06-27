@@ -111,7 +111,7 @@ public class TbRegisterInfoController extends BaseCurdController<TbRegisterInfoS
     @PostMapping("/queryWechatRegisterStatus")
     @IgnoreAuth
     public JsonResult<TbRegisterInfoEntity> queryWechatRegisterStatus (@RequestBody @Validated IdParam idParam) {
-        Object one = service.getOne(new LambdaQueryWrapper<TbRegisterInfoEntity>().eq(TbRegisterInfoEntity::getWeChatUserId, idParam));
+        Object one = service.getOne(new LambdaQueryWrapper<TbRegisterInfoEntity>().eq(TbRegisterInfoEntity::getWeChatUserId, idParam.getId()));
         TbRegisterInfoEntity tbRegisterInfoEntity = JSONObject.parseObject(JSONObject.toJSONString(one), TbRegisterInfoEntity.class);
         return JsonResult.success(tbRegisterInfoEntity);
     }
