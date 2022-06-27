@@ -351,6 +351,12 @@ public class TbRegisterInfoEntity extends Model<TbRegisterInfoEntity> {
     @TableField(typeHandler = ListJsonTypeHandler.class)
     private List<String> type;
 
+    /**
+     * 类型标识
+     */
+    @TableField(exist = false)
+    private String typeSign;
+
     public void setInvestmentLabel(List<String> investmentLabel) {
         if (CollectionUtils.isEmpty(investmentLabel)) {
             investmentLabel = null;

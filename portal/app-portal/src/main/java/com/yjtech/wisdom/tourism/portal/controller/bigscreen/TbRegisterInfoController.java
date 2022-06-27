@@ -26,6 +26,7 @@ import com.yjtech.wisdom.tourism.infrastructure.core.controller.BaseCurdControll
 import com.yjtech.wisdom.tourism.infrastructure.core.domain.model.ScreenLoginUser;
 import com.yjtech.wisdom.tourism.mybatis.typehandler.EncryptTypeHandler;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -87,7 +88,11 @@ public class TbRegisterInfoController extends BaseCurdController<TbRegisterInfoS
         }else {
             super.update(registerInfoEntity);
         }
-        return JsonResult.success();
+
+        // 更新缓存
+        ScreenLoginUser loginUser = new ScreenLoginUser();
+        BeanUtils.copyProperties(registerInfoEntity,loginUser);
+        return JsonResult.success(tokenService.createToken(loginUser));
     }
 
     /**

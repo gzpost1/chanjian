@@ -181,4 +181,14 @@ public class TbRegisterInfoParam extends PageQuery implements Serializable {
      * 企业信息是否完善 0-未完善 1-已完善
      */
     private Integer companyInfoFinishSign;
+
+    /**
+     * 类型标识
+     */
+    private String typeSign;
+
+    public void setType(String type) {
+        this.type = type;
+        this.typeSign = type;
+    }
 }

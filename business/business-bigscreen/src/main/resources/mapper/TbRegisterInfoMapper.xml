@@ -233,9 +233,6 @@
             <if test="params.operationDirection != null">
                 and operation_direction = #{params.operationDirection}
             </if>
-            <if test="params.type != null">
-                and ri.type = #{params.type}
-            </if>
             <if test="params.createUser != null">
                 and ri.create_user = #{params.createUser}
             </if>
@@ -299,6 +296,23 @@
             </if>
             <if test="params.weChatUserId != null">
                 and ri.we_chat_user_id = #{params.weChatUserId}
+            </if>
+
+            <!-- 投资方 -->
+            <if test="params.typeSign != null and params.typeSign == 1">
+                and ri.investment_label is not null
+            </if>
+            <!-- 业态方 -->
+            <if test="params.typeSign != null and params.typeSign == 2">
+                and ri.commercial_label is not null
+            </if>
+            <!-- 运营方 -->
+            <if test="params.typeSign != null and params.typeSign == 3">
+                and ri.operation_label is not null
+            </if>
+            <!-- 项目方 -->
+            <if test="params.typeSign != null and params.typeSign == 4">
+                and ri.project_label is not null
             </if>
         </if>
     </sql>
