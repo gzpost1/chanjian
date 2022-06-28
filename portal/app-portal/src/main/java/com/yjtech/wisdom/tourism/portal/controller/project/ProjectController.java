@@ -113,8 +113,7 @@ public class ProjectController {
         queryWrapper.likeRight(StringUtils.isNotBlank(query.getAreaCode()), TbProjectInfoEntity::getAreaCode, AreaUtils.trimCode(query.getAreaCode()));
         queryWrapper.orderByDesc(TbProjectInfoEntity::getIsTop);
         queryWrapper.orderByDesc(TbProjectInfoEntity::getViewNum);
-        queryWrapper.orderByDesc(TbProjectInfoEntity::getCreateTime);
-        queryWrapper.last(" limit 10");
+        queryWrapper.last(" ,ifnull(update_time,create_time) DESC limit 10");
         List<TbProjectInfoEntity> list = projectInfoService.list(queryWrapper);
         list.forEach(i -> i.setResource( Optional.ofNullable(
                     projectResourceService.
