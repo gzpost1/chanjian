@@ -99,7 +99,7 @@
                 </if>
             </if>
         </where>
-        ORDER BY is_top DESC,ifnull(update_time,create_time) DESC
+        ORDER BY create_time DESC
     </select>
 
     <select id="queryProjectNumTrend" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO">
