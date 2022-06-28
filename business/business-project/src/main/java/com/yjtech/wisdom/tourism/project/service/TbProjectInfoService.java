@@ -24,8 +24,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -67,6 +69,9 @@ public class TbProjectInfoService extends ServiceImpl<TbProjectInfoMapper, TbPro
         if(CollectionUtils.isNotEmpty(list)){
             for(TbProjectInfoEntity entity : list){
                 entity.setPitchOnLabelIdList(tbProjectLabelRelationService.queryForLabelIdListByProjectId(entity.getId()));
+                entity.setResource(Optional.ofNullable(
+                        projectResourceService.
+                                list(new LambdaQueryWrapper<TbProjectResourceEntity>().eq(TbProjectResourceEntity::getProjectId, entity.getId()))).orElse(new ArrayList<>()));
             }
         }
         return list;
