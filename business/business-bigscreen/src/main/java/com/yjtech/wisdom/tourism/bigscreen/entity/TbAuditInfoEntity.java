@@ -65,7 +65,7 @@ public class TbAuditInfoEntity extends Model<TbAuditInfoEntity> {
     private LocalDateTime updateTime;
 
     /**
-     * 审核状态 0.待审核 1.通过 2.驳回
+     * 审核状态 0.审核中 1.通过 2.驳回
      */
     private Integer auditStatus;
 

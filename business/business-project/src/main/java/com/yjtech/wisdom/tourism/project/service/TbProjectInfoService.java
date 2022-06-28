@@ -35,6 +35,8 @@ public class TbProjectInfoService extends ServiceImpl<TbProjectInfoMapper, TbPro
     private TbProjectResourceService projectResourceService;
     @Autowired
     private TbProjectLabelRelationService tbProjectLabelRelationService;
+    @Autowired
+    private TbProjectInfoMapper tbProjectInfoMapper;
 
     @Transactional(rollbackFor = Exception.class)
     public void delete(Long id) {
@@ -111,11 +113,13 @@ public class TbProjectInfoService extends ServiceImpl<TbProjectInfoMapper, TbPro
         List<String> valueList = Lists.newLinkedList();
         Map<String, BaseVO> map = vos.stream().collect(Collectors.toMap(BaseVO::getName, e -> e));
 
+        long sum = 0; //项目总数
         while (!endTime.isBefore(beginTime)){
             int i = beginTime.getMonthValue();
             String month = Convert.numberToChinese(i, false);
             nameList.add((i < 10 ? month : StringUtils.substring(month, 1)) + "月");
-            valueList.add(map.containsKey(i + "") ? map.get(i + "").getValue() : "0");
+            sum += map.containsKey(i + "") ? Long.parseLong(map.get(i + "").getValue()) : 0;
+            valueList.add(sum + "");
             beginTime = beginTime.plusMonths(1);
         }
         List<BaseValueVO> list = Lists.newArrayList();
@@ -157,5 +161,18 @@ public class TbProjectInfoService extends ServiceImpl<TbProjectInfoMapper, TbPro
         list.add(BaseValueVO.builder().name("fundingAmountQuantity").value(fundingAmountList).build());
         list.add(BaseValueVO.builder().name("coordinate").value(nameList).build());
         return list;
+    }
+
+    /**
+     * 查询公司绑定的发布项目
+     *
+     * @param id
+     * @return
+     */
+    public TbProjectInfoEntity findBingProject(Long id) {
+        return tbProjectInfoMapper.selectOne(new LambdaQueryWrapper<TbProjectInfoEntity>()
+                .eq(TbProjectInfoEntity::getCompanyId, String.valueOf(id))
+                .eq(TbProjectInfoEntity::getStatus, Byte.valueOf("2"))
+        );
     }
 }

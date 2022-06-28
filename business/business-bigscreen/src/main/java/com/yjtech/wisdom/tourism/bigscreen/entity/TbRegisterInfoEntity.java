@@ -4,18 +4,19 @@ import com.baomidou.mybatisplus.annotation.*;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.yjtech.wisdom.tourism.bigscreen.validate.RegisterValidationGroup;
 import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.common.enums.BeanValidationGroup;
+import com.yjtech.wisdom.tourism.mybatis.typehandler.ListJsonTypeHandler;
 import lombok.*;
 import lombok.experimental.Accessors;
-import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.util.CollectionUtils;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 注册信息
@@ -42,14 +43,14 @@ public class TbRegisterInfoEntity extends Model<TbRegisterInfoEntity> {
     /**
      * 公司名称
      */
-    @Length(max = 30)
-    @NotNull(message = "企业名称不能为空")
+    //@Length(max = 30)
+    //@NotNull(message = "企业名称不能为空")
     private String companyName;
 
     /**
      * 企业类型
      */
-    @NotNull(message = "企业类型不能为空")
+    //@NotNull(message = "企业类型不能为空")
     private String companyType;
 
     /**
@@ -60,21 +61,24 @@ public class TbRegisterInfoEntity extends Model<TbRegisterInfoEntity> {
     /**
      * 联系人手机号
      */
-    @NotNull(message = "手机号不能为空")
-    @Length(max = 13, message = "请输入正确手机号")
+    //@NotNull(message = "手机号不能为空")
+    //@Length(max = 13, message = "请输入正确手机号")
     private String phone;
 
     /**
      * 密码
      */
-    @NotNull(message = "密码不能为空")
+    //@NotNull(message = "密码不能为空")
     private String pwd;
 
-    @NotNull(message = "地址不能为空")
+    /**
+     * 地址 - 删除字段
+     */
+    //@NotNull(message = "地址不能为空")
     private String address;
 
     /**
-     * 联系邮箱
+     * 联系邮箱 - 删除字段
      */
     private String email;
 
@@ -89,75 +93,107 @@ public class TbRegisterInfoEntity extends Model<TbRegisterInfoEntity> {
     private BigDecimal latitude;
 
     /**
-     * 标签
-     */
-    @NotNull(message = "标签不能为空")
-    private String label;
-
-    /**
      * 注册资本
      */
-    @NotNull(message = "注册资本不能为空")
-    @Length(max = 9, message = "请填写正确注册资本")
+    //@NotNull(message = "注册资本不能为空")
     private BigDecimal registeredCapital;
 
     /**
      * 注册年份
      */
-    @NotNull(message = "注册年份不能为空")
-    @Length(max = 4, message = "请填写正确年")
+    //@NotNull(message = "注册年份不能为空")
+    //@Length(max = 4, message = "请填写正确年")
     private Integer registeredYear;
 
     /**
      * 主营业务
      */
-    @NotNull(message = "注册年份不能为空")
+    //@NotNull(message = "注册年份不能为空")
     private String mainBusiness;
 
     /**
      * 经营范围
      */
-    @NotNull(message = "经营范围不能为空")
+    //@NotNull(message = "经营范围不能为空")
     private String businessScope;
-
-    /**
-     * 投资方向
-     */
-    @NotNull(message = "投资方向不能为空", groups = {RegisterValidationGroup.investor.class})
-    private String investmentDirection;
-
-    /**
-     * 曾参与投资的项目
-     */
-    @NotNull(message = "曾参与的项目不能为空")
-    private String investmentProject;
 
     /**
      * 资质
      */
-    @NotNull(message = "资质资格不能为空")
+    //@NotNull(message = "资质资格不能为空")
     private String qualificationImgs;
 
     /**
      * 业态方向
      */
-    @NotNull(message = "业态方向不能为空", groups = {RegisterValidationGroup.commercial.class})
+    //@NotNull(message = "业态方向不能为空", groups = {RegisterValidationGroup.commercial.class})
     private String commercialDirection;
 
     /**
      * 运营方向
      */
-    @NotNull(message = "运营方向不能为空", groups = {RegisterValidationGroup.operator.class})
+    //@NotNull(message = "运营方向不能为空", groups = {RegisterValidationGroup.operator.class})
     private String operationDirection;
+    /**
+     * 投资方向
+     */
+    //@NotNull(message = "投资方向不能为空", groups = {RegisterValidationGroup.investor.class})
+    private String investmentDirection;
+
+
+    /** ================》新增 Start 《================= */
+    /**
+     * 投资方标签
+     */
+    @TableField(typeHandler = ListJsonTypeHandler.class)
+    private List<String> investmentLabel;
+    /**
+     * 运营方标签
+     */
+    @TableField(typeHandler = ListJsonTypeHandler.class)
+    private List<String> operationLabel;
+    /**
+     * 业态方标签
+     */
+    @TableField(typeHandler = ListJsonTypeHandler.class)
+    private List<String> commercialLabel;
+    /**
+     * 项目方标签
+     */
+    @TableField(typeHandler = ListJsonTypeHandler.class)
+    private List<String> projectLabel;
 
     /**
-     * 1.投资方 2.业态方 3.运营方
+     * 曾参与的投资项目
      */
-    private Integer type;
+    private String investmentRemark;
     /**
-     * 审核状态 0.待审核 1.通过 2.驳回
+     * 曾参与的业态项目
+     */
+    private String commercialRemark;
+    /**
+     * 曾参与的运营项目
+     */
+    private String operationRemark;
+
+    /**
+     * 企业信息是否完善 0-未完善 1-已完善
+     */
+    private Integer companyInfoFinishSign;
+
+    /**
+     * 微信注册用户id,管理后台不传
+     */
+    private Long weChatUserId;
+
+    /** ================》新增 End 《================= */
+
+
+    /**
+     * 审核状态 0.审核中 1.通过 2.驳回
      */
     private Integer auditStatus;
+
     /**
      * 是否是加入黑名单
      */
@@ -282,9 +318,9 @@ public class TbRegisterInfoEntity extends Model<TbRegisterInfoEntity> {
     }
 
     /**
-     * 联系人
+     * 联系人 - 删除字段
      */
-    private String contact;
+     private String contact;
 
     /**
      * 模糊所在地区域编码
@@ -294,4 +330,55 @@ public class TbRegisterInfoEntity extends Model<TbRegisterInfoEntity> {
 
     /** 数据统计权限（0正常 1停用） */
     private String dataPermissions;
+
+
+
+    /**
+     * 废弃（由于加入多选，无法继续使用）：标签
+     */
+    //@NotNull(message = "标签不能为空")
+    private String label;
+    /**
+     * 废弃（由于加入多选，无法继续使用）:曾参与投资的项目
+     */
+    //@NotNull(message = "曾参与的项目不能为空")
+    private String investmentProject;
+
+    /**
+     * 废弃（由于加入多选，无法继续使用）:1.投资方 2.业态方 3.运营方 4.项目方
+     */
+    //@NotNull(message = "企业类型不能为空")
+    @TableField(typeHandler = ListJsonTypeHandler.class)
+    private List<String> type;
+
+    /**
+     * 类型标识
+     */
+    @TableField(exist = false)
+    private String typeSign;
+
+    public void setInvestmentLabel(List<String> investmentLabel) {
+        if (CollectionUtils.isEmpty(investmentLabel)) {
+            investmentLabel = null;
+        }
+        this.investmentLabel = investmentLabel;
+    }
+
+    public void setOperationLabel(List<String> operationLabel) {
+        if (CollectionUtils.isEmpty(operationLabel)) {
+            operationLabel = null;
+        }
+        this.operationLabel = operationLabel;
+    }
+
+    public void setCommercialLabel(List<String> commercialLabel) {
+        if (CollectionUtils.isEmpty(commercialLabel)) {
+            commercialLabel = null;
+        }
+        this.commercialLabel = commercialLabel;
+    }
+
+    public void setProjectLabel(List<String> projectLabel) {
+        this.projectLabel = projectLabel;
+    }
 }

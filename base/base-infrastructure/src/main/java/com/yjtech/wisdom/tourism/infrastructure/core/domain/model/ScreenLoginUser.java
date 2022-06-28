@@ -1,9 +1,7 @@
 package com.yjtech.wisdom.tourism.infrastructure.core.domain.model;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysUser;
 import lombok.AllArgsConstructor;
@@ -11,12 +9,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -135,7 +130,7 @@ public class ScreenLoginUser {
     private Long updateUser;
 
     /**
-     * 审核状态 0.待审核 1.通过 2.驳回
+     * 审核状态 0.审核中 1.通过 2.驳回
      */
     private Integer auditStatus;
 
@@ -216,4 +211,9 @@ public class ScreenLoginUser {
      * 数据统计权限（0正常 1停用）
      */
     private String dataPermissions;
+
+    /**
+     * 企业信息是否完善 0-为完善 1-已完善
+     */
+    private Integer companyInfoFinishSign;
 }

@@ -7,6 +7,7 @@ import lombok.experimental.Accessors;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * 企业的收藏
@@ -27,10 +28,15 @@ public class RecommendParam  implements Serializable {
 
 
     /**
-     * 1.投资方 2.业态方 3.运营方
+     * 1.投资方 2.业态方 3.运营方 4.项目方
      */
     @NotNull(message = "类型不能为空")
-    private Integer type;
+    private String type;
+
+    /**
+     * 区域编码
+     */
+    private String areaCode;
 
 
 }

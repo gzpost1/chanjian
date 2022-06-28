@@ -38,7 +38,7 @@ public class AuditCompanyParam implements Serializable {
 
 
     /**
-     * 审核状态 0.待审核 1.通过 2.驳回
+     * 审核状态 0.审核中 1.通过 2.驳回
      */
     @NotNull(message = "审核状态不能为空")
     private Integer auditStatus;

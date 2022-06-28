@@ -8,6 +8,7 @@ import com.yjtech.wisdom.tourism.common.annotation.ExcelRead;
 import com.yjtech.wisdom.tourism.common.serializer.LongTypeJsonSerializer;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.URL;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -144,9 +145,18 @@ public class TbProjectInfoEntity {
     private String projectBuildArea;
 
     /**
+     * 3d地图
+     */
+    @ExcelRead(rowNum = 15, cellNum = 2)
+    @Length(max = 200, message = "3d地图最长200位")
+    @URL(message = "3d地图必须是一个合法的url地址")
+    @TableField(value = "project_map")
+    private String projectMap;
+
+    /**
      * 项目招商内容
      */
-    @ExcelRead(rowNum = 16, cellNum = 2)
+    @ExcelRead(rowNum = 17, cellNum = 2)
     @NotBlank(message = "项目招商内容不能为空")
     @Length(max = 999, message = "项目招商内容最长999位")
     @TableField(value = "project_investment_content")
@@ -155,7 +165,7 @@ public class TbProjectInfoEntity {
     /**
      * 总投资额
      */
-    @ExcelRead(rowNum = 17, cellNum = 2)
+    @ExcelRead(rowNum = 18, cellNum = 2)
     @NotBlank(message = "总投资额不能为空")
     @TableField(value = "investment_total")
     private String investmentTotal;
@@ -163,7 +173,7 @@ public class TbProjectInfoEntity {
     /**
      * 引资金额
      */
-    @ExcelRead(rowNum = 18, cellNum = 2)
+    @ExcelRead(rowNum = 19, cellNum = 2)
     @NotBlank(message = "引资金额不能为空")
     @TableField(value = "funding_amount")
     private String fundingAmount;
@@ -171,7 +181,7 @@ public class TbProjectInfoEntity {
     /**
      * 自有资金
      */
-    @ExcelRead(rowNum = 19, cellNum = 2)
+    @ExcelRead(rowNum = 20, cellNum = 2)
     @NotBlank(message = "自有资金不能为空")
     @TableField(value = "private_capital")
     private String privateCapital;
@@ -179,7 +189,7 @@ public class TbProjectInfoEntity {
     /**
      * 投资回收期
      */
-    @ExcelRead(rowNum = 20, cellNum = 2)
+    @ExcelRead(rowNum = 21, cellNum = 2)
     @NotBlank(message = "投资回收期不能为空")
     @TableField(value = "payback_period")
     private String paybackPeriod;
@@ -263,7 +273,7 @@ public class TbProjectInfoEntity {
     /**
      * 服务单位名称
      */
-    @ExcelRead(rowNum = 22, cellNum = 2)
+    @ExcelRead(rowNum = 23, cellNum = 2)
     @Length(max = 30, message = "服务单位名称最长30位")
     @TableField(value = "service_unit_name")
     private String serviceUnitName;
@@ -271,7 +281,7 @@ public class TbProjectInfoEntity {
     /**
      * 联系人（项目服务单位）
      */
-    @ExcelRead(rowNum = 23, cellNum = 2)
+    @ExcelRead(rowNum = 24, cellNum = 2)
     @Length(max = 6, message = "联系人（项目服务单位）最长6位")
     @TableField(value = "project_service_concat")
     private String projectServiceConcat;
@@ -279,21 +289,21 @@ public class TbProjectInfoEntity {
     /**
      * 联系座机（项目服务单位）
      */
-    @ExcelRead(rowNum = 24, cellNum = 2)
+    @ExcelRead(rowNum = 25, cellNum = 2)
     @TableField(value = "project_service_landline")
     private String projectServiceLandline;
 
     /**
      * 联系电话（项目服务单位）
      */
-    @ExcelRead(rowNum = 25, cellNum = 2)
+    @ExcelRead(rowNum = 26, cellNum = 2)
     @TableField(value = "project_service_phone")
     private String projectServicePhone;
 
     /**
      * 优惠政策及扶持条件描述
      */
-    @ExcelRead(rowNum = 27, cellNum = 1)
+    @ExcelRead(rowNum = 28, cellNum = 1)
     @Length(max = 999, message = "优惠政策及扶持条件描述最长999位")
     @TableField(value = "support_desc")
     private String supportDesc;
@@ -362,4 +372,8 @@ public class TbProjectInfoEntity {
     @TableField(exist = false)
     private List<Long> pitchOnLabelIdList;
 
+    /**
+     * 是否置顶 0:否, 1:是（关闭否）
+     */
+    private Byte isTop;
 }
