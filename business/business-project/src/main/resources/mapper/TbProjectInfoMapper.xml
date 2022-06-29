@@ -46,6 +46,8 @@
         <result column="address" jdbcType="VARCHAR" property="address"/>
         <result column="longitude" jdbcType="VARCHAR" property="longitude"/>
         <result column="latitude" jdbcType="VARCHAR" property="latitude"/>
+        <result column="is_top" jdbcType="TINYINT" property="isTop"/>
+        <result column="project_map" jdbcType="VARCHAR" property="projectMap"/>
     </resultMap>
     <sql id="Base_Column_List">
         <!--@mbg.generated-->
@@ -56,7 +58,7 @@
         company_name, company_address, project_concat, project_phone, post_code, contact_landline,
         contact_email, contact_fax, concat_qq, service_unit_name, project_service_concat,
         project_service_phone, project_service_landline, support_desc, `status`, company_id,view_num,
-        area_code,area_name,address,longitude,latitude
+        area_code,area_name,address,longitude,latitude,is_top,project_map
     </sql>
 
     <!-- 查询列表 -->
