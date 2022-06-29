@@ -102,8 +102,8 @@ public class CompanyManagerController {
         AssertUtil.isFalse(Objects.isNull(queryRegisterInfoEntity), "该企业不存在");
 
         // 判断该企业 是否 绑定了已发布的项目；绑定则不能修改黑名单状态
-        TbProjectInfoEntity tb = tbProjectInfoService.findBingProject(queryRegisterInfoEntity.getId());
-        if (ObjectUtils.isEmpty(tb)) {
+        int bindProjectNum = tbProjectInfoService.findBingProject(queryRegisterInfoEntity.getId());
+        if (0 == bindProjectNum) {
             queryRegisterInfoEntity.setBlacklist(params.getBlacklist());
             registerInfoService.updateById(queryRegisterInfoEntity);
             return JsonResult.success();
