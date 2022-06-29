@@ -89,9 +89,10 @@ public class TbRegisterInfoController extends BaseCurdController<TbRegisterInfoS
             super.update(registerInfoEntity);
         }
 
+        TbRegisterInfoEntity tbRegisterInfoEntity = tbRegisterInfoService.queryByPhone(registerInfoEntity.getPhone());
         // 更新缓存
         ScreenLoginUser loginUser = new ScreenLoginUser();
-        BeanUtils.copyProperties(registerInfoEntity,loginUser);
+        BeanUtils.copyProperties(tbRegisterInfoEntity,loginUser);
         return JsonResult.success(tokenService.createToken(loginUser));
     }
 
