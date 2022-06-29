@@ -12,9 +12,13 @@
             ,t.project_investment_content as investmentContent
             ,t.area_name as area
             ,t.project_phone as phone
+            ,t.construction_condition
+            ,t.industrial_condition
+            ,t.market_outlook_forecast
             ,JSON_OBJECT("investmentTotal",t.investment_total,"fundingAmount",t.funding_amount, "privateCapital",t.private_capital, "paybackPeriod",t.payback_period) as target
             ,(SELECT JSON_ARRAYAGG( lb.`name`) FROM tb_project_label lb WHERE lb.id IN (SELECT rel.label_id FROM tb_project_label_relation rel WHERE rel.project_id = t.id)) as labels
             ,res.resource_url as video
+            ,res.index_url as picture
         FROM tb_project_info t
         LEFT JOIN tb_project_resource res ON res.id = (SELECT t1.id FROM tb_project_resource t1 WHERE t1.project_id = t.id AND t1.resource_type = 1 AND t1.deleted = 0 LIMIT 0,1)
         <where>
@@ -54,6 +58,10 @@
         <result property="target" column="target" typeHandler="com.yjtech.wisdom.tourism.mybatis.typehandler.JsonTypeHandler"/>
         <result property="labels" column="labels" typeHandler="com.yjtech.wisdom.tourism.mybatis.typehandler.JsonTypeHandler"/>
         <result property="video" column="video" jdbcType="VARCHAR"/>
+        <result property="constructionCondition" column="construction_condition" jdbcType="VARCHAR"/>
+        <result property="industrialCondition" column="industrial_condition" jdbcType="VARCHAR"/>
+        <result property="marketOutlookForecast" column="market_outlook_forecast" jdbcType="VARCHAR"/>
+        <result property="picture" column="picture" jdbcType="VARCHAR"/>
     </resultMap>
 
     <select id="getAreaList" resultType="java.lang.String">

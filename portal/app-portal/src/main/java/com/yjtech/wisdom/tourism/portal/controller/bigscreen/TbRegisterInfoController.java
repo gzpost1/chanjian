@@ -18,6 +18,7 @@ import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.common.constant.PhoneCodeEnum;
 import com.yjtech.wisdom.tourism.common.core.domain.IdParam;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
+import com.yjtech.wisdom.tourism.common.exception.CustomException;
 import com.yjtech.wisdom.tourism.common.utils.AreaUtils;
 import com.yjtech.wisdom.tourism.common.utils.AssertUtil;
 import com.yjtech.wisdom.tourism.common.utils.ServletUtils;
@@ -28,6 +29,7 @@ import com.yjtech.wisdom.tourism.mybatis.typehandler.EncryptTypeHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -83,15 +85,26 @@ public class TbRegisterInfoController extends BaseCurdController<TbRegisterInfoS
     public JsonResult registerCompanyInfo (@RequestBody @Validated TbRegisterInfoEntity registerInfoEntity) {
         // 有id则代表 更新， 无id 则代表插入
         if (null == registerInfoEntity.getId()) {
+            validatePhone(registerInfoEntity.getPhone());
             encodepwd(registerInfoEntity);
             super.create(registerInfoEntity);
         }else {
+            TbRegisterInfoEntity dbData = tbRegisterInfoService.getById(registerInfoEntity.getId());
+            if (ObjectUtils.isEmpty(dbData)) {
+                throw new CustomException("数据库不存在id为： " + registerInfoEntity.getId() + "的数据");
+            }
+
+            // 不是用户当前手机号，校验手机号码是否存在
+            if (!dbData.getPhone().equals(registerInfoEntity.getPhone())) {
+                validatePhone(registerInfoEntity.getPhone());
+            }
             super.update(registerInfoEntity);
         }
 
+        TbRegisterInfoEntity tbRegisterInfoEntity = tbRegisterInfoService.queryByPhone(registerInfoEntity.getPhone());
         // 更新缓存
         ScreenLoginUser loginUser = new ScreenLoginUser();
-        BeanUtils.copyProperties(registerInfoEntity,loginUser);
+        BeanUtils.copyProperties(tbRegisterInfoEntity,loginUser);
         return JsonResult.success(tokenService.createToken(loginUser));
     }
 

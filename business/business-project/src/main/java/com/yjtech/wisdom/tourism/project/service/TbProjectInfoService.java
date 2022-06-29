@@ -174,10 +174,11 @@ public class TbProjectInfoService extends ServiceImpl<TbProjectInfoMapper, TbPro
      * @param id
      * @return
      */
-    public TbProjectInfoEntity findBingProject(Long id) {
-        return tbProjectInfoMapper.selectOne(new LambdaQueryWrapper<TbProjectInfoEntity>()
+    public int findBingProject(Long id) {
+        return tbProjectInfoMapper.selectCount(new LambdaQueryWrapper<TbProjectInfoEntity>()
                 .eq(TbProjectInfoEntity::getCompanyId, String.valueOf(id))
                 .eq(TbProjectInfoEntity::getStatus, Byte.valueOf("2"))
+                .eq(TbProjectInfoEntity::getDeleted, Byte.valueOf("0"))
         );
     }
 }
