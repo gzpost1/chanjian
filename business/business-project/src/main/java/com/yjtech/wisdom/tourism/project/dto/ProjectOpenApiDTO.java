@@ -45,9 +45,19 @@ public class ProjectOpenApiDTO {
     private String method;
 
     /**
-     * 业主单位名称
+     * 建设条件
      */
-    private String company;
+    private String constructionCondition;
+
+    /**
+     * 产业条件
+     */
+    private String industrialCondition;
+
+    /**
+     * 市场前景预测
+     */
+    private String marketOutlookForecast;
 
     /**
      * 项目招商内容
@@ -55,15 +65,25 @@ public class ProjectOpenApiDTO {
     private String investmentContent;
 
     /**
+     * 业主单位名称
+     */
+    private String company;
+
+    /**
      * 项目特色标签
      */
     @TableField(typeHandler = JsonTypeHandler.class)
-    private  List<String> labels;
+    private List<String> labels;
 
     /**
      * 视频
      */
     private String video;
+
+    /**
+     * 视频封面
+     */
+    private  String picture;
 
     /**
      * 项目所属地区
@@ -79,7 +99,7 @@ public class ProjectOpenApiDTO {
      * 财务指标分析
      */
     @TableField(typeHandler = JsonTypeHandler.class)
-    private  Target target;
+    private Target target;
 
     /**
      * 财务指标分析
