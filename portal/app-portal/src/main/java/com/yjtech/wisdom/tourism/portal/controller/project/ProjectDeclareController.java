@@ -1,24 +1,14 @@
 package com.yjtech.wisdom.tourism.portal.controller.project;
 
-import com.alibaba.excel.EasyExcel;
-import com.alibaba.excel.enums.CellExtraTypeEnum;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.yjtech.wisdom.tourism.common.bean.DemoExtraData;
-import com.yjtech.wisdom.tourism.common.bean.DemoExtraListener;
-import com.yjtech.wisdom.tourism.common.constant.Constants;
 import com.yjtech.wisdom.tourism.common.core.domain.IdParam;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
-import com.yjtech.wisdom.tourism.common.enums.ImportInfoTypeEnum;
-import com.yjtech.wisdom.tourism.common.enums.NoticeTemplateTypeEnum;
-import com.yjtech.wisdom.tourism.common.enums.NoticeTypeEnum;
 import com.yjtech.wisdom.tourism.common.exception.CustomException;
-import com.yjtech.wisdom.tourism.common.utils.ExcelFormReadUtil;
 import com.yjtech.wisdom.tourism.common.utils.IdWorker;
 import com.yjtech.wisdom.tourism.framework.web.service.TokenService;
-import com.yjtech.wisdom.tourism.portal.controller.common.BusinessCommonController;
 import com.yjtech.wisdom.tourism.project.dto.ProjectQuery;
 import com.yjtech.wisdom.tourism.project.dto.ProjectResourceQuery;
 import com.yjtech.wisdom.tourism.project.dto.ProjectUpdateStatusParam;
@@ -28,41 +18,34 @@ import com.yjtech.wisdom.tourism.project.entity.TbProjectResourceEntity;
 import com.yjtech.wisdom.tourism.project.service.TbProjectInfoService;
 import com.yjtech.wisdom.tourism.project.service.TbProjectLabelRelationService;
 import com.yjtech.wisdom.tourism.project.service.TbProjectResourceService;
-import com.yjtech.wisdom.tourism.resource.notice.service.NoticeService;
-import com.yjtech.wisdom.tourism.resource.notice.vo.NoticeCreateVO;
-import com.yjtech.wisdom.tourism.system.service.SysDictDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.io.IOException;
 import java.util.*;
 
 /**
- * 后台管理-项目
+ * 大屏-项目申报
+ *
+ * @date 2022/7/7 11:45
+ * @author horadirm
  */
 @Slf4j
 @RestController
-@RequestMapping("/project")
-public class ProjectController extends BusinessCommonController {
+@RequestMapping("/screen/project/declare")
+public class ProjectDeclareController {
     @Autowired
     private TbProjectInfoService projectInfoService;
     @Autowired
     private TbProjectResourceService projectResourceService;
     @Autowired
     private TbProjectLabelRelationService tbProjectLabelRelationService;    
-	@Autowired
-    private TokenService tokenService;
-	@Autowired
-    private SysDictDataService sysDictDataService;
-	@Autowired
-    private NoticeService noticeService;
 
 
     /**
@@ -240,65 +223,7 @@ public class ProjectController extends BusinessCommonController {
         entity.setStatus(param.getStatus());
         entity.setUpdateTime(new Date());
         projectInfoService.updateById(entity);
-        //发送项目审核通知
-        try {
-            sendProjectAuditNotice(entity.getProjectName(), entity.getStatus());
-        }catch (Exception e){
-            log.error("******************** 发送项目审核通知异常 ********************");
-            e.printStackTrace();
-        }
         return JsonResult.ok();
-    }
-
-    /**
-     * 下载模板
-     *
-     * @param request
-     * @param response
-     */
-    @GetMapping("getTemplate")
-    public void getTemplate(HttpServletRequest request, HttpServletResponse response) {
-        getTemplate(ImportInfoTypeEnum.PROJECT, request, response);
-    }
-
-    /**
-     * 招商引资数据导入
-     *
-     * @param
-     * @return
-     */
-    @RequestMapping("info/importExcel")
-    public JsonResult<TbProjectInfoEntity> importExcel(@RequestParam("file") MultipartFile file) throws IOException {
-//        InputStream fileIs = this.getClass().getClassLoader().getResourceAsStream("files/excel/招商平台项目信息登记表（模板）（试行）.xlsx");
-
-        if(Objects.isNull(file)){
-            throw new CustomException("上传附件不能为空");
-
-        }
-        // 这里 需要指定读用哪个class去读，然后读取第一个sheet
-        List<DemoExtraData> list = EasyExcel.read(file.getInputStream(), DemoExtraData.class, new DemoExtraListener())
-                // 需要读取合并单元格信息 默认不读取
-                .extraRead(CellExtraTypeEnum.MERGE).sheet().doReadSync();
-
-        TbProjectInfoEntity entity = new ExcelFormReadUtil<TbProjectInfoEntity>().readExcel(list, TbProjectInfoEntity.class, 1);
-        if (Objects.isNull(entity)) {
-            throw new CustomException("导入excel格式有误");
-        }
-
-        //校验项目名称是否重复
-        if(StringUtils.isNotBlank(entity.getProjectName())){
-            validateProjectName(null, entity.getProjectName());
-        }
-
-        //校验参数的合法性
-        new ExcelFormReadUtil<TbProjectInfoEntity>().validateExcelReadData(entity,"entity");
-
-        //构建区域信息
-        String[] areaInfo = entity.getAreaCode().split("-");
-        entity.setAreaName(areaInfo[0]);
-        entity.setAreaCode(areaInfo[1]);
-
-        return JsonResult.success(entity);
     }
 
     /**
@@ -328,23 +253,4 @@ public class ProjectController extends BusinessCommonController {
             tbProjectLabelRelationService.build(projectId, labelIdList);
         }
     }
-
-    /**
-     * 发送项目审核通知
-     *
-     * @param projectName
-     * @param auditStatus
-     */
-    private void sendProjectAuditNotice(String projectName, Byte auditStatus){
-        //查询模板类型
-        Byte noticeTemplateType = NoticeTemplateTypeEnum.getNoticeTemplateTypeByAuditStatus(auditStatus);
-        if(null == noticeTemplateType){
-            return;
-        }
-        //查询 消息模板类型 信息
-        String noticeTemplate = sysDictDataService.selectDictLabel(Constants.DICT_TYPE_NOTICE_TEMPLATE, noticeTemplateType.toString());
-        //构建项目申报模板消息
-        noticeService.create(new NoticeCreateVO(String.format(noticeTemplate, projectName), NoticeTypeEnum.NOTICE_TYPE_PROGRAM_DECLARE.getType(), null));
-    }
-
 }

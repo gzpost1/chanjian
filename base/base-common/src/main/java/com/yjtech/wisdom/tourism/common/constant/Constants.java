@@ -152,6 +152,10 @@ public class Constants {
     public static final Integer TYPE_BIG_SCREEN = 0;//大屏
     public static final Integer TYPE_H5_SCREEN = 1;//H5
 
+    /**
+     * 消息模板类型
+     */
+    public static final String DICT_TYPE_NOTICE_TEMPLATE = "notice_template_type";
 
     /**
      * 数字常量

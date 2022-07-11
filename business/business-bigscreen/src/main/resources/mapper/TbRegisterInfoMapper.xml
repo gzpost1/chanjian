@@ -122,7 +122,17 @@
             and ri.blacklist = false
             and ri.company_info_finish_sign = 1
         </where>
-        order by ri.audit_time desc
+        <choose>
+            <when test="params.type != null and params.type == 2">
+                order by ri.audit_time
+            </when>
+            <when test="params.type != null and params.type == 3">
+                order by CONVERT(ri.company_name USING gbk) COLLATE gbk_chinese_ci
+            </when>
+            <otherwise>
+                order by ri.audit_time desc
+            </otherwise>
+        </choose>
     </select>
 
     <select id="recommendCompany" resultMap="BaseResultMap"

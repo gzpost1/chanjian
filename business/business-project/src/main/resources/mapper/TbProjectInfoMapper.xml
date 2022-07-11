@@ -62,7 +62,8 @@
     </sql>
 
     <!-- 查询列表 -->
-    <select id="queryForList" parameterType="com.yjtech.wisdom.tourism.project.dto.ProjectQuery" resultMap="BaseResultMap">
+    <select id="queryForList" parameterType="com.yjtech.wisdom.tourism.project.dto.ProjectQuery"
+            resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from
@@ -188,5 +189,13 @@
             create_time BETWEEN #{beginTime} AND #{endTime}
         GROUP BY
             `name`
+    </select>
+
+    <!-- 根据企业id查询项目id列表 -->
+    <select id="queryIdListByCompanyId" resultType="long">
+        SELECT id FROM tb_project_info
+        WHERE
+            deleted = 0
+            and company_id = #{companyId}
     </select>
 </mapper>

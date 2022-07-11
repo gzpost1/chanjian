@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.TemporalAdjusters;
@@ -153,12 +154,25 @@ public class TbProjectInfoService extends ServiceImpl<TbProjectInfoMapper, TbPro
         List<String> investmentTotalList = Lists.newLinkedList();
         List<String> fundingAmountList = Lists.newLinkedList();
         Map<String, ProjectAmountVo> map = vos.stream().collect(Collectors.toMap(ProjectAmountVo::getName, e -> e));
+        //累加 总投资额
+        BigDecimal investmentTotal = BigDecimal.ZERO;
+        //累加 引资金额
+        BigDecimal fundingAmount = BigDecimal.ZERO;
+
         while (!endTime.isBefore(beginTime)) {
             int i = beginTime.getMonthValue();
             String month = Convert.numberToChinese(i, false);
             nameList.add((i < 10 ? month : StringUtils.substring(month, 1)) + "月");
-            investmentTotalList.add(map.containsKey(i + "") ? map.get(i + "").getInvestmentTotal() : "0");
-            fundingAmountList.add(map.containsKey(i + "") ? map.get(i + "").getFundingAmount() : "0");
+            //当月总投资额
+            String currentInvestmentTotal = map.containsKey(i + "") ? map.get(i + "").getInvestmentTotal() : "0";
+            //当月引资金额
+            String currentFundingAmount = map.containsKey(i + "") ? map.get(i + "").getFundingAmount() : "0";
+            //累加金额
+            investmentTotal = investmentTotal.add(new BigDecimal(currentInvestmentTotal));
+            fundingAmount = fundingAmount.add(new BigDecimal(currentFundingAmount));
+
+            investmentTotalList.add(investmentTotal.toString());
+            fundingAmountList.add(fundingAmount.toString());
             beginTime = beginTime.plusMonths(1);
         }
         List<BaseValueVO> list = Lists.newArrayList();
@@ -181,4 +195,15 @@ public class TbProjectInfoService extends ServiceImpl<TbProjectInfoMapper, TbPro
                 .eq(TbProjectInfoEntity::getDeleted, Byte.valueOf("0"))
         );
     }
+
+    /**
+     * 根据企业id查询项目id列表
+     *
+     * @param companyId
+     * @return
+     */
+    public List<Long> queryIdListByCompanyId(Long companyId){
+        return baseMapper.queryIdListByCompanyId(companyId);
+    }
+
 }
