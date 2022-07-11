@@ -12,6 +12,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -123,7 +124,7 @@ public class ScreenLoginUser {
     /**
      * 1.投资方 2.业态方 3.运营方
      */
-    private Integer type;
+    private List<String> type;
 
     private Long createUser;
 
