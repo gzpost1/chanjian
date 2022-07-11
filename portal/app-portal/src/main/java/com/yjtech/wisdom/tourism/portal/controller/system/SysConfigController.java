@@ -17,12 +17,12 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * 参数配置 信息操作处理
+ * 大屏-参数配置 信息操作处理
  *
  * @author liuhong
  */
 @RestController
-@RequestMapping("/system/config")
+@RequestMapping("/screen/system/config")
 public class SysConfigController extends BaseController {
   @Autowired private SysConfigService configService;
 

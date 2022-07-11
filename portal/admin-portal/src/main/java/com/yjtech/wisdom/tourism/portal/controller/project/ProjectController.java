@@ -242,7 +242,7 @@ public class ProjectController extends BusinessCommonController {
         projectInfoService.updateById(entity);
         //发送项目审核通知
         try {
-            sendProjectAuditNotice(entity.getProjectName(), entity.getStatus());
+            sendProjectAuditNotice(entity.getId(), entity.getProjectName(), entity.getStatus());
         }catch (Exception e){
             log.error("******************** 发送项目审核通知异常 ********************");
             e.printStackTrace();
@@ -332,10 +332,11 @@ public class ProjectController extends BusinessCommonController {
     /**
      * 发送项目审核通知
      *
+     * @param projectId
      * @param projectName
      * @param auditStatus
      */
-    private void sendProjectAuditNotice(String projectName, Byte auditStatus){
+    private void sendProjectAuditNotice(Long projectId, String projectName, Byte auditStatus){
         //查询模板类型
         Byte noticeTemplateType = NoticeTemplateTypeEnum.getNoticeTemplateTypeByAuditStatus(auditStatus);
         if(null == noticeTemplateType){
@@ -344,7 +345,8 @@ public class ProjectController extends BusinessCommonController {
         //查询 消息模板类型 信息
         String noticeTemplate = sysDictDataService.selectDictLabel(Constants.DICT_TYPE_NOTICE_TEMPLATE, noticeTemplateType.toString());
         //构建项目申报模板消息
-        noticeService.create(new NoticeCreateVO(String.format(noticeTemplate, projectName), NoticeTypeEnum.NOTICE_TYPE_PROGRAM_DECLARE.getType(), null));
+        noticeService.create(new NoticeCreateVO(String.format(noticeTemplate, projectName),
+                NoticeTypeEnum.NOTICE_TYPE_PROGRAM_DECLARE.getType(), null, projectId.toString()));
     }
 
 }
