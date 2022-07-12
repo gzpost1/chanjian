@@ -10,10 +10,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * 时间工具类
@@ -246,6 +243,26 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
         LocalDateTime beginTime = LocalDateTime.now();
         LocalDateTime endTime = beginTime.toLocalDate().atStartOfDay().plusDays(1).plusMinutes(30);
         return Duration.between(beginTime, endTime).toMinutes();
+    }
+
+    public static String getTimePeriod(Long during) {
+        if (Objects.isNull(during)) {
+            return null;
+        }
+        long hour = during / 3600000;
+        long min = (during - hour * 3600000) / 60000;
+        long sec = (during - hour * 3600000 - min * 60000) / 1000;
+        String duringTime = "";
+        if (sec != 0) {
+            duringTime = sec + "秒";
+        }
+        if (min != 0) {
+            duringTime = min + "分" + duringTime;
+        }
+        if (hour != 0) {
+            duringTime = hour + "时" + duringTime;
+        }
+        return duringTime;
     }
 
 }
