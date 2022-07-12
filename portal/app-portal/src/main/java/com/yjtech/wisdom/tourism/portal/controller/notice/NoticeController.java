@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.yjtech.wisdom.tourism.common.annotation.IgnoreAuth;
 import com.yjtech.wisdom.tourism.common.core.domain.IdParam;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
+import com.yjtech.wisdom.tourism.common.enums.CompanyRoleEnum;
 import com.yjtech.wisdom.tourism.framework.web.service.ScreenTokenService;
 import com.yjtech.wisdom.tourism.infrastructure.core.domain.model.ScreenLoginUser;
 import com.yjtech.wisdom.tourism.project.service.TbProjectInfoService;
@@ -94,10 +95,13 @@ public class NoticeController {
         if(null == loginUser){
             return null;
         }
-        //根据企业id查询项目id列表
-        List<Long> projectIdList = tbProjectInfoService.queryIdListByCompanyId(loginUser.getId());
-        if(CollectionUtils.isNotEmpty(projectIdList)){
-            return projectIdList.stream().map(String::valueOf).collect(Collectors.toList());
+        //登录企业用户角色为项目方时，查询范围为公告、消息
+        if(CollectionUtils.isNotEmpty(loginUser.getType()) && loginUser.getType().contains(CompanyRoleEnum.COMPANY_ROLE_PROJECT.getType())){
+            //根据企业id查询项目id列表
+            List<Long> projectIdList = tbProjectInfoService.queryIdListByCompanyId(loginUser.getId());
+            if(CollectionUtils.isNotEmpty(projectIdList)){
+                return projectIdList.stream().map(String::valueOf).collect(Collectors.toList());
+            }
         }
         return null;
     }
