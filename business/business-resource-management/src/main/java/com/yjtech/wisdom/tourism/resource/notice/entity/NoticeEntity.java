@@ -82,7 +82,7 @@ public class NoticeEntity extends BaseEntity {
         //默认类型：公告
         setType(null == vo.getType() ? NoticeTypeEnum.NOTICE_TYPE_PUBLIC.getType() : vo.getType());
         //默认空
-        setBusinessId(null);
+        setBusinessId(vo.getBusinessId());
         //默认未读
         setReadFlag(EntityConstants.DISABLED);
     }

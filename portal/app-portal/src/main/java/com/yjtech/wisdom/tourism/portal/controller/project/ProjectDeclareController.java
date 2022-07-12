@@ -4,11 +4,15 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.yjtech.wisdom.tourism.common.constant.AuditStatusConstants;
 import com.yjtech.wisdom.tourism.common.core.domain.IdParam;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
+import com.yjtech.wisdom.tourism.common.enums.CompanyRoleEnum;
 import com.yjtech.wisdom.tourism.common.exception.CustomException;
 import com.yjtech.wisdom.tourism.common.utils.IdWorker;
-import com.yjtech.wisdom.tourism.framework.web.service.TokenService;
+import com.yjtech.wisdom.tourism.common.utils.ServletUtils;
+import com.yjtech.wisdom.tourism.framework.web.service.ScreenTokenService;
+import com.yjtech.wisdom.tourism.infrastructure.core.domain.model.ScreenLoginUser;
 import com.yjtech.wisdom.tourism.project.dto.ProjectQuery;
 import com.yjtech.wisdom.tourism.project.dto.ProjectResourceQuery;
 import com.yjtech.wisdom.tourism.project.dto.ProjectUpdateStatusParam;
@@ -22,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,7 +50,9 @@ public class ProjectDeclareController {
     @Autowired
     private TbProjectResourceService projectResourceService;
     @Autowired
-    private TbProjectLabelRelationService tbProjectLabelRelationService;    
+    private TbProjectLabelRelationService tbProjectLabelRelationService;
+    @Autowired
+    private ScreenTokenService screenTokenService;
 
 
     /**
@@ -58,7 +65,11 @@ public class ProjectDeclareController {
      */
     @PostMapping("/queryForPage")
     public JsonResult<IPage<TbProjectInfoEntity>> queryForPage(@RequestBody ProjectQuery query) {
+        //获取当前企业用户信息
+        ScreenLoginUser screenLoginUser = screenTokenService.getLoginUser(ServletUtils.getRequest());
         LambdaQueryWrapper<TbProjectInfoEntity> queryWrapper = new LambdaQueryWrapper<>();
+        //默认查询当前企业用户所属的项目
+        queryWrapper.eq(TbProjectInfoEntity::getCompanyId, screenLoginUser.getId());
         queryWrapper.like(StringUtils.isNotBlank(query.getProjectName()), TbProjectInfoEntity::getProjectName, query.getProjectName());
         queryWrapper.in(CollectionUtils.isNotEmpty(query.getStatus()), TbProjectInfoEntity::getStatus, query.getStatus());
         queryWrapper.last(" order by ifnull(update_time,create_time) desc");
@@ -149,12 +160,10 @@ public class ProjectDeclareController {
      */
     @PostMapping("/create")
     public JsonResult create(@RequestBody @Valid TbProjectInfoEntity entity) {
-//        LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
         entity.setDeleted(Byte.valueOf("0"));
         entity.setStatus(Byte.valueOf("0"));
         validateProjectName(null, entity.getProjectName());
         entity.setId(IdWorker.getInstance().nextId());
-//        entity.setCreateUser(loginUser.getUser().getUserId());
         //构建项目-标签关联
         buildProjectLabelRelation(projectInfoService.save(entity), entity.getId(), entity.getPitchOnLabelIdList());
 
@@ -253,4 +262,17 @@ public class ProjectDeclareController {
             tbProjectLabelRelationService.build(projectId, labelIdList);
         }
     }
+
+    /**
+     * 校验用户
+     */
+    private void checkUser(){
+        //获取当前企业用户信息
+        ScreenLoginUser screenLoginUser = screenTokenService.getLoginUser(ServletUtils.getRequest());
+        Assert.isTrue(null != screenLoginUser
+                && AuditStatusConstants.SUCCESS.equals(screenLoginUser.getAuditStatus())
+                && CollectionUtils.isNotEmpty(screenLoginUser.getType())
+                && screenLoginUser.getType().contains(CompanyRoleEnum.COMPANY_ROLE_PROJECT.getType()), "操作失败：当前企业用户非项目方或未审核通过");
+    }
+
 }
