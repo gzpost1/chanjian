@@ -66,6 +66,7 @@
         tb_notice
         <where>
             deleted = 0
+            and status = 1
             and read_flag = 0
             <choose>
                 <when test="params != null and params.businessIdList != null and params.businessIdList.size > 0">
