@@ -8,9 +8,12 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yjtech.wisdom.tourism.common.bean.DemoExtraData;
 import com.yjtech.wisdom.tourism.common.bean.DemoExtraListener;
+import com.yjtech.wisdom.tourism.common.constant.Constants;
 import com.yjtech.wisdom.tourism.common.core.domain.IdParam;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.common.enums.ImportInfoTypeEnum;
+import com.yjtech.wisdom.tourism.common.enums.NoticeTemplateTypeEnum;
+import com.yjtech.wisdom.tourism.common.enums.NoticeTypeEnum;
 import com.yjtech.wisdom.tourism.common.exception.CustomException;
 import com.yjtech.wisdom.tourism.common.utils.ExcelFormReadUtil;
 import com.yjtech.wisdom.tourism.common.utils.IdWorker;
@@ -25,6 +28,9 @@ import com.yjtech.wisdom.tourism.project.entity.TbProjectResourceEntity;
 import com.yjtech.wisdom.tourism.project.service.TbProjectInfoService;
 import com.yjtech.wisdom.tourism.project.service.TbProjectLabelRelationService;
 import com.yjtech.wisdom.tourism.project.service.TbProjectResourceService;
+import com.yjtech.wisdom.tourism.resource.notice.service.NoticeService;
+import com.yjtech.wisdom.tourism.resource.notice.vo.NoticeCreateVO;
+import com.yjtech.wisdom.tourism.system.service.SysDictDataService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -53,6 +59,10 @@ public class ProjectController extends BusinessCommonController {
     private TbProjectLabelRelationService tbProjectLabelRelationService;    
 	@Autowired
     private TokenService tokenService;
+	@Autowired
+    private SysDictDataService sysDictDataService;
+	@Autowired
+    private NoticeService noticeService;
 
 
     /**
@@ -230,6 +240,13 @@ public class ProjectController extends BusinessCommonController {
         entity.setStatus(param.getStatus());
         entity.setUpdateTime(new Date());
         projectInfoService.updateById(entity);
+        //发送项目审核通知
+        try {
+            sendProjectAuditNotice(entity.getId(), entity.getProjectName(), entity.getStatus());
+        }catch (Exception e){
+            log.error("******************** 发送项目审核通知异常 ********************");
+            e.printStackTrace();
+        }
         return JsonResult.ok();
     }
 
@@ -311,4 +328,25 @@ public class ProjectController extends BusinessCommonController {
             tbProjectLabelRelationService.build(projectId, labelIdList);
         }
     }
+
+    /**
+     * 发送项目审核通知
+     *
+     * @param projectId
+     * @param projectName
+     * @param auditStatus
+     */
+    private void sendProjectAuditNotice(Long projectId, String projectName, Byte auditStatus){
+        //查询模板类型
+        Byte noticeTemplateType = NoticeTemplateTypeEnum.getNoticeTemplateTypeByAuditStatus(auditStatus);
+        if(null == noticeTemplateType){
+            return;
+        }
+        //查询 消息模板类型 信息
+        String noticeTemplate = sysDictDataService.selectDictLabel(Constants.DICT_TYPE_NOTICE_TEMPLATE, noticeTemplateType.toString());
+        //构建项目申报模板消息
+        noticeService.create(new NoticeCreateVO(String.format(noticeTemplate, projectName),
+                NoticeTypeEnum.NOTICE_TYPE_PROGRAM_DECLARE.getType(), null, projectId.toString()));
+    }
+
 }

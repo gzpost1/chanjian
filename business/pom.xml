@@ -24,6 +24,7 @@
         <module>business-bigscreen</module>
         <module>business-project</module>
         <module>business-chat</module>
+        <module>business-meeting</module>
     </modules>
 
     <dependencies>

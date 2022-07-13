@@ -47,4 +47,12 @@ public interface TbProjectInfoMapper extends BaseMapper<TbProjectInfoEntity> {
      * 大屏-数据统计-月度总投资额与引资金额需求趋势
      */
     List<ProjectAmountVo> queryProjectAmountTrend(@Param("beginTime") LocalDateTime beginTime, @Param("endTime") LocalDateTime endTime);
+
+    /**
+     * 根据企业id查询项目id列表
+     *
+     * @param companyId
+     * @return
+     */
+    List<Long> queryIdListByCompanyId(@Param("companyId") Long companyId);
 }

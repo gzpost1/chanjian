@@ -12,6 +12,7 @@ import com.yjtech.wisdom.tourism.common.bean.BaseValueVO;
 import com.yjtech.wisdom.tourism.common.core.domain.IdParam;
 import com.yjtech.wisdom.tourism.common.utils.StringUtils;
 import com.yjtech.wisdom.tourism.common.utils.bean.BeanMapper;
+import com.yjtech.wisdom.tourism.project.dto.ProjectNumQueryParam;
 import com.yjtech.wisdom.tourism.project.dto.ProjectOpenApiDTO;
 import com.yjtech.wisdom.tourism.project.dto.ProjectOpenApiQueryParam;
 import com.yjtech.wisdom.tourism.project.dto.ProjectQuery;
@@ -21,6 +22,7 @@ import com.yjtech.wisdom.tourism.project.entity.TbProjectResourceEntity;
 import com.yjtech.wisdom.tourism.project.mapper.ProjectOpenApiMapper;
 import com.yjtech.wisdom.tourism.project.mapper.TbProjectInfoMapper;
 import com.yjtech.wisdom.tourism.project.vo.ProjectAmountVo;
+import com.yjtech.wisdom.tourism.project.vo.ProjectNumVO;
 import org.apache.commons.collections.CollectionUtils;
 import org.omg.CORBA.Object;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,4 +83,39 @@ public class ProjectOpenApiService {
     public List<String> getLabelList() {
         return apiMapper.getLabelList();
     }
+
+    /**
+     * 根据开始时间和结束时间，查询总项目条数，总投资额
+     * @param param
+     * @return
+     */
+    public ProjectNumVO getAllProjectNum(ProjectNumQueryParam param) {
+        return apiMapper.getAllProjectNum(param.getStartTime(),param.getEndTime());
+    }
+
+    /**
+     * 根据开始时间和结束时间，查询总项目条数，总投资额（根据区县聚合）
+     * @param param
+     * @return
+     */
+    public List<ProjectNumVO> getProjectNumByAreaCode(ProjectNumQueryParam param) {
+        return apiMapper.getAllProjectNumByAreaCode(param.getStartTime(),param.getEndTime());
+    }
+    /**
+     * 根据开始时间和结束时间，查询总项目条数，总投资额（根据项目标签聚合）
+     * @param param
+     * @return
+     */
+    public List<ProjectNumVO> getProjectNumByLabel(ProjectNumQueryParam param) {
+        return apiMapper.getAllProjectNumByLabel(param.getStartTime(),param.getEndTime());
+    }
+    /**
+     * 根据开始时间和结束时间，查询总项目条数，总投资额（根据项目标签聚合）
+     * @param param
+     * @return
+     */
+    public List<ProjectNumVO> getProjectNumByMonth(ProjectNumQueryParam param) {
+        return apiMapper.getAllProjectNumByMonth(param.getStartTime(),param.getEndTime());
+    }
+
 }
