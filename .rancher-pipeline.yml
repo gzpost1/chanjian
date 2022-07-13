@@ -11,7 +11,7 @@ stages:
   - publishImageConfig:
       dockerfilePath: portal/admin-portal/Dockerfile
       buildContext: portal/admin-portal/
-      tag: test-guiyang-wenlvzhaoshang/test-admin-portal:${CICD_EXECUTION_SEQUENCE}
+      tag: yj-guiyang-wenlvzhaoshang/admin-portal:${CICD_EXECUTION_SEQUENCE}
       pushRemote: true
       registry: harbor.yunjingtech.cn:30002
     env:
@@ -21,21 +21,13 @@ stages:
   when:
     branch:
       include:
-      - test_wlcy_v1.0
-- name: Deploy-admin-portal
-  steps:
-  - applyYamlConfig:
-      path: portal/admin-portal/deployment.yaml
-  when:
-    branch:
-      include:
-      - test_wlcy_v1.0
+      - prod_wlcy
 - name: Publish-app-portal
   steps:
   - publishImageConfig:
       dockerfilePath: portal/app-portal/Dockerfile
       buildContext: portal/app-portal/
-      tag: test-guiyang-wenlvzhaoshang/test-app-portal:${CICD_EXECUTION_SEQUENCE}
+      tag: yj-guiyang-wenlvzhaoshang/app-portal:${CICD_EXECUTION_SEQUENCE}
       pushRemote: true
       registry: harbor.yunjingtech.cn:30002
     env:
@@ -45,13 +37,14 @@ stages:
   when:
     branch:
       include:
-      - test_wlcy_v1.0
-- name: Deploy-app-portal
+      - prod_wlcy
+- name: wechat-message-push
   steps:
-  - applyYamlConfig:
-      path: portal/app-portal/deployment.yaml
+  - runScriptConfig:
+      image: harbor.yunjingtech.cn:30002/yj-base/python:message-prod
+      shellScript: python3 /scripts/get_image_name_prod.py
   when:
     branch:
       include:
-      - test_wlcy_v1.0
+      - prod_wlcy
 timeout: 15
