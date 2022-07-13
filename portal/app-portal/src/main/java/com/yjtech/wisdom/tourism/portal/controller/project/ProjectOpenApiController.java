@@ -3,9 +3,11 @@ package com.yjtech.wisdom.tourism.portal.controller.project;
 import com.yjtech.wisdom.tourism.common.annotation.IgnoreAuth;
 import com.yjtech.wisdom.tourism.common.core.domain.IdParam;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
+import com.yjtech.wisdom.tourism.project.dto.ProjectNumQueryParam;
 import com.yjtech.wisdom.tourism.project.dto.ProjectOpenApiDTO;
 import com.yjtech.wisdom.tourism.project.dto.ProjectOpenApiQueryParam;
 import com.yjtech.wisdom.tourism.project.service.ProjectOpenApiService;
+import com.yjtech.wisdom.tourism.project.vo.ProjectNumVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -53,6 +55,48 @@ public class ProjectOpenApiController {
     @PostMapping("/getLabelList")
     public JsonResult<List<String>> getLabelList() {
         return JsonResult.success(apiService.getLabelList());
+    }
+
+
+
+    /**
+     * 获取所有项目数及投资总额
+     */
+    @IgnoreAuth
+    @PostMapping("/getAllProjectNum")
+    public JsonResult<ProjectNumVO>  getAllProjectNum(@RequestBody ProjectNumQueryParam param){
+        ProjectNumVO projectNumVO= apiService.getAllProjectNum(param);
+        return JsonResult.success(projectNumVO);
+    }
+
+    /**
+     * 获取所有项目数及投资总额（根据区县聚合）
+     */
+    @IgnoreAuth
+    @PostMapping("/getProjectNumByAreaCode")
+    public JsonResult<List<ProjectNumVO>>  getProjectNumByAreaCode(@RequestBody ProjectNumQueryParam param){
+        List<ProjectNumVO> projectNumVOs= apiService.getProjectNumByAreaCode(param);
+        return JsonResult.success(projectNumVOs);
+    }
+
+    /**
+     * 获取所有项目数及投资总额（根据标签聚合）
+     */
+    @IgnoreAuth
+    @PostMapping("/getProjectNumByLabel")
+    public JsonResult<List<ProjectNumVO>>  getProjectNumByLabel(@RequestBody ProjectNumQueryParam param){
+        List<ProjectNumVO> projectNumVOs= apiService.getProjectNumByLabel(param);
+        return JsonResult.success(projectNumVOs);
+    }
+
+    /**
+     * 获取所有项目数及投资总额（根据月份聚合）
+     */
+    @IgnoreAuth
+    @PostMapping("/getProjectNumByMonth")
+    public JsonResult<List<ProjectNumVO>>  getProjectNumByMonth(@RequestBody ProjectNumQueryParam param){
+        List<ProjectNumVO> projectNumVOs= apiService.getProjectNumByMonth(param);
+        return JsonResult.success(projectNumVOs);
     }
 
     /**

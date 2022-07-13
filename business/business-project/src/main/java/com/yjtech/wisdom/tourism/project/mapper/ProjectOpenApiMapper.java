@@ -2,8 +2,10 @@ package com.yjtech.wisdom.tourism.project.mapper;
 
 import com.yjtech.wisdom.tourism.project.dto.ProjectOpenApiDTO;
 import com.yjtech.wisdom.tourism.project.dto.ProjectOpenApiQueryParam;
+import com.yjtech.wisdom.tourism.project.vo.ProjectNumVO;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 public interface ProjectOpenApiMapper {
@@ -20,4 +22,13 @@ public interface ProjectOpenApiMapper {
      * @return
      */
     List<String> getLabelList();
+
+
+    ProjectNumVO getAllProjectNum(@Param("startTime") Date startTime,@Param("endTime") Date endTime);
+
+     List<ProjectNumVO> getAllProjectNumByAreaCode(@Param("startTime") Date startTime,@Param("endTime") Date endTime);
+
+    List<ProjectNumVO> getAllProjectNumByLabel(@Param("startTime") Date startTime,@Param("endTime") Date endTime);
+    List<ProjectNumVO> getAllProjectNumByMonth(@Param("startTime") Date startTime,@Param("endTime") Date endTime);
+
 }

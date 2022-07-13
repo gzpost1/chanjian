@@ -3,34 +3,39 @@
 <mapper namespace="com.yjtech.wisdom.tourism.project.mapper.ProjectOpenApiMapper">
     <select id="getList" resultMap="getListMap">
         SELECT
-            t.id
-            ,t.project_name AS `name`
-            ,t.create_time AS publishTime
-            ,t.construction_requirement AS requirement
-            ,t.cooperation_method as method
-            ,t.company_name as company
-            ,t.project_investment_content as investmentContent
-            ,t.area_name as area
-            ,t.project_phone as phone
-            ,t.construction_condition
-            ,t.industrial_condition
-            ,t.market_outlook_forecast
-            ,JSON_OBJECT("investmentTotal",t.investment_total,"fundingAmount",t.funding_amount, "privateCapital",t.private_capital, "paybackPeriod",t.payback_period) as target
-            ,(SELECT JSON_ARRAYAGG( lb.`name`) FROM tb_project_label lb WHERE lb.id IN (SELECT rel.label_id FROM tb_project_label_relation rel WHERE rel.project_id = t.id)) as labels
-            ,res.resource_url as video
-            ,res.index_url as picture
+        t.id
+        ,t.project_name AS `name`
+        ,t.create_time AS publishTime
+        ,t.construction_requirement AS requirement
+        ,t.cooperation_method as method
+        ,t.company_name as company
+        ,t.project_investment_content as investmentContent
+        ,t.area_name as area
+        ,t.project_phone as phone
+        ,t.construction_condition
+        ,t.industrial_condition
+        ,t.market_outlook_forecast
+        ,JSON_OBJECT("investmentTotal",t.investment_total,"fundingAmount",t.funding_amount,
+        "privateCapital",t.private_capital, "paybackPeriod",t.payback_period) as target
+        ,(SELECT JSON_ARRAYAGG( lb.`name`) FROM tb_project_label lb WHERE lb.id IN (SELECT rel.label_id FROM
+        tb_project_label_relation rel WHERE rel.project_id = t.id)) as labels
+        ,res.resource_url as video
+        ,res.index_url as picture
         FROM tb_project_info t
-        LEFT JOIN tb_project_resource res ON res.id = (SELECT t1.id FROM tb_project_resource t1 WHERE t1.project_id = t.id AND t1.resource_type = 1 AND t1.deleted = 0 LIMIT 0,1)
+        LEFT JOIN tb_project_resource res ON res.id = (SELECT t1.id FROM tb_project_resource t1 WHERE t1.project_id =
+        t.id AND t1.resource_type = 1 AND t1.deleted = 0 LIMIT 0,1)
         <where>
             t.deleted = 0
             <if test="param.id != null and param.id != ''">
                 and t.id = #{param.id}
             </if>
             <if test="param.label != null and param.label != ''">
-                and t.id in (SELECT rel.project_id from tb_project_label_relation rel WHERE rel.label_id in (SELECT lb.id from tb_project_label lb WHERE lb.`name` = #{param.label}))
+                and t.id in (SELECT rel.project_id from tb_project_label_relation rel WHERE rel.label_id in (SELECT
+                lb.id from tb_project_label lb WHERE lb.`name` = #{param.label}))
             </if>
             <if test="param.keyword != null and param.keyword != ''">
-                and (t.project_name Like CONCAT('%',#{param.keyword},'%') Or t.company_name Like CONCAT('%',#{param.keyword},'%'))
+                and (t.project_name Like CONCAT('%',#{param.keyword},'%') Or t.company_name Like
+                CONCAT('%',#{param.keyword},'%'))
             </if>
             <if test="param.area != null and param.area != ''">
                 and t.area_name = #{param.area}
@@ -55,8 +60,10 @@
         <result property="investmentContent" column="investmentContent" jdbcType="VARCHAR"/>
         <result property="area" column="area" jdbcType="VARCHAR"/>
         <result property="phone" column="phone" jdbcType="VARCHAR"/>
-        <result property="target" column="target" typeHandler="com.yjtech.wisdom.tourism.mybatis.typehandler.JsonTypeHandler"/>
-        <result property="labels" column="labels" typeHandler="com.yjtech.wisdom.tourism.mybatis.typehandler.JsonTypeHandler"/>
+        <result property="target" column="target"
+                typeHandler="com.yjtech.wisdom.tourism.mybatis.typehandler.JsonTypeHandler"/>
+        <result property="labels" column="labels"
+                typeHandler="com.yjtech.wisdom.tourism.mybatis.typehandler.JsonTypeHandler"/>
         <result property="video" column="video" jdbcType="VARCHAR"/>
         <result property="constructionCondition" column="construction_condition" jdbcType="VARCHAR"/>
         <result property="industrialCondition" column="industrial_condition" jdbcType="VARCHAR"/>
@@ -74,8 +81,59 @@
     <select id="getLabelList" resultType="java.lang.String">
         SELECT DISTINCT t.`name`
         FROM tb_project_label t
-        WHERE t.deleted = 0 AND t.`status` = 1
+        WHERE t.deleted = 0
+          AND t.`status` = 1
         ORDER BY t.`name` ASC
+    </select>
+
+
+    <select id="getAllProjectNum" resultType="com.yjtech.wisdom.tourism.project.vo.ProjectNumVO">
+        SELECT count(*) as projectNum , sum(investment_total) as investmentTotal
+        FROM tb_project_info
+        WHERE deleted = 0 AND status = 2
+        <if test="startTime != null and endTime != null ">
+            and update_time >= #{startTime}
+            and update_time &lt;= #{endTime}
+        </if>
+    </select>
+
+    <select id="getAllProjectNumByAreaCode" resultType="com.yjtech.wisdom.tourism.project.vo.ProjectNumVO">
+        SELECT area_code, area_name as type, count(*) as projectNum , sum(investment_total) as investmentTotal
+        FROM tb_project_info
+        WHERE deleted = 0 AND status = 2
+        <if test="startTime != null and endTime != null ">
+            and update_time >= #{startTime}
+            and update_time &lt;= #{endTime}
+        </if>
+        group by area_code
+    </select>
+
+    <select id="getAllProjectNumByMonth" resultType="com.yjtech.wisdom.tourism.project.vo.ProjectNumVO">
+        SELECT   DATE_FORMAT(update_time,'%Y%m') type, count(*) as projectNum , sum(investment_total) as investmentTotal
+        FROM tb_project_info
+        WHERE deleted = 0 AND status = 2
+        <if test="startTime != null and endTime != null ">
+            and update_time >= #{startTime}
+            and update_time &lt;= #{endTime}
+        </if>
+        group by type
+        order by type
+    </select>
+
+    <select id="getAllProjectNumByLabel" resultType="com.yjtech.wisdom.tourism.project.vo.ProjectNumVO">
+        select a.label_id,c.`name` as type , COUNT(b.id) as projectNum , SUM(b.investment_total)as investmentTotal
+        from tb_project_label_relation a
+             ,tb_project_info b
+             , tb_project_label c
+        where a.label_id =c.id
+          and a.project_id =b.id
+          and b.`status` = 2
+          and b.deleted = 0
+        <if test="startTime != null and endTime != null ">
+            and b.update_time >= #{startTime}
+            and b.update_time &lt;= #{endTime}
+         </if>
+          GROUP BY a.label_id
     </select>
 
 </mapper>
