@@ -15,11 +15,10 @@ import com.yjtech.wisdom.tourism.project.service.TbProjectResourceService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
@@ -142,5 +141,20 @@ public class ProjectController {
 
         return queryWrapper;
     }
+
+
+    /**
+     * 下载zip压缩包（项目信息，PPT，mp4）
+     *
+     * @param request
+     * @param response
+     */
+    @GetMapping("/download")
+    public void download(@RequestBody @Valid IdParam idParam,
+                         HttpServletRequest request,
+                         HttpServletResponse response) {
+        projectInfoService.download(idParam.getId(),request,response);
+    }
+
 
 }

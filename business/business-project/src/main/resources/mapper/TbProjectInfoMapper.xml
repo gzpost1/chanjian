@@ -133,21 +133,22 @@
     <select id="queryProjectPlanFootprintPie" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO">
         SELECT a.name,IFNULL(b.value ,0) value
         FROM
-            ( SELECT '0-5亩' AS `name` UNION SELECT '5-10亩' AS `name` UNION SELECT '10-15亩' AS `name` UNION SELECT '15-20亩' AS `name` UNION SELECT '20亩以上' AS `name` ) a
+            ( SELECT '0-50亩' AS `name` UNION SELECT '50-100亩' AS `name` UNION SELECT '100-300亩' AS `name` UNION SELECT '300-500亩' AS `name` UNION SELECT '500亩以上' AS `name` ) a
             LEFT JOIN
             (SELECT name,COUNT(1) `value` FROM
             (
             SELECT
             CASE
-            WHEN project_plan_footprint <![CDATA[>]]> 0 and project_plan_footprint <![CDATA[<]]> 5 THEN '0-5亩'
-            WHEN project_plan_footprint <![CDATA[>=]]> 5 and project_plan_footprint <![CDATA[<]]> 10  THEN '5-10亩'
-            WHEN project_plan_footprint <![CDATA[>=]]> 10 and project_plan_footprint <![CDATA[<]]> 15  THEN '10-15亩'
-            WHEN project_plan_footprint <![CDATA[>=]]> 15 and project_plan_footprint <![CDATA[<]]> 20  THEN '15-20亩'
-            WHEN project_plan_footprint <![CDATA[>=]]> 20 THEN '20亩以上' END `name`
+            WHEN project_plan_footprint <![CDATA[>]]> 0 and project_plan_footprint <![CDATA[<=]]> 50 THEN '0-50亩'
+            WHEN project_plan_footprint <![CDATA[>]]> 50 and project_plan_footprint <![CDATA[<=]]> 100  THEN '50-100亩'
+            WHEN project_plan_footprint <![CDATA[>]]> 100 and project_plan_footprint <![CDATA[<=]]> 300  THEN '100-300亩'
+            WHEN project_plan_footprint <![CDATA[>]]> 300 and project_plan_footprint <![CDATA[<=]]> 500  THEN '300-500亩'
+            WHEN project_plan_footprint <![CDATA[>]]> 500 THEN '500亩以上' END `name`
             FROM
             tb_project_info
             WHERE
             project_plan_footprint IS NOT NULL
+            and  status in (0,1,2)
             )t
             GROUP BY name) b
         ON a.name = b.name

@@ -90,9 +90,6 @@
                      left join tb_dict_area a on ri.area_code = left(a.code, 6)
         <where>
             1 = 1
-            <if test="params.areaCode != null">
-                and ri.area_code LIKE CONCAT(#{params.areaCode},'%')
-            </if>
             <!-- 投资方 -->
             <if test="params.type != null and params.type == 1">
                 and ri.investment_label is not null
@@ -143,9 +140,6 @@
                      left join tb_dict_area a on ri.area_code = left(a.code, 6)
         <where>
             1 = 1
-            <if test="params.areaCode != null">
-                and ri.area_code LIKE CONCAT(#{params.areaCode},'%')
-            </if>
             <!-- 投资方 -->
             <if test="params.type != null and params.type == 1">
                 and ri.investment_label is not null

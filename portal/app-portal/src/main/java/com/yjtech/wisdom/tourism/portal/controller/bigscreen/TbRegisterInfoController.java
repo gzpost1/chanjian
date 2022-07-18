@@ -171,9 +171,7 @@ public class TbRegisterInfoController extends BaseCurdController<TbRegisterInfoS
      */
     @PostMapping("recommendCompany")
     public List<TbRegisterInfoEntity> recommendCompany(@RequestBody @Validated RecommendParam param) {
-        ScreenLoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
-        String areaCode = loginUser.getAreaCode();
-        param.setAreaCode(areaCode);
+//        ScreenLoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
         return tbRegisterInfoService.recommendCompany(param);
     }
 

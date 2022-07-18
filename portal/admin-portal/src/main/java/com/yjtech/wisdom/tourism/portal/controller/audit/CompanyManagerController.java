@@ -170,5 +170,14 @@ public class CompanyManagerController {
         return JsonResult.success(registerInfoService.queryProjectCompany());
     }
 
+    /**
+     * 查询项目方的所有企业
+     *
+     * @return
+     */
+    @PostMapping("/queryProjectCompanyById")
+    public JsonResult<TbRegisterInfoEntity> queryProjectCompanyById(@RequestBody @Valid IdParam idParam) {
+        return JsonResult.success(registerInfoService.getById(idParam.getId()));
+    }
 
 }

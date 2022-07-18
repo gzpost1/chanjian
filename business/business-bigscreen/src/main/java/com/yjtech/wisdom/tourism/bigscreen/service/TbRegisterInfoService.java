@@ -13,7 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 注册信息 服务实现类
@@ -99,7 +100,53 @@ public class TbRegisterInfoService extends BaseMybatisServiceImpl<TbRegisterInfo
      * @return
      */
     public List<TbRegisterInfoEntity> recommendCompany(RecommendParam param) {
-        return tbRegisterInfoMapper.recommendCompany(param);
+        List<TbRegisterInfoEntity> tbRegisterInfoEntities = tbRegisterInfoMapper.recommendCompany(param);
+        //统计相似度排序map
+        Map<Long, Integer> map = new HashMap<>();
+
+        for (String label:param.getLabels()){
+            List<TbRegisterInfoEntity> collect = new ArrayList<>();
+            if (param.getType() != null && "1".equals(param.getType())){
+                 collect = tbRegisterInfoEntities.stream().filter(a -> a.getInvestmentLabel().contains(label)).collect(Collectors.toList());
+            } else  if (param.getType() != null && "2".equals(param.getType())){
+                collect = tbRegisterInfoEntities.stream().filter(a -> a.getCommercialLabel().contains(label)).collect(Collectors.toList());
+            }else  if (param.getType() != null && "3".equals(param.getType())){
+                collect = tbRegisterInfoEntities.stream().filter(a -> a.getOperationLabel().contains(label)).collect(Collectors.toList());
+            }
+            for (TbRegisterInfoEntity tbRegisterInfoEntity:collect){
+                if (map.containsKey(tbRegisterInfoEntity.getId())){
+                    map.put(tbRegisterInfoEntity.getId(),map.get(tbRegisterInfoEntity.getId())+1);
+                }else {
+                    map.put(tbRegisterInfoEntity.getId(),1);
+                }
+            }
+        }
+        List<TbRegisterInfoEntity> list = new ArrayList<>();
+        List<Map.Entry<Long, Integer>> entries = sortHashMap(map);
+        for (Map.Entry<Long, Integer> maps:entries){
+            if (list.size() >= 10){break;}
+            List<TbRegisterInfoEntity> collect = tbRegisterInfoEntities.stream().filter(a -> a.getId().longValue() == maps.getKey().longValue()).collect(Collectors.toList());
+            list.addAll(collect);
+        }
+        return list;
+    }
+
+
+
+    /**
+     * 对hashMap的value排序-倒序
+     * @param map
+     * @return
+     */
+    private List<Map.Entry<Long, Integer>> sortHashMap(Map<Long, Integer> map){
+        List<Map.Entry<Long, Integer>> list = new ArrayList<>(map.entrySet());
+        Collections.sort(list, new Comparator<Map.Entry<Long, Integer>>() {
+            @Override
+            public int compare(Map.Entry<Long, Integer> o1, Map.Entry<Long, Integer> o2) {
+                return  o2.getValue() - o1.getValue();
+            }
+        });
+        return list;
     }
 
 }
