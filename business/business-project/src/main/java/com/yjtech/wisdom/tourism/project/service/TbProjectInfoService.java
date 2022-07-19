@@ -240,6 +240,7 @@ public class TbProjectInfoService extends ServiceImpl<TbProjectInfoMapper, TbPro
             }
             response.setCharacterEncoding(CharEncoding.UTF_8);
             response.setContentType("application/force-download");
+            response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
             response.setHeader(
                     "Content-Disposition",
                     "attachment;fileName=" + FileUtils.setFileDownloadHeader(request, entity.getProjectName()+".zip"));

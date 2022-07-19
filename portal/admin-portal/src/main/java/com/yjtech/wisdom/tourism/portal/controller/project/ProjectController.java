@@ -357,11 +357,12 @@ public class ProjectController extends BusinessCommonController {
      * @param response
      */
     @GetMapping("/download")
-    public void download(@RequestBody @Valid IdParam idParam,
+    public void download(@RequestParam(value = "id")  Long id,
                          HttpServletRequest request,
                          HttpServletResponse response) {
-        projectInfoService.download(idParam.getId(),request,response);
+        projectInfoService.download(id,request,response);
     }
+
 
 
 }

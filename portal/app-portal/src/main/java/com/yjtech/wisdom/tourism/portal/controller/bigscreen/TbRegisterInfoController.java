@@ -165,7 +165,7 @@ public class TbRegisterInfoController extends BaseCurdController<TbRegisterInfoS
     }
 
     /**
-     * 根据登陆企业所在地推荐企业
+     * 根据登陆企业标签推荐企业
      *
      * @return
      */

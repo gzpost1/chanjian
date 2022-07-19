@@ -41,7 +41,7 @@ public class CompanyManagerController {
 
 
     /**
-     * 查询项目方的所有企业
+     * 查询项目方id的所有该企业
      *
      * @return
      */

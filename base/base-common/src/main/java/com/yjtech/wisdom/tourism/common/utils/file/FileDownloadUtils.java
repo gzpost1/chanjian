@@ -22,7 +22,7 @@ public class FileDownloadUtils {
      * 资源地址
      */
 //    public static final String RESOURCE_LOCATION = "/Users/chenzhongge/Downloads/zip/";
-    public static final String RESOURCE_LOCATION = "/home/temp/";
+    public static final String RESOURCE_LOCATION = "/tmp/";
 
 
 
