@@ -349,4 +349,20 @@ public class ProjectController extends BusinessCommonController {
                 NoticeTypeEnum.NOTICE_TYPE_PROGRAM_DECLARE.getType(), null, projectId.toString()));
     }
 
+
+    /**
+     * 下载zip压缩包（项目信息，PPT，mp4）
+     *
+     * @param request
+     * @param response
+     */
+    @GetMapping("/download")
+    public void download(@RequestParam(value = "id")  Long id,
+                         HttpServletRequest request,
+                         HttpServletResponse response) {
+        projectInfoService.download(id,request,response);
+    }
+
+
+
 }

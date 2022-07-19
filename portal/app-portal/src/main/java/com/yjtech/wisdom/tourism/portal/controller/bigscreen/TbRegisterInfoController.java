@@ -165,15 +165,13 @@ public class TbRegisterInfoController extends BaseCurdController<TbRegisterInfoS
     }
 
     /**
-     * 根据登陆企业所在地推荐企业
+     * 根据登陆企业标签推荐企业
      *
      * @return
      */
     @PostMapping("recommendCompany")
     public List<TbRegisterInfoEntity> recommendCompany(@RequestBody @Validated RecommendParam param) {
-        ScreenLoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
-        String areaCode = loginUser.getAreaCode();
-        param.setAreaCode(areaCode);
+//        ScreenLoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
         return tbRegisterInfoService.recommendCompany(param);
     }
 
