@@ -2,6 +2,8 @@ package com.yjtech.wisdom.tourism.project.vo;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 /**
  * description: ProjectNumVO
  * date: 2022/7/11 15:07
@@ -14,5 +16,5 @@ public class ProjectNumVO {
 
     private Integer projectNum;
 
-    private Integer investmentTotal;
+    private BigDecimal investmentTotal;
 }
