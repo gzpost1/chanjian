@@ -22,7 +22,7 @@ public class PlatformIntroductionCreateVO implements Serializable {
      */
     @NotBlank(message = "名称不能为空")
     @Size(min = 1, max = 30, message = "名称长度不合法")
-    @Pattern(regexp = "^[\\u4e00-\\u9fa5]*$", message = "名称非法，仅支持中文")
+//    @Pattern(regexp = "^[\\u4e00-\\u9fa5]*$", message = "名称非法，仅支持中文")
     private String name;
 
     /**
