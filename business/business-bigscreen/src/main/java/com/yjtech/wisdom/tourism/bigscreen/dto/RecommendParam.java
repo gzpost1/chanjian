@@ -1,7 +1,11 @@
 package com.yjtech.wisdom.tourism.bigscreen.dto;
 
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.yjtech.wisdom.tourism.mybatis.entity.PageQuery;
+import com.yjtech.wisdom.tourism.mybatis.typehandler.JsonTypeHandler;
+import com.yjtech.wisdom.tourism.mybatis.typehandler.ListJsonTypeHandler;
 import lombok.*;
 import lombok.experimental.Accessors;
 
@@ -34,9 +38,14 @@ public class RecommendParam  implements Serializable {
     private String type;
 
     /**
-     * 区域编码
+     * 区域编码(废除)
      */
     private String areaCode;
 
+    /**
+     * 标签列表
+     */
+    @TableField(typeHandler = ListJsonTypeHandler.class,updateStrategy = FieldStrategy.IGNORED)
+    private List<String> labels;
 
 }
