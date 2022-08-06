@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjtech.wisdom.tourism.resource.industry.mapper.IndustryFundsMapper">
+
+    <resultMap id="BaseResultMap" type="com.yjtech.wisdom.tourism.resource.industry.entity.IndustryFundsEntity">
+        <!--@Table tb_industry_funds-->
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="create_user" jdbcType="BIGINT" property="createUser"/>
+        <result column="update_user" jdbcType="BIGINT" property="updateUser"/>
+        <result column="deleted" jdbcType="TINYINT" property="deleted"/>
+        <result column="status" jdbcType="TINYINT" property="status"/>
+        <result column="company_name" jdbcType="VARCHAR" property="companyName"/>
+        <result column="main_industry" jdbcType="VARCHAR" property="mainIndustry"/>
+        <result column="total_investment_sum" jdbcType="DECIMAL" property="totalInvestmentSum"/>
+        <result column="project_info" jdbcType="VARCHAR" property="projectInfo"
+                javaType="com.yjtech.wisdom.tourism.resource.industry.entity.ProjectInfo"
+                typeHandler="com.yjtech.wisdom.tourism.mybatis.typehandler.ListObjectJsonTypeHandler"/>
+    </resultMap>
+
+    <sql id="BaseColumn">
+        id,create_time,update_time,create_user,update_user,deleted,status,company_name,main_industry,total_investment_sum,project_info
+    </sql>
+
+    <!-- 查询列表 -->
+    <select id="queryForList" resultMap="BaseResultMap"
+            parameterType="com.yjtech.wisdom.tourism.resource.industry.vo.IndustryFundsQueryVO">
+        SELECT
+        <include refid="BaseColumn"/>
+        FROM
+        tb_industry_funds
+        <where>
+            deleted = 0
+            <if test="params != null">
+                <if test="params.status != null">
+                    and status = #{params.status}
+                </if>
+                <if test="params.companyName != null and params.companyName != ''">
+                    and company_name LIKE CONCAT('%', #{params.companyName}, '%')
+                </if>
+            </if>
+        </where>
+        ORDER BY update_time DESC
+    </select>
+
+</mapper>

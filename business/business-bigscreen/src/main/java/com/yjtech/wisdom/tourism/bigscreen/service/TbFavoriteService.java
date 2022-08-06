@@ -6,10 +6,15 @@ import com.yjtech.wisdom.tourism.bigscreen.dto.FavoriteIsCheckParam;
 import com.yjtech.wisdom.tourism.bigscreen.dto.MyFavoritesVo;
 import com.yjtech.wisdom.tourism.bigscreen.entity.TbFavoriteEntity;
 import com.yjtech.wisdom.tourism.bigscreen.mapper.TbFavoriteMapper;
+import com.yjtech.wisdom.tourism.common.bean.BaseVO;
+import com.yjtech.wisdom.tourism.common.bean.project.ProjectDataStatisticsDTO;
+import com.yjtech.wisdom.tourism.common.bean.project.ProjectDataStatisticsQueryVO;
+import com.yjtech.wisdom.tourism.common.enums.FavouriteSourceEnum;
 import com.yjtech.wisdom.tourism.mybatis.base.BaseMybatisServiceImpl;
 import com.yjtech.wisdom.tourism.mybatis.entity.PageQuery;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -52,5 +57,29 @@ public class TbFavoriteService extends BaseMybatisServiceImpl<TbFavoriteMapper, 
         queryWrapper.eq(TbFavoriteEntity.TYPE,param.getType());
         queryWrapper.eq(TbFavoriteEntity.FAVORITE_TYPE,param.getFavoriteType());
         return Optional.ofNullable(this.baseMapper.selectCount(queryWrapper)).orElse(0);
+    }
+
+    /**
+     * 查询数据统计
+     *
+     * @param vo
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public ProjectDataStatisticsDTO queryDataStatistics(ProjectDataStatisticsQueryVO vo){
+        //当前数据来源默认为项目
+        vo.setFavouriteSource(FavouriteSourceEnum.FAVOURITE_SOURCE_PROJECT.getType());
+        return baseMapper.queryDataStatistics(vo);
+    }
+
+    /**
+     * 查询趋势
+     *
+     * @param vo
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public List<BaseVO> queryAnalysis(ProjectDataStatisticsQueryVO vo){
+        return baseMapper.queryAnalysis(vo);
     }
 }

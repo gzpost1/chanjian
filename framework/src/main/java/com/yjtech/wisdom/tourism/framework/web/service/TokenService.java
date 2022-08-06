@@ -176,6 +176,16 @@ public class TokenService {
     }
 
     /**
+     * 从令牌中获取数据声明
+     *
+     * @param token 令牌
+     * @return 数据声明
+     */
+    private Claims parseToken(String token) {
+        return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+    }
+
+    /**
      * 从数据声明生成令牌
      *
      * @param claims 数据声明
@@ -185,16 +195,6 @@ public class TokenService {
         String token =
                 Jwts.builder().setClaims(claims).signWith(SignatureAlgorithm.HS512, secret).compact();
         return token;
-    }
-
-    /**
-     * 从令牌中获取数据声明
-     *
-     * @param token 令牌
-     * @return 数据声明
-     */
-    private Claims parseToken(String token) {
-        return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
     }
 
     /**

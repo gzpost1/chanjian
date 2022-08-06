@@ -23,6 +23,15 @@ public class SecurityUtils {
     }
   }
 
+  /** 获取用户角色 */
+  public static Long getRoleId() {
+    try {
+      return getLoginUser().getUser().getRoles().get(0).getRoleId();
+    } catch (Exception e) {
+      throw new CustomException(HttpStatus.UNAUTHORIZED, "获取用户账户异常");
+    }
+  }
+
   /** 获取用户账户 */
   public static String getUsername() {
     try {

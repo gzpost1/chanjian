@@ -23,5 +23,36 @@
         limit #{dataLimit.limit} offset #{dataLimit.offset}
     </select>
 
+    <!-- 查询留言数统计 -->
+    <select id="queryMessageStatistics" resultType="int">
+        SELECT
+        COUNT(id)
+        FROM
+        chat_message
+        <where>
+            log_del = 'N'
+            <if test="companyId != null">
+                and to_user_id = #{companyId}
+            </if>
+        </where>
+    </select>
+
+    <!-- 查询趋势 -->
+    <select id="queryAnalysis" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO"
+            parameterType="com.yjtech.wisdom.tourism.common.bean.project.ProjectDataStatisticsQueryVO">
+        SELECT DATE_FORMAT(dateInfo.mark,'%m/%d') AS name, COALESCE (dataInfo.num,0) AS value
+        FROM
+        (SELECT date_add(date_sub(#{params.beginDate}, INTERVAL 1 DAY), INTERVAL (CAST(help_topic_id AS signed) + 1) DAY) AS mark
+        FROM mysql.help_topic
+        WHERE help_topic_id &lt; DATEDIFF(#{params.endDate}, DATE_SUB(#{params.beginDate}, INTERVAL 1 DAY))) AS dateInfo
+        LEFT JOIN
+        (SELECT LEFT(send_time,10) as mark, COUNT(id) AS num
+        FROM chat_message
+        WHERE log_del = 'N' and to_user_id = #{params.companyId}
+        GROUP BY LEFT(send_time,10)) as dataInfo
+        ON dateInfo.mark = dataInfo.mark
+        ORDER BY dateInfo.mark
+    </select>
+
 
 </mapper>
