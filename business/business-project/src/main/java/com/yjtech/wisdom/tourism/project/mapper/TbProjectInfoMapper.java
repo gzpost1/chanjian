@@ -3,8 +3,10 @@ package com.yjtech.wisdom.tourism.project.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
+import com.yjtech.wisdom.tourism.project.dto.ProjectInvestmentDto;
 import com.yjtech.wisdom.tourism.project.dto.ProjectQuery;
 import com.yjtech.wisdom.tourism.project.entity.TbProjectInfoEntity;
+import com.yjtech.wisdom.tourism.project.vo.InvestmentTotalVo;
 import com.yjtech.wisdom.tourism.project.vo.ProjectAmountVo;
 import org.apache.ibatis.annotations.Param;
 
@@ -41,7 +43,7 @@ public interface TbProjectInfoMapper extends BaseMapper<TbProjectInfoEntity> {
     /**
      * 大屏-数据统计-总投资额量级项目分布
      */
-    List<BaseVO> queryInvestmentTotalTrend();
+    List<ProjectInvestmentDto> queryInvestmentTotalTrend();
 
     /**
      * 大屏-数据统计-月度总投资额与引资金额需求趋势
@@ -55,4 +57,18 @@ public interface TbProjectInfoMapper extends BaseMapper<TbProjectInfoEntity> {
      * @return
      */
     List<Long> queryIdListByCompanyId(@Param("companyId") Long companyId);
+
+    /**
+     * 获取投资总额
+     *
+     * @return
+     */
+    Long getInvestmentTotal(@Param("params")InvestmentTotalVo vo);
+
+    /**
+     * 大屏-底部-注册公司、投资项目、规划项目占地统计
+     *
+     * @return
+     */
+    List<BaseVO> queryDataStatic();
 }

@@ -4,6 +4,7 @@ import com.yjtech.wisdom.tourism.common.annotation.IgnoreAuth;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
 import com.yjtech.wisdom.tourism.common.bean.BaseValueVO;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
+import com.yjtech.wisdom.tourism.project.dto.ProjectInvestmentStaticDto;
 import com.yjtech.wisdom.tourism.project.service.TbProjectInfoService;
 import com.yjtech.wisdom.tourism.project.service.TbProjectLabelService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,8 +67,12 @@ public class DataStatisticsController {
      */
     @GetMapping("/queryInvestmentTotalTrend")
     @IgnoreAuth
-    public JsonResult<List<BaseVO>> queryInvestmentTotalTrend() {
-        return JsonResult.success(projectInfoService.getBaseMapper().queryInvestmentTotalTrend());
+    public JsonResult<ProjectInvestmentStaticDto> queryInvestmentTotalTrend() {
+        ProjectInvestmentStaticDto dto = new ProjectInvestmentStaticDto();
+        dto.setList(projectInfoService.getBaseMapper().queryInvestmentTotalTrend());
+        dto.setTotalMoney(projectInfoService.getBaseMapper().getInvestmentTotal(null));
+        dto.setCompareMoney(projectInfoService.getCompareMoney());
+        return JsonResult.success(dto);
     }
 
     /**
@@ -77,5 +82,14 @@ public class DataStatisticsController {
     @IgnoreAuth
     public JsonResult<List<BaseValueVO>> queryProjectAmountTrend() {
         return JsonResult.success(projectInfoService.queryProjectAmountTrend());
+    }
+
+    /**
+     * 大屏-底部-注册公司、投资项目、规划项目占地统计
+     */
+    @GetMapping("/queryDataStatic")
+    @IgnoreAuth
+    public JsonResult<List<BaseVO>> queryDataStatic() {
+        return JsonResult.success(projectInfoService.queryDataStatic());
     }
 }

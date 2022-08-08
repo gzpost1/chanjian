@@ -8,10 +8,10 @@ import com.yjtech.wisdom.tourism.bigscreen.dto.RecommendParam;
 import com.yjtech.wisdom.tourism.bigscreen.dto.TbRegisterInfoParam;
 import com.yjtech.wisdom.tourism.bigscreen.entity.TbRegisterInfoEntity;
 import com.yjtech.wisdom.tourism.bigscreen.mapper.TbRegisterInfoMapper;
+import com.yjtech.wisdom.tourism.common.bean.BaseVO;
 import com.yjtech.wisdom.tourism.mybatis.base.BaseMybatisServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -149,4 +149,12 @@ public class TbRegisterInfoService extends BaseMybatisServiceImpl<TbRegisterInfo
         return list;
     }
 
+    /**
+     * 企业角色数目分布
+     *
+     * @return
+     */
+    public List<BaseVO> queryCorpTypeDistributed() {
+        return tbRegisterInfoMapper.queryCorpTypeDistributed();
+    }
 }

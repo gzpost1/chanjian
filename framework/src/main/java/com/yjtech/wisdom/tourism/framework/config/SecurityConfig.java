@@ -125,6 +125,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 //大屏-标签信息相关，不参与鉴权
                 .antMatchers("/tag/queryByRole", "/tag/queryForList")
                 .anonymous()
+                //大屏-天气相关，不参与鉴权
+                .antMatchers("/weather/**")
+                .anonymous()
                 // 除上面外的所有请求全部需要鉴权认证
                 .anyRequest()
                 .authenticated()

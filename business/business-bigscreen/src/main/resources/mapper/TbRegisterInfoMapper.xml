@@ -167,6 +167,14 @@
         select id,company_name as companyName from tb_register_info
     </select>
 
+    <select id="queryCorpTypeDistributed" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO">
+        select '企业总数' as name, count(id) as value from tb_register_info where blacklist = false and audit_status = 1 and company_info_finish_sign = 1
+        union all select '投资方' as name, count(id) as value from tb_register_info where investment_label is not null and blacklist = false and audit_status = 1 and company_info_finish_sign = 1
+        union all select '业态方' as name, count(id) as value from tb_register_info where commercial_label is not null and blacklist = false and audit_status = 1 and company_info_finish_sign = 1
+        union all select '运营方' as name, count(id) as value from tb_register_info where operation_label is not null and blacklist = false and audit_status = 1 and company_info_finish_sign = 1
+        union all select '项目方' as name, count(id) as value from tb_register_info where project_label is not null and blacklist = false and audit_status = 1 and company_info_finish_sign = 1
+    </select>
+
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         ri.*,

@@ -11,6 +11,7 @@ import com.yjtech.wisdom.tourism.common.bean.BaseVO;
 import com.yjtech.wisdom.tourism.common.bean.BaseValueVO;
 import com.yjtech.wisdom.tourism.common.enums.ImportInfoTypeEnum;
 import com.yjtech.wisdom.tourism.common.exception.CustomException;
+import com.yjtech.wisdom.tourism.common.utils.DateTimeUtil;
 import com.yjtech.wisdom.tourism.common.utils.ImportTemplateUtils;
 import com.yjtech.wisdom.tourism.common.utils.StringUtils;
 import com.yjtech.wisdom.tourism.common.utils.file.FileDownloadUtils;
@@ -20,6 +21,7 @@ import com.yjtech.wisdom.tourism.project.entity.TbProjectInfoEntity;
 import com.yjtech.wisdom.tourism.project.entity.TbProjectLabelRelationEntity;
 import com.yjtech.wisdom.tourism.project.entity.TbProjectResourceEntity;
 import com.yjtech.wisdom.tourism.project.mapper.TbProjectInfoMapper;
+import com.yjtech.wisdom.tourism.project.vo.InvestmentTotalVo;
 import com.yjtech.wisdom.tourism.project.vo.ProjectAmountVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.CharEncoding;
@@ -354,6 +356,30 @@ public class TbProjectInfoService extends ServiceImpl<TbProjectInfoMapper, TbPro
     }
 
 
+    /**
+     * 获取比较投资额 本月与上月比
+     * 单位：万元
+     *
+     * @return
+     */
+    public Long getCompareMoney() {
+        InvestmentTotalVo vo = new InvestmentTotalVo();
+        vo.setBeginTime(DateTimeUtil.getCurrentMonthFirstDayStr());
+        vo.setEndTime(DateTimeUtil.getCurrentMonthLastDayStr());
+        Long currentMoney = baseMapper.getInvestmentTotal(vo);
 
+        vo.setBeginTime(DateTimeUtil.getCurrentLastMonthFirstDayStr());
+        vo.setEndTime(DateTimeUtil.getCurrentLastMonthLastDayStr());
+        Long lastMonthMoney = baseMapper.getInvestmentTotal(vo);
+        return currentMoney - lastMonthMoney;
+    }
 
+    /**
+     * 大屏-底部-注册公司、投资项目、规划项目占地统计
+     *
+     * @return
+     */
+    public List<BaseVO> queryDataStatic() {
+        return baseMapper.queryDataStatic();
+    }
 }

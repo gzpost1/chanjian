@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yjtech.wisdom.tourism.bigscreen.dto.RecommendParam;
 import com.yjtech.wisdom.tourism.bigscreen.dto.TbRegisterInfoParam;
 import com.yjtech.wisdom.tourism.bigscreen.entity.TbRegisterInfoEntity;
+import com.yjtech.wisdom.tourism.common.bean.BaseVO;
 import com.yjtech.wisdom.tourism.mybatis.base.BaseMybatisMapper;
 import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
@@ -28,4 +29,6 @@ public interface TbRegisterInfoMapper extends BaseMybatisMapper<TbRegisterInfoEn
     List<TbRegisterInfoEntity> recommendCompany(@Param("params")RecommendParam param);
 
     IPage<TbRegisterInfoEntity> queryForPageByType(Page page, @Param("params")TbRegisterInfoParam param);
+
+    List<BaseVO> queryCorpTypeDistributed();
 }
