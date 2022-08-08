@@ -406,10 +406,13 @@ public class TbProjectInfoService extends ServiceImpl<TbProjectInfoMapper, TbPro
         vo.setBeginTime(DateTimeUtil.getCurrentMonthFirstDayStr());
         vo.setEndTime(DateTimeUtil.getCurrentMonthLastDayStr());
         Long currentMoney = baseMapper.getInvestmentTotal(vo);
+        currentMoney = currentMoney == null ? 0 : currentMoney;
 
         vo.setBeginTime(DateTimeUtil.getCurrentLastMonthFirstDayStr());
         vo.setEndTime(DateTimeUtil.getCurrentLastMonthLastDayStr());
         Long lastMonthMoney = baseMapper.getInvestmentTotal(vo);
+        lastMonthMoney = lastMonthMoney == null ? 0 : lastMonthMoney;
+
         return currentMoney - lastMonthMoney;
     }
 

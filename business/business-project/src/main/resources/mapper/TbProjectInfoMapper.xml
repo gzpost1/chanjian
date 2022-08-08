@@ -160,7 +160,7 @@
         FROM
         ( SELECT '百万级别' AS `name` UNION SELECT '千万级别' AS `name` UNION SELECT '亿级' AS `name` UNION SELECT '十亿级' AS `name` UNION SELECT '十亿级以上' AS `name` ) a
         LEFT JOIN
-        (SELECT name,COUNT(name) `value`, sum(t.investment_total) money FROM
+        (SELECT name,COUNT(name) `value`, CONVERT(sum(t.investment_total), DECIMAL(10,2)) money FROM
         (
         SELECT
         CASE
@@ -223,7 +223,7 @@
     <select id="queryDataStatic" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO">
         select '注册公司' as name, count(id) as value from tb_register_info where blacklist = false and audit_status = 1 and company_info_finish_sign = 1
         union all  select '投资项目' as name, count(id) as value from tb_project_info where deleted = 0
-        union all  select '规划项目占地' as name, sum(project_plan_footprint) as value from tb_project_info where deleted = 0
+        union all  select '规划项目占地' as name, Convert(sum(project_plan_footprint), DECIMAL(10,0)) as value from tb_project_info where deleted = 0
     </select>
 
     <!-- 根据时间区间查询数据统计 -->
