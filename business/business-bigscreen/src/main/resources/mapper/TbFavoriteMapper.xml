@@ -110,4 +110,45 @@
         order by create_time desc
     </select>
 
+    <!-- 查询数据统计 -->
+    <select id="queryDataStatistics" resultType="com.yjtech.wisdom.tourism.common.bean.project.ProjectDataStatisticsDTO"
+            parameterType="com.yjtech.wisdom.tourism.common.bean.project.ProjectDataStatisticsQueryVO">
+        SELECT
+        COALESCE(SUM(CASE WHEN favorite_type = 1 THEN 1 ELSE 0 END),0) as collectNum,
+        COALESCE(SUM(CASE WHEN favorite_type = 2 THEN 1 ELSE 0 END),0) as likeNum
+        FROM
+        tb_favorite
+        <where>
+            deleted = 0
+            <if test="params != null">
+                <if test="params.projectId != null">
+                    and favorite_id = #{params.projectId}
+                </if>
+                <if test="params.favouriteSource != null">
+                    and type = #{params.favouriteSource}
+                </if>
+            </if>
+        </where>
+    </select>
+
+    <!-- 查询数据趋势 -->
+    <select id="queryAnalysis" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO"
+            parameterType="com.yjtech.wisdom.tourism.common.bean.project.ProjectDataStatisticsQueryVO">
+        SELECT DATE_FORMAT(dateInfo.mark,'%m/%d') AS name, COALESCE (dataInfo.num,0) AS value
+        FROM
+        (SELECT date_add(date_sub(#{params.beginDate}, INTERVAL 1 DAY), INTERVAL (CAST(help_topic_id AS signed) + 1) DAY) AS mark
+        FROM mysql.help_topic
+        WHERE help_topic_id &lt; DATEDIFF(#{params.endDate}, DATE_SUB(#{params.beginDate}, INTERVAL 1 DAY))) AS dateInfo
+        LEFT JOIN
+        (SELECT LEFT(create_time,10) as mark, COUNT(id) AS num
+        FROM tb_favorite
+        WHERE deleted = 0
+        and type = #{params.favouriteSource}
+        and favorite_type = #{params.favouriteType}
+        and favorite_id = #{params.projectId}
+        GROUP BY LEFT(create_time,10)) as dataInfo
+        ON dateInfo.mark = dataInfo.mark
+        ORDER BY dateInfo.mark
+    </select>
+
 </mapper>

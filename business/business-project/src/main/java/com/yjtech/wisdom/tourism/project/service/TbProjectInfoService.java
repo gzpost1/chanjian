@@ -9,6 +9,9 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
 import com.yjtech.wisdom.tourism.common.bean.BaseValueVO;
+import com.yjtech.wisdom.tourism.common.bean.index.DataStatisticsDTO;
+import com.yjtech.wisdom.tourism.common.bean.index.DataStatisticsQueryVO;
+import com.yjtech.wisdom.tourism.common.bean.project.ProjectDataStatisticsQueryVO;
 import com.yjtech.wisdom.tourism.common.enums.ImportInfoTypeEnum;
 import com.yjtech.wisdom.tourism.common.exception.CustomException;
 import com.yjtech.wisdom.tourism.common.utils.DateTimeUtil;
@@ -34,7 +37,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -355,6 +361,39 @@ public class TbProjectInfoService extends ServiceImpl<TbProjectInfoMapper, TbPro
         return newFile;
     }
 
+    /**
+     * 查询数据统计
+     *
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public DataStatisticsDTO queryDataStatistics(){
+        DataStatisticsDTO dto = baseMapper.queryDataStatisticsByDuration(new DataStatisticsQueryVO(null));
+        dto.setTotalNum(baseMapper.selectCount(new LambdaQueryWrapper<>()));
+
+        return dto;
+    }
+    /**
+     * 查询趋势
+     *
+     * @param vo
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public List<BaseVO> queryAnalysis(DataStatisticsQueryVO vo){
+        return baseMapper.queryAnalysis(vo);
+    }
+
+    /**
+     * 查询浏览数趋势
+     *
+     * @param vo
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public List<BaseVO> queryViewNumAnalysis(ProjectDataStatisticsQueryVO vo){
+        return baseMapper.queryViewNumAnalysis(vo);
+    }
 
     /**
      * 获取比较投资额 本月与上月比

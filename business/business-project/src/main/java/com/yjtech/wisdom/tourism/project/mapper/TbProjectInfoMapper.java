@@ -4,6 +4,9 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
 import com.yjtech.wisdom.tourism.project.dto.ProjectInvestmentDto;
+import com.yjtech.wisdom.tourism.common.bean.index.DataStatisticsDTO;
+import com.yjtech.wisdom.tourism.common.bean.index.DataStatisticsQueryVO;
+import com.yjtech.wisdom.tourism.common.bean.project.ProjectDataStatisticsQueryVO;
 import com.yjtech.wisdom.tourism.project.dto.ProjectQuery;
 import com.yjtech.wisdom.tourism.project.entity.TbProjectInfoEntity;
 import com.yjtech.wisdom.tourism.project.vo.InvestmentTotalVo;
@@ -71,4 +74,29 @@ public interface TbProjectInfoMapper extends BaseMapper<TbProjectInfoEntity> {
      * @return
      */
     List<BaseVO> queryDataStatic();
+
+    /**
+     * 根据时间区间查询数据统计
+     *
+     * @param params
+     * @return
+     */
+    DataStatisticsDTO queryDataStatisticsByDuration(@Param("params") DataStatisticsQueryVO params);
+
+    /**
+     * 查询趋势
+     *
+     * @param params
+     * @return
+     */
+    List<BaseVO> queryAnalysis(@Param("params") DataStatisticsQueryVO params);
+
+    /**
+     * 查询浏览数趋势
+     *
+     * @param params
+     * @return
+     */
+    List<BaseVO> queryViewNumAnalysis(@Param("params") ProjectDataStatisticsQueryVO params);
+
 }

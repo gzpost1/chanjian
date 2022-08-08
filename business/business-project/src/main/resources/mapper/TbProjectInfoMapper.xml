@@ -225,4 +225,52 @@
         union all  select '投资项目' as name, count(id) as value from tb_project_info where deleted = 0
         union all  select '规划项目占地' as name, sum(project_plan_footprint) as value from tb_project_info where deleted = 0
     </select>
+
+    <!-- 根据时间区间查询数据统计 -->
+    <select id="queryDataStatisticsByDuration" resultType="com.yjtech.wisdom.tourism.common.bean.index.DataStatisticsDTO"
+            parameterType="com.yjtech.wisdom.tourism.common.bean.index.DataStatisticsQueryVO">
+        SELECT COUNT(id) as currentMonthNum FROM tb_project_info
+        <where>
+            deleted = 0
+            <if test="params != null">
+                <if test="params.beginDate != null and params.endDate != null">
+                    AND create_time BETWEEN #{params.beginDate} AND #{params.endDate}
+                </if>
+            </if>
+        </where>
+    </select>
+
+    <!-- 查询趋势 -->
+    <select id="queryAnalysis" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO"
+            parameterType="com.yjtech.wisdom.tourism.common.bean.index.DataStatisticsQueryVO">
+        SELECT DATE_FORMAT(dateInfo.mark,'%m/%d') AS name, COALESCE (dataInfo.num,0) AS value
+        FROM
+        (SELECT date_add(date_sub(#{params.beginDate}, INTERVAL 1 DAY), INTERVAL (CAST(help_topic_id AS signed) + 1) DAY) AS mark
+        FROM mysql.help_topic
+        WHERE help_topic_id &lt; DATEDIFF(#{params.endDate}, DATE_SUB(#{params.beginDate}, INTERVAL 1 DAY))) AS dateInfo
+        LEFT JOIN
+        (SELECT LEFT(create_time,10) as mark, COUNT(id) AS num
+        FROM tb_project_info
+        WHERE deleted = 0
+        GROUP BY LEFT(create_time,10)) as dataInfo
+        ON dateInfo.mark = dataInfo.mark
+        ORDER BY dateInfo.mark
+    </select>
+
+    <!-- 查询浏览数趋势 -->
+    <select id="queryViewNumAnalysis" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO"
+            parameterType="com.yjtech.wisdom.tourism.common.bean.project.ProjectDataStatisticsQueryVO">
+        SELECT DATE_FORMAT(dateInfo.mark,'%m/%d') AS name, COALESCE (dataInfo.num,0) AS value
+        FROM
+        (SELECT date_add(date_sub(#{params.beginDate}, INTERVAL 1 DAY), INTERVAL (CAST(help_topic_id AS signed) + 1) DAY) AS mark
+        FROM mysql.help_topic
+        WHERE help_topic_id &lt; DATEDIFF(#{params.endDate}, DATE_SUB(#{params.beginDate}, INTERVAL 1 DAY))) AS dateInfo
+        LEFT JOIN
+        (SELECT LEFT(update_time,10) as mark, view_num AS num
+        FROM tb_project_info
+        WHERE deleted = 0 and id = #{params.projectId}
+        GROUP BY LEFT(update_time,10)) as dataInfo
+        ON dateInfo.mark = dataInfo.mark
+        ORDER BY dateInfo.mark
+    </select>
 </mapper>

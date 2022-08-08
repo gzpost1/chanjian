@@ -6,18 +6,26 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.yjtech.wisdom.tourism.bigscreen.service.TbFavoriteService;
+import com.yjtech.wisdom.tourism.chat.service.ChatMessageService;
+import com.yjtech.wisdom.tourism.common.bean.BaseVO;
 import com.yjtech.wisdom.tourism.common.bean.DemoExtraData;
 import com.yjtech.wisdom.tourism.common.bean.DemoExtraListener;
+import com.yjtech.wisdom.tourism.common.bean.index.DataAnalysisDTO;
+import com.yjtech.wisdom.tourism.common.bean.project.ProjectDataStatisticsDTO;
+import com.yjtech.wisdom.tourism.common.bean.project.ProjectDataStatisticsQueryVO;
 import com.yjtech.wisdom.tourism.common.constant.Constants;
+import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.common.core.domain.IdParam;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
-import com.yjtech.wisdom.tourism.common.enums.ImportInfoTypeEnum;
-import com.yjtech.wisdom.tourism.common.enums.NoticeTemplateTypeEnum;
-import com.yjtech.wisdom.tourism.common.enums.NoticeTypeEnum;
+import com.yjtech.wisdom.tourism.common.core.domain.UpdateStatusParam;
+import com.yjtech.wisdom.tourism.common.enums.*;
 import com.yjtech.wisdom.tourism.common.exception.CustomException;
+import com.yjtech.wisdom.tourism.common.utils.DateUtils;
 import com.yjtech.wisdom.tourism.common.utils.ExcelFormReadUtil;
 import com.yjtech.wisdom.tourism.common.utils.IdWorker;
-import com.yjtech.wisdom.tourism.framework.web.service.TokenService;
+import com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysRole;
+import com.yjtech.wisdom.tourism.infrastructure.utils.SecurityUtils;
 import com.yjtech.wisdom.tourism.portal.controller.common.BusinessCommonController;
 import com.yjtech.wisdom.tourism.project.dto.ProjectQuery;
 import com.yjtech.wisdom.tourism.project.dto.ProjectResourceQuery;
@@ -35,6 +43,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -42,6 +51,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -58,11 +68,13 @@ public class ProjectController extends BusinessCommonController {
     @Autowired
     private TbProjectLabelRelationService tbProjectLabelRelationService;    
 	@Autowired
-    private TokenService tokenService;
-	@Autowired
     private SysDictDataService sysDictDataService;
 	@Autowired
     private NoticeService noticeService;
+	@Autowired
+    private TbFavoriteService tbFavoriteService;
+	@Autowired
+    private ChatMessageService chatMessageService;
 
 
     /**
@@ -172,6 +184,10 @@ public class ProjectController extends BusinessCommonController {
         validateProjectName(null, entity.getProjectName());
         entity.setId(IdWorker.getInstance().nextId());
 //        entity.setCreateUser(loginUser.getUser().getUserId());
+        //浏览次数开关默认开启
+        entity.setViewNumFlag(EntityConstants.ENABLED);
+        //收藏次数开关默认开启
+        entity.setCollectNumFlag(EntityConstants.ENABLED);
         //构建项目-标签关联
         buildProjectLabelRelation(projectInfoService.save(entity), entity.getId(), entity.getPitchOnLabelIdList());
 
@@ -248,6 +264,36 @@ public class ProjectController extends BusinessCommonController {
             e.printStackTrace();
         }
         return JsonResult.ok();
+    }
+
+    /**
+     * 更新浏览次数展示开关
+     *
+     * @param param
+     * @return
+     */
+    @PostMapping("/updateViewNumFlag")
+    public JsonResult updateViewNumFlag(@RequestBody @Valid UpdateStatusParam param) {
+        Assert.isTrue(SysRole.isAdmin(SecurityUtils.getUserId()), "当前用户无权限操作");
+        projectInfoService.update(new LambdaUpdateWrapper<TbProjectInfoEntity>()
+                .eq(TbProjectInfoEntity::getId, param.getId())
+                .set(null != param.getStatus(), TbProjectInfoEntity::getViewNumFlag, param.getStatus()));
+        return JsonResult.success();
+    }
+
+    /**
+     * 更新收藏次数展示开关
+     *
+     * @param param
+     * @return
+     */
+    @PostMapping("/updateCollectNumFlag")
+    public JsonResult updateCollectNumFlag(@RequestBody @Valid UpdateStatusParam param) {
+        Assert.isTrue(SysRole.isAdmin(SecurityUtils.getUserId()), "当前用户无权限操作");
+        projectInfoService.update(new LambdaUpdateWrapper<TbProjectInfoEntity>()
+                .set(null != param.getStatus(), TbProjectInfoEntity::getCollectNumFlag, param.getStatus())
+                .eq(TbProjectInfoEntity::getId, param.getId()));
+        return JsonResult.success();
     }
 
     /**
@@ -363,6 +409,72 @@ public class ProjectController extends BusinessCommonController {
         projectInfoService.download(id,request,response);
     }
 
+    /**
+     * 查看数据-数据统计
+     *
+     * @param vo
+     * @return
+     */
+    @PostMapping("/queryDataStatistics")
+    public JsonResult<ProjectDataStatisticsDTO> queryDataStatistics(@RequestBody @Valid ProjectDataStatisticsQueryVO vo) {
+        //获取点赞数、收藏数
+        ProjectDataStatisticsDTO dto = tbFavoriteService.queryDataStatistics(vo);
 
+        TbProjectInfoEntity project = projectInfoService.getById(vo.getProjectId());
+        Assert.notNull(project, "项目信息不存在");
+        //获取浏览数
+        dto.setViewNum(null == project.getViewNum() ? 0 : project.getViewNum());
+        //获取留言数
+        dto.setMessageNum(StringUtils.isBlank(project.getCompanyId()) ? 0 : chatMessageService.queryMessageStatistics(project.getCompanyId()));
+
+        return JsonResult.success(dto);
+    }
+
+    /**
+     * 查询趋势-浏览数、点赞数、留言数、收藏数
+     * <p style="color:red">
+     *     该接口开始日期与结束日期必传
+     * </p>
+     *
+     * @param vo
+     * @return
+     */
+    @PostMapping("queryAnalysis")
+    public JsonResult<DataAnalysisDTO> queryAnalysis(@RequestBody @Valid ProjectDataStatisticsQueryVO vo) {
+        Assert.notNull(vo.getBeginDate(), "开始日期不能为空");
+        Assert.notNull(vo.getEndDate(), "结束日期不能为空");
+        //获取浏览数
+        List<BaseVO> list1 = projectInfoService.queryViewNumAnalysis(vo);
+
+        //查询的收藏，默认数据来源为项目
+        vo.setFavouriteSource(FavouriteSourceEnum.FAVOURITE_SOURCE_PROJECT.getType());
+
+        //获取点赞数
+        //设置收藏类型为点赞
+        vo.setFavouriteType(FavouriteTypeEnum.FAVOURITE_TYPE_LIKE.getType());
+        List<BaseVO> list2 = tbFavoriteService.queryAnalysis(vo);
+
+        //获取收藏数
+        //设置收藏类型为收藏
+        vo.setFavouriteType(FavouriteTypeEnum.FAVOURITE_TYPE_COLLECT.getType());
+        List<BaseVO> list3 = tbFavoriteService.queryAnalysis(vo);
+
+        TbProjectInfoEntity project = projectInfoService.getById(vo.getProjectId());
+        Assert.notNull(project, "项目信息不存在");
+        //获取留言数
+        List<BaseVO> list4;
+        //企业id为空时，则构建默认
+        if(StringUtils.isBlank(project.getCompanyId())){
+            list4 = DateUtils.getInitBaseVO(vo.getBeginDate().format(DateTimeFormatter.ISO_LOCAL_DATE),
+                    vo.getEndDate().format(DateTimeFormatter.ISO_LOCAL_DATE),
+                    DateUtils.YYYY_MM_DD, Calendar.DAY_OF_YEAR);
+        } else {
+            //设置所属企业id
+            vo.setCompanyId(project.getCompanyId());
+            list4 = chatMessageService.queryAnalysis(vo);
+        }
+
+        return JsonResult.success(new DataAnalysisDTO(list1, list2, list3, list4));
+    }
 
 }

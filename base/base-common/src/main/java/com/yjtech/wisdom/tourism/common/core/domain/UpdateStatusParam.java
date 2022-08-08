@@ -17,6 +17,9 @@ public class UpdateStatusParam {
     @NotNull(message = "id不能为空")
     private Long id;
 
+    /**
+     * 状态 0否 1是
+     */
     @EnumValue(values = {"1", "0"},message = "状态必须为1或0")
     @NotNull(message = "状态不能为空")
     private Byte status;
