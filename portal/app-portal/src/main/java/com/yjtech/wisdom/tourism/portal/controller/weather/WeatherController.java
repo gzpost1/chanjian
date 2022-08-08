@@ -1,6 +1,7 @@
 package com.yjtech.wisdom.tourism.portal.controller.weather;
 
 import com.google.common.collect.Maps;
+import com.yjtech.wisdom.tourism.common.annotation.IgnoreAuth;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.common.utils.EncryptUtil;
 import com.yjtech.wisdom.tourism.weather.service.WeatherService;
@@ -34,6 +35,7 @@ public class WeatherController {
      * 根据经纬度获得天气数据
      */
     @PostMapping("info")
+    @IgnoreAuth
     public JsonResult<WeatherInfoVO> queryWeatherByAreaCode(@RequestBody @Valid WeatherQuery query) throws Exception {
         StringBuffer location = new StringBuffer();
         location.append(query.getLongitude()).append(",").append(query.getLatitude());

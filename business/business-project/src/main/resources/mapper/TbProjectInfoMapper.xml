@@ -164,10 +164,10 @@
         (
         SELECT
         CASE
-        WHEN investment_total >= 0.01 and investment_total < 0.1 THEN '百万级别'
-        WHEN investment_total >= 0.1 and investment_total < 1 THEN '千万级别'
-        WHEN investment_total >= 1 and investment_total < 10 THEN '亿级'
-        WHEN investment_total >= 10 and investment_total < 100 THEN '十亿级'
+        WHEN investment_total >= 0.01 and investment_total &lt; 0.1 THEN '百万级别'
+        WHEN investment_total >= 0.1 and investment_total &lt; 1 THEN '千万级别'
+        WHEN investment_total >= 1 and investment_total &lt; 10 THEN '亿级'
+        WHEN investment_total >= 10 and investment_total &lt; 100 THEN '十亿级'
         WHEN investment_total >= 100 THEN '十亿级以上' END `name`,
         investment_total
         FROM
