@@ -3,6 +3,7 @@ package com.yjtech.wisdom.tourism.portal.controller.audit;
 
 import com.yjtech.wisdom.tourism.bigscreen.entity.TbRegisterInfoEntity;
 import com.yjtech.wisdom.tourism.bigscreen.service.TbRegisterInfoService;
+import com.yjtech.wisdom.tourism.common.annotation.IgnoreAuth;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
 import com.yjtech.wisdom.tourism.common.core.domain.IdParam;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
@@ -57,6 +58,7 @@ public class CompanyManagerController {
      * @return
      */
     @PostMapping("/queryCorpTypeDistributed")
+    @IgnoreAuth
     public JsonResult<List<BaseVO>> queryCorpTypeDistributed() {
         return JsonResult.success(registerInfoService.queryCorpTypeDistributed());
     }
