@@ -26,6 +26,14 @@ public interface IndustryFundsMapper extends BaseMapper<IndustryFundsEntity> {
      */
     List<IndustryFundsEntity> queryForList(Page page, @Param("params") IndustryFundsQueryVO params);
 
+    /**
+     * 根据id查询信息
+     *
+     * @param id
+     * @return
+     */
+    IndustryFundsEntity queryForId(@Param("id") Long id);
+
 
 
 }

@@ -44,4 +44,18 @@
         ORDER BY update_time DESC
     </select>
 
+    <!-- 根据id查询信息 -->
+    <select id="queryForId" resultMap="BaseResultMap">
+        SELECT
+        <include refid="BaseColumn"/>
+        FROM
+        tb_industry_funds
+        <where>
+            deleted = 0
+            <if test="id != null">
+                and id = #{id}
+            </if>
+        </where>
+    </select>
+
 </mapper>
