@@ -83,7 +83,7 @@ public class IndustryFundsService extends ServiceImpl<IndustryFundsMapper, Indus
      */
     @Transactional(readOnly = true)
     public IndustryFundsEntity queryForId(Long id) {
-        return baseMapper.selectById(id);
+        return baseMapper.queryForId(id);
     }
 
     /**
