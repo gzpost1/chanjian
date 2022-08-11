@@ -18,5 +18,5 @@ public class ProjectInvestmentDto extends BaseVO {
     /**
      * 所占比例
      */
-    private Double scale;
+    private String scale;
 }
