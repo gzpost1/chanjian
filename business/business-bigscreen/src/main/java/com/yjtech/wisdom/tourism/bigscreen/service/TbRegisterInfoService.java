@@ -8,10 +8,15 @@ import com.yjtech.wisdom.tourism.bigscreen.dto.RecommendParam;
 import com.yjtech.wisdom.tourism.bigscreen.dto.TbRegisterInfoParam;
 import com.yjtech.wisdom.tourism.bigscreen.entity.TbRegisterInfoEntity;
 import com.yjtech.wisdom.tourism.bigscreen.mapper.TbRegisterInfoMapper;
+import com.yjtech.wisdom.tourism.common.bean.BaseVO;
+import com.yjtech.wisdom.tourism.common.bean.BaseVO;
+import com.yjtech.wisdom.tourism.common.bean.index.DataStatisticsDTO;
+import com.yjtech.wisdom.tourism.common.bean.index.DataStatisticsQueryVO;
+import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.mybatis.base.BaseMybatisServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -131,6 +136,44 @@ public class TbRegisterInfoService extends BaseMybatisServiceImpl<TbRegisterInfo
         return list;
     }
 
+    /**
+     * 查询数据统计
+     *
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public DataStatisticsDTO queryDataStatistics(){
+        DataStatisticsDTO dto = baseMapper.queryDataStatisticsByDuration(new DataStatisticsQueryVO(null));
+        dto.setTotalNum(baseMapper.selectCount(new LambdaQueryWrapper<>()));
+
+        return dto;
+    }
+
+    /**
+     * 查询数据统计 黑名单
+     *
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public DataStatisticsDTO queryDataStatisticsByBlackList(){
+        DataStatisticsDTO dto = baseMapper.queryDataStatisticsByDuration(new DataStatisticsQueryVO(EntityConstants.ENABLED));
+        dto.setTotalNum(baseMapper.selectCount(new LambdaQueryWrapper<TbRegisterInfoEntity>()
+                .eq(TbRegisterInfoEntity::getBlacklist, EntityConstants.ENABLED)));
+
+        return dto;
+    }
+
+    /**
+     * 查询趋势
+     *
+     * @param vo
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public List<BaseVO> queryAnalysis(DataStatisticsQueryVO vo){
+        return baseMapper.queryAnalysis(vo);
+    }
+
 
 
     /**
@@ -149,4 +192,12 @@ public class TbRegisterInfoService extends BaseMybatisServiceImpl<TbRegisterInfo
         return list;
     }
 
+    /**
+     * 企业角色数目分布
+     *
+     * @return
+     */
+    public List<BaseVO> queryCorpTypeDistributed() {
+        return tbRegisterInfoMapper.queryCorpTypeDistributed();
+    }
 }

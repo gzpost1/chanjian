@@ -1,6 +1,8 @@
 package com.yjtech.wisdom.tourism.common.utils;
 
 import cn.hutool.core.date.DateUtil;
+import com.google.common.collect.Lists;
+import com.yjtech.wisdom.tourism.common.bean.BaseVO;
 import com.yjtech.wisdom.tourism.common.exception.CustomException;
 import com.yjtech.wisdom.tourism.common.exception.ErrorCode;
 import org.apache.commons.lang3.time.DateFormatUtils;
@@ -21,6 +23,8 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
     public static String YYYY = "yyyy";
 
     public static String YYYY_MM = "yyyy-MM";
+
+    public static String MM_SLASH_DD = "MM/dd";
 
     public static String YYYY_MM_DD = "yyyy-MM-dd";
 
@@ -203,6 +207,42 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
             timeList.add(dayStr);
         }
         return timeList;
+    }
+
+    /**
+     * 根据时间范围获取初始化BaseVO
+     * @param begin
+     * @param end
+     * @param format
+     * @param calendarType
+     * @return
+     */
+    public static List<BaseVO> getInitBaseVO(String begin, String end, String format, int calendarType) {
+        //构建日期字符串格式
+        SimpleDateFormat sdf = new SimpleDateFormat(format);
+        Date dBegin;
+        Date dEnd;
+        try {
+            dBegin = sdf.parse(begin);
+            dEnd = sdf.parse(end);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            throw new CustomException(ErrorCode.BUSINESS_EXCEPTION, "获取时间范围内的时间日期列表失败：格式化日期异常");
+        }
+        List<BaseVO> initList = Lists.newArrayList();
+        //手动添加初始时间
+        initList.add(new BaseVO(sdf.format(dBegin), "0"));
+        Calendar calBegin = Calendar.getInstance();
+        calBegin.setTime(dBegin);
+        Calendar calEnd = Calendar.getInstance();
+        calEnd.setTime(dEnd);
+        //追踪遍历时间
+        while (dEnd.after(calBegin.getTime())) {
+            calBegin.add(calendarType, 1);
+            String dayStr = sdf.format(calBegin.getTime());
+            initList.add(new BaseVO(dayStr, "0"));
+        }
+        return initList;
     }
 
     /**

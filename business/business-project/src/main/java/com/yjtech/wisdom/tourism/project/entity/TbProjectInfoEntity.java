@@ -376,4 +376,14 @@ public class TbProjectInfoEntity {
      * 是否置顶 0:否, 1:是（关闭否）
      */
     private Byte isTop;
+
+    /**
+     * 浏览次数展示开关 0否 1是
+     */
+    private Byte viewNumFlag;
+
+    /**
+     * 收藏次数展示开关 0否 1是
+     */
+    private Byte collectNumFlag;
 }

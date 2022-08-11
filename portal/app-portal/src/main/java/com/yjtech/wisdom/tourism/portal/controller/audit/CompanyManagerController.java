@@ -3,6 +3,8 @@ package com.yjtech.wisdom.tourism.portal.controller.audit;
 
 import com.yjtech.wisdom.tourism.bigscreen.entity.TbRegisterInfoEntity;
 import com.yjtech.wisdom.tourism.bigscreen.service.TbRegisterInfoService;
+import com.yjtech.wisdom.tourism.common.annotation.IgnoreAuth;
+import com.yjtech.wisdom.tourism.common.bean.BaseVO;
 import com.yjtech.wisdom.tourism.common.core.domain.IdParam;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import lombok.extern.slf4j.Slf4j;
@@ -48,6 +50,17 @@ public class CompanyManagerController {
     @PostMapping("/queryProjectCompanyById")
     public JsonResult<TbRegisterInfoEntity> queryProjectCompanyById(@RequestBody @Valid IdParam idParam) {
         return JsonResult.success(registerInfoService.getById(idParam.getId()));
+    }
+
+    /**
+     * 企业角色数目分布
+     *
+     * @return
+     */
+    @PostMapping("/queryCorpTypeDistributed")
+    @IgnoreAuth
+    public JsonResult<List<BaseVO>> queryCorpTypeDistributed() {
+        return JsonResult.success(registerInfoService.queryCorpTypeDistributed());
     }
 
 }

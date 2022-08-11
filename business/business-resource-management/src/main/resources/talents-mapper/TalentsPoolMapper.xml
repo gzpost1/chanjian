@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjtech.wisdom.tourism.resource.talents.mapper.TalentsPoolMapper">
+
+
+    <!-- 根据时间区间查询数据统计 -->
+    <select id="queryDataStatisticsByDuration" resultType="com.yjtech.wisdom.tourism.common.bean.index.DataStatisticsDTO"
+            parameterType="com.yjtech.wisdom.tourism.common.bean.index.DataStatisticsQueryVO">
+        SELECT COUNT(id) as currentMonthNum FROM tb_talents_pool
+        <where>
+            deleted = 0
+            <if test="params != null">
+                <if test="params.beginDate != null and params.endDate != null">
+                    AND create_time BETWEEN #{params.beginDate} AND #{params.endDate}
+                </if>
+            </if>
+        </where>
+    </select>
+
+</mapper>

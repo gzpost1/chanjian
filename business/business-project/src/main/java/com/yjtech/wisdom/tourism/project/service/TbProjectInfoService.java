@@ -9,8 +9,12 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
 import com.yjtech.wisdom.tourism.common.bean.BaseValueVO;
+import com.yjtech.wisdom.tourism.common.bean.index.DataStatisticsDTO;
+import com.yjtech.wisdom.tourism.common.bean.index.DataStatisticsQueryVO;
+import com.yjtech.wisdom.tourism.common.bean.project.ProjectDataStatisticsQueryVO;
 import com.yjtech.wisdom.tourism.common.enums.ImportInfoTypeEnum;
 import com.yjtech.wisdom.tourism.common.exception.CustomException;
+import com.yjtech.wisdom.tourism.common.utils.DateTimeUtil;
 import com.yjtech.wisdom.tourism.common.utils.ImportTemplateUtils;
 import com.yjtech.wisdom.tourism.common.utils.StringUtils;
 import com.yjtech.wisdom.tourism.common.utils.file.FileDownloadUtils;
@@ -20,6 +24,7 @@ import com.yjtech.wisdom.tourism.project.entity.TbProjectInfoEntity;
 import com.yjtech.wisdom.tourism.project.entity.TbProjectLabelRelationEntity;
 import com.yjtech.wisdom.tourism.project.entity.TbProjectResourceEntity;
 import com.yjtech.wisdom.tourism.project.mapper.TbProjectInfoMapper;
+import com.yjtech.wisdom.tourism.project.vo.InvestmentTotalVo;
 import com.yjtech.wisdom.tourism.project.vo.ProjectAmountVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.CharEncoding;
@@ -32,7 +37,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -353,7 +361,67 @@ public class TbProjectInfoService extends ServiceImpl<TbProjectInfoMapper, TbPro
         return newFile;
     }
 
+    /**
+     * 查询数据统计
+     *
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public DataStatisticsDTO queryDataStatistics(){
+        DataStatisticsDTO dto = baseMapper.queryDataStatisticsByDuration(new DataStatisticsQueryVO(null));
+        dto.setTotalNum(baseMapper.selectCount(new LambdaQueryWrapper<>()));
 
+        return dto;
+    }
+    /**
+     * 查询趋势
+     *
+     * @param vo
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public List<BaseVO> queryAnalysis(DataStatisticsQueryVO vo){
+        return baseMapper.queryAnalysis(vo);
+    }
 
+    /**
+     * 查询浏览数趋势
+     *
+     * @param vo
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public List<BaseVO> queryViewNumAnalysis(ProjectDataStatisticsQueryVO vo){
+        return baseMapper.queryViewNumAnalysis(vo);
+    }
 
+    /**
+     * 获取比较投资额 本月与上月比
+     * 单位：万元
+     *
+     * @return
+     */
+    public Long getCompareMoney() {
+        InvestmentTotalVo vo = new InvestmentTotalVo();
+        vo.setBeginTime(DateTimeUtil.getCurrentMonthFirstDayStr());
+        vo.setEndTime(DateTimeUtil.getCurrentMonthLastDayStr());
+        Long currentMoney = baseMapper.getInvestmentTotal(vo);
+        currentMoney = currentMoney == null ? 0 : currentMoney;
+
+        vo.setBeginTime(DateTimeUtil.getCurrentLastMonthFirstDayStr());
+        vo.setEndTime(DateTimeUtil.getCurrentLastMonthLastDayStr());
+        Long lastMonthMoney = baseMapper.getInvestmentTotal(vo);
+        lastMonthMoney = lastMonthMoney == null ? 0 : lastMonthMoney;
+
+        return currentMoney - lastMonthMoney;
+    }
+
+    /**
+     * 大屏-底部-注册公司、投资项目、规划项目占地统计
+     *
+     * @return
+     */
+    public List<BaseVO> queryDataStatic() {
+        return baseMapper.queryDataStatic();
+    }
 }

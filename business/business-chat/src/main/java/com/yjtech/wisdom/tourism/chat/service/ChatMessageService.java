@@ -2,7 +2,6 @@ package com.yjtech.wisdom.tourism.chat.service;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -10,7 +9,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yjtech.wisdom.tourism.bigscreen.entity.TbRegisterInfoEntity;
 import com.yjtech.wisdom.tourism.bigscreen.mapper.TbRegisterInfoMapper;
 import com.yjtech.wisdom.tourism.chat.conver.ChatMessageCover;
-import com.yjtech.wisdom.tourism.chat.conver.ChatRecordCover;
 import com.yjtech.wisdom.tourism.chat.dto.Message;
 import com.yjtech.wisdom.tourism.chat.dto.MessageHistoryQuery;
 import com.yjtech.wisdom.tourism.chat.dto.MessageRecordQuery;
@@ -22,11 +20,9 @@ import com.yjtech.wisdom.tourism.chat.redis.ChatRecordRedisDao;
 import com.yjtech.wisdom.tourism.chat.uitl.MessageUtil;
 import com.yjtech.wisdom.tourism.chat.vo.ChatMessageExportVo;
 import com.yjtech.wisdom.tourism.chat.vo.ChatMessageVo;
-import com.yjtech.wisdom.tourism.chat.vo.EnterpriseVo;
-import com.yjtech.wisdom.tourism.common.utils.ServletUtils;
-import com.yjtech.wisdom.tourism.infrastructure.core.domain.model.ScreenLoginUser;
+import com.yjtech.wisdom.tourism.common.bean.BaseVO;
+import com.yjtech.wisdom.tourism.common.bean.project.ProjectDataStatisticsQueryVO;
 import com.yjtech.wisdom.tourism.redis.RedisCache;
-import com.yjtech.wisdom.tourism.system.domain.TagEntity;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -192,5 +188,27 @@ public class ChatMessageService extends ServiceImpl<ChatMessageMapper, ChatMessa
         LambdaQueryWrapper<ChatMessageEntity> queryWrapper = buildSendMsgQueryWrapper(messageRecordQuery);
         IPage<ChatMessageEntity> messageEntityIPage = this.baseMapper.selectPage(page, queryWrapper);
         return ChatMessageCover.INSTANCE.cover2ChatMessageExportVo(messageEntityIPage.getRecords(), getRegisterInfoEntityMap());
+    }
+
+    /**
+     * 查询留言数统计
+     *
+     * @param companyId
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public int queryMessageStatistics(String companyId){
+        return baseMapper.queryMessageStatistics(companyId);
+    }
+
+    /**
+     * 查询趋势
+     *
+     * @param vo
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public List<BaseVO> queryAnalysis(ProjectDataStatisticsQueryVO vo){
+        return baseMapper.queryAnalysis(vo);
     }
 }

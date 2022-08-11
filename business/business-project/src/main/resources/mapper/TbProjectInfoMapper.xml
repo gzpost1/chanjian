@@ -154,27 +154,28 @@
         ON a.name = b.name
     </select>
 
-    <select id="queryInvestmentTotalTrend" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO">
+    <select id="queryInvestmentTotalTrend" resultType="com.yjtech.wisdom.tourism.project.dto.ProjectInvestmentDto">
         SELECT
-            a.name,IFNULL(b.value,0)value
+            a.name,IFNULL(b.value,0) value, IFNULL(b.money,0) * 10000 as money, ifnull(convert(b.money/(select sum(investment_total) from tb_project_info WHERE investment_total IS NOT NULL), decimal(10,2)) * 100, 0) as scale
         FROM
-            ( SELECT '百万级别' AS `name` UNION SELECT '千万级别' AS `name` UNION SELECT '亿级' AS `name` UNION SELECT '十亿级' AS `name` UNION SELECT '十亿级以上' AS `name` ) a
-            LEFT JOIN
-            (SELECT name,COUNT(1) `value` FROM
-            (
-            SELECT
-            CASE
-            WHEN investment_total <![CDATA[>=]]> 0.01 and investment_total <![CDATA[<]]> 0.1 THEN '百万级别'
-            WHEN investment_total <![CDATA[>=]]> 0.1 and investment_total <![CDATA[<]]> 1 THEN '千万级别'
-            WHEN investment_total <![CDATA[>=]]> 1 and investment_total <![CDATA[<]]> 10 THEN '亿级'
-            WHEN investment_total <![CDATA[>=]]> 10 and investment_total <![CDATA[<]]> 100 THEN '十亿级'
-            WHEN investment_total <![CDATA[>=]]> 100 THEN '十亿级以上' END `name`
-            FROM
-            tb_project_info
-            WHERE
-            investment_total IS NOT NULL
-            )t
-            GROUP BY name) b
+        ( SELECT '百万级别' AS `name` UNION SELECT '千万级别' AS `name` UNION SELECT '亿级' AS `name` UNION SELECT '十亿级' AS `name` UNION SELECT '十亿级以上' AS `name` ) a
+        LEFT JOIN
+        (SELECT name,COUNT(name) `value`, CONVERT(sum(t.investment_total), DECIMAL(10,2)) money FROM
+        (
+        SELECT
+        CASE
+        WHEN investment_total >= 0.01 and investment_total &lt; 0.1 THEN '百万级别'
+        WHEN investment_total >= 0.1 and investment_total &lt; 1 THEN '千万级别'
+        WHEN investment_total >= 1 and investment_total &lt; 10 THEN '亿级'
+        WHEN investment_total >= 10 and investment_total &lt; 100 THEN '十亿级'
+        WHEN investment_total >= 100 THEN '十亿级以上' END `name`,
+        investment_total
+        FROM
+        tb_project_info
+        WHERE
+        investment_total IS NOT NULL
+        )t
+        GROUP BY name) b
         ON a.name = b.name
     </select>
 
@@ -198,5 +199,78 @@
         WHERE
             deleted = 0
             and company_id = #{companyId}
+    </select>
+
+    <!-- 投资总额 -->
+    <select id="getInvestmentTotal" resultType="java.lang.Long" parameterType="com.yjtech.wisdom.tourism.project.vo.InvestmentTotalVo">
+        select
+               sum(investment_total) * 10000
+        from tb_project_info
+        <where>
+            investment_total IS NOT NULL
+            <if test="params != null">
+              <if test="params.beginTime != null and params.beginTime != ''">
+                    and #{params.beginTime} &lt;= create_time
+                </if>
+                <if test="params.endTime != null and params.endTime != ''">
+                    and #{params.endTime} &gt;= create_time
+                </if>
+            </if>
+        </where>
+    </select>
+
+    <!-- 大屏-底部-注册公司、投资项目、规划项目占地统计 -->
+    <select id="queryDataStatic" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO">
+        select '注册公司' as name, count(id) as value from tb_register_info where blacklist = false and audit_status = 1 and company_info_finish_sign = 1
+        union all  select '投资项目' as name, count(id) as value from tb_project_info where deleted = 0
+        union all  select '规划项目占地' as name, Convert(sum(project_plan_footprint), DECIMAL(10,0)) as value from tb_project_info where deleted = 0
+    </select>
+
+    <!-- 根据时间区间查询数据统计 -->
+    <select id="queryDataStatisticsByDuration" resultType="com.yjtech.wisdom.tourism.common.bean.index.DataStatisticsDTO"
+            parameterType="com.yjtech.wisdom.tourism.common.bean.index.DataStatisticsQueryVO">
+        SELECT COUNT(id) as currentMonthNum FROM tb_project_info
+        <where>
+            deleted = 0
+            <if test="params != null">
+                <if test="params.beginDate != null and params.endDate != null">
+                    AND create_time BETWEEN #{params.beginDate} AND #{params.endDate}
+                </if>
+            </if>
+        </where>
+    </select>
+
+    <!-- 查询趋势 -->
+    <select id="queryAnalysis" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO"
+            parameterType="com.yjtech.wisdom.tourism.common.bean.index.DataStatisticsQueryVO">
+        SELECT DATE_FORMAT(dateInfo.mark,'%m/%d') AS name, COALESCE (dataInfo.num,0) AS value
+        FROM
+        (SELECT date_add(date_sub(#{params.beginDate}, INTERVAL 1 DAY), INTERVAL (CAST(help_topic_id AS signed) + 1) DAY) AS mark
+        FROM mysql.help_topic
+        WHERE help_topic_id &lt; DATEDIFF(#{params.endDate}, DATE_SUB(#{params.beginDate}, INTERVAL 1 DAY))) AS dateInfo
+        LEFT JOIN
+        (SELECT LEFT(create_time,10) as mark, COUNT(id) AS num
+        FROM tb_project_info
+        WHERE deleted = 0
+        GROUP BY LEFT(create_time,10)) as dataInfo
+        ON dateInfo.mark = dataInfo.mark
+        ORDER BY dateInfo.mark
+    </select>
+
+    <!-- 查询浏览数趋势 -->
+    <select id="queryViewNumAnalysis" resultType="com.yjtech.wisdom.tourism.common.bean.BaseVO"
+            parameterType="com.yjtech.wisdom.tourism.common.bean.project.ProjectDataStatisticsQueryVO">
+        SELECT DATE_FORMAT(dateInfo.mark,'%m/%d') AS name, COALESCE (dataInfo.num,0) AS value
+        FROM
+        (SELECT date_add(date_sub(#{params.beginDate}, INTERVAL 1 DAY), INTERVAL (CAST(help_topic_id AS signed) + 1) DAY) AS mark
+        FROM mysql.help_topic
+        WHERE help_topic_id &lt; DATEDIFF(#{params.endDate}, DATE_SUB(#{params.beginDate}, INTERVAL 1 DAY))) AS dateInfo
+        LEFT JOIN
+        (SELECT LEFT(update_time,10) as mark, view_num AS num
+        FROM tb_project_info
+        WHERE deleted = 0 and id = #{params.projectId}
+        GROUP BY LEFT(update_time,10)) as dataInfo
+        ON dateInfo.mark = dataInfo.mark
+        ORDER BY dateInfo.mark
     </select>
 </mapper>
