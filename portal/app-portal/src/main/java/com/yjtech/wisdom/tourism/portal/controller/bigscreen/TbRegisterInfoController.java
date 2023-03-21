@@ -18,6 +18,7 @@ import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.common.constant.PhoneCodeEnum;
 import com.yjtech.wisdom.tourism.common.core.domain.IdParam;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
+import com.yjtech.wisdom.tourism.common.enums.CompanyRoleEnum;
 import com.yjtech.wisdom.tourism.common.exception.CustomException;
 import com.yjtech.wisdom.tourism.common.utils.AreaUtils;
 import com.yjtech.wisdom.tourism.common.utils.AssertUtil;
@@ -26,6 +27,10 @@ import com.yjtech.wisdom.tourism.framework.web.service.ScreenTokenService;
 import com.yjtech.wisdom.tourism.infrastructure.core.controller.BaseCurdController;
 import com.yjtech.wisdom.tourism.infrastructure.core.domain.model.ScreenLoginUser;
 import com.yjtech.wisdom.tourism.mybatis.typehandler.EncryptTypeHandler;
+import com.yjtech.wisdom.tourism.project.entity.TbProjectLabelEntity;
+import com.yjtech.wisdom.tourism.project.service.TbProjectLabelService;
+import com.yjtech.wisdom.tourism.system.domain.TagEntity;
+import com.yjtech.wisdom.tourism.system.service.TagService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +41,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * v1.5_注册信息
@@ -61,6 +70,12 @@ public class TbRegisterInfoController extends BaseCurdController<TbRegisterInfoS
     @Autowired
     private TbRegisterInfoService tbRegisterInfoService;
 
+    @Autowired
+    private TagService tagService;
+
+    @Autowired
+    private TbProjectLabelService projectLabelService;
+
     /**
      * 快速注册
      *
@@ -72,6 +87,12 @@ public class TbRegisterInfoController extends BaseCurdController<TbRegisterInfoS
         TbRegisterInfoEntity tbRegisterInfoEntity = JSONObject.parseObject(JSONObject.toJSONString(quickRegisterVo), TbRegisterInfoEntity.class);
         validatePhone(tbRegisterInfoEntity.getPhone());
         encodepwd(tbRegisterInfoEntity);
+        // 新增四种类型
+        List<String> type = Arrays.asList("1","2","3","4");
+        tbRegisterInfoEntity.setType(type);
+        // 添加四种类型的标签
+        addLabel(tbRegisterInfoEntity);
+
         return JsonResult.success(super.create(tbRegisterInfoEntity));
     }
 
@@ -239,6 +260,23 @@ public class TbRegisterInfoController extends BaseCurdController<TbRegisterInfoS
 //        validateSms(registerInfoEntity);
         encodepwd(registerInfoEntity);
         return JsonResult.success(super.create(registerInfoEntity));
+    }
+
+    private void addLabel(TbRegisterInfoEntity tbRegisterInfoEntity){
+        // 查询所有标签
+        List<TagEntity> tageList = tagService.list();
+        Map<String, List<String>> tagMap = new HashMap<>();
+        tageList.forEach(tagEntity -> {
+            tagMap.put(tagEntity.getEnterpriseRole(), tagEntity.getTagInfo());
+        });
+
+        List<TbProjectLabelEntity> proList = projectLabelService.list();
+        List<String> proTag = proList.stream().map(TbProjectLabelEntity::getName).collect(Collectors.toList());
+
+        tbRegisterInfoEntity.setInvestmentLabel(tagMap.get(CompanyRoleEnum.COMPANY_ROLE_INVESTOR.getDescribe()));
+        tbRegisterInfoEntity.setOperationLabel(tagMap.get(CompanyRoleEnum.COMPANY_ROLE_OPERATOR.getDescribe()));
+        tbRegisterInfoEntity.setCommercialLabel(tagMap.get(CompanyRoleEnum.COMPANY_ROLE_BUSINESS.getDescribe()));
+        tbRegisterInfoEntity.setProjectLabel(proTag);
     }
 
     //----------------- 废弃 ----------------------//
