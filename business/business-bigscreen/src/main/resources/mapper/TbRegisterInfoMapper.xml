@@ -117,7 +117,6 @@
 
             and ri.audit_status = 1
             and ri.blacklist = false
---             and ri.company_info_finish_sign = 1
         </where>
         <choose>
             <when test="params.type != null and params.type == 2">
