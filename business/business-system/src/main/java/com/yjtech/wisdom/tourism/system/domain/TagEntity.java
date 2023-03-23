@@ -24,7 +24,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
-@TableName(value = "tb_tag")
+@TableName(value = "tb_tag", autoResultMap = true)
 public class TagEntity extends BaseEntity {
 
     private static final long serialVersionUID = 671063174105380239L;
