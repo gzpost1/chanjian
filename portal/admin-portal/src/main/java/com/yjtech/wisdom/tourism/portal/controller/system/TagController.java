@@ -1,12 +1,14 @@
 package com.yjtech.wisdom.tourism.portal.controller.system;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.yjtech.wisdom.tourism.common.annotation.IgnoreAuth;
 import com.yjtech.wisdom.tourism.common.core.domain.IdParam;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.system.domain.TagEntity;
 import com.yjtech.wisdom.tourism.system.service.TagService;
 import com.yjtech.wisdom.tourism.system.vo.TagQueryVO;
 import com.yjtech.wisdom.tourism.system.vo.TagUpdateVO;
+import io.jsonwebtoken.lang.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.List;
 
 /**
  * 管理后台-标签管理
@@ -62,4 +65,18 @@ public class TagController {
         return JsonResult.success(tagService.queryForPage(vo));
     }
 
+    /**
+     * 根据角色查询标签信息
+     *
+     * @param vo
+     * @return
+     */
+    @IgnoreAuth
+    @PostMapping("queryByRole")
+    public JsonResult<TagEntity> queryByRole(@RequestBody @Valid TagQueryVO vo) {
+        List<TagEntity> entityList = tagService.queryForList(vo);
+        Assert.notEmpty(entityList, "标签信息不存在");
+
+        return JsonResult.success(entityList.get(0));
+    }
 }
