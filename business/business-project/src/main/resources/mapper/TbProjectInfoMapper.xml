@@ -173,7 +173,7 @@
         FROM
         tb_project_info
         WHERE
-        investment_total IS NOT NULL
+        investment_total IS NOT NULL and deleted=0
         )t
         GROUP BY name) b
         ON a.name = b.name
@@ -207,7 +207,7 @@
                sum(investment_total) * 10000
         from tb_project_info
         <where>
-            investment_total IS NOT NULL
+            investment_total IS NOT NULL and deleted=0
             <if test="params != null">
               <if test="params.beginTime != null and params.beginTime != ''">
                     and #{params.beginTime} &lt;= create_time
