@@ -386,4 +386,10 @@ public class TbProjectInfoEntity {
      * 收藏次数展示开关 0否 1是
      */
     private Byte collectNumFlag;
+
+    /**
+     * 展示序号
+     */
+    private Integer sortNum;
+
 }

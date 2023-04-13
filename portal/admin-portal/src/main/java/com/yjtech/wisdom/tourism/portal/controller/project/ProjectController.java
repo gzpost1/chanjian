@@ -90,7 +90,7 @@ public class ProjectController extends BusinessCommonController {
         LambdaQueryWrapper<TbProjectInfoEntity> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.like(StringUtils.isNotBlank(query.getProjectName()), TbProjectInfoEntity::getProjectName, query.getProjectName());
         queryWrapper.in(CollectionUtils.isNotEmpty(query.getStatus()), TbProjectInfoEntity::getStatus, query.getStatus());
-        queryWrapper.last(" order by ifnull(update_time,create_time) desc");
+        queryWrapper.last(" order by sort_num asc, ifnull(update_time,create_time) desc");
         IPage<TbProjectInfoEntity> pageResult = projectInfoService.page(new Page<>(query.getPageNo(), query.getPageSize()), queryWrapper);
         //构建已选中项目标签id列表
         List<TbProjectInfoEntity> records = pageResult.getRecords();
