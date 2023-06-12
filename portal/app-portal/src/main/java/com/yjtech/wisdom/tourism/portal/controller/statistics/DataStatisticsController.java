@@ -4,6 +4,8 @@ import com.yjtech.wisdom.tourism.common.annotation.IgnoreAuth;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
 import com.yjtech.wisdom.tourism.common.bean.BaseValueVO;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
+import com.yjtech.wisdom.tourism.common.utils.MathUtil;
+import com.yjtech.wisdom.tourism.project.dto.ProjectInvestmentDto;
 import com.yjtech.wisdom.tourism.project.dto.ProjectInvestmentStaticDto;
 import com.yjtech.wisdom.tourism.project.service.TbProjectInfoService;
 import com.yjtech.wisdom.tourism.project.service.TbProjectLabelService;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -69,7 +72,15 @@ public class DataStatisticsController {
     @IgnoreAuth
     public JsonResult<ProjectInvestmentStaticDto> queryInvestmentTotalTrend() {
         ProjectInvestmentStaticDto dto = new ProjectInvestmentStaticDto();
-        dto.setList(projectInfoService.getBaseMapper().queryInvestmentTotalTrend());
+        List<ProjectInvestmentDto> projectInvestmentDtos = projectInfoService.getBaseMapper().queryInvestmentTotalTrend();
+        double totalMoney = projectInvestmentDtos.stream().mapToDouble(d -> Double.parseDouble(d.getMoney())).sum();
+        projectInvestmentDtos.stream().forEach(projectInvestmentDto -> {
+            double money = Double.parseDouble(projectInvestmentDto.getMoney());
+            BigDecimal percent = MathUtil.calPercent(BigDecimal.valueOf(money), BigDecimal.valueOf(totalMoney), 2);
+            projectInvestmentDto.setScale(percent.toString());
+        });
+
+        dto.setList(projectInvestmentDtos);
         dto.setTotalMoney(projectInfoService.getBaseMapper().getInvestmentTotal(null));
         dto.setCompareMoney(projectInfoService.getCompareMoney());
         return JsonResult.success(dto);
