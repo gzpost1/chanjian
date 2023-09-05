@@ -9,35 +9,11 @@ spring:
       datasource:
         # 标准产监-开发
         industryMonitoringStandard:
-          url: jdbc:mysql://42.193.2.246:31907/industry_monitoring_standard_wlcy?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+          url: jdbc:mysql://220.197.15.146:30236/industry_monitoring_standard_wlcy?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
           username: root
           password: yjwl2019!@#
           driver-class-name: com.mysql.cj.jdbc.Driver
           type: com.alibaba.druid.pool.DruidDataSource
-        # 一码游贵州-开发
-        oneTravel:
-          url: jdbc:mysql://1.14.13.130:32620/db_one_travel?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
-          username: root
-          password: Xnh00<>?
-          driver-class-name: com.mysql.cj.jdbc.Driver
-        # 珊瑚礁-开发
-        fxDist:
-          url: jdbc:mysql://1.14.13.130:32487/db_dist?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
-          username: root
-          password: Xnh00<>?
-          driver-class-name: com.mysql.cj.jdbc.Driver
-        # 景区中心-开发
-        smartTravel:
-          url: jdbc:mysql://118.24.106.195:32487/db_smart_travel?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
-          username: root
-          password: Xnh00<>?
-          driver-class-name: com.mysql.cj.jdbc.Driver
-        # 酒店中心-开发
-        hotelCenter:
-          url: jdbc:mysql://1.14.13.130:31765/db_hotel?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
-          username: root
-          password: Xnh00<>?
-          driver-class-name: com.mysql.cj.jdbc.Driver
       druid:
         # 初始连接数
         initialSize: 5
