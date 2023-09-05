@@ -12,7 +12,7 @@ spring:
           driver-class-name: com.mysql.cj.jdbc.Driver
         # 一码游贵州-测试（第一套环境）
         oneTravel:
-          url: jdbc:mysql://mysql.test-guizhou:3306/db_one_travel?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+          url: jdbc:mysql://mysql.test-guizhou-bug:3306/db_one_travel?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
           username: root
           password: Xnh00<>?
           driver-class-name: com.mysql.cj.jdbc.Driver
