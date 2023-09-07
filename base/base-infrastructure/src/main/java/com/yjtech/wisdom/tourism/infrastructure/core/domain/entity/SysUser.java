@@ -74,11 +74,17 @@ public class SysUser extends BaseEntity {
   /** 角色对象 */
   private List<SysRole> roles;
 
+  /** 数据权限区划 */
+  private List<DictArea> areas;
+
   /** 角色组 */
   private Long[] roleIds;
 
   /** 岗位组 */
   private Long[] postIds;
+
+  /** 区域组 */
+  private String[] areaCodes;
 
   /** 备注 */
   @Size(max = 100, message = "备注长度不能超过100个字符")

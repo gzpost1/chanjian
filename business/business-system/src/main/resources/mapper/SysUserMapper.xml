@@ -27,6 +27,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result property="pushToken"       column="push_token"       />
 		<association property="dept"    column="dept_id" javaType="com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysDept" resultMap="deptResult" />
 		<collection  property="roles"   javaType="java.util.List"        resultMap="RoleResult" />
+		<collection  property="areas"   javaType="java.util.List"        resultMap="AreaResult" />
 	</resultMap>
 
 	<resultMap id="deptResult" type="com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysDept">
@@ -47,6 +48,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result property="status"       column="role_status"    />
 		<result property="permissionType"       column="permission_type"    />
 	</resultMap>
+	<resultMap id="AreaResult" type="com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.DictArea">
+		<id     property="code"       column="area_code"        />
+		<result property="name"     column="area_name"      />
+	</resultMap>
 
 	<sql id="selectUserVo">
         select u.user_id, u.dept_id, u.user_name, u.nick_name, u.email, u.avatar, u.phonenumber, u.password, u.sex, u.status as status, u.deleted, u.login_ip, u.login_date, u.create_user, u.create_time, u.remark, u.push_token,
@@ -60,11 +65,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectUserList" parameterType="com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysUser" resultMap="SysUserResult">
 		select u.user_id, u.dept_id, u.nick_name, u.user_name, u.email, u.avatar, u.phonenumber, u.password, u.sex, u.status, u.deleted, u.login_ip, u.login_date, u.create_user, u.create_time, u.remark, d.dept_name, d.leader,
-		r.role_name
+		r.role_name,ua.area_code, a.name area_name
 		from sys_user u
 		left join sys_dept d on u.dept_id = d.dept_id
 		left join sys_user_role ur on u.user_id = ur.user_id
 		left join sys_role r on r.role_id = ur.role_id
+		left join tb_user_area ua on u.user_id = ua.user_id
+		left join tb_dict_area a on ua.area_code = a.code
 		where u.deleted = '0'
 		<if test="args.userName != null and args.userName != ''">
 			AND u.user_name like concat('%', #{args.userName}, '%')
@@ -224,4 +231,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </foreach>
  	</delete>
 
+	<select id="selectUserAreaById" resultMap="AreaResult">
+		select code area_code, name area_name
+		from tb_user_area ua
+				 left join tb_dict_area da on ua.area_code = da.code
+		where user_id = #{userId}
+	</select>
 </mapper>
