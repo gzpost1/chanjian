@@ -359,6 +359,12 @@
             <if test="params.typeSign != null and params.typeSign == 4">
                 and ri.project_label is not null
             </if>
+            <if test="params.createBeginTime != null">
+                and ri.create_time >= #{params.createBeginTime}
+            </if>
+            <if test="params.createEndTime != null">
+                and ri.create_time &lt;= #{params.createEndTime}
+            </if>
         </if>
     </sql>
 </mapper>

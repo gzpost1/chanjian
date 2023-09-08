@@ -24,7 +24,9 @@ import com.yjtech.wisdom.tourism.common.exception.CustomException;
 import com.yjtech.wisdom.tourism.common.utils.DateUtils;
 import com.yjtech.wisdom.tourism.common.utils.ExcelFormReadUtil;
 import com.yjtech.wisdom.tourism.common.utils.IdWorker;
+import com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.DictArea;
 import com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysRole;
+import com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysUser;
 import com.yjtech.wisdom.tourism.infrastructure.utils.SecurityUtils;
 import com.yjtech.wisdom.tourism.portal.controller.common.BusinessCommonController;
 import com.yjtech.wisdom.tourism.project.dto.ProjectQuery;
@@ -53,6 +55,7 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 后台管理-项目
@@ -87,7 +90,12 @@ public class ProjectController extends BusinessCommonController {
      */
     @PostMapping("/queryForPage")
     public JsonResult<IPage<TbProjectInfoEntity>> queryForPage(@RequestBody ProjectQuery query) {
+        SysUser user = SecurityUtils.getLoginUser().getUser();
+        List<DictArea> areas = user.getAreas();
         LambdaQueryWrapper<TbProjectInfoEntity> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.in(!user.isAdmin(), TbProjectInfoEntity::getAreaCode, areas.stream()
+                .map(DictArea::getCode)
+                .collect(Collectors.toList()));
         queryWrapper.like(StringUtils.isNotBlank(query.getProjectName()), TbProjectInfoEntity::getProjectName, query.getProjectName());
         queryWrapper.in(CollectionUtils.isNotEmpty(query.getStatus()), TbProjectInfoEntity::getStatus, query.getStatus());
         queryWrapper.last(" order by sort_num asc, ifnull(update_time,create_time) desc");

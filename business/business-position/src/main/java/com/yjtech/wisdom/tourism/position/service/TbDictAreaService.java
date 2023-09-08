@@ -69,4 +69,10 @@ public class TbDictAreaService extends BaseMybatisServiceImpl<TbDictAreaMapper, 
     static public Integer getAreaLevel(TbDictAreaEntity dictAreaEntity) {
         return dictAreaEntity.getLevel();
     }
+
+    public List<TbDictAreaEntity> subArea(String code) {
+        LambdaQueryWrapper<TbDictAreaEntity> queryWrapper = Wrappers.lambdaQuery();
+        queryWrapper.likeRight(TbDictAreaEntity::getCode, code);
+        return list(queryWrapper);
+    }
 }

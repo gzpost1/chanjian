@@ -232,6 +232,10 @@ public class TbRegisterInfoEntity extends Model<TbRegisterInfoEntity> {
      * 所在地区域编码
      */
     private String areaCode;
+    /**
+     * 区域名称
+     */
+    private String areaName;
 
 
     public static final String ID = "id";
@@ -356,6 +360,11 @@ public class TbRegisterInfoEntity extends Model<TbRegisterInfoEntity> {
      */
     @TableField(exist = false)
     private String typeSign;
+
+    @TableField(exist = false)
+    private LocalDateTime createBeginTime;
+    @TableField(exist = false)
+    private LocalDateTime createEndTime;
 
     public void setInvestmentLabel(List<String> investmentLabel) {
         if (CollectionUtils.isEmpty(investmentLabel)) {
