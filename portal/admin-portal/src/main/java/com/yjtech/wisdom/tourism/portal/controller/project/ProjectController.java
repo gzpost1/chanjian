@@ -21,6 +21,7 @@ import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.common.core.domain.UpdateStatusParam;
 import com.yjtech.wisdom.tourism.common.enums.*;
 import com.yjtech.wisdom.tourism.common.exception.CustomException;
+import com.yjtech.wisdom.tourism.common.utils.AreaUtils;
 import com.yjtech.wisdom.tourism.common.utils.DateUtils;
 import com.yjtech.wisdom.tourism.common.utils.ExcelFormReadUtil;
 import com.yjtech.wisdom.tourism.common.utils.IdWorker;
@@ -69,14 +70,14 @@ public class ProjectController extends BusinessCommonController {
     @Autowired
     private TbProjectResourceService projectResourceService;
     @Autowired
-    private TbProjectLabelRelationService tbProjectLabelRelationService;    
-	@Autowired
+    private TbProjectLabelRelationService tbProjectLabelRelationService;
+    @Autowired
     private SysDictDataService sysDictDataService;
-	@Autowired
+    @Autowired
     private NoticeService noticeService;
-	@Autowired
+    @Autowired
     private TbFavoriteService tbFavoriteService;
-	@Autowired
+    @Autowired
     private ChatMessageService chatMessageService;
 
 
@@ -90,23 +91,24 @@ public class ProjectController extends BusinessCommonController {
      */
     @PostMapping("/queryForPage")
     public JsonResult<IPage<TbProjectInfoEntity>> queryForPage(@RequestBody ProjectQuery query) {
+        if (StringUtils.isNotBlank(query.getAreaCode())) {
+            query.setAreaCode(AreaUtils.trimCode(query.getAreaCode()));
+        }
         SysUser user = SecurityUtils.getLoginUser().getUser();
         List<DictArea> areas = user.getAreas();
-        LambdaQueryWrapper<TbProjectInfoEntity> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.in(!user.isAdmin(), TbProjectInfoEntity::getAreaCode, areas.stream()
-                .map(DictArea::getCode)
-                .collect(Collectors.toList()));
-        queryWrapper.like(StringUtils.isNotBlank(query.getProjectName()), TbProjectInfoEntity::getProjectName, query.getProjectName());
-        queryWrapper.in(CollectionUtils.isNotEmpty(query.getStatus()), TbProjectInfoEntity::getStatus, query.getStatus());
-        queryWrapper.last(" order by sort_num asc, ifnull(update_time,create_time) desc");
-        IPage<TbProjectInfoEntity> pageResult = projectInfoService.page(new Page<>(query.getPageNo(), query.getPageSize()), queryWrapper);
+        if (!user.isAdmin()) {
+            query.setAreaCodes(areas.stream().map(DictArea::getCode).collect(Collectors.toList()));
+        }
+        if (!user.isAdmin() && CollectionUtils.isEmpty(areas)) {
+            return JsonResult.success(new Page<>());
+        }
+        IPage<TbProjectInfoEntity> pageResult = projectInfoService.customPage(query);
         //构建已选中项目标签id列表
         List<TbProjectInfoEntity> records = pageResult.getRecords();
-        if(CollectionUtils.isNotEmpty(records)){
-            for(TbProjectInfoEntity entity : records){
+        if (CollectionUtils.isNotEmpty(records)) {
+            for (TbProjectInfoEntity entity : records) {
                 entity.setPitchOnLabelIdList(tbProjectLabelRelationService.queryForLabelIdListByProjectId(entity.getId()));
             }
-            pageResult.setRecords(records);
         }
         return JsonResult.success(pageResult);
     }
@@ -121,15 +123,12 @@ public class ProjectController extends BusinessCommonController {
      */
     @PostMapping("/queryForDetail")
     public JsonResult<TbProjectInfoEntity> queryForDetail(@RequestBody @Valid IdParam idParam) {
-        TbProjectInfoEntity entity = Optional.ofNullable(projectInfoService.getById(idParam.getId())).orElse(new TbProjectInfoEntity());
+        TbProjectInfoEntity entity = Optional.ofNullable(projectInfoService.getById(idParam.getId()))
+                .orElse(new TbProjectInfoEntity());
 
         if (!Objects.isNull(entity.getId())) {
-            entity.setResource(
-                    Optional.ofNullable(
-                            projectResourceService.
-                                    list(new LambdaQueryWrapper<TbProjectResourceEntity>().eq(TbProjectResourceEntity::getProjectId, entity.getId())))
-                            .orElse(new ArrayList<TbProjectResourceEntity>())
-            );
+            entity.setResource(Optional.ofNullable(projectResourceService.list(new LambdaQueryWrapper<TbProjectResourceEntity>().eq(TbProjectResourceEntity::getProjectId, entity.getId())))
+                    .orElse(new ArrayList<TbProjectResourceEntity>()));
             //构建已选中项目标签id列表
             entity.setPitchOnLabelIdList(tbProjectLabelRelationService.queryForLabelIdListByProjectId(entity.getId()));
         }
@@ -267,7 +266,7 @@ public class ProjectController extends BusinessCommonController {
         //发送项目审核通知
         try {
             sendProjectAuditNotice(entity.getId(), entity.getProjectName(), entity.getStatus());
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error("******************** 发送项目审核通知异常 ********************");
             e.printStackTrace();
         }
@@ -283,8 +282,7 @@ public class ProjectController extends BusinessCommonController {
     @PostMapping("/updateViewNumFlag")
     public JsonResult updateViewNumFlag(@RequestBody @Valid UpdateStatusParam param) {
         Assert.isTrue(SysRole.isAdmin(SecurityUtils.getUserId()), "当前用户无权限操作");
-        projectInfoService.update(new LambdaUpdateWrapper<TbProjectInfoEntity>()
-                .eq(TbProjectInfoEntity::getId, param.getId())
+        projectInfoService.update(new LambdaUpdateWrapper<TbProjectInfoEntity>().eq(TbProjectInfoEntity::getId, param.getId())
                 .set(null != param.getStatus(), TbProjectInfoEntity::getViewNumFlag, param.getStatus()));
         return JsonResult.success();
     }
@@ -298,8 +296,7 @@ public class ProjectController extends BusinessCommonController {
     @PostMapping("/updateCollectNumFlag")
     public JsonResult updateCollectNumFlag(@RequestBody @Valid UpdateStatusParam param) {
         Assert.isTrue(SysRole.isAdmin(SecurityUtils.getUserId()), "当前用户无权限操作");
-        projectInfoService.update(new LambdaUpdateWrapper<TbProjectInfoEntity>()
-                .set(null != param.getStatus(), TbProjectInfoEntity::getCollectNumFlag, param.getStatus())
+        projectInfoService.update(new LambdaUpdateWrapper<TbProjectInfoEntity>().set(null != param.getStatus(), TbProjectInfoEntity::getCollectNumFlag, param.getStatus())
                 .eq(TbProjectInfoEntity::getId, param.getId()));
         return JsonResult.success();
     }
@@ -325,7 +322,7 @@ public class ProjectController extends BusinessCommonController {
     public JsonResult<TbProjectInfoEntity> importExcel(@RequestParam("file") MultipartFile file) throws IOException {
 //        InputStream fileIs = this.getClass().getClassLoader().getResourceAsStream("files/excel/招商平台项目信息登记表（模板）（试行）.xlsx");
 
-        if(Objects.isNull(file)){
+        if (Objects.isNull(file)) {
             throw new CustomException("上传附件不能为空");
 
         }
@@ -340,12 +337,12 @@ public class ProjectController extends BusinessCommonController {
         }
 
         //校验项目名称是否重复
-        if(StringUtils.isNotBlank(entity.getProjectName())){
+        if (StringUtils.isNotBlank(entity.getProjectName())) {
             validateProjectName(null, entity.getProjectName());
         }
 
         //校验参数的合法性
-        new ExcelFormReadUtil<TbProjectInfoEntity>().validateExcelReadData(entity,"entity");
+        new ExcelFormReadUtil<TbProjectInfoEntity>().validateExcelReadData(entity, "entity");
 
         //构建区域信息
         String[] areaInfo = entity.getAreaCode().split("-");
@@ -357,6 +354,7 @@ public class ProjectController extends BusinessCommonController {
 
     /**
      * 修改置顶状态
+     *
      * @Param:
      * @return:
      */
@@ -376,9 +374,9 @@ public class ProjectController extends BusinessCommonController {
      * @param projectId
      * @param labelIdList
      */
-    private void buildProjectLabelRelation(boolean result, Long projectId, List<Long> labelIdList){
+    private void buildProjectLabelRelation(boolean result, Long projectId, List<Long> labelIdList) {
         //构建项目-标签关联
-        if(result){
+        if (result) {
             tbProjectLabelRelationService.build(projectId, labelIdList);
         }
     }
@@ -390,17 +388,16 @@ public class ProjectController extends BusinessCommonController {
      * @param projectName
      * @param auditStatus
      */
-    private void sendProjectAuditNotice(Long projectId, String projectName, Byte auditStatus){
+    private void sendProjectAuditNotice(Long projectId, String projectName, Byte auditStatus) {
         //查询模板类型
         Byte noticeTemplateType = NoticeTemplateTypeEnum.getNoticeTemplateTypeByAuditStatus(auditStatus);
-        if(null == noticeTemplateType){
+        if (null == noticeTemplateType) {
             return;
         }
         //查询 消息模板类型 信息
         String noticeTemplate = sysDictDataService.selectDictLabel(Constants.DICT_TYPE_NOTICE_TEMPLATE, noticeTemplateType.toString());
         //构建项目申报模板消息
-        noticeService.create(new NoticeCreateVO(String.format(noticeTemplate, projectName),
-                NoticeTypeEnum.NOTICE_TYPE_PROGRAM_DECLARE.getType(), null, projectId.toString()));
+        noticeService.create(new NoticeCreateVO(String.format(noticeTemplate, projectName), NoticeTypeEnum.NOTICE_TYPE_PROGRAM_DECLARE.getType(), null, projectId.toString()));
     }
 
 
@@ -411,10 +408,8 @@ public class ProjectController extends BusinessCommonController {
      * @param response
      */
     @GetMapping("/download")
-    public void download(@RequestParam(value = "id")  Long id,
-                         HttpServletRequest request,
-                         HttpServletResponse response) {
-        projectInfoService.download(id,request,response);
+    public void download(@RequestParam(value = "id") Long id, HttpServletRequest request, HttpServletResponse response) {
+        projectInfoService.download(id, request, response);
     }
 
     /**
@@ -441,7 +436,7 @@ public class ProjectController extends BusinessCommonController {
     /**
      * 查询趋势-浏览数、点赞数、留言数、收藏数
      * <p style="color:red">
-     *     该接口开始日期与结束日期必传
+     * 该接口开始日期与结束日期必传
      * </p>
      *
      * @param vo
@@ -472,10 +467,9 @@ public class ProjectController extends BusinessCommonController {
         //获取留言数
         List<BaseVO> list4;
         //企业id为空时，则构建默认
-        if(StringUtils.isBlank(project.getCompanyId())){
-            list4 = DateUtils.getInitBaseVO(vo.getBeginDate().format(DateTimeFormatter.ISO_LOCAL_DATE),
-                    vo.getEndDate().format(DateTimeFormatter.ISO_LOCAL_DATE),
-                    DateUtils.YYYY_MM_DD, Calendar.DAY_OF_YEAR);
+        if (StringUtils.isBlank(project.getCompanyId())) {
+            list4 = DateUtils.getInitBaseVO(vo.getBeginDate().format(DateTimeFormatter.ISO_LOCAL_DATE), vo.getEndDate()
+                    .format(DateTimeFormatter.ISO_LOCAL_DATE), DateUtils.YYYY_MM_DD, Calendar.DAY_OF_YEAR);
         } else {
             //设置所属企业id
             vo.setCompanyId(project.getCompanyId());

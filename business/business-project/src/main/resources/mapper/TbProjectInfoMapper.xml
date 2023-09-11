@@ -49,6 +49,9 @@
         <result column="is_top" jdbcType="TINYINT" property="isTop"/>
         <result column="project_map" jdbcType="VARCHAR" property="projectMap"/>
         <result column="sort_num"  property="sortNum"/>
+        <result column="audit_status"  property="auditStatus"/>
+        <result column="audit_time"  property="auditTime"/>
+        <result column="next_audit_user_ids"  property="nextAuditUserIds" typeHandler="com.yjtech.wisdom.tourism.mybatis.typehandler.ListLongJsonTypeHandler"/>
     </resultMap>
     <sql id="Base_Column_List">
         <!--@mbg.generated-->
@@ -68,29 +71,30 @@
         select
         <include refid="Base_Column_List"/>
         from
-        tb_project_info
+        tb_project_info tpi left join tb_audit_manage_info tami on tpi.id = tami.source_id
         <where>
-            deleted = 0
+            tpi.deleted = 0
+            and tami.status = 1
             <if test="params != null">
                 <if test="params.projectName != null and params.projectName != ''">
                     and project_name LIKE CONCAT('%',#{params.projectName},'%')
                 </if>
                 <choose>
                     <when test="params.status != null and params.status.size > 0">
-                        and status in
+                        and tpi.status in
                         <foreach collection="params.status" item="item" open="(" separator="," close=")">
                             #{item}
                         </foreach>
                     </when>
                     <otherwise>
-                        and status = 2
+                        and tpi.status = 2
                     </otherwise>
                 </choose>
                 <if test="params.areaCode != null and params.areaCode != ''">
                     and area_code LIKE CONCAT(#{params.areaCode},'%')
                 </if>
                 <if test="params.labelIdList != null and params.labelIdList.size > 0">
-                    and id in
+                    and tpi.id in
                     (select project_id from tb_project_label_relation
                     where
                     label_id in
@@ -273,5 +277,34 @@
         GROUP BY LEFT(update_time,10)) as dataInfo
         ON dateInfo.mark = dataInfo.mark
         ORDER BY dateInfo.mark
+    </select>
+
+    <select id="customPage" resultMap="BaseResultMap">
+        select tpi.* ,tami.status audit_status, tami.next_audit_user_ids, tami.create_time audit_time
+        from tb_project_info tpi left join tb_audit_manage_info tami on tpi.id = tami.source_id
+        <where>
+            <if test="query.updateBeginTime != null">
+                and tpi.update_time >= #{query.updateBeginTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="query.updateEndTime != null">
+                and tpi.update_time &lt;= #{query.updateEndTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="query.status != null and query.status.size() != 0">
+                and tpi.status in
+                <foreach collection="query.status" item="item" index="index" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="query.areaCodes != null and query.areaCodes.size() != 0">
+                and tpi.area_code in
+                <foreach collection="query.areaCodes" item="item" index="index" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="query.areaCode != null and query.areaCode != ''">
+                and tpi.area_code = #{query.areaCode,jdbcType=VARCHAR}
+            </if>
+        </where>
+        order by sort_num, ifnull(tpi.update_time, tpi.create_time) desc
     </select>
 </mapper>

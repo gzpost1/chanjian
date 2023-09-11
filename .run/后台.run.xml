@@ -1,0 +1,38 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="后台" type="DEPLOY_HOST_RUN_CONFIGURATION" factoryName="Deploy to Host">
+    <option name="accountModel" />
+    <option name="accountModels" />
+    <option name="address" />
+    <option name="afterCommand" value="./upload.sh;curl -u &quot;token-bwtll:xwkvbqnpxf6fghk2dclsk6w5j8jp5lhwc8g4tzfz8gwvkcj4m9sjc4&quot; -X POST -H 'Accept: application/json' -H 'Content-Type: application/json' 'https://paas-test.ymygz.com:10443/v3/project/local:p-r7j28/workloads/deployment:dev-guiyang-wenlvzhaoshang:admin-portal?action=redeploy' -k" />
+    <option name="alreadyReset" value="true" />
+    <option name="autoOpen" value="false" />
+    <option name="beforeCommand" value="" />
+    <option name="defaultTabIdx" value="0" />
+    <option name="ecsInstance">
+      <EcsInstance>
+        <option name="OSType" />
+        <option name="instanceId" />
+        <option name="instanceName" />
+        <option name="netType" />
+        <option name="privateIps" />
+        <option name="publicIps" />
+        <option name="regionId" />
+        <option name="tags" />
+      </EcsInstance>
+    </option>
+    <option name="ecsInstances" />
+    <option name="hostIds">
+      <list>
+        <option value="2" />
+      </list>
+    </option>
+    <option name="hostTagId" value="0" />
+    <option name="location" value="/root/dev-wlcy/admin-api" />
+    <option name="pathOrUrl" value="D:\Repo\standard\portal\admin-portal\target\admin-portal-1.0-SNAPSHOT.jar" />
+    <option name="tagId" value="0" />
+    <option name="terminalCommand" />
+    <option name="type" value="HOST" />
+    <option name="uploadType" value="FILE" />
+    <method v="2" />
+  </configuration>
+</component>

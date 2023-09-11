@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjtech.wisdom.tourism.resource.auditmanage.mapper.AuditManageInfoMapper">
+  <resultMap id="BaseResultMap" type="com.yjtech.wisdom.tourism.resource.auditmanage.entity.AuditManageInfo">
+    <!--@mbg.generated-->
+    <!--@Table tb_audit_manage_info-->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="process_id" jdbcType="BIGINT" property="processId" />
+    <result column="source_id" jdbcType="BIGINT" property="sourceId" />
+    <result column="next_audit_user_ids" jdbcType="VARCHAR" property="nextAuditUserIds" typeHandler="com.yjtech.wisdom.tourism.mybatis.typehandler.ListLongJsonTypeHandler"/>
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="create_user" jdbcType="BIGINT" property="createUser" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="update_user" jdbcType="BIGINT" property="updateUser" />
+    <result column="deleted" jdbcType="BOOLEAN" property="deleted" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, process_id, source_id, next_audit_user_ids, `status`, create_time, create_user, 
+    update_time, update_user, deleted
+  </sql>
+</mapper>

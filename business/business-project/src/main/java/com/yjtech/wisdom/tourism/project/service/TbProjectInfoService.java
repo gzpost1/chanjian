@@ -67,13 +67,12 @@ public class TbProjectInfoService extends ServiceImpl<TbProjectInfoMapper, TbPro
         this.removeById(id);
 
         LambdaUpdateWrapper<TbProjectResourceEntity> wrapper = new LambdaUpdateWrapper<TbProjectResourceEntity>();
-        wrapper.eq(TbProjectResourceEntity::getProjectId,id);
+        wrapper.eq(TbProjectResourceEntity::getProjectId, id);
         boolean result = projectResourceService.remove(wrapper);
 
         //同步删除该项目的标签关联
-        if(result){
-            tbProjectLabelRelationService.remove(new LambdaQueryWrapper<TbProjectLabelRelationEntity>()
-                    .eq(TbProjectLabelRelationEntity::getProjectId, id));
+        if (result) {
+            tbProjectLabelRelationService.remove(new LambdaQueryWrapper<TbProjectLabelRelationEntity>().eq(TbProjectLabelRelationEntity::getProjectId, id));
         }
     }
 
@@ -85,15 +84,14 @@ public class TbProjectInfoService extends ServiceImpl<TbProjectInfoMapper, TbPro
      * @return
      */
     @Transactional(readOnly = true)
-    public List<TbProjectInfoEntity> queryForList(ProjectQuery params){
+    public List<TbProjectInfoEntity> queryForList(ProjectQuery params) {
         List<TbProjectInfoEntity> list = baseMapper.queryForList(null, params);
         //构建已选中项目标签id列表
-        if(CollectionUtils.isNotEmpty(list)){
-            for(TbProjectInfoEntity entity : list){
+        if (CollectionUtils.isNotEmpty(list)) {
+            for (TbProjectInfoEntity entity : list) {
                 entity.setPitchOnLabelIdList(tbProjectLabelRelationService.queryForLabelIdListByProjectId(entity.getId()));
-                entity.setResource(Optional.ofNullable(
-                        projectResourceService.
-                                list(new LambdaQueryWrapper<TbProjectResourceEntity>().eq(TbProjectResourceEntity::getProjectId, entity.getId()))).orElse(new ArrayList<>()));
+                entity.setResource(Optional.ofNullable(projectResourceService.list(new LambdaQueryWrapper<TbProjectResourceEntity>().eq(TbProjectResourceEntity::getProjectId, entity.getId())))
+                        .orElse(new ArrayList<>()));
             }
         }
         return list;
@@ -106,12 +104,12 @@ public class TbProjectInfoService extends ServiceImpl<TbProjectInfoMapper, TbPro
      * @return
      */
     @Transactional(readOnly = true)
-    public IPage<TbProjectInfoEntity> queryForPage(ProjectQuery params){
+    public IPage<TbProjectInfoEntity> queryForPage(ProjectQuery params) {
         Page<TbProjectInfoEntity> page = new Page<>(params.getPageNo(), params.getPageSize());
         List<TbProjectInfoEntity> records = baseMapper.queryForList(page, params);
         //构建已选中项目标签id列表
-        if(CollectionUtils.isNotEmpty(records)){
-            for(TbProjectInfoEntity entity : records){
+        if (CollectionUtils.isNotEmpty(records)) {
+            for (TbProjectInfoEntity entity : records) {
                 entity.setPitchOnLabelIdList(tbProjectLabelRelationService.queryForLabelIdListByProjectId(entity.getId()));
             }
             page.setRecords(records);
@@ -122,16 +120,21 @@ public class TbProjectInfoService extends ServiceImpl<TbProjectInfoMapper, TbPro
 
     /**
      * 大屏-数据统计-平台项目累计总数
+     *
      * @Param:
      * @return:
      */
     public List<BaseValueVO> queryProjectNumTrend() {
         LocalDateTime endTime = LocalDateTime.now();
-        LocalDateTime beginTime = endTime.minusMonths(11).with(TemporalAdjusters.firstDayOfMonth())
-                .withHour(0).withMinute(0).withSecond(0).withNano(0);
+        LocalDateTime beginTime = endTime.minusMonths(11)
+                .with(TemporalAdjusters.firstDayOfMonth())
+                .withHour(0)
+                .withMinute(0)
+                .withSecond(0)
+                .withNano(0);
         //上线时间为2022-05-01，仅展示2022年5月以后的月份及对应数据
         LocalDateTime beginTime1 = LocalDate.of(2022, 5, 1).atStartOfDay();
-        if(beginTime.isBefore(beginTime1)){
+        if (beginTime.isBefore(beginTime1)) {
             beginTime = beginTime1;
         }
         List<BaseVO> vos = baseMapper.queryProjectNumTrend(beginTime, endTime);
@@ -141,7 +144,7 @@ public class TbProjectInfoService extends ServiceImpl<TbProjectInfoMapper, TbPro
         Map<String, BaseVO> map = vos.stream().collect(Collectors.toMap(BaseVO::getName, e -> e));
 
         long sum = 0; //项目总数
-        while (!endTime.isBefore(beginTime)){
+        while (!endTime.isBefore(beginTime)) {
             int i = beginTime.getMonthValue();
             String month = Convert.numberToChinese(i, false);
             nameList.add((i < 10 ? month : StringUtils.substring(month, 1)) + "月");
@@ -157,16 +160,21 @@ public class TbProjectInfoService extends ServiceImpl<TbProjectInfoMapper, TbPro
 
     /**
      * 大屏-数据统计-月度总投资额与引资金额需求趋势
+     *
      * @Param:
      * @return:
      */
     public List<BaseValueVO> queryProjectAmountTrend() {
         LocalDateTime endTime = LocalDateTime.now();
-        LocalDateTime beginTime = endTime.minusMonths(11).with(TemporalAdjusters.firstDayOfMonth())
-                .withHour(0).withMinute(0).withSecond(0).withNano(0);
+        LocalDateTime beginTime = endTime.minusMonths(11)
+                .with(TemporalAdjusters.firstDayOfMonth())
+                .withHour(0)
+                .withMinute(0)
+                .withSecond(0)
+                .withNano(0);
         //上线时间为2022-05-01，仅展示2022年5月以后的月份及对应数据
         LocalDateTime beginTime1 = LocalDate.of(2022, 5, 1).atStartOfDay();
-        if(beginTime.isBefore(beginTime1)){
+        if (beginTime.isBefore(beginTime1)) {
             beginTime = beginTime1;
         }
         List<ProjectAmountVo> vos = baseMapper.queryProjectAmountTrend(beginTime, endTime);
@@ -210,11 +218,9 @@ public class TbProjectInfoService extends ServiceImpl<TbProjectInfoMapper, TbPro
      * @return
      */
     public int findBingProject(Long id) {
-        return tbProjectInfoMapper.selectCount(new LambdaQueryWrapper<TbProjectInfoEntity>()
-                .eq(TbProjectInfoEntity::getCompanyId, String.valueOf(id))
+        return tbProjectInfoMapper.selectCount(new LambdaQueryWrapper<TbProjectInfoEntity>().eq(TbProjectInfoEntity::getCompanyId, String.valueOf(id))
                 .eq(TbProjectInfoEntity::getStatus, Byte.valueOf("2"))
-                .eq(TbProjectInfoEntity::getDeleted, Byte.valueOf("0"))
-        );
+                .eq(TbProjectInfoEntity::getDeleted, Byte.valueOf("0")));
     }
 
     /**
@@ -223,7 +229,7 @@ public class TbProjectInfoService extends ServiceImpl<TbProjectInfoMapper, TbPro
      * @param companyId
      * @return
      */
-    public List<Long> queryIdListByCompanyId(Long companyId){
+    public List<Long> queryIdListByCompanyId(Long companyId) {
         return baseMapper.queryIdListByCompanyId(companyId);
     }
 
@@ -231,34 +237,32 @@ public class TbProjectInfoService extends ServiceImpl<TbProjectInfoMapper, TbPro
     /**
      * 下载项目信息，PPT,视频（压缩包）
      */
-    public void  download(Long projectId, HttpServletRequest request, HttpServletResponse response){
+    public void download(Long projectId, HttpServletRequest request, HttpServletResponse response) {
         TbProjectInfoEntity entity = Optional.ofNullable(baseMapper.selectById(projectId))
                 .orElseThrow(() -> new CustomException("项目不存在"));
         //获取项目资源（下载ppt,视频等资源）
         List<String> list = getResourceDownloadPath(projectId);
         //获取项目信息Excel
-        String excelPath=builcExcel(entity);
+        String excelPath = builcExcel(entity);
         list.add(excelPath);
-        String zipFilePath = FileDownloadUtils.RESOURCE_LOCATION+entity.getProjectName()+".zip";
+        String zipFilePath = FileDownloadUtils.RESOURCE_LOCATION + entity.getProjectName() + ".zip";
         try {
-            FileDownloadUtils.generateZip(zipFilePath,list);
+            FileDownloadUtils.generateZip(zipFilePath, list);
             File file = new File(zipFilePath);
-            if (!file.exists()){
+            if (!file.exists()) {
                 return;
             }
             response.setCharacterEncoding(CharEncoding.UTF_8);
             response.setContentType("application/force-download");
             response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
-            response.setHeader(
-                    "Content-Disposition",
-                    "attachment;fileName=" + FileUtils.setFileDownloadHeader(request, entity.getProjectName()+".zip"));
+            response.setHeader("Content-Disposition", "attachment;fileName=" + FileUtils.setFileDownloadHeader(request, entity.getProjectName() + ".zip"));
             InputStream fileInputStream = new FileInputStream(file);
             FileUtils.writeBytes(fileInputStream, response);
         } catch (Exception e) {
             throw new RuntimeException(e);
-        }finally {
+        } finally {
             File file = new File(zipFilePath);
-            if(file.exists()) {
+            if (file.exists()) {
                 file.delete();
             }
         }
@@ -266,24 +270,24 @@ public class TbProjectInfoService extends ServiceImpl<TbProjectInfoMapper, TbPro
 
     /**
      * 获取项目资源，ppt,mp4等本地资源路径
+     *
      * @param projectId
      * @return
      */
-    private List<String>  getResourceDownloadPath(Long projectId){
-        List<String> list=new ArrayList<>();
+    private List<String> getResourceDownloadPath(Long projectId) {
+        List<String> list = new ArrayList<>();
 
-        List<TbProjectResourceEntity> tbProjectResourceEntities = Optional.ofNullable(
-                projectResourceService.
-                        list(new LambdaQueryWrapper<TbProjectResourceEntity>().eq(TbProjectResourceEntity::getProjectId, projectId))).orElse(new ArrayList<>());
-        for (TbProjectResourceEntity tbProjectResourceEntity:tbProjectResourceEntities){
-            if (tbProjectResourceEntity.getResourceUrl() != null){
+        List<TbProjectResourceEntity> tbProjectResourceEntities = Optional.ofNullable(projectResourceService.list(new LambdaQueryWrapper<TbProjectResourceEntity>().eq(TbProjectResourceEntity::getProjectId, projectId)))
+                .orElse(new ArrayList<>());
+        for (TbProjectResourceEntity tbProjectResourceEntity : tbProjectResourceEntities) {
+            if (tbProjectResourceEntity.getResourceUrl() != null) {
                 String[] a = tbProjectResourceEntity.getResourceUrl().split("\\.");
-                String x=a[a.length - 1];
-                String downloadPath =FileDownloadUtils.RESOURCE_LOCATION + tbProjectResourceEntity.getName() + "." + x;
-                boolean b = FileDownloadUtils.downVideo(tbProjectResourceEntity.getResourceUrl(),downloadPath );
-                if (b){
+                String x = a[a.length - 1];
+                String downloadPath = FileDownloadUtils.RESOURCE_LOCATION + tbProjectResourceEntity.getName() + "." + x;
+                boolean b = FileDownloadUtils.downVideo(tbProjectResourceEntity.getResourceUrl(), downloadPath);
+                if (b) {
                     list.add(downloadPath);
-                    log.info("已下载成功地址路径: {}",downloadPath);
+                    log.info("已下载成功地址路径: {}", downloadPath);
                 }
             }
         }
@@ -293,6 +297,7 @@ public class TbProjectInfoService extends ServiceImpl<TbProjectInfoMapper, TbPro
 
     /**
      * 根据模板写入项目信息
+     *
      * @param entity
      * @return
      */
@@ -338,15 +343,16 @@ public class TbProjectInfoService extends ServiceImpl<TbProjectInfoMapper, TbPro
 
     /**
      * 读取excel模板，并复制到新文件中供写入和下载
+     *
      * @return
      */
-    public File createNewFile(String oldFileName, String newFileName){
+    public File createNewFile(String oldFileName, String newFileName) {
         //读取模板，并赋值到新文件************************************************************
         //文件模板路径
         InputStream resourceAsStream = this.getClass().getClassLoader().getResourceAsStream(oldFileName);
         //判断路径是否存在
         File dir = new File(FileDownloadUtils.RESOURCE_LOCATION);
-        if(!dir.exists()){
+        if (!dir.exists()) {
             dir.mkdirs();
         }
         //写入到新的excel
@@ -367,12 +373,13 @@ public class TbProjectInfoService extends ServiceImpl<TbProjectInfoMapper, TbPro
      * @return
      */
     @Transactional(readOnly = true)
-    public DataStatisticsDTO queryDataStatistics(){
+    public DataStatisticsDTO queryDataStatistics() {
         DataStatisticsDTO dto = baseMapper.queryDataStatisticsByDuration(new DataStatisticsQueryVO(null));
         dto.setTotalNum(baseMapper.selectCount(new LambdaQueryWrapper<>()));
 
         return dto;
     }
+
     /**
      * 查询趋势
      *
@@ -380,7 +387,7 @@ public class TbProjectInfoService extends ServiceImpl<TbProjectInfoMapper, TbPro
      * @return
      */
     @Transactional(readOnly = true)
-    public List<BaseVO> queryAnalysis(DataStatisticsQueryVO vo){
+    public List<BaseVO> queryAnalysis(DataStatisticsQueryVO vo) {
         return baseMapper.queryAnalysis(vo);
     }
 
@@ -391,7 +398,7 @@ public class TbProjectInfoService extends ServiceImpl<TbProjectInfoMapper, TbPro
      * @return
      */
     @Transactional(readOnly = true)
-    public List<BaseVO> queryViewNumAnalysis(ProjectDataStatisticsQueryVO vo){
+    public List<BaseVO> queryViewNumAnalysis(ProjectDataStatisticsQueryVO vo) {
         return baseMapper.queryViewNumAnalysis(vo);
     }
 
@@ -423,5 +430,9 @@ public class TbProjectInfoService extends ServiceImpl<TbProjectInfoMapper, TbPro
      */
     public List<BaseVO> queryDataStatic() {
         return baseMapper.queryDataStatic();
+    }
+
+    public IPage<TbProjectInfoEntity> customPage(ProjectQuery query) {
+        return baseMapper.customPage(new Page<>(query.getPageNo(), query.getPageSize()), query);
     }
 }

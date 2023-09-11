@@ -142,6 +142,8 @@ public class TbRegisterInfoParam extends PageQuery implements Serializable {
      */
     private String areaCode;
 
+    private String likeAreaCode;
+
     /**
      * 审核时间
      */

@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.common.enums.BeanValidationGroup;
 import com.yjtech.wisdom.tourism.mybatis.typehandler.ListJsonTypeHandler;
+import com.yjtech.wisdom.tourism.mybatis.typehandler.ListLongJsonTypeHandler;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -232,9 +233,11 @@ public class TbRegisterInfoEntity extends Model<TbRegisterInfoEntity> {
      * 所在地区域编码
      */
     private String areaCode;
+
     /**
      * 区域名称
      */
+    @TableField(exist = false)
     private String areaName;
 
 

@@ -1,6 +1,7 @@
 package com.yjtech.wisdom.tourism.project.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
 import com.yjtech.wisdom.tourism.project.dto.ProjectInvestmentDto;
@@ -99,4 +100,5 @@ public interface TbProjectInfoMapper extends BaseMapper<TbProjectInfoEntity> {
      */
     List<BaseVO> queryViewNumAnalysis(@Param("params") ProjectDataStatisticsQueryVO params);
 
+    IPage<TbProjectInfoEntity> customPage(Page<TbProjectInfoEntity> page, @Param("query") ProjectQuery query);
 }
