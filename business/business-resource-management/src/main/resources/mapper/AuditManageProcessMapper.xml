@@ -20,19 +20,27 @@
     deleted
   </sql>
 
-  <select id="nextProcess" resultMap="BaseResultMap">
-    select *
-    from tb_audit_manage_process
-    where sort > (select sort
-                  from tb_audit_manage_process
-                  where id = (select process_id
-                              from tb_audit_manage_log
-                              where deleted = 0
-                                and source_id = #{sourceId}
-                              order by create_time desc
-                              limit 1))
-      and deleted = 0
-    order by sort
+    <select id="nextProcess" resultMap="BaseResultMap">
+        select *
+        from tb_audit_manage_process
+        where sort > (select sort
+                      from tb_audit_manage_process
+                      where id = (select process_id
+                                  from tb_audit_manage_log
+                                  where deleted = 0
+                                    and source_id = #{sourceId}
+                                  order by create_time desc
+                                  limit 1))
+          and config_id = (select config_id
+                           from tb_audit_manage_process
+                           where id = (select process_id
+                                       from tb_audit_manage_log
+                                       where deleted = 0
+                                         and source_id = #{sourceId}
+                                       order by create_time desc
+                                       limit 1))
+          and deleted = 0
+        order by sort
     limit 1;
   </select>
 
