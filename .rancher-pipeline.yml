@@ -21,7 +21,7 @@ stages:
     when:
       branch:
         include:
-          - test_wlcy_v1.0
+          - test_wlcy
   - name: Deploy-admin-portal
     steps:
       - applyYamlConfig:
@@ -29,7 +29,7 @@ stages:
     when:
       branch:
         include:
-          - test_wlcy_v1.0
+          - test_wlcy
   - name: Publish-app-portal
     steps:
       - publishImageConfig:
@@ -45,7 +45,7 @@ stages:
     when:
       branch:
         include:
-          - test_wlcy_v1.0
+          - test_wlcy
   - name: Deploy-app-portal
     steps:
       - applyYamlConfig:
@@ -53,5 +53,5 @@ stages:
     when:
       branch:
         include:
-          - test_wlcy_v1.0
+          - test_wlcy
 timeout: 15
