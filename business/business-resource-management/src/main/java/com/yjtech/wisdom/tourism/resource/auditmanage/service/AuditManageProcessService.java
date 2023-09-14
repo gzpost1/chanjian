@@ -23,4 +23,8 @@ public class AuditManageProcessService extends ServiceImpl<AuditManageProcessMap
     public int insertList(List<AuditManageProcess> list) {
         return baseMapper.insertList(list);
     }
+
+    public int deleteByConfigId(Long configId) {
+        return baseMapper.deleteByConfigId(configId);
+    }
 }

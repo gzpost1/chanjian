@@ -16,5 +16,7 @@ public interface AuditManageProcessMapper extends BaseMapper<AuditManageProcess>
 
     int insertList(@Param("list")List<AuditManageProcess> list);
 
+    int deleteByConfigId(@Param("configId") Long configId);
+
 
 }

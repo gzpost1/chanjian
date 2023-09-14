@@ -18,7 +18,6 @@ import com.yjtech.wisdom.tourism.resource.auditmanage.entity.AuditManageInfo;
 import com.yjtech.wisdom.tourism.resource.auditmanage.entity.AuditManageProcess;
 import com.yjtech.wisdom.tourism.resource.auditmanage.service.AuditManageConfigService;
 import com.yjtech.wisdom.tourism.resource.auditmanage.service.AuditManageInfoService;
-import com.yjtech.wisdom.tourism.resource.auditmanage.service.AuditManageLogService;
 import com.yjtech.wisdom.tourism.resource.auditmanage.service.AuditManageProcessService;
 import com.yjtech.wisdom.tourism.system.service.SysUserService;
 import lombok.extern.slf4j.Slf4j;
@@ -48,8 +47,6 @@ public class AuditManageConfigController {
     private AuditManageConfigService auditManageConfigService;
     @Autowired
     private AuditManageProcessService auditManageProcessService;
-    @Autowired
-    private AuditManageLogService auditManageLogService;
     @Autowired
     private AuditManageInfoService auditManageInfoService;
     @Autowired
@@ -172,7 +169,10 @@ public class AuditManageConfigController {
         LambdaQueryWrapper<AuditManageConfig> configQuery = Wrappers.lambdaQuery();
         configQuery.eq(AuditManageConfig::getName, dto.getName());
         AuditManageConfig one = auditManageConfigService.getOne(configQuery);
-        AssertUtil.isTrue(Objects.equals(one.getId(), dto.getId()), "审核名称重复，请重新修改！");
+        AssertUtil.isTrue(one == null || Objects.equals(one.getId(), dto.getId()), "审核名称重复，请重新修改！");
+        if (one == null){
+            one = BeanMapper.map(dto, AuditManageConfig.class);
+        }
         // 编辑账号时，需检查之前的审核
         // 找出未审批过的log
         LambdaQueryWrapper<AuditManageProcess> processQuery = Wrappers.lambdaQuery();
@@ -205,7 +205,7 @@ public class AuditManageConfigController {
             auditManageProcess.setConfigId(dto.getId());
             auditManageProcess.setSort(sort++);
         }
-        auditManageProcessService.remove(processQuery);
+        auditManageProcessService.deleteByConfigId(dto.getId());
         auditManageProcessService.insertList(dto.getProcessList());
         return JsonResult.success();
     }
@@ -225,7 +225,7 @@ public class AuditManageConfigController {
                 }
             }
         }
-        return JsonResult.success();
+        return JsonResult.success(contained);
     }
 
     /**
@@ -247,7 +247,7 @@ public class AuditManageConfigController {
             infoQuery.eq(AuditManageInfo::getStatus, 0);
             AssertUtil.isTrue(auditManageInfoService.count(infoQuery) == 0, "该审批流程存在未审核完成的数据，无法删除");
         }
-        auditManageProcessService.remove(processQuery);
+        auditManageProcessService.deleteByConfigId(param.getId());
         return JsonResult.success(auditManageConfigService.removeById(param.getId()));
     }
 }
