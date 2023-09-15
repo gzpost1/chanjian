@@ -39,6 +39,7 @@ public class AuditManageController {
 
     /**
      * 提交审核
+     *
      * @param dto
      * @return
      */
@@ -51,6 +52,7 @@ public class AuditManageController {
         AssertUtil.isTrue(logService.count(logQuery) == 0, "");
         // 查审批初始节点
         AuditManageProcess auditProcess = processService.firstProcess(dto.getAuditName());
+        AssertUtil.notNull(auditProcess, "审核流程不存在");
         // 存log
         AuditManageLog auditLog = new AuditManageLog();
         auditLog.setAction(1);
