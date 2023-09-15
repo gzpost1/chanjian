@@ -19,4 +19,5 @@ public interface AuditManageProcessMapper extends BaseMapper<AuditManageProcess>
     int deleteByConfigId(@Param("configId") Long configId);
 
 
+    AuditManageProcess firstProcess(@Param("auditName") String auditName);
 }

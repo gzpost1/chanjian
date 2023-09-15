@@ -11,7 +11,13 @@ import javax.validation.constraints.Min;
  */
 @Data
 public class AuditDto {
+    /**
+     * 审批名称
+     */
     private String auditName;
+    /**
+     * 审批数据的id
+     */
     private Long sourceId;
     /**
      * 操作 1-通过 2-不通过

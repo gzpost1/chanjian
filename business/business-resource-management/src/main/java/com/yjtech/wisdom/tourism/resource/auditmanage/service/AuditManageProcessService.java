@@ -27,4 +27,8 @@ public class AuditManageProcessService extends ServiceImpl<AuditManageProcessMap
     public int deleteByConfigId(Long configId) {
         return baseMapper.deleteByConfigId(configId);
     }
+
+    public AuditManageProcess firstProcess(String auditName) {
+        return baseMapper.firstProcess(auditName);
+    }
 }
