@@ -7,10 +7,11 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 /**
- *
  * @author songjun
- * @since 2023/9/8
+ * @since 2023/9/18
  */
 public interface AuditManageLogMapper extends BaseMapper<AuditManageLog> {
     List<AuditManageLog> auditLogList(@Param("id") Long id);
+
+     int updateByProcessIdAndSourceId(@Param("updated")AuditManageLog updated,@Param("processId")Long processId,@Param("sourceId")Long sourceId);
 }

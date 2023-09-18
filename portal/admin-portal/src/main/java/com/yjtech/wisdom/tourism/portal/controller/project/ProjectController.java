@@ -5,6 +5,7 @@ import com.alibaba.excel.enums.CellExtraTypeEnum;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.yjtech.wisdom.tourism.bigscreen.service.TbFavoriteService;
 import com.yjtech.wisdom.tourism.chat.service.ChatMessageService;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
@@ -34,6 +35,7 @@ import com.yjtech.wisdom.tourism.project.dto.ProjectResourceQuery;
 import com.yjtech.wisdom.tourism.project.dto.ProjectUpdateStatusParam;
 import com.yjtech.wisdom.tourism.project.dto.ProjectUpdateTopParam;
 import com.yjtech.wisdom.tourism.project.entity.TbProjectInfoEntity;
+import com.yjtech.wisdom.tourism.project.entity.TbProjectLabelRelationEntity;
 import com.yjtech.wisdom.tourism.project.entity.TbProjectResourceEntity;
 import com.yjtech.wisdom.tourism.project.service.TbProjectInfoService;
 import com.yjtech.wisdom.tourism.project.service.TbProjectLabelRelationService;
@@ -102,8 +104,51 @@ public class ProjectController extends BusinessCommonController {
         //构建已选中项目标签id列表
         List<TbProjectInfoEntity> records = pageResult.getRecords();
         if (CollectionUtils.isNotEmpty(records)) {
+            LambdaQueryWrapper<TbProjectLabelRelationEntity> labelQuery = Wrappers.lambdaQuery();
+            labelQuery.in(TbProjectLabelRelationEntity::getProjectId, records.stream()
+                    .map(TbProjectInfoEntity::getId)
+                    .collect(Collectors.toList()));
+            Map<Long, List<Long>> labelMap = tbProjectLabelRelationService.list(labelQuery)
+                    .stream()
+                    .collect(Collectors.groupingBy(TbProjectLabelRelationEntity::getProjectId, Collectors.mapping(TbProjectLabelRelationEntity::getLabelId, Collectors.toList())));
             for (TbProjectInfoEntity entity : records) {
-                entity.setPitchOnLabelIdList(tbProjectLabelRelationService.queryForLabelIdListByProjectId(entity.getId()));
+                entity.setPitchOnLabelIdList(labelMap.get(entity.getId()));
+            }
+        }
+        return JsonResult.success(pageResult);
+    }
+
+    /**
+     * 分页列表
+     *
+     * @Param: query
+     * @return:
+     * @Author: zc
+     * @Date: 2021-07-14
+     */
+    @PostMapping("/auditPage")
+    public JsonResult<IPage<TbProjectInfoEntity>> auditPage(@RequestBody ProjectQuery query) {
+        if (StringUtils.isNotBlank(query.getAreaCode())) {
+            query.setAreaCode(AreaUtils.trimCode(query.getAreaCode()));
+        }
+        SysUser user = SecurityUtils.getLoginUser().getUser();
+        List<DictArea> areas = user.getAreas();
+        if (!user.isAdmin() && CollectionUtils.isNotEmpty(user.getAreas())) {
+            query.setAreaCodes(areas.stream().map(DictArea::getCode).collect(Collectors.toList()));
+        }
+        IPage<TbProjectInfoEntity> pageResult = projectInfoService.auditPage(query);
+        //构建已选中项目标签id列表
+        List<TbProjectInfoEntity> records = pageResult.getRecords();
+        if (CollectionUtils.isNotEmpty(records)) {
+            LambdaQueryWrapper<TbProjectLabelRelationEntity> labelQuery = Wrappers.lambdaQuery();
+            labelQuery.in(TbProjectLabelRelationEntity::getProjectId, records.stream()
+                    .map(TbProjectInfoEntity::getId)
+                    .collect(Collectors.toList()));
+            Map<Long, List<Long>> labelMap = tbProjectLabelRelationService.list(labelQuery)
+                    .stream()
+                    .collect(Collectors.groupingBy(TbProjectLabelRelationEntity::getProjectId, Collectors.mapping(TbProjectLabelRelationEntity::getLabelId, Collectors.toList())));
+            for (TbProjectInfoEntity entity : records) {
+                entity.setPitchOnLabelIdList(labelMap.get(entity.getId()));
             }
         }
         return JsonResult.success(pageResult);

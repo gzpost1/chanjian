@@ -170,34 +170,17 @@ public class AuditManageConfigController {
         configQuery.eq(AuditManageConfig::getName, dto.getName());
         AuditManageConfig one = auditManageConfigService.getOne(configQuery);
         AssertUtil.isTrue(one == null || Objects.equals(one.getId(), dto.getId()), "审核名称重复，请重新修改！");
-        if (one == null){
+        if (one == null) {
             one = BeanMapper.map(dto, AuditManageConfig.class);
         }
         // 编辑账号时，需检查之前的审核
-        // 找出未审批过的log
-        LambdaQueryWrapper<AuditManageProcess> processQuery = Wrappers.lambdaQuery();
-        processQuery.eq(AuditManageProcess::getConfigId, dto.getId());
-        List<AuditManageProcess> processList = auditManageProcessService.list(processQuery);
-        if (CollectionUtils.isNotEmpty(processList)) {
-            List<Long> processIds = processList.stream().map(AuditManageProcess::getId).collect(Collectors.toList());
-            // 检查未审批完成的数据
-            LambdaQueryWrapper<AuditManageInfo> infoQuery = Wrappers.lambdaQuery();
-            infoQuery.in(AuditManageInfo::getProcessId, processIds);
-            infoQuery.eq(AuditManageInfo::getStatus, 0);
-            List<AuditManageInfo> infoList = auditManageInfoService.list(infoQuery);
-            if (CollectionUtils.isNotEmpty(infoList)) {
-                for (AuditManageInfo info : infoList) {
-                    boolean ok = false;
-                    for (AuditManageProcess process : dto.getProcessList()) {
-                        if (new HashSet<>(process.getUserIds()).containsAll(info.getNextAuditUserIds())) {
-                            ok = true;
-                            break;
-                        }
-                    }
-                    AssertUtil.isTrue(ok, "原账号存在未审核的数据");
-                }
-            }
-        }
+        // 找出未审批过的info对应的process
+        List<AuditManageProcess> auditingProcessList = auditManageProcessService.auditingProcessList(dto.getId());
+        Set<Long> mustContainProcessIds = auditingProcessList.stream()
+                .map(AuditManageProcess::getId)
+                .collect(Collectors.toSet());
+        Set<Long> processIds = dto.getProcessList().stream().map(AuditManageProcess::getId).collect(Collectors.toSet());
+        AssertUtil.isTrue(processIds.containsAll(mustContainProcessIds), "原账号存在未审核的数据");
         one.setName(dto.getName());
         auditManageConfigService.updateById(one);
         int sort = 0;
@@ -211,21 +194,13 @@ public class AuditManageConfigController {
     }
 
     @PostMapping("checkBeforeUpdate")
-    public JsonResult<Boolean> checkBeforeUpdate(@RequestBody @Valid AuditManageConfigUpdateCheckDto dto) {
+    public JsonResult<Void> checkBeforeUpdate(@RequestBody @Valid AuditManageConfigUpdateCheckDto dto) {
         LambdaQueryWrapper<AuditManageInfo> queryWrapper = Wrappers.lambdaQuery();
         queryWrapper.eq(AuditManageInfo::getStatus, 0);
-        List<AuditManageInfo> list = auditManageInfoService.list(queryWrapper);
-        boolean contained = false;
-        jump:
-        for (AuditManageInfo info : list) {
-            for (Long userId : dto.getUserIds()) {
-                if (info.getNextAuditUserIds().contains(userId)) {
-                    contained = true;
-                    break jump;
-                }
-            }
-        }
-        return JsonResult.success(contained);
+        queryWrapper.eq(AuditManageInfo::getProcessId, dto.getProcessId());
+        int count = auditManageInfoService.count(queryWrapper);
+        AssertUtil.isTrue(count == 0, "原账号存在未审核的数据");
+        return JsonResult.success();
     }
 
     /**

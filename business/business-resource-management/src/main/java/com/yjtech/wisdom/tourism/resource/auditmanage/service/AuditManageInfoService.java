@@ -1,8 +1,6 @@
 package com.yjtech.wisdom.tourism.resource.auditmanage.service;
 
 import org.springframework.stereotype.Service;
-import javax.annotation.Resource;
-import java.util.List;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yjtech.wisdom.tourism.resource.auditmanage.entity.AuditManageInfo;
 import com.yjtech.wisdom.tourism.resource.auditmanage.mapper.AuditManageInfoMapper;
@@ -13,5 +11,7 @@ import com.yjtech.wisdom.tourism.resource.auditmanage.mapper.AuditManageInfoMapp
  */
 @Service
 public class AuditManageInfoService extends ServiceImpl<AuditManageInfoMapper, AuditManageInfo> {
-
+    public int insertOrUpdate(AuditManageInfo auditManageInfo) {
+        return baseMapper.insertOrUpdate(auditManageInfo);
+    }
 }

@@ -280,10 +280,11 @@
     </select>
 
     <select id="customPage" resultMap="BaseResultMap">
-        select tpi.*, tami.status audit_status, tami.next_audit_user_ids, tami.create_time audit_time
+        select tpi.*, tami.status audit_status, tami.create_time audit_time
         from tb_project_info tpi
-                 left join tb_audit_manage_info tami on tpi.id = tami.source_id
+                 left join (select * from tb_audit_manage_info where deleted = 0) tami on tpi.id = tami.source_id
         <where>
+            tpi.deleted = 0
             <if test="query.updateBeginTime != null">
                 and tpi.update_time >= #{query.updateBeginTime,jdbcType=TIMESTAMP}
             </if>
@@ -311,8 +312,60 @@
                     #{item}
                 </foreach>
             </if>
-            <if test="query.auditUser != null">
-                and tami.next_audit_user_ids like concat('%', #{query.auditUser}, '%')
+        </where>
+        order by sort_num, ifnull(tpi.update_time, tpi.create_time) desc
+    </select>
+
+    <select id="auditPage" resultMap="BaseResultMap">
+        select tpi.*, taml.status audit_status, taml.create_time audit_time
+        from tb_project_info tpi
+                 left join (select l.*
+                            from tb_audit_manage_log l
+                                     right join (select max(l.id) max_id, source_id
+                                                 from tb_audit_manage_log l
+                                                          left join
+                                                      tb_audit_manage_process p
+                                                      on l.process_id = p.id
+                                                 where l.deleted = 0
+                                                   and p.deleted = 0
+                                                   and (
+                                                         (
+                                                                     p.user_ids like concat('%"', #{userId}, '"%')
+                                                                 and audit_user is null
+                                                             )
+                                                         or audit_user = #{userId}
+                                                     )
+                                                 group by source_id) l1 on l.id = l1.max_id) taml
+                           on tpi.id = taml.source_id
+        <where>
+            tpi.deleted = 0
+              and taml.deleted = 0
+            <if test="query.updateBeginTime != null">
+                and tpi.update_time >= #{query.updateBeginTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="query.updateEndTime != null">
+                and tpi.update_time &lt;= #{query.updateEndTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="query.status != null and query.status.size() != 0">
+                and tpi.status in
+                <foreach collection="query.status" item="item" index="index" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="query.areaCodes != null and query.areaCodes.size() != 0">
+                and tpi.area_code in
+                <foreach collection="query.areaCodes" item="item" index="index" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="query.areaCode != null and query.areaCode != ''">
+                and tpi.area_code = #{query.areaCode,jdbcType=VARCHAR}
+            </if>
+            <if test="query.auditStatus != null">
+                and taml.status in
+                <foreach collection="query.auditStatus" item="item" index="index" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
             </if>
         </where>
         order by sort_num, ifnull(tpi.update_time, tpi.create_time) desc

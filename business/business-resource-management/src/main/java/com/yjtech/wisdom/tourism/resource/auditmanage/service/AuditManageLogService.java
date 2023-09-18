@@ -1,5 +1,6 @@
 package com.yjtech.wisdom.tourism.resource.auditmanage.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.List;
@@ -16,5 +17,9 @@ public class AuditManageLogService extends ServiceImpl<AuditManageLogMapper, Aud
 
     public List<AuditManageLog> auditLogList(Long id) {
         return baseMapper.auditLogList(id);
+    }
+
+    public int updateByProcessIdAndSourceId(AuditManageLog updated, Long processId, Long sourceId) {
+        return baseMapper.updateByProcessIdAndSourceId(updated, processId, sourceId);
     }
 }

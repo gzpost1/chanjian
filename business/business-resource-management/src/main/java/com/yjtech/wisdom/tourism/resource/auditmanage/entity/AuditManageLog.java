@@ -12,13 +12,14 @@ import lombok.EqualsAndHashCode;
 /**
  *
  * @author songjun
- * @since 2023/9/8
+ * @since 2023/9/18
  */
+
 /**
-    * 审核记录表
-    */
+ * 审核记录表
+ */
 @Data
-@EqualsAndHashCode(callSuper=true)
+@EqualsAndHashCode(callSuper = true)
 @TableName(value = "tb_audit_manage_log")
 public class AuditManageLog extends BaseEntity {
     /**
@@ -40,12 +41,6 @@ public class AuditManageLog extends BaseEntity {
     private Long sourceId;
 
     /**
-     * 操作 0-提交 1-审核
-     */
-    @TableField(value = "action")
-    private Integer action;
-
-    /**
      * 审核意见
      */
     @TableField(value = "`text`")
@@ -57,6 +52,11 @@ public class AuditManageLog extends BaseEntity {
     @TableField(value = "`status`")
     private Integer status;
 
+    /**
+     * 审核用户，创建用户是上一步的用户
+     */
+    @TableField(value = "audit_user")
+    private Long auditUser;
     /**
      * 操作人
      */

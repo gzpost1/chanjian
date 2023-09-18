@@ -15,10 +15,9 @@ import java.util.List;
 @Service
 public class AuditManageProcessService extends ServiceImpl<AuditManageProcessMapper, AuditManageProcess> {
 
-    public AuditManageProcess nextProcess(Long sourceId){
-        return baseMapper.nextProcess(sourceId);
+    public AuditManageProcess nextProcess(AuditManageProcess process){
+        return baseMapper.nextProcess(process);
     }
-
 
     public int insertList(List<AuditManageProcess> list) {
         return baseMapper.insertList(list);
@@ -30,5 +29,13 @@ public class AuditManageProcessService extends ServiceImpl<AuditManageProcessMap
 
     public AuditManageProcess firstProcess(String auditName) {
         return baseMapper.firstProcess(auditName);
+    }
+
+    public AuditManageProcess getBySourceId(Long sourceId) {
+        return baseMapper.getBySourceId(sourceId);
+    }
+
+    public List<AuditManageProcess> auditingProcessList(Long configId) {
+        return baseMapper.auditingProcessList(configId);
     }
 }

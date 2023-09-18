@@ -48,8 +48,4 @@ public class ProjectQuery extends PageQuery {
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateEndTime;
-    /**
-     * 审核用户
-     */
-    private Long auditUser;
 }

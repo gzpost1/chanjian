@@ -10,5 +10,5 @@ import java.util.List;
  */
 @Data
 public class AuditManageConfigUpdateCheckDto {
-    private List<Long> userIds;
+    private Long processId;
 }

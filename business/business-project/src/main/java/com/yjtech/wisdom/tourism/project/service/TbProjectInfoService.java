@@ -19,6 +19,7 @@ import com.yjtech.wisdom.tourism.common.utils.ImportTemplateUtils;
 import com.yjtech.wisdom.tourism.common.utils.StringUtils;
 import com.yjtech.wisdom.tourism.common.utils.file.FileDownloadUtils;
 import com.yjtech.wisdom.tourism.common.utils.file.FileUtils;
+import com.yjtech.wisdom.tourism.infrastructure.utils.SecurityUtils;
 import com.yjtech.wisdom.tourism.project.dto.ProjectQuery;
 import com.yjtech.wisdom.tourism.project.entity.TbProjectInfoEntity;
 import com.yjtech.wisdom.tourism.project.entity.TbProjectLabelRelationEntity;
@@ -434,5 +435,10 @@ public class TbProjectInfoService extends ServiceImpl<TbProjectInfoMapper, TbPro
 
     public IPage<TbProjectInfoEntity> customPage(ProjectQuery query) {
         return baseMapper.customPage(new Page<>(query.getPageNo(), query.getPageSize()), query);
+    }
+
+    public IPage<TbProjectInfoEntity> auditPage(ProjectQuery query) {
+        Long userId = SecurityUtils.getUserId();
+        return baseMapper.auditPage(new Page<>(query.getPageNo(), query.getPageSize()), query, userId);
     }
 }
