@@ -11,14 +11,13 @@ import com.yjtech.wisdom.tourism.common.utils.bean.BeanMapper;
 import com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysUser;
 import com.yjtech.wisdom.tourism.mybatis.entity.PageQuery;
 import com.yjtech.wisdom.tourism.resource.auditmanage.dto.AuditManageConfigCreateDto;
+import com.yjtech.wisdom.tourism.resource.auditmanage.dto.AuditManageConfigUpdateCheckDto;
 import com.yjtech.wisdom.tourism.resource.auditmanage.dto.AuditManageConfigUpdateDto;
 import com.yjtech.wisdom.tourism.resource.auditmanage.entity.AuditManageConfig;
 import com.yjtech.wisdom.tourism.resource.auditmanage.entity.AuditManageInfo;
-import com.yjtech.wisdom.tourism.resource.auditmanage.entity.AuditManageLog;
 import com.yjtech.wisdom.tourism.resource.auditmanage.entity.AuditManageProcess;
 import com.yjtech.wisdom.tourism.resource.auditmanage.service.AuditManageConfigService;
 import com.yjtech.wisdom.tourism.resource.auditmanage.service.AuditManageInfoService;
-import com.yjtech.wisdom.tourism.resource.auditmanage.service.AuditManageLogService;
 import com.yjtech.wisdom.tourism.resource.auditmanage.service.AuditManageProcessService;
 import com.yjtech.wisdom.tourism.system.service.SysUserService;
 import lombok.extern.slf4j.Slf4j;
@@ -30,10 +29,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -51,8 +47,6 @@ public class AuditManageConfigController {
     private AuditManageConfigService auditManageConfigService;
     @Autowired
     private AuditManageProcessService auditManageProcessService;
-    @Autowired
-    private AuditManageLogService auditManageLogService;
     @Autowired
     private AuditManageInfoService auditManageInfoService;
     @Autowired
@@ -175,7 +169,10 @@ public class AuditManageConfigController {
         LambdaQueryWrapper<AuditManageConfig> configQuery = Wrappers.lambdaQuery();
         configQuery.eq(AuditManageConfig::getName, dto.getName());
         AuditManageConfig one = auditManageConfigService.getOne(configQuery);
-        AssertUtil.isTrue(!Objects.equals(one.getId(), dto.getId()), "审核名称重复，请重新修改！");
+        AssertUtil.isTrue(one == null || Objects.equals(one.getId(), dto.getId()), "审核名称重复，请重新修改！");
+        if (one == null){
+            one = BeanMapper.map(dto, AuditManageConfig.class);
+        }
         // 编辑账号时，需检查之前的审核
         // 找出未审批过的log
         LambdaQueryWrapper<AuditManageProcess> processQuery = Wrappers.lambdaQuery();
@@ -189,25 +186,15 @@ public class AuditManageConfigController {
             infoQuery.eq(AuditManageInfo::getStatus, 0);
             List<AuditManageInfo> infoList = auditManageInfoService.list(infoQuery);
             if (CollectionUtils.isNotEmpty(infoList)) {
-                infoList.stream().map(AuditManageInfo::getId);
-                LambdaQueryWrapper<AuditManageLog> logQuery = Wrappers.lambdaQuery();
-                Map<Long, List<AuditManageLog>> infoMap = auditManageLogService.list(logQuery)
-                        .stream()
-                        .collect(Collectors.groupingBy(AuditManageLog::getSourceId));
-                for (List<AuditManageLog> value : infoMap.values()) {
-                    value.sort(Comparator.comparing(AuditManageLog::getCreateTime));
-                    for (int i = 0; i < value.size(); i++) {
-                        if (i == 0) {
-                            continue;
+                for (AuditManageInfo info : infoList) {
+                    boolean ok = false;
+                    for (AuditManageProcess process : dto.getProcessList()) {
+                        if (new HashSet<>(process.getUserIds()).containsAll(info.getNextAuditUserIds())) {
+                            ok = true;
+                            break;
                         }
-                        AuditManageLog log = value.get(i);
-                        AssertUtil.isFalse(CollectionUtils.isNotEmpty(dto.getProcessList()) || dto.getProcessList()
-                                .size() < i, "原账号存在未审核的数据");
-                        AuditManageProcess newProcess = dto.getProcessList().get(i - 1);
-                        AssertUtil.isTrue(newProcess.getUserIds()
-                                .contains(log.getCreateUser()), "原账号存在未审核的数据");
-
                     }
+                    AssertUtil.isTrue(ok, "原账号存在未审核的数据");
                 }
             }
         }
@@ -218,9 +205,27 @@ public class AuditManageConfigController {
             auditManageProcess.setConfigId(dto.getId());
             auditManageProcess.setSort(sort++);
         }
-        auditManageProcessService.remove(processQuery);
+        auditManageProcessService.deleteByConfigId(dto.getId());
         auditManageProcessService.insertList(dto.getProcessList());
         return JsonResult.success();
+    }
+
+    @PostMapping("checkBeforeUpdate")
+    public JsonResult<Boolean> checkBeforeUpdate(@RequestBody @Valid AuditManageConfigUpdateCheckDto dto) {
+        LambdaQueryWrapper<AuditManageInfo> queryWrapper = Wrappers.lambdaQuery();
+        queryWrapper.eq(AuditManageInfo::getStatus, 0);
+        List<AuditManageInfo> list = auditManageInfoService.list(queryWrapper);
+        boolean contained = false;
+        jump:
+        for (AuditManageInfo info : list) {
+            for (Long userId : dto.getUserIds()) {
+                if (info.getNextAuditUserIds().contains(userId)) {
+                    contained = true;
+                    break jump;
+                }
+            }
+        }
+        return JsonResult.success(contained);
     }
 
     /**
@@ -242,7 +247,7 @@ public class AuditManageConfigController {
             infoQuery.eq(AuditManageInfo::getStatus, 0);
             AssertUtil.isTrue(auditManageInfoService.count(infoQuery) == 0, "该审批流程存在未审核完成的数据，无法删除");
         }
-        auditManageProcessService.remove(processQuery);
+        auditManageProcessService.deleteByConfigId(param.getId());
         return JsonResult.success(auditManageConfigService.removeById(param.getId()));
     }
 }

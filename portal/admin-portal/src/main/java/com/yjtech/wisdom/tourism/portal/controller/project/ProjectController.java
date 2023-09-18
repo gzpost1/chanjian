@@ -5,7 +5,6 @@ import com.alibaba.excel.enums.CellExtraTypeEnum;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yjtech.wisdom.tourism.bigscreen.service.TbFavoriteService;
 import com.yjtech.wisdom.tourism.chat.service.ChatMessageService;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
@@ -96,11 +95,8 @@ public class ProjectController extends BusinessCommonController {
         }
         SysUser user = SecurityUtils.getLoginUser().getUser();
         List<DictArea> areas = user.getAreas();
-        if (!user.isAdmin()) {
+        if (!user.isAdmin() && CollectionUtils.isNotEmpty(user.getAreas())) {
             query.setAreaCodes(areas.stream().map(DictArea::getCode).collect(Collectors.toList()));
-        }
-        if (!user.isAdmin() && CollectionUtils.isEmpty(areas)) {
-            return JsonResult.success(new Page<>());
         }
         IPage<TbProjectInfoEntity> pageResult = projectInfoService.customPage(query);
         //构建已选中项目标签id列表

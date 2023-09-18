@@ -1,5 +1,7 @@
 package com.yjtech.wisdom.tourism.portal.controller.auditmanage;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.common.utils.AssertUtil;
 import com.yjtech.wisdom.tourism.resource.auditmanage.dto.AuditDto;
@@ -36,13 +38,46 @@ public class AuditManageController {
     private AuditManageInfoService infoService;
 
     /**
+     * 提交审核
+     *
+     * @param dto
+     * @return
+     */
+    @PostMapping("commit")
+    public JsonResult<Void> commit(@RequestBody @Valid AuditDto dto) {
+        // 如果source审核失败或者不存在审核，则可以提交
+        LambdaQueryWrapper<AuditManageLog> logQuery = Wrappers.lambdaQuery();
+        logQuery.eq(AuditManageLog::getSourceId, dto.getSourceId());
+        logQuery.ne(AuditManageLog::getStatus, 2);
+        AssertUtil.isTrue(logService.count(logQuery) == 0, "");
+        // 查审批初始节点
+        AuditManageProcess auditProcess = processService.firstProcess(dto.getAuditName());
+        AssertUtil.notNull(auditProcess, "审核流程不存在");
+        // 存log
+        AuditManageLog auditLog = new AuditManageLog();
+        auditLog.setAction(1);
+        auditLog.setStatus(dto.getStatus());
+        auditLog.setSourceId(dto.getSourceId());
+        auditLog.setText(dto.getText());
+        auditLog.setProcessId(auditProcess.getId());
+        logService.save(auditLog);
+        // 存info
+        AuditManageInfo info = new AuditManageInfo();
+        info.setProcessId(auditProcess.getId());
+        info.setStatus(0);
+        info.setSourceId(dto.getSourceId());
+        infoService.save(info);
+        return JsonResult.success();
+    }
+
+    /**
      * 审核
      *
      * @param dto
      * @return
      */
-    @PostMapping("action")
-    public JsonResult<Void> action(@RequestBody @Valid AuditDto dto) {
+    @PostMapping("audit")
+    public JsonResult<Void> audit(@RequestBody @Valid AuditDto dto) {
         // 查下一个审核节点
         AuditManageProcess auditProcess = processService.nextProcess(dto.getSourceId());
         AssertUtil.notNull(auditProcess, "不存在下一个审核节点");

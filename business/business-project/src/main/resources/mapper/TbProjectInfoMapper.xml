@@ -280,8 +280,9 @@
     </select>
 
     <select id="customPage" resultMap="BaseResultMap">
-        select tpi.* ,tami.status audit_status, tami.next_audit_user_ids, tami.create_time audit_time
-        from tb_project_info tpi left join tb_audit_manage_info tami on tpi.id = tami.source_id
+        select tpi.*, tami.status audit_status, tami.next_audit_user_ids, tami.create_time audit_time
+        from tb_project_info tpi
+                 left join tb_audit_manage_info tami on tpi.id = tami.source_id
         <where>
             <if test="query.updateBeginTime != null">
                 and tpi.update_time >= #{query.updateBeginTime,jdbcType=TIMESTAMP}
@@ -303,6 +304,15 @@
             </if>
             <if test="query.areaCode != null and query.areaCode != ''">
                 and tpi.area_code = #{query.areaCode,jdbcType=VARCHAR}
+            </if>
+            <if test="query.auditStatus != null">
+                and tami.status in
+                <foreach collection="query.auditStatus" item="item" index="index" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="query.auditUser != null">
+                and tami.next_audit_user_ids like concat('%', #{query.auditUser}, '%')
             </if>
         </where>
         order by sort_num, ifnull(tpi.update_time, tpi.create_time) desc
