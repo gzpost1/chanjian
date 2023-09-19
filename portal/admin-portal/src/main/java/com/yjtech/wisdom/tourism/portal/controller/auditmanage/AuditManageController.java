@@ -111,7 +111,7 @@ public class AuditManageController {
         } else if (dto.getStatus() == 2) {
             info.setStatus(2);
         }
-        infoService.updateByProcessId(info, info.getProcessId());
+        infoService.updateBySourceId(info, dto.getSourceId());
         return JsonResult.success();
     }
 }

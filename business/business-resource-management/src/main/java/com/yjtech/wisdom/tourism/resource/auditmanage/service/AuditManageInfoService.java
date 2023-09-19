@@ -1,6 +1,5 @@
 package com.yjtech.wisdom.tourism.resource.auditmanage.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yjtech.wisdom.tourism.resource.auditmanage.entity.AuditManageInfo;
@@ -16,7 +15,7 @@ public class AuditManageInfoService extends ServiceImpl<AuditManageInfoMapper, A
         return baseMapper.insertOrUpdate(auditManageInfo);
     }
 
-    public int updateByProcessId(AuditManageInfo updated, Long processId) {
-        return baseMapper.updateByProcessId(updated, processId);
+    public int updateBySourceId(AuditManageInfo updated, Long sourceId) {
+        return baseMapper.updateBySourceId(updated, sourceId);
     }
 }
