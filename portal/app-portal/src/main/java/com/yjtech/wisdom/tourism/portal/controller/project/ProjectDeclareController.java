@@ -69,12 +69,6 @@ public class ProjectDeclareController {
         ScreenLoginUser screenLoginUser = screenTokenService.getLoginUser(ServletUtils.getRequest());
         //默认查询当前企业用户所属的项目
         query.setCompanyId(screenLoginUser.getId());
-        if (query.getShowStatus() == null) {
-            query.setShowStatus(1);
-        }
-        if (query.getAuditStatus() == null) {
-            query.setAuditStatus(Collections.singletonList(1));
-        }
         IPage<TbProjectInfoEntity> pageResult = projectInfoService.customPage(query);
         //构建已选中项目标签id列表
         List<TbProjectInfoEntity> records = pageResult.getRecords();
