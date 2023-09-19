@@ -91,7 +91,7 @@ public class AuditManageController {
         updated.setStatus(dto.getStatus());
         updated.setText(dto.getText());
         updated.setAuditUser(SecurityUtils.getUserId());
-        updated.setUpdateTime(updated.getUpdateTime());
+        updated.setUpdateTime(new Date());
         updated.setUpdateUser(SecurityUtils.getUserId());
         logService.updateByProcessIdAndSourceId(updated, auditProcess.getId(), dto.getSourceId());
         // 添加下级审核，更新审核状态
