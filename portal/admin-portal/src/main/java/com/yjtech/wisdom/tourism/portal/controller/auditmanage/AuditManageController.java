@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.Date;
 
 /**
  * 【后台】审核
@@ -67,6 +68,8 @@ public class AuditManageController {
         info.setSourceId(dto.getSourceId());
         info.setLogId(auditLog.getId());
         info.setStatus(0);
+        info.setCreateTime(new Date());
+        info.setUpdateTime(new Date());
         infoService.insertOrUpdate(info);
         return JsonResult.success();
     }
@@ -88,10 +91,13 @@ public class AuditManageController {
         updated.setStatus(dto.getStatus());
         updated.setText(dto.getText());
         updated.setAuditUser(SecurityUtils.getUserId());
+        updated.setUpdateTime(updated.getUpdateTime());
+        updated.setUpdateUser(SecurityUtils.getUserId());
         logService.updateByProcessIdAndSourceId(updated, auditProcess.getId(), dto.getSourceId());
         // 添加下级审核，更新审核状态
         AuditManageInfo info = new AuditManageInfo();
         info.setSourceId(dto.getSourceId());
+        info.setUpdateTime(new Date());
         if (dto.getStatus() == 1) {
             // 审核通过
             AuditManageProcess nextProcess = processService.nextProcess(auditProcess);
