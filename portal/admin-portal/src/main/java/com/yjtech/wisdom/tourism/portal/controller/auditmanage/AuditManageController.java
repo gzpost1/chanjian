@@ -55,10 +55,18 @@ public class AuditManageController {
         // 查审批初始节点
         AuditManageProcess auditProcess = processService.firstProcess(dto.getAuditName());
         AssertUtil.notNull(auditProcess, "审核流程不存在");
+        // 存提交log
+        AuditManageLog commitLog = new AuditManageLog();
+        commitLog.setProcessId(-1L);
+        commitLog.setSourceId(dto.getSourceId());
+        commitLog.setType(0);
+        commitLog.setStatus(1);
+        logService.save(commitLog);
         // 存log
         AuditManageLog auditLog = new AuditManageLog();
         auditLog.setProcessId(auditProcess.getId());
         auditLog.setSourceId(dto.getSourceId());
+        auditLog.setType(1);
         auditLog.setStatus(0);
         auditLog.setText(dto.getText());
         logService.save(auditLog);
@@ -106,6 +114,7 @@ public class AuditManageController {
                 AuditManageLog auditLog = new AuditManageLog();
                 auditLog.setProcessId(nextProcess.getId());
                 auditLog.setSourceId(dto.getSourceId());
+                auditLog.setType(1);
                 auditLog.setStatus(0);
                 logService.save(auditLog);
                 info.setLogId(auditLog.getId());

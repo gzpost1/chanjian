@@ -33,7 +33,7 @@ public class AuditManageLogController {
      * @param idParam
      * @return
      */
-    @PostMapping("lilst")
+    @PostMapping("list")
     public JsonResult<List<AuditManageLog>> list(@RequestBody @Valid IdParam idParam) {
         return JsonResult.success(logService.auditLogList(idParam.getId()));
     }

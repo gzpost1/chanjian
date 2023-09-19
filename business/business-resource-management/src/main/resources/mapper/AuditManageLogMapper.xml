@@ -8,6 +8,7 @@
     <result column="process_id" jdbcType="BIGINT" property="processId" />
     <result column="source_id" jdbcType="BIGINT" property="sourceId" />
     <result column="text" jdbcType="VARCHAR" property="text" />
+    <result column="type" jdbcType="INTEGER" property="type" />
     <result column="status" jdbcType="TINYINT" property="status" />
     <result column="audit_user" jdbcType="BIGINT" property="auditUser" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
@@ -18,7 +19,7 @@
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    id, process_id, source_id, `text`, `status`, audit_user, create_time, create_user, 
+    id, process_id, source_id, `text`, `type`, `status`, audit_user, create_time, create_user, 
     update_time, update_user, deleted
   </sql>
 
@@ -50,6 +51,9 @@
       </if>
       <if test="updated.status != null">
         status = #{updated.status,jdbcType=TINYINT},
+      </if>
+      <if test="updated.type != null">
+        `type` = #{updated.type,jdbcType=INTEGER},
       </if>
       <if test="updated.auditUser != null">
         audit_user = #{updated.auditUser,jdbcType=BIGINT},

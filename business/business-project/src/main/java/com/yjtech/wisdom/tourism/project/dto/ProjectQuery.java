@@ -2,6 +2,7 @@ package com.yjtech.wisdom.tourism.project.dto;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.yjtech.wisdom.tourism.mybatis.entity.PageQuery;
 import lombok.Data;
 
@@ -28,7 +29,12 @@ public class ProjectQuery extends PageQuery {
      * 区域编码
      */
     private String areaCode;
-
+    @JsonIgnore
+    private Long companyId;
+    /**
+     * 上架下架 0-下架 1-上架
+     */
+    private Integer showStatus;
     /**
      * 区域编码(内部)
      */

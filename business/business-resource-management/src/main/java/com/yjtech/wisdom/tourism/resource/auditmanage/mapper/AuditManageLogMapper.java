@@ -8,10 +8,10 @@ import java.util.List;
 
 /**
  * @author songjun
- * @since 2023/9/18
+ * @since 2023/9/19
  */
 public interface AuditManageLogMapper extends BaseMapper<AuditManageLog> {
     List<AuditManageLog> auditLogList(@Param("id") Long id);
 
-     int updateByProcessIdAndSourceId(@Param("updated")AuditManageLog updated,@Param("processId")Long processId,@Param("sourceId")Long sourceId);
+    int updateByProcessIdAndSourceId(@Param("updated") AuditManageLog updated, @Param("processId") Long processId, @Param("sourceId") Long sourceId);
 }

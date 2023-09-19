@@ -12,7 +12,7 @@ import lombok.EqualsAndHashCode;
 /**
  *
  * @author songjun
- * @since 2023/9/18
+ * @since 2023/9/19
  */
 
 /**
@@ -45,6 +45,12 @@ public class AuditManageLog extends BaseEntity {
      */
     @TableField(value = "`text`")
     private String text;
+
+    /**
+     * 类型 0-提交 1-审核
+     */
+    @TableField(value = "`type`")
+    private Integer type;
 
     /**
      * 审核状态 0-待审核 1-通过 2-不通过
