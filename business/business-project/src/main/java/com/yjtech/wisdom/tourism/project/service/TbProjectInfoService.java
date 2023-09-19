@@ -441,4 +441,8 @@ public class TbProjectInfoService extends ServiceImpl<TbProjectInfoMapper, TbPro
         Long userId = SecurityUtils.getUserId();
         return baseMapper.auditPage(new Page<>(query.getPageNo(), query.getPageSize()), query, userId);
     }
+
+    public List<TbProjectInfoEntity> queryRecommendProject(ProjectQuery query) {
+        return baseMapper.queryRecommendProject(query);
+    }
 }

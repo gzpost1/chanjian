@@ -103,4 +103,6 @@ public interface TbProjectInfoMapper extends BaseMapper<TbProjectInfoEntity> {
     IPage<TbProjectInfoEntity> customPage(Page<TbProjectInfoEntity> page, @Param("query") ProjectQuery query);
 
     IPage<TbProjectInfoEntity> auditPage(Page<TbProjectInfoEntity> page, @Param("query") ProjectQuery query, @Param("userId") Long userId);
+
+    List<TbProjectInfoEntity> queryRecommendProject(@Param("query") ProjectQuery query);
 }

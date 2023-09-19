@@ -51,7 +51,6 @@
         <result column="sort_num"  property="sortNum"/>
         <result column="audit_status"  property="auditStatus"/>
         <result column="audit_time"  property="auditTime"/>
-        <result column="next_audit_user_ids"  property="nextAuditUserIds" typeHandler="com.yjtech.wisdom.tourism.mybatis.typehandler.ListLongJsonTypeHandler"/>
     </resultMap>
     <sql id="Base_Column_List">
         <!--@mbg.generated-->
@@ -68,8 +67,7 @@
     <!-- 查询列表 -->
     <select id="queryForList" parameterType="com.yjtech.wisdom.tourism.project.dto.ProjectQuery"
             resultMap="BaseResultMap">
-        select
-        <include refid="Base_Column_List"/>
+        select tpi.*, tami.status audit_status, tami.create_time audit_time
         from
         tb_project_info tpi left join tb_audit_manage_info tami on tpi.id = tami.source_id
         <where>
@@ -87,7 +85,7 @@
                         </foreach>
                     </when>
                     <otherwise>
-                        and tpi.status = 2
+                        and tpi.status != 4
                     </otherwise>
                 </choose>
                 <if test="params.areaCode != null and params.areaCode != ''">
@@ -369,5 +367,36 @@
             </if>
         </where>
         order by sort_num, ifnull(tpi.update_time, tpi.create_time) desc
+    </select>
+
+    <select id="queryRecommendProject" resultMap="BaseResultMap">
+        select tpi.*, tami.status audit_status, tami.create_time audit_time
+        from tb_project_info tpi
+        left join (select * from tb_audit_manage_info where deleted = 0) tami on tpi.id = tami.source_id
+        <where>
+            tpi.deleted = 0 and tpi.status != 4
+            <if test="query.updateBeginTime != null">
+                and tpi.update_time >= #{query.updateBeginTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="query.updateEndTime != null">
+                and tpi.update_time &lt;= #{query.updateEndTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="query.areaCodes != null and query.areaCodes.size() != 0">
+                and tpi.area_code in
+                <foreach collection="query.areaCodes" item="item" index="index" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="query.areaCode != null and query.areaCode != ''">
+                and tpi.area_code = #{query.areaCode,jdbcType=VARCHAR}
+            </if>
+            <if test="query.auditStatus != null">
+                and tami.status in
+                <foreach collection="query.auditStatus" item="item" index="index" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+        order by is_top desc ,view_num desc , ifnull(tpi.update_time, tpi.create_time) desc limit 10
     </select>
 </mapper>

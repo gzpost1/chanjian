@@ -154,23 +154,26 @@ public class TalentsPoolService extends ServiceImpl<TalentsPoolMapper, TalentsPo
      * @param vo
      * @return
      */
-    private LambdaQueryWrapper<TalentsPoolEntity> buildQueryWrapper(TalentsPoolQueryVO vo){
-        SysUser user = SecurityUtils.getLoginUser().getUser();
-        List<DictArea> areas = user.getAreas();
-        boolean hasCityRights = new HashSet<>(areas.stream()
-                .map(DictArea::getCode)
-                .collect(Collectors.toList())).containsAll(dictAreaService.subArea("5201")
-                .stream()
-                .map(TbDictAreaEntity::getCode)
-                .collect(Collectors.toList()));
-        boolean hasAllRights = hasCityRights || user.isAdmin();
+    private LambdaQueryWrapper<TalentsPoolEntity> buildQueryWrapper(TalentsPoolQueryVO vo) {
         LambdaQueryWrapper<TalentsPoolEntity> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(!hasAllRights, BaseEntity::getCreateUser, user.getUserId());
-        return wrapper
-                .like(StringUtils.isNotBlank(vo.getName()), TalentsPoolEntity::getName, vo.getName())
+        boolean hasAllRights = false;
+        hasAllRights |= vo.getHasAllRights();
+        try {
+            SysUser user = SecurityUtils.getLoginUser().getUser();
+            List<DictArea> areas = user.getAreas();
+            hasAllRights |= new HashSet<>(areas.stream()
+                    .map(DictArea::getCode)
+                    .collect(Collectors.toList())).containsAll(dictAreaService.subArea("5201")
+                    .stream()
+                    .map(TbDictAreaEntity::getCode)
+                    .collect(Collectors.toList()));
+            hasAllRights |= user.isAdmin();
+            wrapper.eq(!hasAllRights, BaseEntity::getCreateUser, user.getUserId());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return wrapper.like(StringUtils.isNotBlank(vo.getName()), TalentsPoolEntity::getName, vo.getName())
                 .eq(null != vo.getStatus(), TalentsPoolEntity::getStatus, vo.getStatus())
                 .orderByDesc(TalentsPoolEntity::getUpdateTime);
     }
-
-
 }

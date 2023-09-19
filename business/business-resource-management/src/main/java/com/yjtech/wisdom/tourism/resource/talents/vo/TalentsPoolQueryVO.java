@@ -1,5 +1,6 @@
 package com.yjtech.wisdom.tourism.resource.talents.vo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.yjtech.wisdom.tourism.mybatis.entity.PageQuery;
 import lombok.Data;
 import org.hibernate.validator.constraints.Range;
@@ -25,4 +26,9 @@ public class TalentsPoolQueryVO extends PageQuery {
      */
     private String name;
 
+    /**
+     * 查看所有人才权限
+     */
+    @JsonIgnore
+    private Boolean hasAllRights = false;
 }

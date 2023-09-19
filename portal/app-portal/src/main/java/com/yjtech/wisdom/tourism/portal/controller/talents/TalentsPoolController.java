@@ -42,6 +42,7 @@ public class TalentsPoolController {
     @PostMapping("queryForList")
     @IgnoreAuth
     public JsonResult<List<TalentsPoolEntity>> queryForList(@RequestBody @Valid TalentsPoolQueryVO vo) {
+        vo.setHasAllRights(true);
         return JsonResult.success(talentsPoolService.queryForList(vo));
     }
 
@@ -54,6 +55,7 @@ public class TalentsPoolController {
     @PostMapping("queryForPage")
     @IgnoreAuth
     public JsonResult<IPage<TalentsPoolEntity>> queryForPage(@RequestBody @Valid TalentsPoolQueryVO vo) {
+        vo.setHasAllRights(true);
         return JsonResult.success(talentsPoolService.queryForPage(vo));
     }
 
