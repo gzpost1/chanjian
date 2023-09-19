@@ -25,7 +25,7 @@
   <select id="auditLogList" resultMap="BaseResultMap">
     select l.*, u.nick_name username
     from tb_audit_manage_log l
-           left join sys_user u on l.create_user = u.user_id
+           left join sys_user u on l.audit_user = u.user_id
     where source_id = #{id}
       and l.deleted = 0
       and u.deleted = 0
