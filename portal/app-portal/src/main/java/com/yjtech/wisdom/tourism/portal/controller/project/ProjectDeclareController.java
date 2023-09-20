@@ -72,8 +72,8 @@ public class ProjectDeclareController {
         IPage<TbProjectInfoEntity> pageResult = projectInfoService.customPage(query);
         //构建已选中项目标签id列表
         List<TbProjectInfoEntity> records = pageResult.getRecords();
-        if(CollectionUtils.isNotEmpty(records)){
-            for(TbProjectInfoEntity entity : records){
+        if (CollectionUtils.isNotEmpty(records)) {
+            for (TbProjectInfoEntity entity : records) {
                 entity.setPitchOnLabelIdList(tbProjectLabelRelationService.queryForLabelIdListByProjectId(entity.getId()));
             }
             pageResult.setRecords(records);
