@@ -26,10 +26,9 @@
   <select id="auditLogList" resultMap="BaseResultMap">
     select l.*, u.nick_name username
     from tb_audit_manage_log l
-           left join sys_user u on l.audit_user = u.user_id
+           left join (select * from sys_user where deleted = 0) u on l.audit_user = u.user_id
     where source_id = #{id}
       and l.deleted = 0
-      and u.deleted = 0
     order by l.create_time;
   </select>
 
