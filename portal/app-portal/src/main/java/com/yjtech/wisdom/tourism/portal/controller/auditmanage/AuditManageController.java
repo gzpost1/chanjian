@@ -61,7 +61,6 @@ public class AuditManageController {
         commitLog.setSourceId(dto.getSourceId());
         commitLog.setType(0);
         commitLog.setStatus(1);
-        commitLog.setAuditUser(SecurityUtils.getUserId());
         logService.save(commitLog);
         // 存log
         AuditManageLog auditLog = new AuditManageLog();
