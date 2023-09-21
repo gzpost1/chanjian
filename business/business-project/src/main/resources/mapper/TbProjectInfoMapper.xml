@@ -403,6 +403,6 @@
                 </foreach>
             </if>
         </where>
-        order by is_top desc ,view_num desc , ifnull(tpi.update_time, tpi.create_time) desc limit 10
+        order by is_top desc ,sort_num ,view_num desc , ifnull(tpi.update_time, tpi.create_time) desc limit 10
     </select>
 </mapper>
