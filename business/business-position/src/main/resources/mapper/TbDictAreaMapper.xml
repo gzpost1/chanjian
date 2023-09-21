@@ -102,4 +102,18 @@
     </if>
 </sql>
 
+    <select id="getAreaTree" resultType="com.yjtech.wisdom.tourism.dto.area.AreaTreeNode">
+        SELECT
+        code as id,
+        parent_code as parent_id,
+        name as title
+        FROM
+        `tb_dict_area`
+        WHERE
+        town_code IS NULL
+        <if test="areaCode != null and areaCode != ''">
+            AND code like CONCAT(#{areaCode},'%')
+        </if>
+        ORDER BY CODE
+    </select>
 </mapper>

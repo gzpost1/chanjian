@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,6 +50,9 @@ public class ProjectController {
     @PostMapping("/queryForPage")
     public JsonResult<IPage<TbProjectInfoEntity>> queryForPage(@RequestBody ProjectQuery query) {
         query.setAreaCode(StringUtils.isBlank(query.getAreaCode()) ? query.getAreaCode() : AreaUtils.trimCode(query.getAreaCode()));
+        if (query.getAuditStatus() == null) {
+            query.setAuditStatus(Collections.singletonList(1));
+        }
         return JsonResult.success(projectInfoService.queryForPage(query));
     }
 
@@ -77,16 +81,13 @@ public class ProjectController {
      */
     @PostMapping("/queryForDetail")
     public JsonResult<TbProjectInfoEntity> queryForDetail(@RequestBody @Valid IdParam idParam) {
-        TbProjectInfoEntity entity = Optional.ofNullable(projectInfoService.getById(idParam.getId())).orElse(new TbProjectInfoEntity());
+        TbProjectInfoEntity entity = Optional.ofNullable(projectInfoService.getById(idParam.getId()))
+                .orElse(new TbProjectInfoEntity());
         int viewNum = Optional.ofNullable(entity.getViewNum()).orElse(Integer.parseInt("0"));
         entity.setViewNum(++viewNum);
 
-        entity.setResource(
-                Optional.ofNullable(
-                        projectResourceService.
-                                list(new LambdaQueryWrapper<TbProjectResourceEntity>().eq(TbProjectResourceEntity::getProjectId, entity.getId())))
-                        .orElse(new ArrayList<>())
-        );
+        entity.setResource(Optional.ofNullable(projectResourceService.list(new LambdaQueryWrapper<TbProjectResourceEntity>().eq(TbProjectResourceEntity::getProjectId, entity.getId())))
+                .orElse(new ArrayList<>()));
 
         //构建已选中项目标签id列表
         entity.setPitchOnLabelIdList(tbProjectLabelRelationService.queryForLabelIdListByProjectId(entity.getId()));
@@ -107,19 +108,12 @@ public class ProjectController {
     @IgnoreAuth
     @PostMapping("/queryRecommendProject")
     public JsonResult<List<TbProjectInfoEntity>> queryRecommendProject(@RequestBody ProjectQuery query) {
-        LambdaQueryWrapper<TbProjectInfoEntity> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(TbProjectInfoEntity::getStatus, "2");
-        queryWrapper.likeRight(StringUtils.isNotBlank(query.getAreaCode()), TbProjectInfoEntity::getAreaCode, AreaUtils.trimCode(query.getAreaCode()));
-        queryWrapper.orderByDesc(TbProjectInfoEntity::getIsTop);
-        queryWrapper.orderByAsc(TbProjectInfoEntity::getSortNum);
-        queryWrapper.orderByDesc(TbProjectInfoEntity::getViewNum);
-        queryWrapper.last(" ,ifnull(update_time,create_time) DESC limit 10");
-        List<TbProjectInfoEntity> list = projectInfoService.list(queryWrapper);
-        list.forEach(i -> i.setResource( Optional.ofNullable(
-                    projectResourceService.
-                            list(new LambdaQueryWrapper<TbProjectResourceEntity>().eq(TbProjectResourceEntity::getProjectId, i.getId())))
-                    .orElse(new ArrayList<>()))
-        );
+        if (query.getAuditStatus() == null) {
+            query.setAuditStatus(Collections.singletonList(1));
+        }
+        List<TbProjectInfoEntity> list = projectInfoService.queryRecommendProject(query);
+        list.forEach(i -> i.setResource(Optional.ofNullable(projectResourceService.list(new LambdaQueryWrapper<TbProjectResourceEntity>().eq(TbProjectResourceEntity::getProjectId, i.getId())))
+                .orElse(new ArrayList<>())));
         return JsonResult.success(list);
     }
 
@@ -129,12 +123,12 @@ public class ProjectController {
      * @param query
      * @return
      */
-    private LambdaQueryWrapper buildQueryWrapper(ProjectQuery query){
+    private LambdaQueryWrapper buildQueryWrapper(ProjectQuery query) {
         LambdaQueryWrapper<TbProjectInfoEntity> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.like(StringUtils.isNotBlank(query.getProjectName()), TbProjectInfoEntity::getProjectName, query.getProjectName());
-        if(CollectionUtils.isEmpty(query.getStatus())){
+        if (CollectionUtils.isEmpty(query.getStatus())) {
             queryWrapper.eq(TbProjectInfoEntity::getStatus, "2");
-        }else {
+        } else {
             queryWrapper.in(TbProjectInfoEntity::getStatus, query.getStatus());
         }
         queryWrapper.likeRight(StringUtils.isNotBlank(query.getAreaCode()), TbProjectInfoEntity::getAreaCode, AreaUtils.trimCode(query.getAreaCode()));
@@ -151,10 +145,8 @@ public class ProjectController {
      * @param response
      */
     @GetMapping("/download")
-    public void download(@RequestParam(value = "id")  Long id,
-                         HttpServletRequest request,
-                         HttpServletResponse response) {
-        projectInfoService.download(id,request,response);
+    public void download(@RequestParam(value = "id") Long id, HttpServletRequest request, HttpServletResponse response) {
+        projectInfoService.download(id, request, response);
     }
 
 

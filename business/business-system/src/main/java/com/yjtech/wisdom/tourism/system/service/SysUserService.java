@@ -1,10 +1,12 @@
 package com.yjtech.wisdom.tourism.system.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.google.common.collect.Lists;
 import com.yjtech.wisdom.tourism.common.annotation.DataScope;
 import com.yjtech.wisdom.tourism.common.constant.UserConstants;
 import com.yjtech.wisdom.tourism.common.exception.CustomException;
 import com.yjtech.wisdom.tourism.common.utils.StringUtils;
+import com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.DictArea;
 import com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysRole;
 import com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysUser;
 import com.yjtech.wisdom.tourism.infrastructure.core.page.TableSupport;
@@ -12,7 +14,9 @@ import com.yjtech.wisdom.tourism.infrastructure.utils.SecurityUtils;
 import com.yjtech.wisdom.tourism.system.domain.SysPost;
 import com.yjtech.wisdom.tourism.system.domain.SysUserPost;
 import com.yjtech.wisdom.tourism.system.domain.SysUserRole;
+import com.yjtech.wisdom.tourism.system.domain.UserArea;
 import com.yjtech.wisdom.tourism.system.mapper.*;
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -42,6 +47,8 @@ public class SysUserService {
   @Autowired private SysUserPostMapper userPostMapper;
 
   @Autowired private SysConfigService configService;
+
+  @Autowired private UserAreaMapper userAreaMapper;
 
   /**
    * 根据条件分页查询用户列表
@@ -229,6 +236,10 @@ public class SysUserService {
     userPostMapper.deleteUserPostByUserId(userId);
     // 新增用户与岗位管理
     insertUserPost(user);
+    // 删除用户与区域关联
+    userAreaMapper.deleteByUserId(userId);
+    // 新增用户与区域关联
+    insertUserArea(user);
     return userMapper.updateUser(user);
   }
 
@@ -329,6 +340,26 @@ public class SysUserService {
   }
 
   /**
+   * 新增用户区域信息
+   *
+   * @param user 用户对象
+   */
+  private void insertUserArea(SysUser user) {
+    String[] areaCodes = user.getAreaCodes();
+    if (areaCodes != null && areaCodes.length != 0) {
+      // 新增用户与岗位管理
+      List<UserArea> list = new ArrayList<>();
+      for (String code : areaCodes) {
+        UserArea up = new UserArea();
+        up.setUserId(user.getUserId());
+        up.setAreaCode(code);
+        list.add(up);
+      }
+      userAreaMapper.insertList(list);
+    }
+  }
+
+  /**
    * 通过用户ID删除用户
    *
    * @param userId 用户ID
@@ -406,5 +437,9 @@ public class SysUserService {
       successMsg.insert(0, "恭喜您，数据已全部导入成功！共 " + successNum + " 条，数据如下：");
     }
     return successMsg.toString();
+  }
+
+  public List<DictArea> selectUserAreaById(Long userId) {
+    return userMapper.selectUserAreaById(userId);
   }
 }

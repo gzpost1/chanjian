@@ -2,6 +2,7 @@ package com.yjtech.wisdom.tourism.position.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.yjtech.wisdom.tourism.dto.area.AreaTreeNode;
 import com.yjtech.wisdom.tourism.mybatis.base.BaseMybatisServiceImpl;
 import com.yjtech.wisdom.tourism.position.domain.DictAreaQuery;
 import com.yjtech.wisdom.tourism.position.domain.DictAreaTree;
@@ -68,5 +69,15 @@ public class TbDictAreaService extends BaseMybatisServiceImpl<TbDictAreaMapper, 
 
     static public Integer getAreaLevel(TbDictAreaEntity dictAreaEntity) {
         return dictAreaEntity.getLevel();
+    }
+
+    public List<TbDictAreaEntity> subArea(String code) {
+        LambdaQueryWrapper<TbDictAreaEntity> queryWrapper = Wrappers.lambdaQuery();
+        queryWrapper.likeRight(TbDictAreaEntity::getCode, code);
+        return list(queryWrapper);
+    }
+
+    public List<AreaTreeNode> getAreaTree(String areaCode) {
+        return baseMapper.getAreaTree(areaCode);
     }
 }

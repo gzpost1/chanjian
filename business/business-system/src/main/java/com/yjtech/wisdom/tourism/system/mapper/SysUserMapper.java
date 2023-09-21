@@ -1,6 +1,7 @@
 package com.yjtech.wisdom.tourism.system.mapper;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.DictArea;
 import com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysUser;
 import org.apache.ibatis.annotations.Param;
 
@@ -125,4 +126,6 @@ public interface SysUserMapper {
    * @return 结果
    */
   public SysUser checkEmailUnique(String email);
+
+  List<DictArea> selectUserAreaById(@Param("userId") Long userId);
 }

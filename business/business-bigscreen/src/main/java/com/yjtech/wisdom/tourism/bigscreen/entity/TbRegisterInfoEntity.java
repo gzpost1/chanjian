@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.common.enums.BeanValidationGroup;
 import com.yjtech.wisdom.tourism.mybatis.typehandler.ListJsonTypeHandler;
+import com.yjtech.wisdom.tourism.mybatis.typehandler.ListLongJsonTypeHandler;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -233,6 +234,12 @@ public class TbRegisterInfoEntity extends Model<TbRegisterInfoEntity> {
      */
     private String areaCode;
 
+    /**
+     * 区域名称
+     */
+    @TableField(exist = false)
+    private String areaName;
+
 
     public static final String ID = "id";
 
@@ -356,6 +363,11 @@ public class TbRegisterInfoEntity extends Model<TbRegisterInfoEntity> {
      */
     @TableField(exist = false)
     private String typeSign;
+
+    @TableField(exist = false)
+    private LocalDateTime createBeginTime;
+    @TableField(exist = false)
+    private LocalDateTime createEndTime;
 
     public void setInvestmentLabel(List<String> investmentLabel) {
         if (CollectionUtils.isEmpty(investmentLabel)) {

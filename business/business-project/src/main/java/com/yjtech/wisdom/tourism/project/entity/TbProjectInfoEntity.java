@@ -391,5 +391,20 @@ public class TbProjectInfoEntity {
      * 展示序号
      */
     private Integer sortNum;
+    /**
+     * 审核状态
+     */
+    @TableField(exist = false)
+    private Integer auditStatus;
+    /**
+     * 审核时间
+     */
+    @TableField(exist = false)
+    private Date auditTime;
+    /**
+     * 展示序号
+     */
+    @TableField(exist = false)
+    private List<Long> nextAuditUserIds;
 
 }

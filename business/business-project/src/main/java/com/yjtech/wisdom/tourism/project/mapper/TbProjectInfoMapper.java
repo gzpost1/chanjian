@@ -1,12 +1,13 @@
 package com.yjtech.wisdom.tourism.project.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yjtech.wisdom.tourism.common.bean.BaseVO;
-import com.yjtech.wisdom.tourism.project.dto.ProjectInvestmentDto;
 import com.yjtech.wisdom.tourism.common.bean.index.DataStatisticsDTO;
 import com.yjtech.wisdom.tourism.common.bean.index.DataStatisticsQueryVO;
 import com.yjtech.wisdom.tourism.common.bean.project.ProjectDataStatisticsQueryVO;
+import com.yjtech.wisdom.tourism.project.dto.ProjectInvestmentDto;
 import com.yjtech.wisdom.tourism.project.dto.ProjectQuery;
 import com.yjtech.wisdom.tourism.project.entity.TbProjectInfoEntity;
 import com.yjtech.wisdom.tourism.project.vo.InvestmentTotalVo;
@@ -66,7 +67,7 @@ public interface TbProjectInfoMapper extends BaseMapper<TbProjectInfoEntity> {
      *
      * @return
      */
-    Long getInvestmentTotal(@Param("params")InvestmentTotalVo vo);
+    Long getInvestmentTotal(@Param("params") InvestmentTotalVo vo);
 
     /**
      * 大屏-底部-注册公司、投资项目、规划项目占地统计
@@ -99,4 +100,9 @@ public interface TbProjectInfoMapper extends BaseMapper<TbProjectInfoEntity> {
      */
     List<BaseVO> queryViewNumAnalysis(@Param("params") ProjectDataStatisticsQueryVO params);
 
+    IPage<TbProjectInfoEntity> customPage(Page<TbProjectInfoEntity> page, @Param("query") ProjectQuery query);
+
+    IPage<TbProjectInfoEntity> auditPage(Page<TbProjectInfoEntity> page, @Param("query") ProjectQuery query, @Param("userId") Long userId);
+
+    List<TbProjectInfoEntity> queryRecommendProject(@Param("query") ProjectQuery query);
 }

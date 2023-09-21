@@ -1,5 +1,6 @@
 package com.yjtech.wisdom.tourism.position.mapper;
 
+import com.yjtech.wisdom.tourism.dto.area.AreaTreeNode;
 import com.yjtech.wisdom.tourism.position.entity.TbDictAreaEntity;
 import com.yjtech.wisdom.tourism.mybatis.base.BaseMybatisMapper;
 import org.apache.ibatis.annotations.Param;
@@ -15,4 +16,5 @@ import java.util.List;
  */
 public interface TbDictAreaMapper extends BaseMybatisMapper<TbDictAreaEntity> {
 
+    List<AreaTreeNode> getAreaTree(@Param("areaCode") String areaCode);
 }

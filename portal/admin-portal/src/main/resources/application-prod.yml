@@ -10,30 +10,6 @@ spring:
           username: root
           password: yjwl2019!@#
           driver-class-name: com.mysql.cj.jdbc.Driver
-        # 一码游贵州-生产（读库）
-        oneTravel:
-          url: jdbc:mysql://mysql-slave1.yj-guizhou:3306/db_one_travel?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=GMT%2B8
-          username: yjymygz
-          password: Yj123Ymygz!@#
-          driver-class-name: com.mysql.cj.jdbc.Driver
-        # 珊瑚礁-生产（读库）
-        fxDist:
-          url: jdbc:mysql://tx-mysql-slave.yj-fx-distribution:3306/db_dist?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=GMT%2B8
-          username: yjfx
-          password: Yjfx123!@#
-          driver-class-name: com.mysql.cj.jdbc.Driver
-        # 景区中心-生产（读库）
-        smartTravel:
-          url: jdbc:mysql://tx-mysql-slave.yj-fx-distribution:3306/db_smart_travel?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=GMT%2B8
-          username: yjfx
-          password: Yjfx123!@#
-          driver-class-name: com.mysql.cj.jdbc.Driver
-        # 酒店中心-生产（读库）
-        hotelCenter:
-          url: jdbc:mysql://mysql-slave1.yj-guizhou:3306/db_hotel_yjwl?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=GMT%2B8
-          username: yjymygz
-          password: Yj123Ymygz!@#
-          driver-class-name: com.mysql.cj.jdbc.Driver
       druid:
         # 初始连接数
         initialSize: 5

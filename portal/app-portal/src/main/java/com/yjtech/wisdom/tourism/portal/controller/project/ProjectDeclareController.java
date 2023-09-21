@@ -67,17 +67,13 @@ public class ProjectDeclareController {
     public JsonResult<IPage<TbProjectInfoEntity>> queryForPage(@RequestBody ProjectQuery query) {
         //获取当前企业用户信息
         ScreenLoginUser screenLoginUser = screenTokenService.getLoginUser(ServletUtils.getRequest());
-        LambdaQueryWrapper<TbProjectInfoEntity> queryWrapper = new LambdaQueryWrapper<>();
         //默认查询当前企业用户所属的项目
-        queryWrapper.eq(TbProjectInfoEntity::getCompanyId, screenLoginUser.getId());
-        queryWrapper.like(StringUtils.isNotBlank(query.getProjectName()), TbProjectInfoEntity::getProjectName, query.getProjectName());
-        queryWrapper.in(CollectionUtils.isNotEmpty(query.getStatus()), TbProjectInfoEntity::getStatus, query.getStatus());
-        queryWrapper.last(" order by ifnull(update_time,create_time) desc");
-        IPage<TbProjectInfoEntity> pageResult = projectInfoService.page(new Page<>(query.getPageNo(), query.getPageSize()), queryWrapper);
+        query.setCompanyId(screenLoginUser.getId());
+        IPage<TbProjectInfoEntity> pageResult = projectInfoService.customPage(query);
         //构建已选中项目标签id列表
         List<TbProjectInfoEntity> records = pageResult.getRecords();
-        if(CollectionUtils.isNotEmpty(records)){
-            for(TbProjectInfoEntity entity : records){
+        if (CollectionUtils.isNotEmpty(records)) {
+            for (TbProjectInfoEntity entity : records) {
                 entity.setPitchOnLabelIdList(tbProjectLabelRelationService.queryForLabelIdListByProjectId(entity.getId()));
             }
             pageResult.setRecords(records);

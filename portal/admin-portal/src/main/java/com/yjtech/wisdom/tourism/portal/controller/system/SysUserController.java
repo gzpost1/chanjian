@@ -99,6 +99,7 @@ public class SysUserController extends BaseController {
       result.put("data", userService.selectUserById(userId));
       result.put("postIds", postService.selectPostListByUserId(userId));
       result.put("roleIds", roleService.selectRoleListByUserId(userId));
+      result.put("areas", userService.selectUserAreaById(userId));
     }
     return JsonResult.success(result);
   }

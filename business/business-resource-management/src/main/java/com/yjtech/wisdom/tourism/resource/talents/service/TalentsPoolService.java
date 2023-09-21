@@ -10,15 +10,24 @@ import com.yjtech.wisdom.tourism.common.core.domain.UpdateStatusParam;
 import com.yjtech.wisdom.tourism.common.exception.CustomException;
 import com.yjtech.wisdom.tourism.common.exception.ErrorCode;
 import com.yjtech.wisdom.tourism.common.utils.StringUtils;
+import com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.DictArea;
+import com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysUser;
+import com.yjtech.wisdom.tourism.infrastructure.utils.SecurityUtils;
+import com.yjtech.wisdom.tourism.mybatis.entity.BaseEntity;
+import com.yjtech.wisdom.tourism.position.entity.TbDictAreaEntity;
+import com.yjtech.wisdom.tourism.position.service.TbDictAreaService;
 import com.yjtech.wisdom.tourism.resource.talents.entity.TalentsPoolEntity;
 import com.yjtech.wisdom.tourism.resource.talents.mapper.TalentsPoolMapper;
 import com.yjtech.wisdom.tourism.resource.talents.vo.TalentsPoolCreateVO;
 import com.yjtech.wisdom.tourism.resource.talents.vo.TalentsPoolQueryVO;
 import com.yjtech.wisdom.tourism.resource.talents.vo.TalentsPoolUpdateVO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 人才库管理(TbTalentsPool)表服务实现类
@@ -28,7 +37,8 @@ import java.util.List;
  */
 @Service
 public class TalentsPoolService extends ServiceImpl<TalentsPoolMapper, TalentsPoolEntity> {
-
+    @Autowired
+    private TbDictAreaService dictAreaService;
 
 
     /**
@@ -144,12 +154,26 @@ public class TalentsPoolService extends ServiceImpl<TalentsPoolMapper, TalentsPo
      * @param vo
      * @return
      */
-    private LambdaQueryWrapper<TalentsPoolEntity> buildQueryWrapper(TalentsPoolQueryVO vo){
-        return new LambdaQueryWrapper<TalentsPoolEntity>()
-                .like(StringUtils.isNotBlank(vo.getName()), TalentsPoolEntity::getName, vo.getName())
+    private LambdaQueryWrapper<TalentsPoolEntity> buildQueryWrapper(TalentsPoolQueryVO vo) {
+        LambdaQueryWrapper<TalentsPoolEntity> wrapper = new LambdaQueryWrapper<>();
+        boolean hasAllRights = false;
+        hasAllRights |= vo.getHasAllRights();
+        try {
+            SysUser user = SecurityUtils.getLoginUser().getUser();
+            List<DictArea> areas = user.getAreas();
+            hasAllRights |= new HashSet<>(areas.stream()
+                    .map(DictArea::getCode)
+                    .collect(Collectors.toList())).containsAll(dictAreaService.subArea("5201")
+                    .stream()
+                    .map(TbDictAreaEntity::getCode)
+                    .collect(Collectors.toList()));
+            hasAllRights |= user.isAdmin();
+            wrapper.eq(!hasAllRights, BaseEntity::getCreateUser, user.getUserId());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return wrapper.like(StringUtils.isNotBlank(vo.getName()), TalentsPoolEntity::getName, vo.getName())
                 .eq(null != vo.getStatus(), TalentsPoolEntity::getStatus, vo.getStatus())
                 .orderByDesc(TalentsPoolEntity::getUpdateTime);
     }
-
-
 }
