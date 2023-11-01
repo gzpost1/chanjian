@@ -40,6 +40,11 @@ import com.yjtech.wisdom.tourism.project.entity.TbProjectResourceEntity;
 import com.yjtech.wisdom.tourism.project.service.TbProjectInfoService;
 import com.yjtech.wisdom.tourism.project.service.TbProjectLabelRelationService;
 import com.yjtech.wisdom.tourism.project.service.TbProjectResourceService;
+import com.yjtech.wisdom.tourism.project.vo.ProjectStatisticsVo;
+import com.yjtech.wisdom.tourism.resource.auditmanage.entity.AuditManageInfo;
+import com.yjtech.wisdom.tourism.resource.auditmanage.entity.AuditManageLog;
+import com.yjtech.wisdom.tourism.resource.auditmanage.service.AuditManageInfoService;
+import com.yjtech.wisdom.tourism.resource.auditmanage.service.AuditManageLogService;
 import com.yjtech.wisdom.tourism.resource.notice.service.NoticeService;
 import com.yjtech.wisdom.tourism.resource.notice.vo.NoticeCreateVO;
 import com.yjtech.wisdom.tourism.system.service.SysDictDataService;
@@ -80,7 +85,25 @@ public class ProjectController extends BusinessCommonController {
     private TbFavoriteService tbFavoriteService;
     @Autowired
     private ChatMessageService chatMessageService;
+    @Autowired
+    private AuditManageLogService auditManageLogService;
+    @Autowired
+    private AuditManageInfoService auditManageInfoService;
 
+    /**
+     * 后台统计
+     *
+     * @param query
+     * @return
+     */
+    @PostMapping("statistics")
+    public JsonResult<ProjectStatisticsVo> statistics(@RequestBody ProjectQuery query) {
+        String areaCode = query.getAreaCode();
+        if (StringUtils.isNotBlank(areaCode)) {
+            areaCode = AreaUtils.trimCode(areaCode);
+        }
+        return JsonResult.success(projectInfoService.statistics(areaCode));
+    }
 
     /**
      * 分页列表
@@ -310,6 +333,23 @@ public class ProjectController extends BusinessCommonController {
         } catch (Exception e) {
             log.error("******************** 发送项目审核通知异常 ********************");
             e.printStackTrace();
+        }
+        if (param.getStatus() == Byte.parseByte("4")) {
+            AuditManageLog auditLog = new AuditManageLog();
+            auditLog.setProcessId(-2L);
+            auditLog.setSourceId(param.getId());
+            auditLog.setType(1);
+            auditLog.setStatus(2);
+            auditLog.setText("下架");
+            auditLog.setAuditUser(SecurityUtils.getUserId());
+            auditManageLogService.save(auditLog);
+            AuditManageInfo info = new AuditManageInfo();
+            info.setSourceId(param.getId());
+            info.setUpdateTime(new Date());
+            info.setLogId(auditLog.getId());
+            info.setProcessId(-2L);
+            info.setStatus(2);
+            auditManageInfoService.updateBySourceId(info, param.getId());
         }
         return JsonResult.ok();
     }

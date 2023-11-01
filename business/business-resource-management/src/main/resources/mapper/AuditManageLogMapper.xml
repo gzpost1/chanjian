@@ -73,6 +73,6 @@
         deleted = #{updated.deleted,jdbcType=BOOLEAN},
       </if>
     </set>
-    where process_id=#{processId,jdbcType=BIGINT} and source_id=#{sourceId,jdbcType=BIGINT}
+    where process_id=#{processId,jdbcType=BIGINT} and source_id=#{sourceId,jdbcType=BIGINT} and status = 0
   </update>
 </mapper>

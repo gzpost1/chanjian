@@ -22,4 +22,8 @@ public class AuditManageLogService extends ServiceImpl<AuditManageLogMapper, Aud
     public int updateByProcessIdAndSourceId(AuditManageLog updated, Long processId, Long sourceId) {
         return baseMapper.updateByProcessIdAndSourceId(updated, processId, sourceId);
     }
+
+    public int updateStatusAndTextBySourceId(Integer updatedStatus, String updatedText, Long sourceId) {
+        return baseMapper.updateStatusAndTextBySourceId(updatedStatus, updatedText, sourceId);
+    }
 }

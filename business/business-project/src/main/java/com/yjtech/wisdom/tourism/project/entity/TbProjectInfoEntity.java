@@ -407,4 +407,21 @@ public class TbProjectInfoEntity {
     @TableField(exist = false)
     private List<Long> nextAuditUserIds;
 
+    public String getStatusStr() {
+        if (auditStatus == null) {
+            return "待审核";
+        }
+        if (status == 4) {
+            return "已下架";
+        }
+        switch (auditStatus) {
+            case 0:
+                return "审核中";
+            case 1:
+                return "已发布";
+            case 2:
+                return "驳回";
+        }
+        return "状态错误";
+    }
 }
