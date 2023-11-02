@@ -317,7 +317,7 @@
                 and tpi.company_id = #{query.companyId,jdbcType=VARCHAR}
             </if>
             <if test="query.areaCode != null and query.areaCode != ''">
-                and tpi.area_code like concat('%', #{query.areaCode,jdbcType=VARCHAR}, '%')
+                and tpi.area_code like concat(#{query.areaCode,jdbcType=VARCHAR}, '%')
             </if>
             <if test="query.auditStatus != null">
                 and tami.status in
@@ -382,7 +382,7 @@
           </foreach>
         </if>
         <if test="query.areaCode != null and query.areaCode != ''">
-          and tpi.area_code like concat('%', #{query.areaCode,jdbcType=VARCHAR}, '%')
+          and tpi.area_code like concat(#{query.areaCode,jdbcType=VARCHAR}, '%')
         </if>
         <if test="query.auditStatus != null">
           and taml.status in
@@ -426,7 +426,7 @@
     </select>
 
     <select id="statistics" resultType="com.yjtech.wisdom.tourism.project.vo.ProjectStatisticsVo">
-      select count(1) `all`, ifnull(sum(tami.status = 1 and tpi.status != 4)) auditRunning, ifnull(sum(tpi.status = 4)) takeDown
+      select count(1) `all`, ifnull(sum(tami.status = 1 and tpi.status != 4),0) auditRunning, ifnull(sum(tpi.status = 4),0) takeDown
       from tb_project_info tpi
              left join (select * from tb_audit_manage_info where deleted = 0) tami
                        on tpi.id = tami.source_id

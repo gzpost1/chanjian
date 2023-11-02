@@ -21,10 +21,7 @@ import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.common.core.domain.UpdateStatusParam;
 import com.yjtech.wisdom.tourism.common.enums.*;
 import com.yjtech.wisdom.tourism.common.exception.CustomException;
-import com.yjtech.wisdom.tourism.common.utils.AreaUtils;
-import com.yjtech.wisdom.tourism.common.utils.DateUtils;
-import com.yjtech.wisdom.tourism.common.utils.ExcelFormReadUtil;
-import com.yjtech.wisdom.tourism.common.utils.IdWorker;
+import com.yjtech.wisdom.tourism.common.utils.*;
 import com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.DictArea;
 import com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysRole;
 import com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysUser;
@@ -288,13 +285,33 @@ public class ProjectController extends BusinessCommonController {
      */
     @PostMapping("/update")
     public JsonResult update(@RequestBody @Valid TbProjectInfoEntity entity) {
-
+        LambdaQueryWrapper<AuditManageInfo> auditInfoQuery = Wrappers.lambdaQuery();
+        auditInfoQuery.eq(AuditManageInfo::getSourceId, entity.getId());
+        AuditManageInfo auditManageInfo = auditManageInfoService.getOne(auditInfoQuery);
+        AssertUtil.isTrue(auditManageInfo == null || auditManageInfo.getStatus() != 0, "审核中的数据不能编辑");
         validateProjectName(entity.getId(), entity.getProjectName());
         entity.setUpdateTime(new Date());
 
         //构建项目-标签关联
         buildProjectLabelRelation(projectInfoService.updateById(entity), entity.getId(), entity.getPitchOnLabelIdList());
-
+        // 如果是审核通过的数据，需要驳回，再次审核
+        if (auditManageInfo != null && auditManageInfo.getStatus() == 1) {
+            AuditManageLog auditLog = new AuditManageLog();
+            auditLog.setProcessId(-2L);
+            auditLog.setSourceId(entity.getId());
+            auditLog.setType(1);
+            auditLog.setStatus(2);
+            auditLog.setText("编辑数据");
+            auditLog.setAuditUser(SecurityUtils.getUserId());
+            auditManageLogService.save(auditLog);
+            AuditManageInfo info = new AuditManageInfo();
+            info.setSourceId(entity.getId());
+            info.setUpdateTime(new Date());
+            info.setLogId(auditLog.getId());
+            info.setProcessId(-2L);
+            info.setStatus(2);
+            auditManageInfoService.updateBySourceId(info, entity.getId());
+        }
         return JsonResult.ok();
     }
 
