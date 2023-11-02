@@ -289,6 +289,9 @@
             <if test="query.updateEndTime != null">
                 and tpi.update_time &lt;= #{query.updateEndTime,jdbcType=TIMESTAMP}
             </if>
+            <if test="query.projectName != null and query.projectName != ''">
+                and tpi.project_name like concat('%', #{query.projectName}, '%')
+            </if>
             <if test="query.status != null and query.status.size() != 0">
                 and tpi.status in
                 <foreach collection="query.status" item="item" index="index" separator="," open="(" close=")">
@@ -350,6 +353,9 @@
             <if test="query.updateEndTime != null">
                 and tpi.update_time &lt;= #{query.updateEndTime,jdbcType=TIMESTAMP}
             </if>
+            <if test="query.projectName != null and query.projectName != ''">
+                and tpi.project_name like concat('%', #{query.projectName}, '%')
+            </if>
             <if test="query.status != null and query.status.size() != 0">
                 and tpi.status in
                 <foreach collection="query.status" item="item" index="index" separator="," open="(" close=")">
@@ -407,7 +413,7 @@
     </select>
 
     <select id="statistics" resultType="com.yjtech.wisdom.tourism.project.vo.ProjectStatisticsVo">
-      select count(1) `all`, count(tami.status = 1 and tpi.status != 4) auditRunning, count(tpi.status = 4) takeDown
+      select count(1) `all`, sum(tami.status = 1 and tpi.status != 4) auditRunning, sum(tpi.status = 4) takeDown
       from tb_project_info tpi
              left join (select * from tb_audit_manage_info where deleted = 0) tami
                        on tpi.id = tami.source_id
