@@ -134,7 +134,7 @@ public class MybatisPlusConfig {
    * @return
    */
   @Bean
-  @Profile({ProfileConstants.DEVELOPMENT, ProfileConstants.LOCAL})
+  @Profile({ProfileConstants.DEVELOPMENT, ProfileConstants.LOCAL, ProfileConstants.TEST})
   public PerformanceInterceptor performanceInterceptor() {
     PerformanceInterceptor performanceInterceptor = new PerformanceInterceptor();
     Properties properties = new Properties();
