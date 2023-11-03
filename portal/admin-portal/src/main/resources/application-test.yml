@@ -51,9 +51,8 @@ spring:
             config:
               multi-statement-allow: true
   redis:
-    database: 9
     # 地址
-    host: redis.test-standard-integrated
+    host: redis
     # 端口，默认为6379
     port: 6379
     # 密码

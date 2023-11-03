@@ -27,6 +27,7 @@ import com.yjtech.wisdom.tourism.project.entity.TbProjectResourceEntity;
 import com.yjtech.wisdom.tourism.project.mapper.TbProjectInfoMapper;
 import com.yjtech.wisdom.tourism.project.vo.InvestmentTotalVo;
 import com.yjtech.wisdom.tourism.project.vo.ProjectAmountVo;
+import com.yjtech.wisdom.tourism.project.vo.ProjectStatisticsVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.CharEncoding;
 import org.apache.commons.collections.CollectionUtils;
@@ -444,5 +445,13 @@ public class TbProjectInfoService extends ServiceImpl<TbProjectInfoMapper, TbPro
 
     public List<TbProjectInfoEntity> queryRecommendProject(ProjectQuery query) {
         return baseMapper.queryRecommendProject(query);
+    }
+
+    public ProjectStatisticsVo statistics(String areaCode) {
+        return baseMapper.statistics(areaCode);
+    }
+
+    public int updateStatusById(Byte updatedStatus, Long id) {
+        return tbProjectInfoMapper.updateStatusById(updatedStatus, id);
     }
 }

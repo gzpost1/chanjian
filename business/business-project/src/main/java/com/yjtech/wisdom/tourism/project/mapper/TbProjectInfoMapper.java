@@ -12,6 +12,7 @@ import com.yjtech.wisdom.tourism.project.dto.ProjectQuery;
 import com.yjtech.wisdom.tourism.project.entity.TbProjectInfoEntity;
 import com.yjtech.wisdom.tourism.project.vo.InvestmentTotalVo;
 import com.yjtech.wisdom.tourism.project.vo.ProjectAmountVo;
+import com.yjtech.wisdom.tourism.project.vo.ProjectStatisticsVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.time.LocalDateTime;
@@ -105,4 +106,10 @@ public interface TbProjectInfoMapper extends BaseMapper<TbProjectInfoEntity> {
     IPage<TbProjectInfoEntity> auditPage(Page<TbProjectInfoEntity> page, @Param("query") ProjectQuery query, @Param("userId") Long userId);
 
     List<TbProjectInfoEntity> queryRecommendProject(@Param("query") ProjectQuery query);
+
+    ProjectStatisticsVo statistics(@Param("areaCode") String areaCode);
+
+    int updateStatusById(@Param("updatedStatus")Byte updatedStatus,@Param("id")Long id);
+
+
 }

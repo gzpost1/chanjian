@@ -2,9 +2,10 @@ package com.yjtech.wisdom.tourism.portal.controller.auditmanage;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.yjtech.wisdom.tourism.common.constant.EntityConstants;
 import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.common.utils.AssertUtil;
-import com.yjtech.wisdom.tourism.infrastructure.utils.SecurityUtils;
+import com.yjtech.wisdom.tourism.project.service.TbProjectInfoService;
 import com.yjtech.wisdom.tourism.resource.auditmanage.dto.AuditDto;
 import com.yjtech.wisdom.tourism.resource.auditmanage.entity.AuditManageInfo;
 import com.yjtech.wisdom.tourism.resource.auditmanage.entity.AuditManageLog;
@@ -38,6 +39,8 @@ public class AuditManageController {
     private AuditManageLogService logService;
     @Autowired
     private AuditManageInfoService infoService;
+    @Autowired
+    private TbProjectInfoService projectInfoService;
 
     /**
      * 提交审核
@@ -79,6 +82,7 @@ public class AuditManageController {
         info.setCreateTime(new Date());
         info.setUpdateTime(new Date());
         infoService.insertOrUpdate(info);
+        projectInfoService.updateStatusById(EntityConstants.NO, dto.getSourceId());
         return JsonResult.success();
     }
 }

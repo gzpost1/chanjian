@@ -289,6 +289,15 @@
             <if test="query.updateEndTime != null">
                 and tpi.update_time &lt;= #{query.updateEndTime,jdbcType=TIMESTAMP}
             </if>
+            <if test="query.createBeginTime != null">
+                and tpi.create_time >= #{query.createBeginTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="query.createEndTime != null">
+                and tpi.create_time &lt;= #{query.createEndTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="query.projectName != null and query.projectName != ''">
+                and tpi.project_name like concat('%', #{query.projectName}, '%')
+            </if>
             <if test="query.status != null and query.status.size() != 0">
                 and tpi.status in
                 <foreach collection="query.status" item="item" index="index" separator="," open="(" close=")">
@@ -308,7 +317,7 @@
                 and tpi.company_id = #{query.companyId,jdbcType=VARCHAR}
             </if>
             <if test="query.areaCode != null and query.areaCode != ''">
-                and tpi.area_code like concat('%', #{query.areaCode,jdbcType=VARCHAR}, '%')
+                and tpi.area_code like concat(#{query.areaCode,jdbcType=VARCHAR}, '%')
             </if>
             <if test="query.auditStatus != null">
                 and tami.status in
@@ -321,58 +330,68 @@
     </select>
 
     <select id="auditPage" resultMap="BaseResultMap">
-        select tpi.*, taml.status audit_status, taml.create_time audit_time
-        from tb_project_info tpi
-                 left join (select l.*
-                            from tb_audit_manage_log l
-                                     right join (select max(l.id) max_id, source_id
-                                                 from tb_audit_manage_log l
-                                                          left join
-                                                      tb_audit_manage_process p
-                                                      on l.process_id = p.id
-                                                 where l.deleted = 0
-                                                   and p.deleted = 0
-                                                   and (
-                                                         (
-                                                                     p.user_ids like concat('%"', #{userId}, '"%')
-                                                                 and audit_user is null
-                                                             )
-                                                         or audit_user = #{userId}
-                                                     )
-                                                 group by source_id) l1 on l.id = l1.max_id) taml
-                           on tpi.id = taml.source_id
-        <where>
-            tpi.deleted = 0
-              and taml.deleted = 0
-            <if test="query.updateBeginTime != null">
-                and tpi.update_time >= #{query.updateBeginTime,jdbcType=TIMESTAMP}
-            </if>
-            <if test="query.updateEndTime != null">
-                and tpi.update_time &lt;= #{query.updateEndTime,jdbcType=TIMESTAMP}
-            </if>
-            <if test="query.status != null and query.status.size() != 0">
-                and tpi.status in
-                <foreach collection="query.status" item="item" index="index" separator="," open="(" close=")">
-                    #{item}
-                </foreach>
-            </if>
-            <if test="query.areaCodes != null and query.areaCodes.size() != 0">
-                and tpi.area_code in
-                <foreach collection="query.areaCodes" item="item" index="index" separator="," open="(" close=")">
-                    #{item}
-                </foreach>
-            </if>
-            <if test="query.areaCode != null and query.areaCode != ''">
-                and tpi.area_code like concat('%', #{query.areaCode,jdbcType=VARCHAR}, '%')
-            </if>
-            <if test="query.auditStatus != null">
-                and taml.status in
-                <foreach collection="query.auditStatus" item="item" index="index" separator="," open="(" close=")">
-                    #{item}
-                </foreach>
-            </if>
-        </where>
-        order by sort_num, ifnull(tpi.update_time, tpi.create_time) desc
+      select tpi.*, taml.status audit_status, taml.create_time audit_time
+      from tb_project_info tpi
+             left join (select l.*
+                        from tb_audit_manage_log l
+                               right join (select max(l.id) max_id, source_id
+                                           from tb_audit_manage_log l
+                                                  left join
+                                                (select *
+                                                 from tb_audit_manage_process
+                                                 where deleted = 0) p
+                                                on l.process_id = p.id
+                                           where l.deleted = 0
+                                             and (
+                                               (
+                                                     p.user_ids like concat('%"', #{userId}, '"%')
+                                                   and audit_user is null
+                                                 )
+                                               or audit_user = #{userId}
+                                             )
+                                           group by source_id) l1 on l.id = l1.max_id) taml
+                       on tpi.id = taml.source_id
+      <where>
+        tpi.deleted = 0
+          and taml.deleted = 0
+        <if test="query.updateBeginTime != null">
+          and tpi.update_time >= #{query.updateBeginTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="query.updateEndTime != null">
+          and tpi.update_time &lt;= #{query.updateEndTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="query.createBeginTime != null">
+          and tpi.create_time >= #{query.createBeginTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="query.createEndTime != null">
+          and tpi.create_time &lt;= #{query.createEndTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="query.projectName != null and query.projectName != ''">
+          and tpi.project_name like concat('%', #{query.projectName}, '%')
+        </if>
+        <if test="query.status != null and query.status.size() != 0">
+          and tpi.status in
+          <foreach collection="query.status" item="item" index="index" separator="," open="(" close=")">
+            #{item}
+          </foreach>
+        </if>
+        <if test="query.areaCodes != null and query.areaCodes.size() != 0">
+          and tpi.area_code in
+          <foreach collection="query.areaCodes" item="item" index="index" separator="," open="(" close=")">
+            #{item}
+          </foreach>
+        </if>
+        <if test="query.areaCode != null and query.areaCode != ''">
+          and tpi.area_code like concat(#{query.areaCode,jdbcType=VARCHAR}, '%')
+        </if>
+        <if test="query.auditStatus != null">
+          and taml.status in
+          <foreach collection="query.auditStatus" item="item" index="index" separator="," open="(" close=")">
+            #{item}
+          </foreach>
+        </if>
+      </where>
+      order by sort_num, ifnull(tpi.update_time, tpi.create_time) desc
     </select>
 
     <select id="queryRecommendProject" resultMap="BaseResultMap">
@@ -405,4 +424,24 @@
         </where>
         order by is_top desc ,sort_num ,view_num desc , ifnull(tpi.update_time, tpi.create_time) desc limit 10
     </select>
+
+    <select id="statistics" resultType="com.yjtech.wisdom.tourism.project.vo.ProjectStatisticsVo">
+      select count(1) `all`, ifnull(sum(tami.status = 1 and tpi.status != 4),0) auditRunning, ifnull(sum(tpi.status = 4),0) takeDown
+      from tb_project_info tpi
+             left join (select * from tb_audit_manage_info where deleted = 0) tami
+                       on tpi.id = tami.source_id
+      <where>
+        tpi.deleted = 0
+        <if test="areaCode != null and areaCode != ''">
+          and area_code like concat(#{areaCode}, '%')
+        </if>
+      </where>
+    </select>
+
+<!--auto generated by MybatisCodeHelper on 2023-11-01-->
+    <update id="updateStatusById">
+        update tb_project_info
+        set `status`=#{updatedStatus,jdbcType=TINYINT}
+        where id=#{id,jdbcType=BIGINT}
+    </update>
 </mapper>

@@ -21,10 +21,7 @@ import com.yjtech.wisdom.tourism.common.core.domain.JsonResult;
 import com.yjtech.wisdom.tourism.common.core.domain.UpdateStatusParam;
 import com.yjtech.wisdom.tourism.common.enums.*;
 import com.yjtech.wisdom.tourism.common.exception.CustomException;
-import com.yjtech.wisdom.tourism.common.utils.AreaUtils;
-import com.yjtech.wisdom.tourism.common.utils.DateUtils;
-import com.yjtech.wisdom.tourism.common.utils.ExcelFormReadUtil;
-import com.yjtech.wisdom.tourism.common.utils.IdWorker;
+import com.yjtech.wisdom.tourism.common.utils.*;
 import com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.DictArea;
 import com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysRole;
 import com.yjtech.wisdom.tourism.infrastructure.core.domain.entity.SysUser;
@@ -40,6 +37,11 @@ import com.yjtech.wisdom.tourism.project.entity.TbProjectResourceEntity;
 import com.yjtech.wisdom.tourism.project.service.TbProjectInfoService;
 import com.yjtech.wisdom.tourism.project.service.TbProjectLabelRelationService;
 import com.yjtech.wisdom.tourism.project.service.TbProjectResourceService;
+import com.yjtech.wisdom.tourism.project.vo.ProjectStatisticsVo;
+import com.yjtech.wisdom.tourism.resource.auditmanage.entity.AuditManageInfo;
+import com.yjtech.wisdom.tourism.resource.auditmanage.entity.AuditManageLog;
+import com.yjtech.wisdom.tourism.resource.auditmanage.service.AuditManageInfoService;
+import com.yjtech.wisdom.tourism.resource.auditmanage.service.AuditManageLogService;
 import com.yjtech.wisdom.tourism.resource.notice.service.NoticeService;
 import com.yjtech.wisdom.tourism.resource.notice.vo.NoticeCreateVO;
 import com.yjtech.wisdom.tourism.system.service.SysDictDataService;
@@ -80,7 +82,25 @@ public class ProjectController extends BusinessCommonController {
     private TbFavoriteService tbFavoriteService;
     @Autowired
     private ChatMessageService chatMessageService;
+    @Autowired
+    private AuditManageLogService auditManageLogService;
+    @Autowired
+    private AuditManageInfoService auditManageInfoService;
 
+    /**
+     * 后台统计
+     *
+     * @param query
+     * @return
+     */
+    @PostMapping("statistics")
+    public JsonResult<ProjectStatisticsVo> statistics(@RequestBody ProjectQuery query) {
+        String areaCode = query.getAreaCode();
+        if (StringUtils.isNotBlank(areaCode)) {
+            areaCode = AreaUtils.trimCode(areaCode);
+        }
+        return JsonResult.success(projectInfoService.statistics(areaCode));
+    }
 
     /**
      * 分页列表
@@ -265,13 +285,33 @@ public class ProjectController extends BusinessCommonController {
      */
     @PostMapping("/update")
     public JsonResult update(@RequestBody @Valid TbProjectInfoEntity entity) {
-
+        LambdaQueryWrapper<AuditManageInfo> auditInfoQuery = Wrappers.lambdaQuery();
+        auditInfoQuery.eq(AuditManageInfo::getSourceId, entity.getId());
+        AuditManageInfo auditManageInfo = auditManageInfoService.getOne(auditInfoQuery);
+        AssertUtil.isTrue(auditManageInfo == null || auditManageInfo.getStatus() != 0, "审核中的数据不能编辑");
         validateProjectName(entity.getId(), entity.getProjectName());
         entity.setUpdateTime(new Date());
 
         //构建项目-标签关联
         buildProjectLabelRelation(projectInfoService.updateById(entity), entity.getId(), entity.getPitchOnLabelIdList());
-
+        // 如果是审核通过的数据，需要驳回，再次审核
+        if (auditManageInfo != null && auditManageInfo.getStatus() == 1) {
+            AuditManageLog auditLog = new AuditManageLog();
+            auditLog.setProcessId(-2L);
+            auditLog.setSourceId(entity.getId());
+            auditLog.setType(1);
+            auditLog.setStatus(2);
+            auditLog.setText("编辑数据");
+            auditLog.setAuditUser(SecurityUtils.getUserId());
+            auditManageLogService.save(auditLog);
+            AuditManageInfo info = new AuditManageInfo();
+            info.setSourceId(entity.getId());
+            info.setUpdateTime(new Date());
+            info.setLogId(auditLog.getId());
+            info.setProcessId(-2L);
+            info.setStatus(2);
+            auditManageInfoService.updateBySourceId(info, entity.getId());
+        }
         return JsonResult.ok();
     }
 
@@ -310,6 +350,23 @@ public class ProjectController extends BusinessCommonController {
         } catch (Exception e) {
             log.error("******************** 发送项目审核通知异常 ********************");
             e.printStackTrace();
+        }
+        if (param.getStatus() == Byte.parseByte("4")) {
+            AuditManageLog auditLog = new AuditManageLog();
+            auditLog.setProcessId(-2L);
+            auditLog.setSourceId(param.getId());
+            auditLog.setType(1);
+            auditLog.setStatus(2);
+            auditLog.setText("下架");
+            auditLog.setAuditUser(SecurityUtils.getUserId());
+            auditManageLogService.save(auditLog);
+            AuditManageInfo info = new AuditManageInfo();
+            info.setSourceId(param.getId());
+            info.setUpdateTime(new Date());
+            info.setLogId(auditLog.getId());
+            info.setProcessId(-2L);
+            info.setStatus(2);
+            auditManageInfoService.updateBySourceId(info, param.getId());
         }
         return JsonResult.ok();
     }

@@ -45,6 +45,16 @@ public class ProjectQuery extends PageQuery {
      */
     private List<Long> labelIdList;
     /**
+     * 创建开始时间
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date createBeginTime;
+    /**
+     * 创建结束时间
+     */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date createEndTime;
+    /**
      * 更新开始时间
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
