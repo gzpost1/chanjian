@@ -413,7 +413,7 @@
                 </foreach>
             </if>
             <if test="query.areaCode != null and query.areaCode != ''">
-                and tpi.area_code = #{query.areaCode,jdbcType=VARCHAR}
+                and tpi.area_code like concat(#{query.areaCode,jdbcType=VARCHAR}, '%')
             </if>
             <if test="query.auditStatus != null">
                 and tami.status in

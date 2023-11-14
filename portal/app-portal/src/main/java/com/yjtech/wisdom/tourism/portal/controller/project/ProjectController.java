@@ -111,6 +111,7 @@ public class ProjectController {
         if (query.getAuditStatus() == null) {
             query.setAuditStatus(Collections.singletonList(1));
         }
+        query.setAreaCode(StringUtils.isBlank(query.getAreaCode()) ? query.getAreaCode() : AreaUtils.trimCode(query.getAreaCode()));
         List<TbProjectInfoEntity> list = projectInfoService.queryRecommendProject(query);
         list.forEach(i -> i.setResource(Optional.ofNullable(projectResourceService.list(new LambdaQueryWrapper<TbProjectResourceEntity>().eq(TbProjectResourceEntity::getProjectId, i.getId())))
                 .orElse(new ArrayList<>())));
