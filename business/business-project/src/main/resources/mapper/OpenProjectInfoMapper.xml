@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjtech.wisdom.tourism.project.mapper.OpenProjectInfoMapper">
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.yjtech.wisdom.tourism.project.entity.OpenProjectInfoEntity">
+        <id column="id" property="id"/>
+        <result column="project_name" property="projectName"/>
+        <result column="construction_requirement" property="constructionRequirement"/>
+        <result column="cooperation_method" property="cooperationMethod"/>
+        <result column="project_site_scale" property="projectSiteScale"/>
+        <result column="project_plan_footprint" property="projectPlanFootprint"/>
+        <result column="create_time" property="createTime"/>
+        <result column="create_user" property="createUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="deleted" property="deleted"/>
+        <result column="project_build_area" property="projectBuildArea"/>
+        <result column="construction_condition" property="constructionCondition"/>
+        <result column="industrial_condition" property="industrialCondition"/>
+        <result column="market_outlook_forecast" property="marketOutlookForecast"/>
+        <result column="project_investment_content" property="projectInvestmentContent"/>
+        <result column="investment_total" property="investmentTotal"/>
+        <result column="funding_amount" property="fundingAmount"/>
+        <result column="private_capital" property="privateCapital"/>
+        <result column="payback_period" property="paybackPeriod"/>
+        <result column="company_name" property="companyName"/>
+        <result column="company_address" property="companyAddress"/>
+        <result column="project_concat" property="projectConcat"/>
+        <result column="project_phone" property="projectPhone"/>
+        <result column="post_code" property="postCode"/>
+        <result column="contact_landline" property="contactLandline"/>
+        <result column="contact_email" property="contactEmail"/>
+        <result column="contact_fax" property="contactFax"/>
+        <result column="concat_qq" property="concatQq"/>
+        <result column="service_unit_name" property="serviceUnitName"/>
+        <result column="project_service_concat" property="projectServiceConcat"/>
+        <result column="project_service_phone" property="projectServicePhone"/>
+        <result column="project_service_landline" property="projectServiceLandline"/>
+        <result column="support_desc" property="supportDesc"/>
+        <result column="status" property="status"/>
+        <result column="company_id" property="companyId"/>
+        <result column="view_num" property="viewNum"/>
+        <result column="area_code" property="areaCode"/>
+        <result column="area_name" property="areaName"/>
+        <result column="address" property="address"/>
+        <result column="longitude" property="longitude"/>
+        <result column="latitude" property="latitude"/>
+        <result column="is_top" property="isTop"/>
+        <result column="project_map" property="projectMap"/>
+        <result column="view_num_flag" property="viewNumFlag"/>
+        <result column="collect_num_flag" property="collectNumFlag"/>
+        <result column="sort_num" property="sortNum"/>
+        <association property="labelNames" javaType="java.util.List" select="queryLabelName" column="id"></association>
+        <association property="resourcesVos" javaType="java.util.List" select="queryResource" column="id"></association>
+    </resultMap>
+
+    <select id="list" resultMap="BaseResultMap"
+            parameterType="com.yjtech.wisdom.tourism.project.entity.OpenProjectInfoEntity">
+        select
+        <include refid="Base_Column_List"/>
+        from tb_project_info
+        <where>
+            <include refid="dynamic_where"/>
+        </where>
+    </select>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, project_name, construction_requirement, cooperation_method, project_site_scale, project_plan_footprint, create_time, create_user, update_time, update_user, deleted, project_build_area, construction_condition, industrial_condition, market_outlook_forecast, project_investment_content, investment_total, funding_amount, private_capital, payback_period, company_name, company_address, project_concat, project_phone, post_code, contact_landline, contact_email, contact_fax, concat_qq, service_unit_name, project_service_concat, project_service_phone, project_service_landline, support_desc, status, company_id, view_num, area_code, area_name, address, longitude, latitude, is_top, project_map, view_num_flag, collect_num_flag, sort_num
+    </sql>
+
+    <sql id="dynamic_where">
+        <if test="params!=null">
+            <if test=" params.id != null">
+                and id = #{params.id}
+            </if>
+            <if test=" params.projectName != null and params.projectName.trim() != ''">
+                and project_name like CONCAT('%',#{params.projectName},'%' )
+            </if>
+            <if test=" params.constructionRequirement != null and params.constructionRequirement.trim() != ''">
+                and construction_requirement like CONCAT('%',#{params.constructionRequirement},'%' )
+            </if>
+            <if test=" params.cooperationMethod != null and params.cooperationMethod.trim() != ''">
+                and cooperation_method like CONCAT('%',#{params.cooperationMethod},'%' )
+            </if>
+            <if test=" params.projectSiteScale != null and params.projectSiteScale.trim() != ''">
+                and project_site_scale like CONCAT('%',#{params.projectSiteScale},'%' )
+            </if>
+            <if test=" params.projectPlanFootprint != null and params.projectPlanFootprint.trim() != ''">
+                and project_plan_footprint like CONCAT('%',#{params.projectPlanFootprint},'%' )
+            </if>
+            <if test=" params.projectBuildArea != null and params.projectBuildArea.trim() != ''">
+                and project_build_area like CONCAT('%',#{params.projectBuildArea},'%' )
+            </if>
+            <if test=" params.constructionCondition != null and params.constructionCondition.trim() != ''">
+                and construction_condition like CONCAT('%',#{params.constructionCondition},'%' )
+            </if>
+            <if test=" params.industrialCondition != null and params.industrialCondition.trim() != ''">
+                and industrial_condition like CONCAT('%',#{params.industrialCondition},'%' )
+            </if>
+            <if test=" params.marketOutlookForecast != null and params.marketOutlookForecast.trim() != ''">
+                and market_outlook_forecast like CONCAT('%',#{params.marketOutlookForecast},'%' )
+            </if>
+            <if test=" params.projectInvestmentContent != null and params.projectInvestmentContent.trim() != ''">
+                and project_investment_content like CONCAT('%',#{params.projectInvestmentContent},'%' )
+            </if>
+            <if test=" params.investmentTotal != null and params.investmentTotal.trim() != ''">
+                and investment_total like CONCAT('%',#{params.investmentTotal},'%' )
+            </if>
+            <if test=" params.fundingAmount != null and params.fundingAmount.trim() != ''">
+                and funding_amount like CONCAT('%',#{params.fundingAmount},'%' )
+            </if>
+            <if test=" params.privateCapital != null and params.privateCapital.trim() != ''">
+                and private_capital like CONCAT('%',#{params.privateCapital},'%' )
+            </if>
+            <if test=" params.paybackPeriod != null and params.paybackPeriod.trim() != ''">
+                and payback_period like CONCAT('%',#{params.paybackPeriod},'%' )
+            </if>
+            <if test=" params.companyName != null and params.companyName.trim() != ''">
+                and company_name like CONCAT('%',#{params.companyName},'%' )
+            </if>
+            <if test=" params.companyAddress != null and params.companyAddress.trim() != ''">
+                and company_address like CONCAT('%',#{params.companyAddress},'%' )
+            </if>
+            <if test=" params.projectConcat != null and params.projectConcat.trim() != ''">
+                and project_concat like CONCAT('%',#{params.projectConcat},'%' )
+            </if>
+            <if test=" params.projectPhone != null and params.projectPhone.trim() != ''">
+                and project_phone like CONCAT('%',#{params.projectPhone},'%' )
+            </if>
+            <if test=" params.postCode != null and params.postCode.trim() != ''">
+                and post_code like CONCAT('%',#{params.postCode},'%' )
+            </if>
+            <if test=" params.contactLandline != null and params.contactLandline.trim() != ''">
+                and contact_landline like CONCAT('%',#{params.contactLandline},'%' )
+            </if>
+            <if test=" params.contactEmail != null and params.contactEmail.trim() != ''">
+                and contact_email like CONCAT('%',#{params.contactEmail},'%' )
+            </if>
+            <if test=" params.contactFax != null and params.contactFax.trim() != ''">
+                and contact_fax like CONCAT('%',#{params.contactFax},'%' )
+            </if>
+            <if test=" params.concatQq != null and params.concatQq.trim() != ''">
+                and concat_qq like CONCAT('%',#{params.concatQq},'%' )
+            </if>
+            <if test=" params.serviceUnitName != null and params.serviceUnitName.trim() != ''">
+                and service_unit_name like CONCAT('%',#{params.serviceUnitName},'%' )
+            </if>
+            <if test=" params.projectServiceConcat != null and params.projectServiceConcat.trim() != ''">
+                and project_service_concat like CONCAT('%',#{params.projectServiceConcat},'%' )
+            </if>
+            <if test=" params.projectServicePhone != null and params.projectServicePhone.trim() != ''">
+                and project_service_phone like CONCAT('%',#{params.projectServicePhone},'%' )
+            </if>
+            <if test=" params.projectServiceLandline != null and params.projectServiceLandline.trim() != ''">
+                and project_service_landline like CONCAT('%',#{params.projectServiceLandline},'%' )
+            </if>
+            <if test=" params.supportDesc != null and params.supportDesc.trim() != ''">
+                and support_desc like CONCAT('%',#{params.supportDesc},'%' )
+            </if>
+            <if test=" params.status != null">
+                and status = #{params.status}
+            </if>
+            <if test=" params.companyId != null and params.companyId.trim() != ''">
+                and company_id like CONCAT('%',#{params.companyId},'%' )
+            </if>
+            <if test=" params.viewNum != null">
+                and view_num = #{params.viewNum}
+            </if>
+            <if test=" params.areaCode != null and params.areaCode.trim() != ''">
+                and area_code like CONCAT('%',#{params.areaCode},'%' )
+            </if>
+            <if test=" params.areaName != null and params.areaName.trim() != ''">
+                and area_name like CONCAT('%',#{params.areaName},'%' )
+            </if>
+            <if test=" params.address != null and params.address.trim() != ''">
+                and address like CONCAT('%',#{params.address},'%' )
+            </if>
+            <if test=" params.longitude != null and params.longitude.trim() != ''">
+                and longitude like CONCAT('%',#{params.longitude},'%' )
+            </if>
+            <if test=" params.latitude != null and params.latitude.trim() != ''">
+                and latitude like CONCAT('%',#{params.latitude},'%' )
+            </if>
+            <if test=" params.isTop != null">
+                and is_top = #{params.isTop}
+            </if>
+            <if test=" params.projectMap != null and params.projectMap.trim() != ''">
+                and project_map like CONCAT('%',#{params.projectMap},'%' )
+            </if>
+            <if test=" params.viewNumFlag != null">
+                and view_num_flag = #{params.viewNumFlag}
+            </if>
+            <if test=" params.collectNumFlag != null">
+                and collect_num_flag = #{params.collectNumFlag}
+            </if>
+            <if test=" params.sortNum != null">
+                and sort_num = #{params.sortNum}
+            </if>
+        </if>
+    </sql>
+
+    <select id="queryLabelName" resultType="String">
+        select p.name
+        from tb_project_label_relation r inner join tb_project_label p on r.label_id=p.id
+        where r.project_id=#{id}
+    </select>
+
+    <select id="queryResource" resultType="com.yjtech.wisdom.tourism.project.vo.ResourcesVo">
+        select case
+                when r.resource_type = 0 then 'vr'
+                when r.resource_type = 1 then '视频'
+                when r.resource_type = 2 then 'pdf' end type
+             , r.resource_url
+        from tb_project_info p
+                     inner join tb_project_resource r on p.id = r.project_id
+        where p.id=#{id}
+    </select>
+</mapper>

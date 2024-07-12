@@ -3,6 +3,7 @@ package com.yjtech.wisdom.tourism.framework.config;
 import com.yjtech.wisdom.tourism.common.config.AppConfig;
 import com.yjtech.wisdom.tourism.common.constant.Constants;
 import com.yjtech.wisdom.tourism.framework.interceptor.RepeatSubmitInterceptor;
+import com.yjtech.wisdom.tourism.framework.interceptor.impl.OpenApiInterceptor;
 import com.yjtech.wisdom.tourism.framework.interceptor.impl.ScreenLoginInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -25,6 +26,8 @@ public class ResourcesConfig implements WebMvcConfigurer {
     private RepeatSubmitInterceptor repeatSubmitInterceptor;
     @Autowired
     private ScreenLoginInterceptor screenLoginInterceptor;
+    @Autowired
+    private OpenApiInterceptor openApiInterceptor;
 
 
     @Override
@@ -50,6 +53,7 @@ public class ResourcesConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(repeatSubmitInterceptor).addPathPatterns("/**");
         registry.addInterceptor(screenLoginInterceptor).addPathPatterns("/screen/**");
+        registry.addInterceptor(openApiInterceptor).addPathPatterns("/open-api/**");
 //                .excludePathPatterns("/screen/auth/login")
 //                .excludePathPatterns("/screen/sms/sendScreenLoginPhoneCode")
 //                .excludePathPatterns("/screen/register/investor")
