@@ -171,3 +171,6 @@ sms.sdk:
   tourTemplateId: 1086274
   # 应急事件短信模板
   emergencyTemplateId: 1086283
+
+open.api:
+  token: apitoken@@@9rSXGKmbqQKRNZ8o4DO7fNi2wyvzuztQBAmLyjjqsKrA

@@ -128,6 +128,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 //大屏-天气相关，不参与鉴权
                 .antMatchers("/weather/**")
                 .anonymous()
+                .antMatchers("/open-api/**")
+                .anonymous()
                 // 除上面外的所有请求全部需要鉴权认证
                 .anyRequest()
                 .authenticated()

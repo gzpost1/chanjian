@@ -61,9 +61,9 @@ spring:
   redis:
     database: 9
     # 地址
-    host: 1.14.103.148
+    host: 220.197.15.146
     # 端口，默认为6379
-    port: 31857
+    port: 38087
     # 密码
     password:
 

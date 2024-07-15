@@ -53,6 +53,11 @@ public class TbRegisterInfoEntity extends Model<TbRegisterInfoEntity> {
      */
     //@NotNull(message = "企业类型不能为空")
     private String companyType;
+    /**
+     * 企业类型名称
+     */
+    @TableField(exist = false)
+    private String companyTypeName;
 
     /**
      * 公司英文名
@@ -357,6 +362,12 @@ public class TbRegisterInfoEntity extends Model<TbRegisterInfoEntity> {
     //@NotNull(message = "企业类型不能为空")
     @TableField(typeHandler = ListJsonTypeHandler.class)
     private List<String> type;
+
+    /**
+     * 角色
+     */
+    @TableField(exist = false)
+    private List<String> roleName;
 
     /**
      * 类型标识

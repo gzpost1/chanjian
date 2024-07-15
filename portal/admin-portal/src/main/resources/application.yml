@@ -205,3 +205,6 @@ tpns:
     connectTimeOut: 30
     readTimeOut: 30
     domainUrl: https://api.tpns.tencent.com/
+
+open.api:
+  token: apitoken@@@9rSXGKmbqQKRNZ8o4DO7fNi2wyvzuztQBAmLyjjqsKrA

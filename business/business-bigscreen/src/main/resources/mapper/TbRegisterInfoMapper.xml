@@ -39,7 +39,6 @@
         <result column="county_name" property="countyName"/>
         <result column="contact" property="contact"/>
         <result column="data_permissions" property="dataPermissions"/>
-
         <result column="company_info_finish_sign" property="companyInfoFinishSign"/>
         <result column="investment_label" property="investmentLabel" typeHandler="com.yjtech.wisdom.tourism.mybatis.typehandler.ListJsonTypeHandler"/>
         <result column="operation_label" property="operationLabel" typeHandler="com.yjtech.wisdom.tourism.mybatis.typehandler.ListJsonTypeHandler"/>
@@ -49,8 +48,13 @@
         <result column="commercial_remark" property="commercialRemark"/>
         <result column="operation_remark" property="operationRemark"/>
         <result column="we_chat_user_id" property="weChatUserId"/>
-
+        <association property="companyTypeName" javaType="java.lang.String" select="queryCompanyTypeName" column="company_type"></association>
     </resultMap>
+
+    <select id="queryCompanyTypeName" resultType="String">
+        select dict_label
+        from sys_dict_data where dict_type = 'company_type' and dict_value=#{value}
+    </select>
 
     <select id="selectOne" resultMap="BaseResultMap">
         <include refid="baseSelect"/>
