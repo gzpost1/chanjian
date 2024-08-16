@@ -51,11 +51,28 @@
         <easypoi.version>3.0.3</easypoi.version>
         <log4j2.version>2.15.0</log4j2.version>
         <flyway-core.version>6.0.8</flyway-core.version>
+        <tomcat.version>9.0.83</tomcat.version>
     </properties>
 
     <dependencyManagement>
 
         <dependencies>
+            <dependency>
+                <groupId>org.apache.tomcat.embed</groupId>
+                <artifactId>tomcat-embed-core</artifactId>
+                <version>${tomcat.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.tomcat.embed</groupId>
+                <artifactId>tomcat-embed-el</artifactId>
+                <version>${tomcat.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.tomcat.embed</groupId>
+                <artifactId>tomcat-embed-websocket</artifactId>
+                <version>${tomcat.version}</version>
+            </dependency>
+
             <!-- 对象拷贝-->
             <dependency>
                 <groupId>org.mapstruct</groupId>
