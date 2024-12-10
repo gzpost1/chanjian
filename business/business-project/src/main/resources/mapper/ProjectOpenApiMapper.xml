@@ -25,7 +25,7 @@
         LEFT JOIN tb_project_resource res ON res.id = (SELECT t1.id FROM tb_project_resource t1 WHERE t1.project_id =
         t.id AND t1.resource_type = 1 AND t1.deleted = 0 LIMIT 0,1)
         <where>
-            t.deleted = 0
+            t.deleted = 0 and t.status=2
             <if test="param.id != null and param.id != ''">
                 and t.id = #{param.id}
             </if>
